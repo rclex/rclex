@@ -1,18 +1,20 @@
-#このファイルはunifexからもってきて特に編集せず
 defmodule Rclex.BundlexProject do
   use Bundlex.Project
 
   def project do
     [
-      libs: libs()
+      nifs: nifs(Bundlex.platform())
     ]
   end
 
-  defp libs do
+  defp nifs(_platform) do
     [
-      unifex: [
-        deps: [shmex: :lib_nif],
-        sources: ["unifex.c", "payload.c"]
+      rclex: [
+        deps: [unifex: :unifex],
+        src_base: "rclex",
+        sources: ["_generated/rclex.c", "rclex.c"],
+        lib_dirs: ["/opt/ros/dashing/lib"],
+        libs: ["rcl","rmw","rcutils"] #<-みたいな?
       ]
     ]
   end
