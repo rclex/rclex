@@ -1,0 +1,9 @@
+%{
+  "bunch": {:hex, :bunch, "1.2.0", "f26c6c84e2e5e245620c73a0a4560ca91a75b25744012537e055426568916ab7", [:mix], [], "hexpm"},
+  "bunch_native": {:hex, :bunch_native, "0.2.1", "0227d2a751a32f8c0b77dfec57c8dc7216351720c9c755c467e6d9387467fd1f", [:mix], [{:bundlex, "~> 0.2.7", [hex: :bundlex, repo: "hexpm", optional: false]}], "hexpm"},
+  "bundlex": {:hex, :bundlex, "0.2.7", "8f46199bf4cf84a60cdfc142edeafbab37040167acc35dda8aa70433f2ff8162", [:mix], [{:bunch, "~> 1.0", [hex: :bunch, repo: "hexpm", optional: false]}, {:qex, "~> 0.5", [hex: :qex, repo: "hexpm", optional: false]}, {:secure_random, "~> 0.5", [hex: :secure_random, repo: "hexpm", optional: false]}], "hexpm"},
+  "qex": {:hex, :qex, "0.5.0", "5a3a9becf67d4006377c4c247ffdaaa8ae5b3634a0caadb788dc24d6125068f4", [:mix], [], "hexpm"},
+  "secure_random": {:hex, :secure_random, "0.5.1", "c5532b37c89d175c328f5196a0c2a5680b15ebce3e654da37129a9fe40ebf51b", [:mix], [], "hexpm"},
+  "shmex": {:hex, :shmex, "0.2.0", "2dc5e3919171e69993729fab2eee5bde6b679a4c7da91fd88e41c4254cc65fef", [:mix], [{:bunch_native, "~> 0.2.0", [hex: :bunch_native, repo: "hexpm", optional: false]}, {:bundlex, "~> 0.2.4", [hex: :bundlex, repo: "hexpm", optional: false]}], "hexpm"},
+  "unifex": {:hex, :unifex, "0.2.5", "a279c09e0bc2a9a50b5fa0552c36783964601f803bb27813122bb17a03be4ebf", [:mix], [{:bunch, "~> 1.0", [hex: :bunch, repo: "hexpm", optional: false]}, {:bundlex, "~> 0.2.0", [hex: :bundlex, repo: "hexpm", optional: false]}, {:shmex, "~> 0.2.0", [hex: :shmex, repo: "hexpm", optional: false]}], "hexpm"},
+}

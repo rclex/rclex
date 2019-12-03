@@ -1,7 +1,7 @@
 defmodule Rclex.MixProject do
   use Mix.Project
 
-  @github_link "https://github.com/HiroiImanishi/hoge.git"
+ 
   def project do
     [
       app: :rclex,
