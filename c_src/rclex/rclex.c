@@ -1,3 +1,5 @@
+//このファイルの関数名でiexから呼び出せる
+
 #include "rclex.h"
 #include <rcl/rcl.h>  //<>なのでカレントディレクトリを探しに行かない
 int handle_load(UnifexEnv * env, void ** priv_data) {
