@@ -1,0 +1,5 @@
+c_src/rclex/rclex.hに必要なヘッダファイルをinclude(/opt/ros/dashing/include/以下のファイル)
+spec.exsに必要なAPIを，引数と返り値とともに記述
+$ mix compile
+_generate以下にファイルが生成される
+c_src/rclex/rclex.cを実装
