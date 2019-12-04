@@ -1,13 +1,9 @@
-defmodule Rclex.Native
+module Rclex.Native
 
 callback :load
-@doc """
-ユーザーにとって必要なAPI
-  rcl_init
-  rcl_shutdown
-   
-  create_node
-  create_publisher
-  rcl_publish
-"""
-spec init() :: {:ok ::label, state}
+
+spec state_init() :: {:ok ::label, state}
+spec state_init2() :: {:ok ::label, statetwo}
+#spec rcl_get_zero_initialized_dontext() :: {rcl_context_t}
+
+spec check_state(target :: pid, state) :: {:ok :: label,answer :: int} | {:error :: label, reason :: atom}

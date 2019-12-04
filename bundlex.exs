@@ -13,6 +13,7 @@ defmodule Rclex.BundlexProject do
         deps: [unifex: :unifex],
         src_base: "rclex",
         sources: ["_generated/rclex.c", "rclex.c"],
+        includes: ["/opt/ros/dashing/include"],
         lib_dirs: ["/opt/ros/dashing/lib"],
         libs: ["rcl","rmw","rcutils"] #<-みたいな?
       ]
