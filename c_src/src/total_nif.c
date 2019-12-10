@@ -89,6 +89,15 @@ ErlNifFunc nif_funcs[] = {
     */
 };
 
+
+#ifndef _MSC_VER
+#if defined (__SUNPRO_C) && (__SUNPRO_C >= 0x550)
+__global
+#elif defined __GNUC__
+__attribute__ ((visibility("default")))
+#endif
+
+#endif
 ERL_NIF_INIT(Elixir.RclEx,nif_funcs,&load,&reload,NULL,NULL);
 #ifdef __cplusplus
 }
