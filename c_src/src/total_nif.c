@@ -2,7 +2,7 @@
 extern "C"
 {
 #endif
-#include "total_nif.h"
+#include "../include/total_nif.h"
 
 //リソースタイプを作る．load()から呼び出される.各種nifファイルから見れるようstaticつけない
 int open_resource(ErlNifEnv* env){

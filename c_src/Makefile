@@ -4,7 +4,7 @@ OBJ		:= ./obj
 ROOTDIR := /opt/ros/dashing
 RCLDIR	:= ..
 
-SRCDIR	:= ./nif_src
+SRCDIR	:= ./src
 CFLAGS	:= -O3 -c -fPIC
 SOFLAGS  := -shared
 # -c でオブジェクトだけ全部作って，-fpic -sharedすることで一つの.soにできる
@@ -19,14 +19,14 @@ all:$(TARGET)
 $(TARGET):init_nif.o node_nif.o publisher_nif.o total_nif.o
 	$(CC) -O3 $(SOFLAGS) $(LDFLAGS) -o $(TARGET) init_nif.o node_nif.o publisher_nif.o total_nif.o $(LIBS)
 
-init_nif.o: init_nif.c total_nif.c
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) total_nif.c init_nif.c  $(LIBS)
+init_nif.o: $(SRCDIR)/init_nif.c $(SRCDIR)/total_nif.c
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $(SRCDIR)/total_nif.c $(SRCDIR)/init_nif.c  $(LIBS)
 
-node_nif.o: node_nif.c total_nif.c
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) total_nif.c node_nif.c  $(LIBS)
+node_nif.o: $(SRCDIR)/node_nif.c $(SRCDIR)/total_nif.c
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $(SRCDIR)/total_nif.c $(SRCDIR)/node_nif.c  $(LIBS)
 
-publisher_nif.o: publisher_nif.c total_nif.c
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) total_nif.c publisher_nif.c  $(LIBS)
+publisher_nif.o: $(SRCDIR)/publisher_nif.c $(SRCDIR)/total_nif.c
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $(SRCDIR)/total_nif.c $(SRCDIR)/publisher_nif.c  $(LIBS)
 
 .PHONY: clean
 clean:
