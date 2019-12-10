@@ -6,43 +6,14 @@ extern "C"
 #include <erl_nif.h>
 #include "total_nif.h"
 #include "node_nif.h"
-#include "rcl/node.h"
-#include "rcl/init.h"
-#include "rcl/context.h"
-#include "rcl/init_options.h"
-#include "rcl/node.h"
 
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "rcl/arguments.h"
-#include "rcl/error_handling.h"
-//#include "rcl/localhost.h"
-#include "rcl/logging.h"
-#include "rcl/logging_rosout.h"
 #include "rcl/rcl.h"
-#include "rcl/remap.h"
-#include "rcl/security_directory.h"
-#include "rcutils/filesystem.h"
-#include "rcutils/find.h"
-#include "rcutils/format_string.h"
-#include "rcutils/get_env.h"
-#include "rcutils/logging.h"
-#include "rcutils/macros.h"
-#include "rcutils/repl_str.h"
-#include "rcutils/snprintf.h"
-#include "rcutils/strdup.h"
-#include "rmw/error_handling.h"
-#include "rmw/node_security_options.h"
-#include "rmw/rmw.h"
-#include "rmw/validate_namespace.h"
-#include "rmw/validate_node_name.h"
-//#include "tracetools/tracetools.h"
 
-//#include "../src/context_impl.h"
-//ここまでコメントアウトしてた
 #define ROS_SECURITY_STRATEGY_VAR_NAME "ROS_SECURITY_STRATEGY"
 #define ROS_SECURITY_ENABLE_VAR_NAME "ROS_SECURITY_ENABLE"
 #define ROS_DOMAIN_ID_VAR_NAME "ROS_DOMAIN_ID"

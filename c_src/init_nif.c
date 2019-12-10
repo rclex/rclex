@@ -7,58 +7,10 @@ extern "C"
 #include "init_nif.h"
 #include "total_nif.h"
 #include <stdio.h>
-#include "rcl/init.h"
-#include "rcl/context.h"
-#include "rcl/init_options.h"
-/*
-ErlNifResourceType* rt_context;
-ErlNifResourceType* rt_ret;
-ErlNifResourceType* rt_options;
 
-ERL_NIF_TERM atom_ok;
-ERL_NIF_TERM atom_true;
-ERL_NIF_TERM atom_false;
+#include "rcl/rcl.h"
 
-void
-free_res(ErlNifEnv* env, void* obj){
-    printf("enter free_res\n");
-    //Tracker* tracker = (Tracker*) enif_priv_data(env);
-    
-}
 
-//リソースタイプを作る．load()から呼び出される
-
-static int open_resource(ErlNifEnv* env){
-    const char* mod = "Elixir.RCLInit";
-    const char* name1 = "rcl_context_t";
-    const char* name2 = "rcl_ret_t";
-    const char* name3 = "rcl_init_options_t";
-    const char* name4 = "rcl_node_t";
-    int flags = ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER;
-
-    rt_context = enif_open_resource_type(env,mod,name1,NULL,flags,NULL);
-    rt_ret     = enif_open_resource_type(env,mod,name2,NULL,flags,NULL);
-    rt_options = enif_open_resource_type(env,mod,name3,NULL,flags,NULL);
-    rt_node = enif_open_resource_type(env,mod,name4,NULL,flags,NULL);
-    if(rt_context == NULL || rt_ret == NULL || rt_options == NULL) return -1;
-    return 0;
-}
-
-//@on_loadで呼び出す
-static int load(ErlNifEnv* env, void** priv,ERL_NIF_TERM load_info){
-    if(open_resource(env) == -1) return -1;
-
-    atom_ok = enif_make_atom(env,"ok");
-    atom_true = enif_make_atom(env,"true");
-    atom_false = enif_make_atom(env,"false");
-    return 0;
-}
-
-static int reload(ErlNifEnv* env,void** priv,ERL_NIF_TERM load_info){
-    if(open_resource(env) == -1) return -1;
-    return 0;
-}
-*/
 ERL_NIF_TERM nif_rcl_get_zero_initialized_init_options(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     printf("op1\n");
     if(argc != 0){
