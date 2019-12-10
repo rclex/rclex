@@ -16,14 +16,18 @@ LIBS 	:= -lrcl -lrmw -lrcutils -lfastrtps
 
 all:$(TARGET)
 
-$(TARGET):init_nif.o node_nif.o total_nif.o
-	$(CC) -O3 $(SOFLAGS) $(LDFLAGS) -o $(TARGET) init_nif.o node_nif.o total_nif.o $(LIBS)
+$(TARGET):init_nif.o node_nif.o publisher_nif.o total_nif.o
+	$(CC) -O3 $(SOFLAGS) $(LDFLAGS) -o $(TARGET) init_nif.o node_nif.o publisher_nif.o total_nif.o $(LIBS)
 
 init_nif.o: init_nif.c total_nif.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) total_nif.c init_nif.c  $(LIBS)
 
 node_nif.o: node_nif.c total_nif.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) total_nif.c node_nif.c  $(LIBS)
+
+publisher_nif.o: publisher_nif.c total_nif.c
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) total_nif.c publisher_nif.c  $(LIBS)
+
 .PHONY: clean
 clean:
 	rm -f *.o

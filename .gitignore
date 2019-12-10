@@ -23,3 +23,5 @@ erl_crash.dump
 rclex-*.tar
 
 /.history/
+
+*.so
