@@ -66,13 +66,14 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_get_zero_initialized_context",0,nif_rcl_get_zero_initialized_context},
     {"rcl_init",4,nif_rcl_init},
     {"rcl_shutdown",1,nif_rcl_shutdown},
-    /*
+    
     //--------------node_nif.c--------------
     {"rcl_get_zero_initialized_node",0,nif_rcl_get_zero_initialized_node},
     {"rcl_node_get_default_options",0,nif_rcl_node_get_default_options},
     {"rcl_node_init",5,nif_rcl_node_init},
     {"rcl_node_fini",1,nif_rcl_node_fini},
     //--------------publisher_nif.c-------------
+    
     {"rcl_get_zero_initialized_publisher",0,nif_rcl_get_zero_initialized_publisher},
     {"rcl_publisher_get_default_options",0,nif_rcl_publisher_get_default_options},
     {"rcl_publisher_get_topic_name",1,nif_rcl_publisher_get_topic_name},
@@ -81,6 +82,7 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_publisher_is_valid",1,nif_rcl_publisher_is_valid},
     {"rcl_publish",3,nif_rcl_publish},
     //---------------msg_int16_nif.c-----------
+    /*
     {"init_std_msgs_msg_Int16",0,nif_init_Int16},
     {"destroy_std_msgs_msg_Int16",1,nif_destroy_Int16},
     {"get_message_type_from_std_msgs_msg_Int16",0,nif_getmsgtype_Int16},

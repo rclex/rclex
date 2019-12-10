@@ -6,6 +6,8 @@ extern "C"
 #include <erl_nif.h>
 
 #include "init_nif.h"
+#include "node_nif.h"
+#include "publisher_nif.h"
 //各種リソースタイプの宣言やリソースタイプの作成を行う
 //------------------------nif_init.c-------------------
 ErlNifResourceType* rt_ret;
