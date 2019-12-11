@@ -101,10 +101,34 @@ defmodule RclEx do
   def rcl_publisher_is_valid(_a) do
       raise "rcl_get_zero_initialized_publisher/0 not implemented"
   end
-  def rcl_publish(_a,_b,_c) do
-      raise "rcl_publish/3 not implemented"
+  @doc """
+    rcl_ret_t
+    rcl_publish(
+      const rcl_publisher_t * publisher,
+      const void * ros_message,
+      rmw_publisher_allocation_t * allocation
+    );
+  """
+  #本来は第3引数があるが，一旦NULLにしておく
+  def rcl_publish(_a,_b) do
+      raise "rcl_publish/2 not implemented"
+  end
+  #-----------------------------msg_int16.ex------------------------------
+  def std_msgs__msg__Int16__init(_a) do
+    raise "NIF std_msgs__msg__Int16__init/0 not implemented"
   end
 
+  def std_msgs__msg__Int16__destroy(_a) do
+      raise "NIF std_msgs__msg__Int16__destroy/1 not implemented"
+  end
+
+  def get_message_type_from_std_msgs_msg_Int16 do
+      raise "NIF get_message_type_from_std_msgs_msg_Int16/0 not implemented"
+  end
+
+  #def cre_int16 do
+  #    get_message_type_from_std_msgs_msg_Int16()
+  #end
   def setting_pub do
     con = rcl_get_zero_initialized_context()
     op = rcl_get_zero_initialized_init_options()
@@ -114,9 +138,11 @@ defmodule RclEx do
     rcl_node_init(node,'test_node','test_namespace_',con,node_op)
     mypub = rcl_get_zero_initialized_publisher()
     mypubop = rcl_publisher_get_default_options()
-    #type_support = Int16.get_message_type_from_std_msgs_msg_Int16
-    #ret = Publisher.rcl_publisher_init(mypub,node,type_support,"topicname",mypubop)
+    type_support = get_message_type_from_std_msgs_msg_Int16()
+    ret = rcl_publisher_init(mypub,node,type_support,'topicname',mypubop)
     IO.puts "success!!"
+    rcl_publish(mypub,1)
+    IO.puts "published"
   end
   def hello do
     :world

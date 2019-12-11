@@ -6,10 +6,10 @@ extern "C"
 #include <erl_nif.h>
 #include <rcl/rcl.h>
 #include <rosidl_generator_c/message_type_support_struct.h>
-#include <rosidl_generator_c/string_functions.h>
-#include <rcl/error_handling.h>
 
 #include <std_msgs/msg/int16.h>
+
+//test_reamp_integration.cppを参考
 
 #include "../../include/total_nif.h"
 //#include "../../include/msg/msg_types.h"

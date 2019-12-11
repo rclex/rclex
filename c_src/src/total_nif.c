@@ -80,7 +80,7 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_publisher_fini",2,nif_rcl_publisher_fini},
     {"rcl_publisher_init",5,nif_rcl_publisher_init},
     {"rcl_publisher_is_valid",1,nif_rcl_publisher_is_valid},
-    {"rcl_publish",3,nif_rcl_publish},
+    {"rcl_publish",2,nif_rcl_publish},
     //---------------msg_int16_nif.c-----------
     
     {"std_msgs__msg__Int16__init",1,nif_std_msgs__msg__Int16__init},
