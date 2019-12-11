@@ -79,7 +79,36 @@ ERL_NIF_TERM nif_rcl_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     
     return ret;
 }
+ERL_NIF_TERM nif_rcl_init_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+    
+    if(argc != 2){
+        return enif_make_badarg(env);
+    }
 
+    rcl_ret_t* res;
+    ERL_NIF_TERM ret;
+    const rcl_init_options_t* res_arg_options;
+    rcl_context_t* res_arg_context;
+    
+    if(!enif_get_resource(env, argv[0], rt_init_options, (void**) &res_arg_options)){
+	    return enif_make_badarg(env);
+    }
+    if(!enif_get_resource(env, argv[1], rt_context, (void**) &res_arg_context)){
+	    return enif_make_badarg(env);
+    }
+    res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
+    if(res == NULL) return enif_make_badarg(env);
+    ret = enif_make_resource(env,res);
+    enif_release_resource(res);
+    
+   
+    //ポインタも，その指し示す先もconst(変更不可)であることを示す
+    
+    //argc,argvに直接値を入れている
+    *res = rcl_init(0,NULL,res_arg_options,res_arg_context);
+    printf("finished rcl_init\n");
+    return ret;
+}
 
 ERL_NIF_TERM nif_rcl_shutdown(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(argc != 1){
