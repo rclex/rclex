@@ -21,7 +21,7 @@ int open_resource(ErlNifEnv* env){
     const char* name8 = "rosidl_message_type_support_t";
     const char* name9 = "rmw_publisher_allocation_t";
     //for msg
-    const char* name10 = "std_msgs__msg__Int16_t";
+    const char* name10 = "std_msgs__msg__Int16";
 
     int flags = ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER;
 
@@ -82,22 +82,21 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_publisher_is_valid",1,nif_rcl_publisher_is_valid},
     {"rcl_publish",3,nif_rcl_publish},
     //---------------msg_int16_nif.c-----------
-    /*
-    {"init_std_msgs_msg_Int16",0,nif_init_Int16},
-    {"destroy_std_msgs_msg_Int16",1,nif_destroy_Int16},
-    {"get_message_type_from_std_msgs_msg_Int16",0,nif_getmsgtype_Int16},
-    */
+    
+    {"std_msgs__msg__Int16__init",1,nif_std_msgs__msg__Int16__init},
+    {"std_msgs__msg__Int16__destroy",1,nif_std_msgs__msg__Int16__destroy},
+    {"get_message_type_from_std_msgs_msg_Int16",0,nif_getmsgtype_int16},
+    
 };
 
-
+/*
 #ifndef _MSC_VER
 #if defined (__SUNPRO_C) && (__SUNPRO_C >= 0x550)
 __global
 #elif defined __GNUC__
 __attribute__ ((visibility("default")))
 #endif
-
-#endif
+*/
 ERL_NIF_INIT(Elixir.RclEx,nif_funcs,&load,&reload,NULL,NULL);
 #ifdef __cplusplus
 }

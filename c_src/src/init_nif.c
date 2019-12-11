@@ -8,7 +8,7 @@ extern "C"
 #include "../include/total_nif.h"
 #include <stdio.h>
 
-#include "rcl/rcl.h"
+#include "rcl/rcl.h"    //include先からcontext.hにたどり着く
 
 
 ERL_NIF_TERM nif_rcl_get_zero_initialized_init_options(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
