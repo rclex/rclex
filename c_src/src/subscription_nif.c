@@ -8,8 +8,8 @@ extern "C"
 #include <stdio.h>
 #include <string.h>
 
-#include "rclex/subsription.h"
-
+#include "rcl/subscription.h"
+#include "rmw/types.h"
 ERL_NIF_TERM nif_rcl_get_zero_initialized_subscription(ErlNifEnv* env,int argc,const ERL_NIF_TERM argv[]){
     if(argc != 0){
       return enif_make_badarg(env);
@@ -158,10 +158,10 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     }
   
   
-  if(!enif_get_resource(env, argv[2], rt_, (void**) &res_msginfo)){
+  if(!enif_get_resource(env, argv[2], rt_msginfo, (void**) &res_msginfo)){
     return enif_make_badarg(env);
   }
-  if(!enif_get_resource(env, argv[3], rt_, (void**) &res_sub_alloc)){
+  if(!enif_get_resource(env, argv[3], rt_sub_alloc, (void**) &res_sub_alloc)){
     return enif_make_badarg(env);
   }
   res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));

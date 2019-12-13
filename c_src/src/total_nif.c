@@ -20,8 +20,14 @@ int open_resource(ErlNifEnv* env){
     const char* name7 = "rcl_publisher_options_t";
     const char* name8 = "rosidl_message_type_support_t";
     const char* name9 = "rmw_publisher_allocation_t";
+
+    //for subscription_nif.c
+    const char* namesub1 = "rcl_subscription_t";
+    const char* namesub2 = "rcl_subscription_options_t";
+    const char* namesub3 = "rmw_message_info_t";
+    const char* namesub4 = "rmw_subscription_allocation_t";
     //for msg
-    const char* name10 = "std_msgs__msg__Int16";
+    const char* namemsg1 = "std_msgs__msg__Int16";
 
     int flags = ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER;
 
@@ -37,8 +43,12 @@ int open_resource(ErlNifEnv* env){
     rt_pub_options  = enif_open_resource_type(env,mod,name7,NULL,flags,NULL);
     rt_rosidl_msg_type_support = enif_open_resource_type(env,mod,name8,NULL,flags,NULL);
     rt_rmw_pub_allocation = enif_open_resource_type(env,mod,name9,NULL,flags,NULL);
-   
-    rt_Int16 = enif_open_resource_type(env,mod,name10,NULL,flags,NULL);
+    
+    rt_sub          = enif_open_resource_type(env,mod,namesub1,NULL,flags,NULL);
+    rt_sub_options  = enif_open_resource_type(env,mod,namesub2,NULL,flags,NULL);
+    rt_msginfo      = enif_open_resource_type(env,mod,namesub3,NULL,flags,NULL);
+    rt_sub_alloc    = enif_open_resource_type(env,mod,namesub4,NULL,flags,NULL);
+    rt_Int16 = enif_open_resource_type(env,mod,namemsg1,NULL,flags,NULL);
 
     //1〜5まで
     if(rt_node == NULL || rt_ret == NULL || rt_node_options == NULL || rt_context == NULL || rt_init_options == NULL) return -1;
@@ -65,12 +75,14 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_get_zero_initialized_init_options",0,nif_rcl_get_zero_initialized_init_options},
     {"rcl_get_zero_initialized_context",0,nif_rcl_get_zero_initialized_context},
     {"rcl_init",4,nif_rcl_init},
+    {"rcl_init_with_null",2,nif_rcl_init_with_null},
     {"rcl_shutdown",1,nif_rcl_shutdown},
     
     //--------------node_nif.c--------------
     {"rcl_get_zero_initialized_node",0,nif_rcl_get_zero_initialized_node},
     {"rcl_node_get_default_options",0,nif_rcl_node_get_default_options},
     {"rcl_node_init",5,nif_rcl_node_init},
+    {"express_node_init",0,express_node_init},
     {"rcl_node_fini",1,nif_rcl_node_fini},
     //--------------publisher_nif.c-------------
     
@@ -81,6 +93,13 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_publisher_init",5,nif_rcl_publisher_init},
     {"rcl_publisher_is_valid",1,nif_rcl_publisher_is_valid},
     {"rcl_publish",2,nif_rcl_publish},
+
+    //---------------subscription_nif.c-------------
+    {"rcl_get_zero_initialized_subscription",0,nif_rcl_get_zero_initialized_subscription},
+    {"rcl_subscription_get_default_options",0,nif_rcl_subscription_get_default_options},
+    {"rcl_subscription_init",5,nif_rcl_subscription_init},
+    {"rcl_subscription_fini",2,nif_rcl_subscription_fini},
+    {"rcl_take",4,nif_rcl_take},
     //---------------msg_int16_nif.c-----------
     
     {"std_msgs__msg__Int16__init",1,nif_std_msgs__msg__Int16__init},

@@ -25,7 +25,9 @@ defmodule RclEx do
   def rcl_init(_a,_b,_c,_d) do
       raise "NIF rcl_init/4 not implemented"
   end
-
+  def rcl_init_with_null(_a,_b) do
+      raise "NIF rcl_init_with_null/2 not implemented"
+  end
   @doc """
       return {:ok,rcl_ret_t}
       arguments...(
@@ -57,6 +59,9 @@ defmodule RclEx do
   def rcl_node_init(_a,_b,_c,_d,_e) do
       raise "NIF rcl_node_init/5 not implemented"
   end
+  def express_node_init do
+      raise "sorry"
+  end
   @doc """
       return rcl_ret_t 
       argument...rcl_node_t
@@ -72,7 +77,6 @@ defmodule RclEx do
       
       node_op = rcl_node_get_default_options()
       zero_node = rcl_get_zero_initialized_node() |> IO.inspect
-      IO.puts "unchi"
       
       rcl_node_init(zero_node,'hoge','fuga',con,node_op) |> IO.inspect
       IO.puts "success!"
@@ -113,6 +117,51 @@ defmodule RclEx do
   def rcl_publish(_a,_b) do
       raise "rcl_publish/2 not implemented"
   end
+
+  #---------------------------subscription_nif.c--------------------------
+  def rcl_subscription_get_default_options do
+    raise "NIF rcl_subscription_get_default_options is not implemented"
+  end
+  def rcl_get_zero_initialized_subscription do
+    raise "NIF rcl_subscription_get_default_options is not implemented"
+  end
+
+  @doc """
+    rcl_ret_t
+    rcl_subscription_init(
+      rcl_subscription_t * subscription,
+      const rcl_node_t * node,
+      const rosidl_message_type_support_t * type_support,
+      const char * topic_name,
+      const rcl_subscription_options_t * options
+  );
+  """
+  
+  def rcl_subscription_init(_a,_b,_c,_d,_e) do
+    raise "NIF rcl_subscription_init is not implemented"
+  end
+  def rcl_subscription_fini(_a,_b) do
+    raise "NIF rcl_subscription_fini is not implemented"
+  end
+  def rcl_take(_a,_b,_c,_d) do
+    raise "NIF rcl_take is not implemented"
+  end
+  def setting_sub do
+    con = rcl_get_zero_initialized_context()
+    op = rcl_get_zero_initialized_init_options()
+    rcl_init_with_null(op,con)
+    
+    node_op = rcl_node_get_default_options()
+    node = rcl_get_zero_initialized_node()
+      
+    rcl_node_init(node,'test_sub','',con,node_op)
+
+    sub_options = rcl_subscription_get_default_options()
+    mysub = rcl_get_zero_initialized_subscription()
+
+    type_support = get_message_type_from_std_msgs_msg_Int16()
+    ret = rcl_subscription_init(mysub,node,type_support,'topicname',sub_options)
+  end
   #-----------------------------msg_int16.ex------------------------------
   def std_msgs__msg__Int16__init(_a) do
     raise "NIF std_msgs__msg__Int16__init/0 not implemented"
@@ -132,10 +181,12 @@ defmodule RclEx do
   def setting_pub do
     con = rcl_get_zero_initialized_context()
     op = rcl_get_zero_initialized_init_options()
-    rcl_init(0,'hello world',op,con)
+    rcl_init_with_null(op,con)
+    
     node_op = rcl_node_get_default_options()
     node = rcl_get_zero_initialized_node()
     rcl_node_init(node,'test_node','test_namespace_',con,node_op)
+    
     mypub = rcl_get_zero_initialized_publisher()
     mypubop = rcl_publisher_get_default_options()
     type_support = get_message_type_from_std_msgs_msg_Int16()

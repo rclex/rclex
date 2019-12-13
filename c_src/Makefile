@@ -17,8 +17,8 @@ MSGLIBS	:= -lrcl -lrmw -lrcutils -lfastrtps -lrosidl_generator_c -lrosidl_typesu
 
 all:$(TARGET)
 
-$(TARGET):init_nif.o node_nif.o publisher_nif.o msg_int16_nif.o total_nif.o int16__functions.o int16__type_support.o
-	$(LD) -O3 $(SOFLAGS) $(LDFLAGS) -o $(TARGET) init_nif.o node_nif.o publisher_nif.o msg_int16_nif.o int16__functions.o int16__type_support.o total_nif.o $(MSGLIBS)
+$(TARGET):init_nif.o node_nif.o publisher_nif.o subscription_nif.o msg_int16_nif.o total_nif.o int16__functions.o int16__type_support.o
+	$(LD) -O3 $(SOFLAGS) $(LDFLAGS) -o $(TARGET) init_nif.o node_nif.o publisher_nif.o subscription_nif.o msg_int16_nif.o int16__functions.o int16__type_support.o total_nif.o $(MSGLIBS)
 
 init_nif.o: $(SRCDIR)/init_nif.c 
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $<  $(LIBS)
@@ -27,6 +27,9 @@ node_nif.o: $(SRCDIR)/node_nif.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $<  $(LIBS)
 
 publisher_nif.o: $(SRCDIR)/publisher_nif.c 
+	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $<  $(LIBS)
+
+subscription_nif.o: $(SRCDIR)/subscription_nif.c 
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $<  $(LIBS)
 
 msg_int16_nif.o: $(SRCDIR)/msg/msg_int16_nif.c 

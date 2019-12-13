@@ -55,7 +55,7 @@ ERL_NIF_TERM nif_rcl_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     char argv_buf[1024];    
     (void)memset(&argv_buf, '\0', sizeof(argv_buf));
     const rcl_init_options_t* res_arg_options;
-    rcl_context_t* res_arg_context;
+    rcl_context_t* res_arg_context; 
     if(!enif_get_int(env,argv[0],&argcval)){
         return enif_make_badarg(env);
     }
@@ -88,7 +88,7 @@ ERL_NIF_TERM nif_rcl_init_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM
     rcl_ret_t* res;
     ERL_NIF_TERM ret;
     const rcl_init_options_t* res_arg_options;
-    rcl_context_t* res_arg_context;
+    rcl_context_t* res_arg_context;  //rcl_initの引数でconstがついてない   
     
     if(!enif_get_resource(env, argv[0], rt_init_options, (void**) &res_arg_options)){
 	    return enif_make_badarg(env);
@@ -111,6 +111,7 @@ ERL_NIF_TERM nif_rcl_init_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM
 }
 
 ERL_NIF_TERM nif_rcl_shutdown(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+    printf("enter rcl_shutdown\n");
     if(argc != 1){
         return enif_make_badarg(env);
     }
