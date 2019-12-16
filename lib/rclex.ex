@@ -4,6 +4,8 @@ defmodule RclEx do
         IO.puts "load_nifs"
         :erlang.load_nif('/home/imanishi/rclex/rclex',0)
     end
+
+  #-----------------------init_nif.c--------------------------
   #return rcl_init_options_t
   def rcl_get_zero_initialized_init_options do
     raise "NIF rcl_get_zero_initialized_init_options/0 not implemented"
@@ -37,7 +39,7 @@ defmodule RclEx do
       raise "NIF rcl_shutdown/1 not implemented" 
   end
 
-  #-----------------------node_nif.c---------------
+  #-----------------------node_nif.c--------------------------
   #return {:ok,rcl_node_t}
   def rcl_get_zero_initialized_node do
     raise "NIF rcl_get_zero_initialized_node/0 not implemented"
@@ -146,22 +148,7 @@ defmodule RclEx do
   def rcl_take(_a,_b,_c,_d) do
     raise "NIF rcl_take is not implemented"
   end
-  def setting_sub do
-    con = rcl_get_zero_initialized_context()
-    op = rcl_get_zero_initialized_init_options()
-    rcl_init_with_null(op,con)
-    
-    node_op = rcl_node_get_default_options()
-    node = rcl_get_zero_initialized_node()
-      
-    rcl_node_init(node,'test_sub','',con,node_op)
-
-    sub_options = rcl_subscription_get_default_options()
-    mysub = rcl_get_zero_initialized_subscription()
-
-    type_support = get_message_type_from_std_msgs_msg_Int16()
-    ret = rcl_subscription_init(mysub,node,type_support,'topicname',sub_options)
-  end
+  
   #-----------------------------msg_int16.ex------------------------------
   def std_msgs__msg__Int16__init(_a) do
     raise "NIF std_msgs__msg__Int16__init/0 not implemented"
@@ -178,24 +165,39 @@ defmodule RclEx do
   #def cre_int16 do
   #    get_message_type_from_std_msgs_msg_Int16()
   #end
-  def setting_pub do
-    con = rcl_get_zero_initialized_context()
-    op = rcl_get_zero_initialized_init_options()
-    rcl_init_with_null(op,con)
-    
-    node_op = rcl_node_get_default_options()
-    node = rcl_get_zero_initialized_node()
-    rcl_node_init(node,'test_node','test_namespace_',con,node_op)
-    
-    mypub = rcl_get_zero_initialized_publisher()
-    mypubop = rcl_publisher_get_default_options()
-    type_support = get_message_type_from_std_msgs_msg_Int16()
-    ret = rcl_publisher_init(mypub,node,type_support,'topicname',mypubop)
-    IO.puts "success!!"
-    rcl_publish(mypub,1)
-    IO.puts "published"
-  end
+  
   def hello do
     :world
   end
 end
+
+con = rcl_get_zero_initialized_context()
+op = rcl_get_zero_initialized_init_options()
+rcl_init_with_null(op,con)
+
+node_op = rcl_node_get_default_options()
+node = rcl_get_zero_initialized_node()
+  
+rcl_node_init(node,'test_sub','',con,node_op)
+
+sub_options = rcl_subscription_get_default_options()
+mysub = rcl_get_zero_initialized_subscription()
+
+type_support = get_message_type_from_std_msgs_msg_Int16()
+ret = rcl_subscription_init(mysub,node,type_support,'topicname',sub_options)
+
+con = rcl_get_zero_initialized_context()
+op = rcl_get_zero_initialized_init_options()
+rcl_init_with_null(op,con)
+
+node_op = rcl_node_get_default_options()
+node = rcl_get_zero_initialized_node()
+rcl_node_init(node,'test_node','test_namespace_',con,node_op)
+
+mypub = rcl_get_zero_initialized_publisher()
+mypubop = rcl_publisher_get_default_options()
+type_support = get_message_type_from_std_msgs_msg_Int16()
+ret = rcl_publisher_init(mypub,node,type_support,'topicname',mypubop)
+IO.puts "success!!"
+rcl_publish(mypub,1)
+IO.puts "published"
