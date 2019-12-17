@@ -10,12 +10,16 @@ defmodule RclEx do
   def rcl_get_zero_initialized_init_options do
     raise "NIF rcl_get_zero_initialized_init_options/0 not implemented"
   end
-
+  def rcl_init_options_init(_a) do
+    raise "NIF rcl_init_options_init/1 is not implemented"
+  end
   #return rcl_context_t
   def rcl_get_zero_initialized_context do
       raise "NIF rcl_get_zero_initialized_context/0 not implemented"
   end
-
+  def nif_read_context(_a) do
+      raise "NIF nif_read_context/1 is not implemented"
+  end
   @doc """
       return {:ok,rcl_ret_t}
       arguments...(
@@ -27,6 +31,9 @@ defmodule RclEx do
   def rcl_init(_a,_b,_c,_d) do
       raise "NIF rcl_init/4 not implemented"
   end
+  @doc """
+    argc,argvに0,NULLを直接入れる関数
+  """
   def rcl_init_with_null(_a,_b) do
       raise "NIF rcl_init_with_null/2 not implemented"
   end
@@ -72,41 +79,58 @@ defmodule RclEx do
       raise "NIF rcl_node_fini/1 not implemented"
   end
 
-  def create_node do
-      con = rcl_get_zero_initialized_context()
-      op = rcl_get_zero_initialized_init_options()
-      rcl_init(0,'hello',op,con)
-      
-      node_op = rcl_node_get_default_options()
-      zero_node = rcl_get_zero_initialized_node() |> IO.inspect
-      
-      rcl_node_init(zero_node,'hoge','fuga',con,node_op) |> IO.inspect
-      IO.puts "success!"
-  end
 #------------------------------publisher_nif.c--------------------------
+  @doc """
+      return rcl_publisher_t 
+      argument...void
+  """
   def rcl_get_zero_initialized_publisher do
       raise "NIF get_zero_initialized_publisher/0 not implemented"
   end
 
+  @doc """
+      return rcl_publisher_options_t 
+      argument...void
+  """
   def rcl_publisher_get_default_options do
       raise "rcl_get_zero_initialized_publisher/0 not implemented"
   end
 
+  @doc """
+      return const char* 
+      argument...rcl_publisher_t*
+  """
   def rcl_publisher_get_topic_name(_a) do
       raise "rcl_get_zero_initialized_publisher/0 not implemented"
   end
 
+  @doc """
+      return rcl_ret_t 
+      argument...rcl_publisher_t*,rcl_node_t*
+  """
   def rcl_publisher_fini(_a,_b) do
       raise "rcl_get_zero_initialized_publisher/0 not implemented"
   end
 
+  @doc """
+      return rcl_ret_t 
+      argument...rcl_publisher_t * publisher,
+                  const rcl_node_t * node,
+                  const rosidl_message_type_support_t * type_support,
+                  const char * topic_name,
+                  const rcl_publisher_options_t * options
+  """
   def rcl_publisher_init(_a,_b,_c,_d,_e) do
       raise "rcl_get_zero_initialized_publisher/0 not implemented"
   end
-
+  @doc """
+      return bool 
+      argument...rcl_publisher_t*
+  """
   def rcl_publisher_is_valid(_a) do
       raise "rcl_get_zero_initialized_publisher/0 not implemented"
   end
+  
   @doc """
     rcl_ret_t
     rcl_publish(
@@ -138,13 +162,25 @@ defmodule RclEx do
       const rcl_subscription_options_t * options
   );
   """
-  
   def rcl_subscription_init(_a,_b,_c,_d,_e) do
     raise "NIF rcl_subscription_init is not implemented"
   end
+  @doc """
+      return rcl_ret_t 
+      argument...rcl_subscription_t*,rcl_node_t*
+  """
   def rcl_subscription_fini(_a,_b) do
     raise "NIF rcl_subscription_fini is not implemented"
   end
+  @doc """
+    rcl_ret_t
+    rcl_take(
+      const rcl_subscription_t * subscription,
+      void * ros_message,
+      rmw_message_info_t * message_info,
+      rmw_subscription_allocation_t * allocation
+    );
+  """
   def rcl_take(_a,_b,_c,_d) do
     raise "NIF rcl_take is not implemented"
   end
@@ -165,39 +201,22 @@ defmodule RclEx do
   #def cre_int16 do
   #    get_message_type_from_std_msgs_msg_Int16()
   #end
-  
-  def hello do
-    :world
-  end
 end
 
-con = rcl_get_zero_initialized_context()
-op = rcl_get_zero_initialized_init_options()
-rcl_init_with_null(op,con)
+conn = RclEx.rcl_get_zero_initialized_context()
+init_op = RclEx.rcl_get_zero_initialized_init_options()
+RclEx.rcl_init_options_init(init_op)
+RclEx.rcl_init_with_null(init_op,conn)
 
-node_op = rcl_node_get_default_options()
-node = rcl_get_zero_initialized_node()
-  
-rcl_node_init(node,'test_sub','',con,node_op)
+node_op = RclEx.rcl_node_get_default_options()
+node = RclEx.rcl_get_zero_initialized_node()
+RclEx.rcl_node_init(node,'test_node','test_namespace_',conn,node_op)
 
-sub_options = rcl_subscription_get_default_options()
-mysub = rcl_get_zero_initialized_subscription()
+pub = RclEx.rcl_get_zero_initialized_publisher()
+pub_op = RclEx.rcl_publisher_get_default_options()
+type_support = RclEx.get_message_type_from_std_msgs_msg_Int16()
 
-type_support = get_message_type_from_std_msgs_msg_Int16()
-ret = rcl_subscription_init(mysub,node,type_support,'topicname',sub_options)
-
-con = rcl_get_zero_initialized_context()
-op = rcl_get_zero_initialized_init_options()
-rcl_init_with_null(op,con)
-
-node_op = rcl_node_get_default_options()
-node = rcl_get_zero_initialized_node()
-rcl_node_init(node,'test_node','test_namespace_',con,node_op)
-
-mypub = rcl_get_zero_initialized_publisher()
-mypubop = rcl_publisher_get_default_options()
-type_support = get_message_type_from_std_msgs_msg_Int16()
-ret = rcl_publisher_init(mypub,node,type_support,'topicname',mypubop)
+ret = RclEx.rcl_publisher_init(pub,node,type_support,'topicname',pub_op)  #segmentation fault
 IO.puts "success!!"
-rcl_publish(mypub,1)
+RclEx.rcl_publish(pub,1)
 IO.puts "published"
