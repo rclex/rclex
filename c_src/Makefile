@@ -6,7 +6,8 @@ ROSDIR := /opt/ros/dashing
 
 SRCDIR	:= ./src
 SOURCES := $(shell ls $(SRCDIR)/*.c)
-CFLAGS	:= -O3 -c -fPIC -MMD -MP	#MMD...オブジェクトの依存関係としてdファイルを出力する
+CFLAGS	:= -O3 -c -fPIC -MMD -MP
+#MMD...オブジェクトの依存関係としてdファイルを出力する
 SOFLAGS  := -shared
 # -c でオブジェクトだけ全部作って，-fpic -sharedすることで一つの.soにできる
 LINK 	:= -lstdc++
@@ -27,13 +28,12 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
 msg_int16_nif.o: $(SRCDIR)/msg/msg_int16_nif.c 
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $<  $(MSGLIBS)
-
+	$(CC) $(CFLAGS) $(INCLUDE) $< 
 int16__functions.o: /opt/ros/dashing/include/std_msgs/msg/int16__functions.c
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $<  $(MSGLIBS)
+	$(CC) $(CFLAGS) $(INCLUDE) $< 
 
 int16__type_support.o: /opt/ros/dashing/include/std_msgs/msg/int16__type_support.c
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDE) $<  $(MSGLIBS)
+	$(CC) $(CFLAGS) $(INCLUDE) $< 
 
 
 .PHONY: all clean
