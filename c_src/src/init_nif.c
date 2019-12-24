@@ -120,6 +120,7 @@ ERL_NIF_TERM nif_rcl_init_options_fini(ErlNifEnv* env, int argc, const ERL_NIF_T
 
 }
 //コンテキストの中身を見る関数
+/*
 ERL_NIF_TERM nif_read_context(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     rcl_context_t* res_context;
     if(!enif_get_resource(env, argv[0], rt_context, (void**) &res_context)){
@@ -127,7 +128,7 @@ ERL_NIF_TERM nif_read_context(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[
     }
     return enif_make_int(env,res_context->global_arguments.impl->log_level);
 }
-
+*/
 ERL_NIF_TERM nif_rcl_shutdown(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     printf("enter rcl_shutdown\n");
     if(argc != 1){

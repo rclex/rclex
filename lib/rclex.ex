@@ -21,9 +21,9 @@ defmodule RclEx do
   def rcl_get_zero_initialized_context do
       raise "NIF rcl_get_zero_initialized_context/0 not implemented"
   end
-  def nif_read_context(_a) do
-      raise "NIF nif_read_context/1 is not implemented"
-  end
+  #def nif_read_context(_a) do
+  #    raise "NIF nif_read_context/1 is not implemented"
+  #end
   @doc """
       return {:ok,rcl_ret_t}
       arguments...(

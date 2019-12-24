@@ -82,7 +82,7 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_get_zero_initialized_context",0,nif_rcl_get_zero_initialized_context},
     {"rcl_init_with_null",2,nif_rcl_init_with_null},
     {"rcl_shutdown",1,nif_rcl_shutdown},
-    {"nif_read_context",1,nif_read_context},
+    //{"nif_read_context",1,nif_read_context},
     //--------------node_nif.c--------------
     {"rcl_get_zero_initialized_node",0,nif_rcl_get_zero_initialized_node},
     {"rcl_node_get_default_options",0,nif_rcl_node_get_default_options},

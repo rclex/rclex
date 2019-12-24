@@ -13,4 +13,4 @@ ERL_NIF_TERM nif_rcl_init_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM
 
 ERL_NIF_TERM nif_rcl_shutdown(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
-ERL_NIF_TERM nif_read_context(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+//ERL_NIF_TERM nif_read_context(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
