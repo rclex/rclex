@@ -25,3 +25,5 @@ rclex-*.tar
 /.history/
 
 *.so
+
+core

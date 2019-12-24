@@ -11,7 +11,7 @@ extern "C"
 #include "rcl/rcl.h"    //include先からcontext.hにたどり着く
 #include "rcl/context.h"
 #include "rcl/init_options.h"
-#include "rcutils/allocator.h"  
+#include "rcutils/allocator.h"
 
 ERL_NIF_TERM nif_rcl_get_zero_initialized_init_options(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(argc != 0){
@@ -64,42 +64,6 @@ ERL_NIF_TERM nif_rcl_get_zero_initialized_context(ErlNifEnv* env, int argc, cons
     return ret;
 }
 
-ERL_NIF_TERM nif_rcl_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
-    
-    if(argc != 4){
-        return enif_make_badarg(env);
-    }
-
-    rcl_ret_t* res;
-    ERL_NIF_TERM ret;
-    int argcval;
-    char argv_buf[1024];    
-    (void)memset(&argv_buf, '\0', sizeof(argv_buf));
-    const rcl_init_options_t* res_arg_options;
-    rcl_context_t* res_arg_context; 
-    if(!enif_get_int(env,argv[0],&argcval)){
-        return enif_make_badarg(env);
-    }
-    if(!enif_get_string(env,argv[1],argv_buf,sizeof(argv_buf),ERL_NIF_LATIN1)){
-        return enif_make_badarg(env);
-    }
-    if(!enif_get_resource(env, argv[2], rt_init_options, (void**) &res_arg_options)){
-	    return enif_make_badarg(env);
-    }
-    if(!enif_get_resource(env, argv[3], rt_context, (void**) &res_arg_context)){
-	    return enif_make_badarg(env);
-    }
-    res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
-    if(res == NULL) return enif_make_badarg(env);
-    ret = enif_make_resource(env,res);
-    enif_release_resource(res);
-    
-   
-    //ポインタも，その指し示す先もconst(変更不可)であることを示す
-    *res = rcl_init(argcval,(const char * const *)argv_buf,res_arg_options,res_arg_context);
-    
-    return ret;
-}
 ERL_NIF_TERM nif_rcl_init_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     
     if(argc != 2){
@@ -131,6 +95,30 @@ ERL_NIF_TERM nif_rcl_init_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM
     return ret;
 }
 
+//return rcl_ret_t
+
+ERL_NIF_TERM nif_rcl_init_options_fini(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+    if(argc != 1){
+        return enif_make_badarg(env);
+    }
+    rcl_ret_t* res;
+    ERL_NIF_TERM ret;
+
+    rcl_init_options_t* res_init_options;
+    
+    if(!enif_get_resource(env,argv[0],rt_init_options,(void**)&res_init_options)){
+        return enif_make_badarg(env);
+    }
+     
+    res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
+    if(res == NULL) return enif_make_badarg(env);
+    ret = enif_make_resource(env,res);
+    enif_release_resource(res);
+    *res = rcl_init_options_fini(res_init_options);
+
+    return ret;
+
+}
 //コンテキストの中身を見る関数
 ERL_NIF_TERM nif_read_context(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     rcl_context_t* res_context;

@@ -8,7 +8,7 @@ extern "C"
 #include "init_nif.h"
 #include "node_nif.h"
 #include "publisher_nif.h"
-#include "msg/msg_int16_nif.h"
+//#include "msg/msg_int16_nif.h"
 #include "subscription_nif.h"
 //各種リソースタイプの宣言やリソースタイプの作成を行う
 //------------------------nif_init.c-------------------
@@ -32,7 +32,7 @@ ErlNifResourceType* rt_sub_options;
 ErlNifResourceType* rt_msginfo;
 ErlNifResourceType* rt_sub_alloc;
 //---------msg_int16_nif.c------------
-ErlNifResourceType* rt_Int16;
+//ErlNifResourceType* rt_Int16;
 
 ERL_NIF_TERM atom_ok;
 ERL_NIF_TERM atom_true;
