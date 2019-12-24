@@ -7,7 +7,7 @@ extern "C"
 #include "../include/init_nif.h"
 #include "../include/total_nif.h"
 #include <stdio.h>
-#include "./arguments_impl.h"
+//#include "./arguments_impl.h" //read_contextに必要
 #include "rcl/rcl.h"    //include先からcontext.hにたどり着く
 #include "rcl/context.h"
 #include "rcl/init_options.h"
