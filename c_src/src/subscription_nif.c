@@ -10,6 +10,11 @@ extern "C"
 
 #include "rcl/subscription.h"
 #include "rmw/types.h"
+
+#include <rosidl_generator_c/message_type_support_struct.h>
+
+#include <std_msgs/msg/int16.h>
+
 ERL_NIF_TERM nif_rcl_get_zero_initialized_subscription(ErlNifEnv* env,int argc,const ERL_NIF_TERM argv[]){
     if(argc != 0){
       return enif_make_badarg(env);
@@ -50,14 +55,14 @@ ERL_NIF_TERM nif_rcl_subscription_get_default_options(ErlNifEnv* env,int argc,co
   );
 */
 ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TERM argv[]){
-  if(argc != 5){
+  if(argc != 4){
     return enif_make_badarg(env);
   }
   rcl_ret_t* res_ret;
   ERL_NIF_TERM ret;
   rcl_subscription_t*  res_sub;
   rcl_node_t* res_node;
-  rosidl_message_type_support_t* res_idl;
+  //rosidl_message_type_support_t* res_idl;
   rcl_subscription_options_t* res_sub_options;
   
   if(!enif_get_resource(env, argv[0], rt_sub, (void**) &res_sub)){
@@ -67,16 +72,18 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
   if(!enif_get_resource(env, argv[1], rt_node, (void**) &res_node)){
     return enif_make_badarg(env);
   }
+  /*
   if(!enif_get_resource(env, argv[2], rt_rosidl_msg_type_support, (void**) &res_idl)){
     return enif_make_badarg(env);
   }
+  */
   char topic_buf[128]; //トピック名を格納するためのバッファ
   (void)memset(&topic_buf,'\0',sizeof(topic_buf));
-  if(!enif_get_string(env,argv[3],topic_buf,sizeof(topic_buf),ERL_NIF_LATIN1)){
+  if(!enif_get_string(env,argv[2],topic_buf,sizeof(topic_buf),ERL_NIF_LATIN1)){
     return enif_make_badarg(env);
   }
   
-  if(!enif_get_resource(env, argv[4], rt_sub_options, (void**) &res_sub_options)){
+  if(!enif_get_resource(env, argv[3], rt_sub_options, (void**) &res_sub_options)){
     return enif_make_badarg(env);
   }
   
@@ -86,7 +93,8 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
   
   ret = enif_make_resource(env,res_ret);
   enif_release_resource(res_ret);
-  *res_ret = rcl_subscription_init(res_sub,res_node,res_idl,topic_buf,res_sub_options);
+  const rosidl_message_type_support_t* msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
+  *res_ret = rcl_subscription_init(res_sub,res_node,msgtype,topic_buf,res_sub_options);
   printf("exit publisher_init\n");
   return ret;
 }

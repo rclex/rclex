@@ -9,6 +9,12 @@ extern "C"
 #include <string.h>
 
 #include "rcl/publisher.h"
+
+//試しに
+#include <rosidl_generator_c/message_type_support_struct.h>
+
+#include <std_msgs/msg/int16.h>
+
 //#include "rcl/allocator.h"
 //#include "rcl/error_handling.h"
 //#include "rcl/expand_topic_name.h"
@@ -90,23 +96,23 @@ ERL_NIF_TERM nif_rcl_publisher_fini(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   
   return ret;
 } 
-
-//rcl_publisher_init(
-//   rcl_publisher_t * publisher,
-//   const rcl_node_t * node,
-//   const rosidl_message_type_support_t * type_support,
-//   const char * topic_name,
-//   const rcl_publisher_options_t * options);
-
+/*
+  rcl_publisher_init(
+    rcl_publisher_t * publisher,
+    const rcl_node_t * node,
+    const rosidl_message_type_support_t * type_support,
+    const char * topic_name,
+    const rcl_publisher_options_t * options);
+*/
 ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
-  if(argc != 5){
+  if(argc != 4){
         return enif_make_badarg(env);
   }
   rcl_ret_t* res_return;
   ERL_NIF_TERM ret;
   rcl_publisher_t*  res_pub;
   rcl_node_t* res_node;
-  rosidl_message_type_support_t* res_idl;
+  //rosidl_message_type_support_t* res_idl;
   rcl_publisher_options_t* res_options;
   
   if(!enif_get_resource(env, argv[0], rt_pub, (void**) &res_pub))
@@ -118,19 +124,19 @@ ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   {
     return enif_make_badarg(env);
   }
-  
+  /*
   if(!enif_get_resource(env, argv[2], rt_rosidl_msg_type_support, (void**) &res_idl))
   {
     return enif_make_badarg(env);
   }
-  
+  */
   char buf[128]; //トピック名を格納するためのバッファ
   (void)memset(&buf,'\0',sizeof(buf));
-  if(!enif_get_string(env,argv[3],buf,sizeof(buf),ERL_NIF_LATIN1)){
+  if(!enif_get_string(env,argv[2],buf,sizeof(buf),ERL_NIF_LATIN1)){
     return enif_make_badarg(env);
   }
   
-  if(!enif_get_resource(env, argv[4], rt_pub_options, (void**) &res_options))
+  if(!enif_get_resource(env, argv[3], rt_pub_options, (void**) &res_options))
   {
     return enif_make_badarg(env);
   }
@@ -141,7 +147,10 @@ ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   
   ret = enif_make_resource(env,res_return);
   enif_release_resource(res_return);
-  *res_return = rcl_publisher_init(res_pub,res_node,res_idl,buf,res_options);
+  //メッセージ型サポートを直接入れている
+  const rosidl_message_type_support_t* msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
+  
+  *res_return = rcl_publisher_init(res_pub,res_node,msgtype,buf,res_options); //segmentation fault
   printf("exit publisher_init\n");
   return ret;
 }
@@ -174,7 +183,7 @@ ERL_NIF_TERM nif_rcl_publish(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
   int a;
   const void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
   //rmw_publisher_allocation_t* res_arg_puballoc; #一旦NULLで済ます
-  printf("1\n");
+  
   if(argc != 2)
   {
       return enif_make_badarg(env);
@@ -184,7 +193,7 @@ ERL_NIF_TERM nif_rcl_publish(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
   {
     return enif_make_badarg(env);
   }
-  printf("2\n");
+  
   if(!enif_get_int(env,argv[1],&a)){
         return enif_make_badarg(env);
     }
@@ -195,13 +204,13 @@ ERL_NIF_TERM nif_rcl_publish(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
     return enif_make_badarg(env);
   }
   */
- printf("3\n");
+ 
   res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
   if(res == NULL) return enif_make_badarg(env);
   
   ret = enif_make_resource(env,res);
   enif_release_resource(res);
-  printf("4\n");
+  
   *res = rcl_publish(res_arg_pub,&a,NULL);
   
   return ret;
