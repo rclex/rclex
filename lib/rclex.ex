@@ -171,6 +171,10 @@ defmodule RclEx do
   def rcl_subscription_fini(_a,_b) do
     raise "NIF rcl_subscription_fini is not implemented"
   end
+
+  def rcl_subscription_get_topic_name(_a) do
+    raise "NIF rcl_subscription_get_topic_name/1 is not implemented"
+  end
   @doc """
     rcl_ret_t
     rcl_take(
@@ -180,11 +184,14 @@ defmodule RclEx do
       rmw_subscription_allocation_t * allocation
     );
   """
+  #これも第4引数はNULLでいけるみたい
   def rcl_take(_a,_b,_c,_d) do
     raise "NIF rcl_take is not implemented"
   end
-  
-  #-----------------------------msg_int16.ex------------------------------
+  def rcl_take_with_null(_a) do
+    raise "NIF rcl_take_with_null is not implemented"
+  end
+  #-----------------------------msg_int16.c------------------------------
   def std_msgs__msg__Int16__init(_a) do
     raise "NIF std_msgs__msg__Int16__init/0 not implemented"
   end
@@ -200,6 +207,23 @@ defmodule RclEx do
   #def cre_int16 do
   #    get_message_type_from_std_msgs_msg_Int16()
   #end
+
+  #-----------------------------wait_nif.c------------------------------
+  def rcl_get_zero_initialized_wait_set do
+    raise "NIF rcl_get_zero_initialized_wait_set/0 is not implemented"
+  end
+  def rcl_wait_set_init(_a,_b,_c,_d,_e,_f,_g,_h) do
+    raise "NIF rcl_get_zero_initialized_wait_set/0 is not implemented"
+  end
+  def rcl_wait_set_fini(_a) do
+    raise "NIF rcl_get_zero_initialized_wait_set/0 is not implemented"
+  end
+  def rcl_wait_set_add_subscription(_a,_b) do
+    raise "NIF rcl_get_zero_initialized_wait_set/0 is not implemented"
+  end
+  def rcl_wait(_a,_b) do
+    raise "NIF rcl_get_zero_initialized_wait_set/0 is not implemented"
+  end
 end
 
 conn = RclEx.rcl_get_zero_initialized_context()
@@ -210,20 +234,38 @@ RclEx.rcl_init_options_fini(init_op)
 
 node_op = RclEx.rcl_node_get_default_options()
 node = RclEx.rcl_get_zero_initialized_node()
-RclEx.rcl_node_init(node,'test_node','test_namespace_',conn,node_op)
+RclEx.rcl_node_init(node,'test_pub_node','test_pub_namespace_',conn,node_op)
 
-IO.puts "hello"
-#type_support = RclEx.get_message_type_from_std_msgs_msg_Int16()
-#sub = RclEx.rcl_get_zero_initialized_subscription()
-#sub_op = RclEx.rcl_subscription_get_default_options()
-IO.puts "world"
-#RclEx.rcl_subscription_init(sub,node,'testtopic',sub_op) #get_message_handle assertion
+conn1 = RclEx.rcl_get_zero_initialized_context()
+init_op1 = RclEx.rcl_get_zero_initialized_init_options()
+RclEx.rcl_init_options_init(init_op1)
+RclEx.rcl_init_with_null(init_op1,conn1)
+RclEx.rcl_init_options_fini(init_op1)
+
+node_op1 = RclEx.rcl_node_get_default_options()
+node1 = RclEx.rcl_get_zero_initialized_node()
+RclEx.rcl_node_init(node1,'test_sub_node','test_sub_namespace_',conn1,node_op1)
+
+sub = RclEx.rcl_get_zero_initialized_subscription()
+sub_op = RclEx.rcl_subscription_get_default_options()
+
+RclEx.rcl_subscription_init(sub,node,'testtopic',sub_op)
 
 pub = RclEx.rcl_get_zero_initialized_publisher()
 pub_op = RclEx.rcl_publisher_get_default_options()
 
-IO.puts "??"
-RclEx.rcl_publisher_init(pub,node,'topicname',pub_op)  #segmentation fault
-IO.puts "success!!"
-#RclEx.rcl_publish(pub,1)
+RclEx.rcl_publisher_init(pub,node,'testtopic',pub_op)
+RclEx.rcl_subscription_get_topic_name(sub)
+RclEx.rcl_publisher_get_topic_name(pub)
+num = IO.gets("input number?\n")
+        |> String.replace("\n","")
+        |> String.to_integer
+RclEx.rcl_publish(pub,num)
 IO.puts "published"
+#waitSet = RclEx.rcl_get_zero_initialized_wait_set()
+#RclEx.rcl_wait_set_init(waitSet,1,0,0,0,0,0,conn1)
+#RclEx.rcl_wait_set_add_subscription(waitSet,sub)
+#RclEx.rcl_wait(waitSet,2000)
+
+RclEx.rcl_take_with_null(sub)
+IO.puts "subscription"
