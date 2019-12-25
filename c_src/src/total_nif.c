@@ -33,6 +33,8 @@ int open_resource(ErlNifEnv* env){
     //for msg
     const char* namemsg1 = "std_msgs__msg__Int16";
 
+    //for timer
+    const char* namewait = "rcl_wait_set_t";
     int flags = ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER;
 
     //RES_TYPE = enif_open_resource_type(env,mod,name,free_res,flags,NULL);
@@ -53,7 +55,7 @@ int open_resource(ErlNifEnv* env){
     rt_msginfo      = enif_open_resource_type(env,mod,namesub3,NULL,flags,NULL);
     rt_sub_alloc    = enif_open_resource_type(env,mod,namesub4,NULL,flags,NULL);
     //rt_Int16 = enif_open_resource_type(env,mod,namemsg1,NULL,flags,NULL);
-
+    rt_waitset      = enif_open_resource_type(env,mod,namewait,NULL,flags,NULL);
     //1〜5まで
     if(rt_node == NULL || rt_ret == NULL || rt_node_options == NULL || rt_context == NULL || rt_init_options == NULL) return -1;
     return 0;
@@ -104,13 +106,23 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_subscription_get_default_options",0,nif_rcl_subscription_get_default_options},
     {"rcl_subscription_init",4,nif_rcl_subscription_init},
     {"rcl_subscription_fini",2,nif_rcl_subscription_fini},
+    {"rcl_subscription_get_topic_name",1,nif_rcl_subscription_get_topic_name},
     {"rcl_take",4,nif_rcl_take},
+    {"rcl_take_with_null",1,nif_rcl_take_with_null},
     //---------------msg_int16_nif.c-----------
     /*
     {"std_msgs__msg__Int16__init",1,nif_std_msgs__msg__Int16__init},
     {"std_msgs__msg__Int16__destroy",1,nif_std_msgs__msg__Int16__destroy},
     {"get_message_type_from_std_msgs_msg_Int16",0,nif_getmsgtype_int16},
     */
+
+    //----------------wait_nif.c-----------------
+    {"rcl_get_zero_initialized_wait_set",0,nif_rcl_get_zero_initialized_wait_set},
+    {"rcl_wait_set_init",8,nif_rcl_wait_set_init},
+    {"rcl_wait_set_fini",1,nif_rcl_wait_set_fini},
+    {"rcl_wait_set_add_subscription",2,nif_rcl_wait_set_add_subscription},
+    {"rcl_wait",2,nif_rcl_wait},
+
 };
 
 /*

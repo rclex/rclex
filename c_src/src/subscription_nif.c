@@ -95,7 +95,7 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
   enif_release_resource(res_ret);
   const rosidl_message_type_support_t* msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
   *res_ret = rcl_subscription_init(res_sub,res_node,msgtype,topic_buf,res_sub_options);
-  printf("exit publisher_init\n");
+  printf("exit subscription_init\n");
   return ret;
 }
 
@@ -142,6 +142,21 @@ ERL_NIF_TERM nif_rcl_subscription_fini(ErlNifEnv* env, int argc, const ERL_NIF_T
     rmw_subscription_allocation_t * allocation
   );
 */
+
+ERL_NIF_TERM nif_rcl_subscription_get_topic_name(ErlNifEnv* env,int argc,const ERL_NIF_TERM argv[]){
+  rcl_subscription_t* res;
+  if(argc != 1){
+      return enif_make_badarg(env);
+  }
+
+  if(!enif_get_resource(env,argv[0],rt_sub,(void**) &res)){
+      return enif_make_badarg(env);
+  }
+  const char* result;
+  result = rcl_subscription_get_topic_name(res);
+  return enif_make_string(env,result,ERL_NIF_LATIN1);
+}
+
 ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
   rcl_ret_t* res;
   ERL_NIF_TERM ret;
@@ -152,7 +167,6 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
   //上2つはinclude/rmw/types.hに定義されてる
   int a;
   const void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
-  //rmw_publisher_allocation_t* res_arg_puballoc; #一旦NULLで済ます
   
   if(argc != 4){
       return enif_make_badarg(env);
@@ -179,6 +193,51 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
 
   *res = rcl_take(res_sub,&a,res_msginfo,res_sub_alloc);
   
+  return ret;
+}
+
+ERL_NIF_TERM nif_rcl_take_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+  if(argc != 1){
+      return enif_make_badarg(env);
+  }
+  rcl_ret_t* res;
+  ERL_NIF_TERM ret;
+
+  const rcl_subscription_t* res_sub;
+  if(!enif_get_resource(env, argv[0], rt_sub, (void**) &res_sub)){
+    return enif_make_badarg(env);
+  }
+
+  /*直打ちパターン
+  rmw_message_info_t* res_msginfo;  
+  
+  int a;
+  const void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
+  
+  
+  
+  if(!enif_get_int(env,argv[1],&a)){
+        return enif_make_badarg(env);
+    }
+  
+  
+  if(!enif_get_resource(env, argv[2], rt_msginfo, (void**) &res_msginfo)){
+    return enif_make_badarg(env);
+  }
+  */
+  printf("1\n");
+  std_msgs__msg__Int16 msg;
+  std_msgs__msg__Int16__init(&msg);
+  printf("2\n"); 
+  rmw_message_info_t messageInfo;
+
+  res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
+  if(res == NULL) return enif_make_badarg(env);
+  ret = enif_make_resource(env,res);
+  enif_release_resource(res);
+  printf("3\n");
+  *res = rcl_take(res_sub,&msg,&messageInfo,NULL); //msgに数値が入るはず．  segmentation fault
+  printf("subscribed number:%d\n",msg.data);
   return ret;
 }
 
