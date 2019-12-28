@@ -37,25 +37,72 @@ int open_resource(ErlNifEnv* env){
     const char* namewait = "rcl_wait_set_t";
     int flags = ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER;
 
+
+    //リソースの解放処理を行う関数
+    void free_ret(ErlNifEnv* env,void* arg){
+        printf("free_resource_ret:%p\n",arg);
+    }
+    void free_context(ErlNifEnv* env,void* arg){
+        printf("free_context:%p\n",arg);
+    }
+    void free_initoptions(ErlNifEnv* env,void* arg){
+        printf("free_initoptions:%p\n",arg);
+    }
+    void free_node(ErlNifEnv* env,void* arg){
+        printf("free_node:%p\n",arg);
+    }
+    void free_nodeoptions(ErlNifEnv* env,void* arg){
+        printf("free_nodeoptions:%p\n",arg);
+    }
+    void free_pub(ErlNifEnv* env,void* arg){
+        printf("free_pub:%p\n",arg);
+    }
+    void free_puboptions(ErlNifEnv* env,void* arg){
+        printf("free_puboptions:%p\n",arg);
+    }
+    void free_msgtype_support(ErlNifEnv* env,void* arg){
+        printf("free_msgtype_support:%p\n",arg);
+    }
+    void free_puballoc(ErlNifEnv* env,void* arg){
+        printf("free_puballoc:%p\n",arg);
+    }
+    void free_sub(ErlNifEnv* env,void* arg){
+        printf("free_sub:%p\n",arg);
+    }
+    void free_suboptions(ErlNifEnv* env,void* arg){
+        printf("free_suboptions:%p\n",arg);
+    }
+    void free_msginfo(ErlNifEnv* env,void* arg){
+        printf("free_msginfo:%p\n",arg);
+    }
+    void free_suballoc(ErlNifEnv* env,void* arg){
+        printf("free_suballoc:%p\n",arg);
+    }
+    void free_int16(ErlNifEnv* env,void* arg){
+        printf("free_int16:%p\n",arg);
+    }
+    void free_waitset(ErlNifEnv* env,void* arg){
+        printf("free_waitset:%p\n",arg);
+    }
     //RES_TYPE = enif_open_resource_type(env,mod,name,free_res,flags,NULL);
-    rt_ret          = enif_open_resource_type(env,mod,name1,NULL,flags,NULL);
-    rt_context      = enif_open_resource_type(env,mod,name2,NULL,flags,NULL);
-    rt_init_options = enif_open_resource_type(env,mod,name3,NULL,flags,NULL);
+    rt_ret          = enif_open_resource_type(env,mod,name1,free_ret,flags,NULL);
+    rt_context      = enif_open_resource_type(env,mod,name2,free_context,flags,NULL);
+    rt_init_options = enif_open_resource_type(env,mod,name3,free_initoptions,flags,NULL);
     
-    rt_node         = enif_open_resource_type(env,mod,name4,NULL,flags,NULL);
-    rt_node_options = enif_open_resource_type(env,mod,name5,NULL,flags,NULL);
+    rt_node         = enif_open_resource_type(env,mod,name4,free_node,flags,NULL);
+    rt_node_options = enif_open_resource_type(env,mod,name5,free_nodeoptions,flags,NULL);
     
-    rt_pub          = enif_open_resource_type(env,mod,name6,NULL,flags,NULL);
-    rt_pub_options  = enif_open_resource_type(env,mod,name7,NULL,flags,NULL);
-    rt_rosidl_msg_type_support = enif_open_resource_type(env,mod,name8,NULL,flags,NULL);
-    rt_rmw_pub_allocation = enif_open_resource_type(env,mod,name9,NULL,flags,NULL);
+    rt_pub          = enif_open_resource_type(env,mod,name6,free_pub,flags,NULL);
+    rt_pub_options  = enif_open_resource_type(env,mod,name7,free_puboptions,flags,NULL);
+    rt_rosidl_msg_type_support = enif_open_resource_type(env,mod,name8,free_msgtype_support,flags,NULL);
+    rt_rmw_pub_allocation = enif_open_resource_type(env,mod,name9,free_puballoc,flags,NULL);
     
-    rt_sub          = enif_open_resource_type(env,mod,namesub1,NULL,flags,NULL);
-    rt_sub_options  = enif_open_resource_type(env,mod,namesub2,NULL,flags,NULL);
-    rt_msginfo      = enif_open_resource_type(env,mod,namesub3,NULL,flags,NULL);
-    rt_sub_alloc    = enif_open_resource_type(env,mod,namesub4,NULL,flags,NULL);
-    //rt_Int16 = enif_open_resource_type(env,mod,namemsg1,NULL,flags,NULL);
-    rt_waitset      = enif_open_resource_type(env,mod,namewait,NULL,flags,NULL);
+    rt_sub          = enif_open_resource_type(env,mod,namesub1,free_sub,flags,NULL);
+    rt_sub_options  = enif_open_resource_type(env,mod,namesub2,free_suboptions,flags,NULL);
+    rt_msginfo      = enif_open_resource_type(env,mod,namesub3,free_msginfo,flags,NULL);
+    rt_sub_alloc    = enif_open_resource_type(env,mod,namesub4,free_suballoc,flags,NULL);
+    rt_Int16        = enif_open_resource_type(env,mod,namemsg1,free_int16,flags,NULL);
+    rt_waitset      = enif_open_resource_type(env,mod,namewait,free_waitset,flags,NULL);
     //1〜5まで
     if(rt_node == NULL || rt_ret == NULL || rt_node_options == NULL || rt_context == NULL || rt_init_options == NULL) return -1;
     return 0;
@@ -108,13 +155,14 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_subscription_fini",2,nif_rcl_subscription_fini},
     {"rcl_subscription_get_topic_name",1,nif_rcl_subscription_get_topic_name},
     {"rcl_take",4,nif_rcl_take},
-    {"rcl_take_with_null",1,nif_rcl_take_with_null},
+    {"rcl_take_with_null",3,nif_rcl_take_with_null},
     //---------------msg_int16_nif.c-----------
-    /*
+    {"create_empty_msgInt16",0,nif_create_empty_msgInt16},
+    {"create_msginfo",0,nif_create_msginfo},
     {"std_msgs__msg__Int16__init",1,nif_std_msgs__msg__Int16__init},
     {"std_msgs__msg__Int16__destroy",1,nif_std_msgs__msg__Int16__destroy},
     {"get_message_type_from_std_msgs_msg_Int16",0,nif_getmsgtype_int16},
-    */
+    {"print_msg",1,nif_print_msg},
 
     //----------------wait_nif.c-----------------
     {"rcl_get_zero_initialized_wait_set",0,nif_rcl_get_zero_initialized_wait_set},
