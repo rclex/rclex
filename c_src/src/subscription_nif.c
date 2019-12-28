@@ -197,47 +197,36 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
 }
 
 ERL_NIF_TERM nif_rcl_take_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
-  if(argc != 1){
+  /*
+  if(argc != 1)
+  */
+  if(argc != 3){
       return enif_make_badarg(env);
   }
   rcl_ret_t* res;
   ERL_NIF_TERM ret;
-
   const rcl_subscription_t* res_sub;
+  std_msgs__msg__Int16* msg;
+  rmw_message_info_t* res_msginfo;  
+  
   if(!enif_get_resource(env, argv[0], rt_sub, (void**) &res_sub)){
     return enif_make_badarg(env);
   }
-
-  /*直打ちパターン
-  rmw_message_info_t* res_msginfo;  
-  
-  int a;
-  const void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
-  
-  
-  
-  if(!enif_get_int(env,argv[1],&a)){
-        return enif_make_badarg(env);
-    }
-  
+  if(!enif_get_resource(env,argv[1],rt_Int16,(void**)&msg)){
+    return enif_make_badarg(env);
+  }
   
   if(!enif_get_resource(env, argv[2], rt_msginfo, (void**) &res_msginfo)){
     return enif_make_badarg(env);
   }
-  */
-  printf("1\n");
-  std_msgs__msg__Int16 msg;
-  std_msgs__msg__Int16__init(&msg);
-  printf("2\n"); 
-  rmw_message_info_t messageInfo;
 
   res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
   if(res == NULL) return enif_make_badarg(env);
   ret = enif_make_resource(env,res);
   enif_release_resource(res);
   printf("3\n");
-  *res = rcl_take(res_sub,&msg,&messageInfo,NULL); //msgに数値が入るはず．  segmentation fault
-  printf("subscribed number:%d\n",msg.data);
+  *res = rcl_take(res_sub,msg,res_msginfo,NULL); //msgに数値が入るはず．  segmentation fault
+  printf("subscribed number:%d\n",msg->data);
   return ret;
 }
 

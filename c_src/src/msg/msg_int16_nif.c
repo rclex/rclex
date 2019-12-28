@@ -14,6 +14,36 @@ extern "C"
 #include "../../include/total_nif.h"
 //#include "../../include/msg/msg_types.h"
 #include "../../include/msg/msg_int16_nif.h"
+#include "rmw/types.h"
+
+//空のInt16メッセージオブジェクトを作る関数
+ERL_NIF_TERM nif_create_empty_msgInt16(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+    if(argc != 0){
+        return enif_make_badarg(env);
+    }
+    std_msgs__msg__Int16* res;
+    ERL_NIF_TERM ret;
+    res = enif_alloc_resource(rt_Int16,sizeof(std_msgs__msg__Int16));
+    if(res == NULL) return enif_make_badarg(env);
+    ret = enif_make_resource(env,res);
+    enif_release_resource(res);
+
+    return ret;
+}
+//空のrmw_message_info_tリソースオブジェクトを作る関数
+ERL_NIF_TERM nif_create_msginfo(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+    if(argc != 0){
+        return enif_make_badarg(env);
+    }
+    rmw_message_info_t* res;
+    ERL_NIF_TERM ret;
+    res = enif_alloc_resource(rt_msginfo,sizeof(rmw_message_info_t));
+    if(res == NULL) return enif_make_badarg(env);
+    ret = enif_make_resource(env,res);
+    enif_release_resource(res);
+
+    return ret;
+}
 
 ERL_NIF_TERM nif_std_msgs__msg__Int16__init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(argc != 1){
@@ -60,7 +90,18 @@ ERL_NIF_TERM nif_getmsgtype_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     
     return ret;
 }
-
+ERL_NIF_TERM nif_print_msg(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+    if(argc != 1){
+        return enif_make_badarg(env);
+    }
+    std_msgs__msg__Int16* res_msg;
+    ERL_NIF_TERM ret;
+    if(!enif_get_resource(env,argv[0],rt_Int16,(void**)&res_msg)){
+        return enif_make_badarg(env);
+    }
+    
+    return enif_make_int(env,res_msg->data);
+}
 #ifdef __cplusplus
 }
 #endif
