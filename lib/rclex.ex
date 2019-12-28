@@ -188,10 +188,18 @@ defmodule RclEx do
   def rcl_take(_a,_b,_c,_d) do
     raise "NIF rcl_take is not implemented"
   end
-  def rcl_take_with_null(_a) do
+  def rcl_take_with_null(_a,_b,_c) do
     raise "NIF rcl_take_with_null is not implemented"
   end
   #-----------------------------msg_int16.c------------------------------
+  def create_empty_msgInt16 do
+    raise "NIF create_empty_msgInt16/0 is not implemented"
+  end
+  
+  def create_msginfo do
+    raise "NIF create_msginfo/0 is not implemented"
+  end
+
   def std_msgs__msg__Int16__init(_a) do
     raise "NIF std_msgs__msg__Int16__init/0 not implemented"
   end
@@ -203,7 +211,9 @@ defmodule RclEx do
   def get_message_type_from_std_msgs_msg_Int16 do
       raise "NIF get_message_type_from_std_msgs_msg_Int16/0 not implemented"
   end
-
+  def print_msg(_a) do
+    raise "NIF print_msg/1 is not implemented"
+  end
   #def cre_int16 do
   #    get_message_type_from_std_msgs_msg_Int16()
   #end
@@ -244,7 +254,7 @@ RclEx.rcl_init_options_fini(init_op1)
 
 node_op1 = RclEx.rcl_node_get_default_options()
 node1 = RclEx.rcl_get_zero_initialized_node()
-RclEx.rcl_node_init(node1,'test_sub_node','test_sub_namespace_',conn1,node_op1)
+RclEx.rcl_node_init(node1,'test_sub_node','test_sub_namespace_',conn1,node_op1) #double free or corruption(fasttop)
 
 sub = RclEx.rcl_get_zero_initialized_subscription()
 sub_op = RclEx.rcl_subscription_get_default_options()
@@ -266,6 +276,8 @@ IO.puts "published"
 #RclEx.rcl_wait_set_init(waitSet,1,0,0,0,0,0,conn1)
 #RclEx.rcl_wait_set_add_subscription(waitSet,sub)
 #RclEx.rcl_wait(waitSet,2000)
-
-RclEx.rcl_take_with_null(sub)
+msg = RclEx.create_empty_msgInt16()
+msginfo = RclEx.create_msginfo()
+RclEx.rcl_take_with_null(sub,msg,msginfo)
+RclEx.print_msg(msg)
 IO.puts "subscription"
