@@ -180,42 +180,48 @@ ERL_NIF_TERM nif_rcl_publish(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
   ERL_NIF_TERM ret;
 
   rcl_publisher_t* res_arg_pub;
-  int a;
-  const void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
-  //rmw_publisher_allocation_t* res_arg_puballoc; #一旦NULLで済ます
+  std_msgs__msg__Int16* ros_message;  //一旦きめうち
+  rmw_publisher_allocation_t* res_pub_alloc;
+  //const void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
   
-  if(argc != 2)
-  {
+  if(argc != 3){
       return enif_make_badarg(env);
   }
 
-  if(!enif_get_resource(env, argv[0], rt_pub, (void**) &res_arg_pub))
-  {
+  if(!enif_get_resource(env, argv[0], rt_pub, (void**) &res_arg_pub)){
     return enif_make_badarg(env);
   }
   
-  if(!enif_get_int(env,argv[1],&a)){
+  if(!enif_get_resource(env,argv[1],rt_Int16,(void**) &ros_message)){
         return enif_make_badarg(env);
-    }
-  
-  /*
-  if(!enif_get_resource(env, argv[2], rt_rmw_pub_allocation, (void**) &res_arg_puballoc))
-  {
+  }
+  if(!enif_get_resource(env, argv[2], rt_pub_alloc, (void**) &res_pub_alloc)){
     return enif_make_badarg(env);
   }
-  */
- 
   res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
   if(res == NULL) return enif_make_badarg(env);
-  
   ret = enif_make_resource(env,res);
   enif_release_resource(res);
   
-  *res = rcl_publish(res_arg_pub,&a,NULL);
+  *res = rcl_publish(res_arg_pub,ros_message,res_pub_alloc);
   
   return ret;
 }
 
+//空のrt_pub_allocを作る
+ERL_NIF_TERM nif_create_pub_alloc(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+  if(argc != 0){
+      return enif_make_badarg(env);
+  }
+  rmw_publisher_allocation_t* res;
+  ERL_NIF_TERM ret;
+  res = enif_alloc_resource(rt_pub_alloc,sizeof(rmw_publisher_allocation_t));
+  if(res == NULL) return enif_make_badarg(env);
+  ret = enif_make_resource(env,res);
+  enif_release_resource(res);
+
+  return ret;
+}
 /*
 static ERL_NIF_INIT(Elixir.RclEx.Publisher,nif_funcs,&load,&reload,NULL,NULL);
 */

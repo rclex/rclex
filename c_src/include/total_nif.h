@@ -8,7 +8,7 @@ extern "C"
 #include "init_nif.h"
 #include "node_nif.h"
 #include "publisher_nif.h"
-//#include "msg/msg_int16_nif.h"
+#include "msg/msg_int16_nif.h"
 #include "subscription_nif.h"
 #include "wait_nif.h"
 //各種リソースタイプの宣言やリソースタイプの作成を行う
@@ -25,15 +25,14 @@ ErlNifResourceType* rt_node_options;
 ErlNifResourceType* rt_pub;
 ErlNifResourceType* rt_pub_options;
 ErlNifResourceType* rt_rosidl_msg_type_support;
-ErlNifResourceType* rt_rmw_pub_allocation;
-
+ErlNifResourceType* rt_pub_alloc;
 //----------------------subscription_nif.cで追加-------------------
 ErlNifResourceType* rt_sub;
 ErlNifResourceType* rt_sub_options;
 ErlNifResourceType* rt_msginfo;
 ErlNifResourceType* rt_sub_alloc;
 //----------------------msg_int16_nif.c------------
-//ErlNifResourceType* rt_Int16;
+ErlNifResourceType* rt_Int16;
 
 //-------------------wait_nif.cで追加------------------------
 ErlNifResourceType* rt_waitset;
