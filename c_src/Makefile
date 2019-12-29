@@ -24,16 +24,15 @@ all:$(TARGET)
 #$(TARGET): $(OBJECTS) msg_int16_nif.o int16__functions.o int16__type_support.o
 #	$(CC) $(SOFLAGS) -o $@ $^ $(LDFLAGS) $(MSGLIBS)
 
-$(TARGET): $(OBJECTS)
+$(TARGET): $(OBJECTS) msg_int16_nif.o
 	$(CC) $(SOFLAGS) -o $@ $^ $(LDFLAGS) $(MSGLIBS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@[ -d $(OBJDIR) ]
 	$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $<
-
-#メッセージ型のビルドをやめてる
-#msg_int16_nif.o: $(SRCDIR)/msg/msg_int16_nif.c 
-#	$(CC) $(CFLAGS) $(INCLUDE) $< 
+	
+msg_int16_nif.o: $(SRCDIR)/msg/msg_int16_nif.c 
+	$(CC) $(CFLAGS) $(INCLUDE) $< 
 #int16__functions.o: /opt/ros/dashing/include/std_msgs/msg/int16__functions.c
 #	$(CC) $(CFLAGS) $(INCLUDE) $< 
 
