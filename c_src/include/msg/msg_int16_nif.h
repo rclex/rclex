@@ -11,3 +11,5 @@ ERL_NIF_TERM nif_std_msgs__msg__Int16__destroy(ErlNifEnv* env, int argc, const E
 ERL_NIF_TERM nif_getmsgtype_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
 ERL_NIF_TERM nif_print_msg(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+
+ERL_NIF_TERM nif_set_data(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);

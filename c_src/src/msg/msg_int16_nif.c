@@ -102,6 +102,25 @@ ERL_NIF_TERM nif_print_msg(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     
     return enif_make_int(env,res_msg->data);
 }
+
+//int16のdataに数値を入れる関数
+ERL_NIF_TERM nif_set_data(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+    if(argc != 2){
+        return enif_make_badarg(env);
+    }
+    std_msgs__msg__Int16* res_msg;
+    int num = 0;
+    ERL_NIF_TERM ret;
+    if(!enif_get_resource(env,argv[0],rt_Int16,(void**)&res_msg)){
+        return enif_make_badarg(env);
+    }
+    printf("koko\n");
+    if(!enif_get_int(env,argv[1],&num)){
+        return enif_make_badarg(env);
+    }
+    res_msg->data = num;
+    return enif_make_atom(env,"ok");
+}
 #ifdef __cplusplus
 }
 #endif
