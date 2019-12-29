@@ -77,6 +77,9 @@ defmodule RclEx do
   def rcl_node_fini(_a) do
       raise "NIF rcl_node_fini/1 not implemented"
   end
+  def read_guard_condition(_a) do
+      raise "haha"
+  end
 
 #------------------------------publisher_nif.c--------------------------
   @doc """
@@ -138,11 +141,13 @@ defmodule RclEx do
       rmw_publisher_allocation_t * allocation
     );
   """
-  #本来は第3引数があるが，一旦NULLにしておく
-  def rcl_publish(_a,_b) do
-      raise "rcl_publish/2 not implemented"
+  def rcl_publish(_a,_b,_c) do
+      raise "rcl_publish/3 is not implemented"
   end
 
+  def create_pub_alloc do
+    raise "NIF create_pub_alloc/0 is not implemented"
+  end
   #---------------------------subscription_nif.c--------------------------
   def rcl_subscription_get_default_options do
     raise "NIF rcl_subscription_get_default_options is not implemented"
@@ -150,7 +155,9 @@ defmodule RclEx do
   def rcl_get_zero_initialized_subscription do
     raise "NIF rcl_subscription_get_default_options is not implemented"
   end
-
+  def create_sub_alloc do
+    raise "NIF create_suballoc/0 is not implemented"
+  end
   @doc """
     rcl_ret_t
     rcl_subscription_init(
@@ -184,13 +191,12 @@ defmodule RclEx do
       rmw_subscription_allocation_t * allocation
     );
   """
-  #これも第4引数はNULLでいけるみたい
   def rcl_take(_a,_b,_c,_d) do
     raise "NIF rcl_take is not implemented"
   end
-  def rcl_take_with_null(_a,_b,_c) do
-    raise "NIF rcl_take_with_null is not implemented"
-  end
+  #def rcl_take_with_null(_a,_b,_c) do
+  #  raise "NIF rcl_take_with_null is not implemented"
+  #end
   #-----------------------------msg_int16.c------------------------------
   def create_empty_msgInt16 do
     raise "NIF create_empty_msgInt16/0 is not implemented"
@@ -214,6 +220,9 @@ defmodule RclEx do
   def print_msg(_a) do
     raise "NIF print_msg/1 is not implemented"
   end
+  def set_data(_a,_b) do
+    raise "NIF set_data/2 is not implemented"
+  end
   #def cre_int16 do
   #    get_message_type_from_std_msgs_msg_Int16()
   #end
@@ -234,50 +243,28 @@ defmodule RclEx do
   def rcl_wait(_a,_b) do
     raise "NIF rcl_get_zero_initialized_wait_set/0 is not implemented"
   end
+
+#-----------------------------use Agent-------------------------
+  use Agent
+  def publisher_start(pub) do
+    Agent.start_link(fn -> pub end)
+  end
+  def get_topic_name_pub(agent_pid) do
+    Agent.get(agent_pid,fn(n)->rcl_publisher_get_topic_name(n) end)
+  end
+  def publish(agent_pid,message,pub_alloc) do
+    Agent.update(agent_pid,fn(n)->rcl_publish(n,message,pub_alloc) end)
+  end
+
+  def subscription_start(sub) do
+    Agent.start_link(fn -> sub end)
+  end
+
+  def get_topic_name_sub(agent_pid) do
+    Agent.get(agent_pid,fn(n) -> rcl_subscription_get_topic_name(n) end)
+  end
+  def subscribe(agent_pid,ros_message,msginfo,sub_alloc) do
+    Agent.update(agent_pid,
+      fn(n)->rcl_take(n,ros_message,msginfo,sub_alloc) end)
+  end
 end
-
-conn = RclEx.rcl_get_zero_initialized_context()
-init_op = RclEx.rcl_get_zero_initialized_init_options()
-RclEx.rcl_init_options_init(init_op)
-RclEx.rcl_init_with_null(init_op,conn)
-RclEx.rcl_init_options_fini(init_op)
-
-node_op = RclEx.rcl_node_get_default_options()
-node = RclEx.rcl_get_zero_initialized_node()
-RclEx.rcl_node_init(node,'test_pub_node','test_pub_namespace_',conn,node_op)
-
-conn1 = RclEx.rcl_get_zero_initialized_context()
-init_op1 = RclEx.rcl_get_zero_initialized_init_options()
-RclEx.rcl_init_options_init(init_op1)
-RclEx.rcl_init_with_null(init_op1,conn1)
-RclEx.rcl_init_options_fini(init_op1)
-
-node_op1 = RclEx.rcl_node_get_default_options()
-node1 = RclEx.rcl_get_zero_initialized_node()
-RclEx.rcl_node_init(node1,'test_sub_node','test_sub_namespace_',conn1,node_op1) #double free or corruption(fasttop)
-
-sub = RclEx.rcl_get_zero_initialized_subscription()
-sub_op = RclEx.rcl_subscription_get_default_options()
-
-RclEx.rcl_subscription_init(sub,node,'testtopic',sub_op)
-
-pub = RclEx.rcl_get_zero_initialized_publisher()
-pub_op = RclEx.rcl_publisher_get_default_options()
-
-RclEx.rcl_publisher_init(pub,node,'testtopic',pub_op)
-RclEx.rcl_subscription_get_topic_name(sub)
-RclEx.rcl_publisher_get_topic_name(pub)
-num = IO.gets("input number?\n")
-        |> String.replace("\n","")
-        |> String.to_integer
-RclEx.rcl_publish(pub,num)
-IO.puts "published"
-#waitSet = RclEx.rcl_get_zero_initialized_wait_set()
-#RclEx.rcl_wait_set_init(waitSet,1,0,0,0,0,0,conn1)
-#RclEx.rcl_wait_set_add_subscription(waitSet,sub)
-#RclEx.rcl_wait(waitSet,2000)
-msg = RclEx.create_empty_msgInt16()
-msginfo = RclEx.create_msginfo()
-RclEx.rcl_take_with_null(sub,msg,msginfo)
-RclEx.print_msg(msg)
-IO.puts "subscription"
