@@ -22,7 +22,13 @@ defmodule PubSample do
 
     #RclEx.rcl_publish(pub,pubmsg,pub_alloc)
 
-    publisher_info = RclEx.Spin.publisher_start(pubmsg,pub,pub_alloc)
+    publisher_info = RclEx.Spin.publisher_start(pubmsg,pub,pub_alloc,&callback/1)
     
+  end
+
+  def callback(pubmsg) do
+    {:ok,number} = RclEx.read_data(pubmsg)
+    IO.puts "pubilshed msg:#{number}"
+    RclEx.set_data(pubmsg,number+1)
   end
 end
