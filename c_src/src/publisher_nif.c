@@ -187,24 +187,20 @@ ERL_NIF_TERM nif_rcl_publish(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
   if(argc != 3){
       return enif_make_badarg(env);
   }
-
   if(!enif_get_resource(env, argv[0], rt_pub, (void**) &res_arg_pub)){
     return enif_make_badarg(env);
   }
-  
   if(!enif_get_resource(env,argv[1],rt_Int16,(void**) &ros_message)){
         return enif_make_badarg(env);
   }
   if(!enif_get_resource(env, argv[2], rt_pub_alloc, (void**) &res_pub_alloc)){
     return enif_make_badarg(env);
   }
-  res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
-  if(res == NULL) return enif_make_badarg(env);
-  ret = enif_make_resource(env,res);
-  enif_release_resource(res);
-  
+  //res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
+  //if(res == NULL) return enif_make_badarg(env);
   *res = rcl_publish(res_arg_pub,ros_message,res_pub_alloc);
-  
+  ret = enif_make_resource(env,res_arg_pub);
+  //enif_release_resource(res_arg_pub);
   return ret;
 }
 

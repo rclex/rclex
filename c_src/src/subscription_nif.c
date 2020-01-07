@@ -55,14 +55,11 @@ ERL_NIF_TERM nif_rcl_subscription_get_default_options(ErlNifEnv* env,int argc,co
   );
 */
 ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TERM argv[]){
-  if(argc != 4){
-    return enif_make_badarg(env);
-  }
   rcl_ret_t* res_ret;
   ERL_NIF_TERM ret;
   rcl_subscription_t*  res_sub;
   rcl_node_t* res_node;
-  //rosidl_message_type_support_t* res_idl;
+  //rosidl_message_type_support_t* res_msgtype;
   rcl_subscription_options_t* res_sub_options;
   
   if(!enif_get_resource(env, argv[0], rt_sub, (void**) &res_sub)){
@@ -73,10 +70,11 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
     return enif_make_badarg(env);
   }
   /*
-  if(!enif_get_resource(env, argv[2], rt_rosidl_msg_type_support, (void**) &res_idl)){
+  if(!enif_get_resource(env, argv[2], rt_msg_type_support, (void**) &res_msgtype)){
     return enif_make_badarg(env);
   }
   */
+  printf("heyhey\n");
   char topic_buf[128]; //トピック名を格納するためのバッファ
   (void)memset(&topic_buf,'\0',sizeof(topic_buf));
   if(!enif_get_string(env,argv[2],topic_buf,sizeof(topic_buf),ERL_NIF_LATIN1)){
@@ -90,12 +88,15 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
   //返すrcl_ret_tについて，alloc_resource
   res_ret = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
   if(res_ret == NULL) return enif_make_badarg(env);
-  
   ret = enif_make_resource(env,res_ret);
   enif_release_resource(res_ret);
-  const rosidl_message_type_support_t* msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
-  *res_ret = rcl_subscription_init(res_sub,res_node,msgtype,topic_buf,res_sub_options);
+  
+  //enif_release_resource(res_ret);
+  printf("nooo\n");
+  const rosidl_message_type_support_t* res_msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
+  *res_ret = rcl_subscription_init(res_sub,res_node,res_msgtype,topic_buf,res_sub_options);
   printf("exit subscription_init\n");
+  
   return ret;
 }
 
@@ -173,12 +174,13 @@ ERL_NIF_TERM nif_create_sub_alloc(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
   );
 */
 ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
-  rcl_ret_t* res;
-  ERL_NIF_TERM ret;
-
+  //rcl_ret_t* res;
+  int res = 100;
   rcl_subscription_t* res_sub;
   rmw_message_info_t* res_msginfo;  
   rmw_subscription_allocation_t* res_sub_alloc;
+  ERL_NIF_TERM ret,ret_sub,ret_msginfo,ret_sub_alloc;
+
   std_msgs__msg__Int16* ros_message;  //一旦きめうち
   //上3つはinclude/rmw/types.hに定義されてる
   //void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
@@ -199,14 +201,20 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
   if(!enif_get_resource(env, argv[3], rt_sub_alloc, (void**) &res_sub_alloc)){
     return enif_make_badarg(env);
   }
-  res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
-  if(res == NULL) return enif_make_badarg(env);
-  ret = enif_make_resource(env,res);
-  enif_release_resource(res);
-
-  *res = rcl_take(res_sub,ros_message,res_msginfo,res_sub_alloc);
+  //res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
+  //if(res == NULL) return enif_make_badarg(env);
+  //ret = enif_make_resource(env,res);
+  //enif_release_resource(res);
   
-  return ret;
+  res = rcl_take(res_sub,ros_message,res_msginfo,res_sub_alloc);
+  ret_sub = enif_make_resource(env,res_sub);
+  ret_msginfo = enif_make_resource(env,res_msginfo);
+  ret_sub_alloc = enif_make_resource(env,res_sub_alloc);
+
+  //enif_release_resource(res_sub);
+  //enif_release_resource(res_msginfo);
+  //enif_release_resource(res_sub_alloc);
+  return enif_make_tuple4(env,enif_make_int(env,res),ret_sub,ret_msginfo,ret_sub_alloc);
 }
 /*
 ERL_NIF_TERM nif_rcl_take_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
