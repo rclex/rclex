@@ -175,7 +175,7 @@ ERL_NIF_TERM nif_create_sub_alloc(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
 */
 ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
   //rcl_ret_t* res;
-  int res = 100;
+  int return_value = 100;
   rcl_subscription_t* res_sub;
   rmw_message_info_t* res_msginfo;  
   rmw_subscription_allocation_t* res_sub_alloc;
@@ -206,7 +206,7 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
   //ret = enif_make_resource(env,res);
   //enif_release_resource(res);
   
-  res = rcl_take(res_sub,ros_message,res_msginfo,res_sub_alloc);
+  return_value = rcl_take(res_sub,ros_message,res_msginfo,res_sub_alloc);
   ret_sub = enif_make_resource(env,res_sub);
   ret_msginfo = enif_make_resource(env,res_msginfo);
   ret_sub_alloc = enif_make_resource(env,res_sub_alloc);
@@ -214,7 +214,7 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
   //enif_release_resource(res_sub);
   //enif_release_resource(res_msginfo);
   //enif_release_resource(res_sub_alloc);
-  return enif_make_tuple4(env,enif_make_int(env,res),ret_sub,ret_msginfo,ret_sub_alloc);
+  return enif_make_tuple4(env,enif_make_int(env,return_value),ret_sub,ret_msginfo,ret_sub_alloc);
 }
 /*
 ERL_NIF_TERM nif_rcl_take_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){

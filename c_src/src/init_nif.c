@@ -88,7 +88,6 @@ ERL_NIF_TERM nif_rcl_init_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM
     
    
     //ポインタも，その指し示す先もconst(変更不可)であることを示す
-    
     //argc,argvに直接値を入れている
     *res = rcl_init(0,NULL,res_options,res_context);
     printf("finished rcl_init\n");
@@ -150,15 +149,6 @@ ERL_NIF_TERM nif_rcl_shutdown(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[
 
     return enif_make_tuple2(env,atom_ok,ret);
 }
-/*
-ErlNifFunc nif_funcs[]={
-    {"rcl_get_zero_initialized_init_options",0,nif_rcl_get_zero_initialized_init_options},
-    {"rcl_get_zero_initialized_context",0,nif_rcl_get_zero_initialized_context},
-    {"rcl_init",4,nif_rcl_init},
-    {"rcl_shutdown",1,nif_rcl_shutdown},
-};
-ERL_NIF_INIT(Elixir.RclEx.Init,nif_funcs,&load,&reload,NULL,NULL);
-*/
 #ifdef __cplusplus
 }
 #endif

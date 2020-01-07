@@ -4,7 +4,7 @@ defmodule RclEx do
         IO.puts "load_nifs"
         :erlang.load_nif('/home/imanishi/rclex/rclex',0)
     end
-
+  require RclEx.Macros
   #-----------------------init_nif.c--------------------------
   #return rcl_init_options_t
   def rcl_get_zero_initialized_init_options do
@@ -256,15 +256,53 @@ defmodule RclEx do
     Agent.update(agent_pid,fn(n)->rcl_publish(n,message,pub_alloc) end)
   end
 
-  def subscription_start(sub) do
-    Agent.start_link(fn -> sub end)
+  def subscription_start(sub,msginfo,sub_alloc) do
+    Agent.start_link(fn -> {:subcription_start,sub,msginfo,sub_alloc} end)
   end
 
   def get_topic_name_sub(agent_pid) do
-    Agent.get(agent_pid,fn(n) -> rcl_subscription_get_topic_name(n) end)
+    Agent.get(agent_pid,fn(n) -> rcl_subscription_get_topic_name(elem(n,1)) end)
   end
-  def subscribe(agent_pid,ros_message,msginfo,sub_alloc) do
+
+  def agentspin(agent_pid,takemsg,callback) do
     Agent.update(agent_pid,
-      fn(n)->rcl_take(n,ros_message,msginfo,sub_alloc) end)
+      fn(n)->
+        {ret,sub,msginfo,sub_alloc} = case rcl_take(elem(n,1),takemsg,elem(n,2),elem(n,3)) do
+          {RclEx.Macros.rcl_ret_ok,sub,msginfo,sub_alloc} -> 
+            IO.puts "subscribed"
+            #callback.(takemsg)
+          {RclEx.Macros.rcl_ret_subscription_take_failed,sub,msginfo,sub_alloc} -> 
+            IO.puts "rcl_take nothing"
+            IO.inspect(takemsg)
+          {_,sub,msginfo,sub_alloc} -> IO.puts "Catch all"
+        end
+      end)
+
+    :timer.sleep(1000)
+    agentspin(agent_pid,takemsg,callback) 
+  end
+  
+  #def loop(sub,msg,msginfo,sub_alloc,count,sleep_msec) do
+  #  ret = case RclEx.rcl_take(sub,msg,msginfo,sub_alloc) do
+  #    {Macro.rcl_ret_ok,sub,msginfo,sub_alloc} -> callback(msg)
+  #    {Macro.rcl_ret_subscription_take_failed,sub,msginfo,sub_alloc} -> IO.puts "rcl_take nothing"
+  #    {_,sub,msginfo,sub_alloc} -> "Catch all"  
+  #  end
+
+  #  IO.puts "count=> #{count}"
+  #  count = count + 1
+  #  :timer.sleep(sleep_msec)
+  #  loop(sub,msg,msginfo,sub_alloc,count,sleep_msec)
+  #end
+#------------------------より使いやすく-------------------
+  def rclexinit(init_op,context) do
+    rcl_init_options_init(init_op)
+    rcl_init_with_null(init_op,context)
+    rcl_init_options_fini(init_op)
+  end
+  def node_init(node,node_name,node_namespace,context,node_op) do
+    node = rcl_get_zero_initialized_node()
+    node_op = rcl_node_get_default_options()
+    rcl_node_init(node,node_name,node_namespace,context,node_op)
   end
 end

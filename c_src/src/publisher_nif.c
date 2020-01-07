@@ -176,18 +176,18 @@ ERL_NIF_TERM nif_rcl_publisher_is_valid(ErlNifEnv* env,int argc,const ERL_NIF_TE
 
 
 ERL_NIF_TERM nif_rcl_publish(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
-  rcl_ret_t* res;
-  ERL_NIF_TERM ret;
-
-  rcl_publisher_t* res_arg_pub;
+  //rcl_ret_t* res;
+  
+  int return_value;
+  rcl_publisher_t* res_pub;
   std_msgs__msg__Int16* ros_message;  //一旦きめうち
   rmw_publisher_allocation_t* res_pub_alloc;
   //const void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
-  
+  ERL_NIF_TERM ret_pub,ret_pub_alloc;
   if(argc != 3){
       return enif_make_badarg(env);
   }
-  if(!enif_get_resource(env, argv[0], rt_pub, (void**) &res_arg_pub)){
+  if(!enif_get_resource(env, argv[0], rt_pub, (void**) &res_pub)){
     return enif_make_badarg(env);
   }
   if(!enif_get_resource(env,argv[1],rt_Int16,(void**) &ros_message)){
@@ -198,10 +198,13 @@ ERL_NIF_TERM nif_rcl_publish(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
   }
   //res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
   //if(res == NULL) return enif_make_badarg(env);
-  *res = rcl_publish(res_arg_pub,ros_message,res_pub_alloc);
-  ret = enif_make_resource(env,res_arg_pub);
+  return_value = rcl_publish(res_pub,ros_message,res_pub_alloc);
+  
+  ret_pub = enif_make_resource(env,res_pub);
+  ret_pub_alloc = enif_make_resource(env,res_pub_alloc);
   //enif_release_resource(res_arg_pub);
-  return ret;
+  
+  return enif_make_tuple3(env,enif_make_int(env,return_value),ret_pub,ret_pub_alloc);
 }
 
 //空のrt_pub_allocを作る

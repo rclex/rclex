@@ -27,3 +27,5 @@ rclex-*.tar
 *.so
 
 core
+
+*.txt

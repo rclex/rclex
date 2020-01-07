@@ -34,10 +34,8 @@ defmodule SubSample do
   end
   #コールバック関数を記述
   defp callback(msg) do
-    IO.puts "enter callback"
     {:ok,received_msg} = RclEx.print_msg(msg)
     IO.puts "received msg:#{received_msg}"
-    IO.puts "finish callback"
   end
 
 end

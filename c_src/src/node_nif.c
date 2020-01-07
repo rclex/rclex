@@ -14,9 +14,6 @@ extern "C"
 
 #include "rcl/rcl.h"
 
-#define ROS_SECURITY_STRATEGY_VAR_NAME "ROS_SECURITY_STRATEGY"
-#define ROS_SECURITY_ENABLE_VAR_NAME "ROS_SECURITY_ENABLE"
-#define ROS_DOMAIN_ID_VAR_NAME "ROS_DOMAIN_ID"
 
 
 ERL_NIF_TERM nif_rcl_get_zero_initialized_node(ErlNifEnv* env,int argc,const ERL_NIF_TERM argv[]){
@@ -196,6 +193,16 @@ ERL_NIF_TERM nif_rcl_node_get_default_options(ErlNifEnv* env, int argc, const ER
 
     return ret;
     
+}
+
+ERL_NIF_TERM nif_read_guard_condition(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+    rcl_node_t* res_node;
+    if(!enif_get_resource(env, argv[0], rt_node, (void**) &res_node)){
+	    return enif_make_badarg(env);
+    }
+    //return enif_make_tuple1(env,res_node->impl->graph_guard_condition->impl->allocated_rmw_guard_condition);
+    //graph_guard_condition以降はnode.cで定義されてるものだからアクセスする必要がないってこと？
+    return enif_make_atom(env,"ok");
 }
 /*
 ERL_NIF_INIT(Elixir.RclEx.Node,nif_funcs,&load,&reload,NULL,NULL);

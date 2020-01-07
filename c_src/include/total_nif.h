@@ -24,7 +24,7 @@ ErlNifResourceType* rt_node_options;
 //-----------------------publisher_nif.cで追加-------------------
 ErlNifResourceType* rt_pub;
 ErlNifResourceType* rt_pub_options;
-ErlNifResourceType* rt_rosidl_msg_type_support;
+ErlNifResourceType* rt_msg_type_support;
 ErlNifResourceType* rt_pub_alloc;
 //----------------------subscription_nif.cで追加-------------------
 ErlNifResourceType* rt_sub;
@@ -45,9 +45,14 @@ ERL_NIF_TERM atom_false;
 int open_resource(ErlNifEnv* env);
 
 //@on_loadで呼び出す
-int load(ErlNifEnv* env, void** priv,ERL_NIF_TERM load_info);
+static int load(ErlNifEnv* env, void** priv,ERL_NIF_TERM load_info);
 
-int reload(ErlNifEnv* env,void** priv,ERL_NIF_TERM load_info);
+static int reload(ErlNifEnv* env,void** priv,ERL_NIF_TERM load_info);
+
+static int upgrade(ErlNifEnv* env, void** priv,void** old_priv,ERL_NIF_TERM load_info);
+
+static void unload(ErlNifEnv* env, void* priv);
+
 
 
 

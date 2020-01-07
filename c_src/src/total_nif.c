@@ -7,10 +7,12 @@ extern "C"
 //リソースタイプを作る．load()から呼び出される.各種nifファイルから見れるようstaticつけない
 int open_resource(ErlNifEnv* env){
     const char* mod = "Elixir.RclEx";
+    /*
     const char* modinit = "Elixir.RclEx.Init";
     const char* modnode = "Elixir.RclEx.Node";
     const char* modpub = "Elixir.RclEx.Publisher";
     const char* modsub = "Elixir.RclEx.Subscription";
+    */
     //for init_nif.c
     const char* name1 = "rcl_ret_t";
     const char* name2 = "rcl_context_t";
@@ -112,7 +114,7 @@ int open_resource(ErlNifEnv* env){
     
     rt_pub          = enif_open_resource_type(env,mod,name6,NULL,flags,NULL);
     rt_pub_options  = enif_open_resource_type(env,mod,name7,NULL,flags,NULL);
-    rt_rosidl_msg_type_support = enif_open_resource_type(env,mod,name8,NULL,flags,NULL);
+    rt_msg_type_support = enif_open_resource_type(env,mod,name8,NULL,flags,NULL);
     rt_pub_alloc = enif_open_resource_type(env,mod,name9,NULL,flags,NULL);
     
     rt_sub          = enif_open_resource_type(env,mod,namesub1,NULL,flags,NULL);
@@ -127,7 +129,7 @@ int open_resource(ErlNifEnv* env){
 }
 
 //@on_loadで呼び出す
-int load(ErlNifEnv* env, void** priv,ERL_NIF_TERM load_info){
+static int load(ErlNifEnv* env, void** priv,ERL_NIF_TERM load_info){
     if(open_resource(env) == -1) return -1;
 
     atom_ok = enif_make_atom(env,"ok");
@@ -136,11 +138,14 @@ int load(ErlNifEnv* env, void** priv,ERL_NIF_TERM load_info){
     return 0;
 }
 
-int reload(ErlNifEnv* env,void** priv,ERL_NIF_TERM load_info){
-    if(open_resource(env) == -1) return -1;
+static int reload(ErlNifEnv* env,void** priv,ERL_NIF_TERM load_info){
     return 0;
 }
-
+static int upgrade(ErlNifEnv* env,void** priv_data,void** old_priv_data,ERL_NIF_TERM load_info){
+    return load(env,priv_data,load_info);
+}
+static void unload(ErlNifEnv *env, void* priv){
+}
 ErlNifFunc nif_funcs[] = {
     //-----------init_nif.c-----------
     {"rcl_get_zero_initialized_init_options",0,nif_rcl_get_zero_initialized_init_options},
@@ -202,7 +207,7 @@ __global
 __attribute__ ((visibility("default")))
 #endif
 */
-ERL_NIF_INIT(Elixir.RclEx,nif_funcs,&load,&reload,NULL,NULL);
+ERL_NIF_INIT(Elixir.RclEx,nif_funcs,&load,&reload,&upgrade,&unload);
 #ifdef __cplusplus
 }
 #endif

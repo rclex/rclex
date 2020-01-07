@@ -75,19 +75,22 @@ ERL_NIF_TERM nif_std_msgs__msg__Int16__destroy(ErlNifEnv* env, int argc, const E
     return atom_ok;
 }
 
+//メッセージ型を作る関数
 ERL_NIF_TERM nif_getmsgtype_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(argc != 0){
         return enif_make_badarg(env);
     }
-    const rosidl_message_type_support_t* res;
+    //ほんまはconstがいる
+    //rosidl_message_type_support_t* res_tmp;
+    rosidl_message_type_support_t** res_tmp;
+    //const rosidl_message_type_support_t* res;
     ERL_NIF_TERM ret;
     
-    res = enif_alloc_resource(rt_rosidl_msg_type_support,sizeof(rosidl_message_type_support_t));
-    if(res == NULL) return enif_make_badarg(env);
-    ret = enif_make_resource(env,res);
-    enif_release_resource(res);
-    res = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
-    
+    res_tmp = enif_alloc_resource(rt_msg_type_support,sizeof(rosidl_message_type_support_t*));
+    if(res_tmp == NULL) return enif_make_badarg(env);
+    ret = enif_make_resource(env,res_tmp);
+    enif_release_resource(res_tmp);
+    *res_tmp = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
     return ret;
 }
 ERL_NIF_TERM nif_print_msg(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
@@ -99,8 +102,7 @@ ERL_NIF_TERM nif_print_msg(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(!enif_get_resource(env,argv[0],rt_Int16,(void**)&res_msg)){
         return enif_make_badarg(env);
     }
-    
-    return enif_make_int(env,res_msg->data);
+    return enif_make_tuple2(env,atom_ok,enif_make_int(env,res_msg->data));
 }
 
 //int16のdataに数値を入れる関数
@@ -114,13 +116,13 @@ ERL_NIF_TERM nif_set_data(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(!enif_get_resource(env,argv[0],rt_Int16,(void**)&res_msg)){
         return enif_make_badarg(env);
     }
-    printf("koko\n");
     if(!enif_get_int(env,argv[1],&num)){
         return enif_make_badarg(env);
     }
     res_msg->data = num;
     return enif_make_atom(env,"ok");
 }
+
 #ifdef __cplusplus
 }
 #endif
