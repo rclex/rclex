@@ -188,7 +188,7 @@ ErlNifFunc nif_funcs[] = {
     {"std_msgs__msg__Int16__init",1,nif_std_msgs__msg__Int16__init},
     {"std_msgs__msg__Int16__destroy",1,nif_std_msgs__msg__Int16__destroy},
     {"get_message_type_from_std_msgs_msg_Int16",0,nif_getmsgtype_int16},
-    {"print_msg",1,nif_print_msg},
+    {"read_data",1,nif_read_data},
     {"set_data",2,nif_set_data},
     //----------------wait_nif.c-----------------
     {"rcl_get_zero_initialized_wait_set",0,nif_rcl_get_zero_initialized_wait_set},

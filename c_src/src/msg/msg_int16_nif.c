@@ -93,7 +93,7 @@ ERL_NIF_TERM nif_getmsgtype_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     *res_tmp = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
     return ret;
 }
-ERL_NIF_TERM nif_print_msg(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+ERL_NIF_TERM nif_read_data(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(argc != 1){
         return enif_make_badarg(env);
     }
