@@ -108,7 +108,7 @@ ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   if(argc != 4){
         return enif_make_badarg(env);
   }
-  rcl_ret_t* res_return;
+  int return_value = 0;
   ERL_NIF_TERM ret;
   rcl_publisher_t*  res_pub;
   rcl_node_t* res_node;
@@ -119,7 +119,6 @@ ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   {
     return enif_make_badarg(env);
   }
-  
   if(!enif_get_resource(env, argv[1], rt_node, (void**) &res_node))
   {
     return enif_make_badarg(env);
@@ -135,22 +134,16 @@ ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   if(!enif_get_string(env,argv[2],buf,sizeof(buf),ERL_NIF_LATIN1)){
     return enif_make_badarg(env);
   }
-  
   if(!enif_get_resource(env, argv[3], rt_pub_options, (void**) &res_options))
   {
     return enif_make_badarg(env);
   }
   
-  //各構造体ポインタそれぞれについて，alloc_resource
-  res_return = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
-  if(res_return == NULL) return enif_make_badarg(env);
-  
-  ret = enif_make_resource(env,res_return);
-  enif_release_resource(res_return);
   //メッセージ型サポートを直接入れている
   const rosidl_message_type_support_t* msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
-  
-  *res_return = rcl_publisher_init(res_pub,res_node,msgtype,buf,res_options); //segmentation fault
+  return_value = rcl_publisher_init(res_pub,res_node,msgtype,buf,res_options); //segmentation fault
+  ret = enif_make_resource(env,res_pub);
+  //enif_release_resource(res_pub);
   printf("exit publisher_init\n");
   return ret;
 }
@@ -177,7 +170,6 @@ ERL_NIF_TERM nif_rcl_publisher_is_valid(ErlNifEnv* env,int argc,const ERL_NIF_TE
 
 ERL_NIF_TERM nif_rcl_publish(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
   //rcl_ret_t* res;
-  
   int return_value;
   rcl_publisher_t* res_pub;
   std_msgs__msg__Int16* ros_message;  //一旦きめうち
@@ -203,7 +195,6 @@ ERL_NIF_TERM nif_rcl_publish(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
   ret_pub = enif_make_resource(env,res_pub);
   ret_pub_alloc = enif_make_resource(env,res_pub_alloc);
   //enif_release_resource(res_arg_pub);
-  
   return enif_make_tuple3(env,enif_make_int(env,return_value),ret_pub,ret_pub_alloc);
 }
 

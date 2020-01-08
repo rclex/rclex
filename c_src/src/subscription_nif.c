@@ -74,7 +74,6 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
     return enif_make_badarg(env);
   }
   */
-  printf("heyhey\n");
   char topic_buf[128]; //トピック名を格納するためのバッファ
   (void)memset(&topic_buf,'\0',sizeof(topic_buf));
   if(!enif_get_string(env,argv[2],topic_buf,sizeof(topic_buf),ERL_NIF_LATIN1)){
@@ -92,7 +91,6 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
   enif_release_resource(res_ret);
   
   //enif_release_resource(res_ret);
-  printf("nooo\n");
   const rosidl_message_type_support_t* res_msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
   *res_ret = rcl_subscription_init(res_sub,res_node,res_msgtype,topic_buf,res_sub_options);
   printf("exit subscription_init\n");

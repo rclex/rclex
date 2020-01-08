@@ -104,13 +104,12 @@ ERL_NIF_TERM express_node_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv
 }
 */
 ERL_NIF_TERM nif_rcl_node_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
-    printf("enter node_init\n");
     if(argc != 5){
         
         return enif_make_badarg(env);
     }
     
-    rcl_ret_t* res;
+    int res = 0;
     ERL_NIF_TERM ret;
 
     rcl_node_t* res_arg_node;
@@ -142,13 +141,11 @@ ERL_NIF_TERM nif_rcl_node_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv
         return enif_make_badarg(env);
     }
    
-    res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
-    if(res == NULL) return enif_make_badarg(env);
-    ret = enif_make_resource(env,res);
-    enif_release_resource(res);
    
-    *res = rcl_node_init(res_arg_node,name_buf,namespace_buf,res_arg_context,res_arg_options);
-    
+    res = rcl_node_init(res_arg_node,name_buf,namespace_buf,res_arg_context,res_arg_options);
+    ret = enif_make_resource(env,res_arg_node);
+    //enif_release_resource(res_arg_node);
+   
     return ret;
 }
 
