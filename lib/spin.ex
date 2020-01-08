@@ -2,6 +2,7 @@ defmodule RclEx.Spin do
   require RclEx.Macros
   require IEx
 
+  #pubtaskspinとpubtaskspinはパターンマッチで選べるようにできれば...
   def subtaskspin(takemsg,sub,msginfo,sub_alloc,callback) do
     case RclEx.rcl_take(sub,takemsg,msginfo,sub_alloc) do
       {RclEx.Macros.rcl_ret_ok,_,_,_} -> 
@@ -16,7 +17,7 @@ defmodule RclEx.Spin do
     Task.async(fn -> subtaskspin(takemsg,sub,msginfo,sub_alloc,callback) end)
   end
 
-  def pubtaskspin(pubmsg,pub,pub_alloc,callback) do
+  def pubtaskspin(pub,pubmsg,pub_alloc,callback) do
     case RclEx.rcl_publish(pub,pubmsg,pub_alloc) do
       {RclEx.Macros.rcl_ret_ok,_,_} -> callback.(pubmsg)
       {RclEx.Macros.rcl_ret_publisher_invalid,_,_} -> IO.puts "Publisher is invalid"
@@ -24,11 +25,20 @@ defmodule RclEx.Spin do
       {RclEx.Macros.rcl_ret_error,_,_} -> IO.puts "unspecified error"
       {_,_,_} -> IO.puts "What!?"
     end
-    :timer.sleep(5000)
-    pubtaskspin(pubmsg,pub,pub_alloc,callback)
+    :timer.sleep(2000)
+    pubtaskspin(pub,pubmsg,pub_alloc,callback)
   end
 
-  def publisher_start(pubmsg,pub,pub_alloc,callback) do
-    pub_pid = Task.async(fn -> pubtaskspin(pubmsg,pub,pub_alloc,callback) end)
+  def singlepublisher_start(pub,pubmsg,callback) do
+    pub_alloc = RclEx.create_pub_alloc()
+    pub_pid = Task.async(fn -> pubtaskspin(pub,pubmsg,pub_alloc,callback) end)
+  end
+
+  def publisher_start(publisher_list,pubmsg_list,callback) do
+    Enum.map(0..length(publisher_list)-1,fn(index)-> 
+      Task.async(fn -> 
+        pubtaskspin(Enum.at(publisher_list,index),Enum.at(pubmsg_list,index),RclEx.create_pub_alloc(),callback) 
+      end)  
+    end)
   end
 end

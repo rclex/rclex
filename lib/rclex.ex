@@ -4,7 +4,6 @@ defmodule RclEx do
         IO.puts "load_nifs"
         :erlang.load_nif('/home/imanishi/rclex/rclex',0)
     end
-  require RclEx.Macros
   #-----------------------init_nif.c--------------------------
   #return rcl_init_options_t
   def rcl_get_zero_initialized_init_options do
@@ -217,8 +216,8 @@ defmodule RclEx do
   def get_message_type_from_std_msgs_msg_Int16 do
       raise "NIF get_message_type_from_std_msgs_msg_Int16/0 not implemented"
   end
-  def print_msg(_a) do
-    raise "NIF print_msg/1 is not implemented"
+  def read_data(_a) do
+    raise "NIF read_data/1 is not implemented"
   end
   def set_data(_a,_b) do
     raise "NIF set_data/2 is not implemented"
@@ -263,25 +262,25 @@ defmodule RclEx do
   def get_topic_name_sub(agent_pid) do
     Agent.get(agent_pid,fn(n) -> rcl_subscription_get_topic_name(elem(n,1)) end)
   end
-
-  def agentspin(agent_pid,takemsg,callback) do
-    Agent.update(agent_pid,
-      fn(n)->
-        {ret,sub,msginfo,sub_alloc} = case rcl_take(elem(n,1),takemsg,elem(n,2),elem(n,3)) do
-          {RclEx.Macros.rcl_ret_ok,sub,msginfo,sub_alloc} -> 
-            IO.puts "subscribed"
-            #callback.(takemsg)
-          {RclEx.Macros.rcl_ret_subscription_take_failed,sub,msginfo,sub_alloc} -> 
-            IO.puts "rcl_take nothing"
-            IO.inspect(takemsg)
-          {_,sub,msginfo,sub_alloc} -> IO.puts "Catch all"
-        end
-      end)
-
-    :timer.sleep(1000)
-    agentspin(agent_pid,takemsg,callback) 
-  end
-  
+#
+  #def agentspin(agent_pid,takemsg,callback) do
+  #  Agent.update(agent_pid,
+  #    fn(n)->
+  #      {ret,sub,msginfo,sub_alloc} = case rcl_take(elem(n,1),takemsg,elem(n,2),elem(n,3)) do
+  #        {RclEx.Macros.rcl_ret_ok,sub,msginfo,sub_alloc} -> 
+  #          IO.puts "subscribed"
+  #          #callback.(takemsg)
+  #        {RclEx.Macros.rcl_ret_subscription_take_failed,sub,msginfo,sub_alloc} -> 
+  #          IO.puts "rcl_take nothing"
+  #          IO.inspect(takemsg)
+  #        {_,sub,msginfo,sub_alloc} -> IO.puts "Catch all"
+  #      end
+  #    end)
+#
+  #  :timer.sleep(1000)
+  #  agentspin(agent_pid,takemsg,callback) 
+  #end
+  #
   #def loop(sub,msg,msginfo,sub_alloc,count,sleep_msec) do
   #  ret = case RclEx.rcl_take(sub,msg,msginfo,sub_alloc) do
   #    {Macro.rcl_ret_ok,sub,msginfo,sub_alloc} -> callback(msg)
@@ -295,14 +294,55 @@ defmodule RclEx do
   #  loop(sub,msg,msginfo,sub_alloc,count,sleep_msec)
   #end
 #------------------------より使いやすく-------------------
+  require IEx
+  def rclexinit do
+    init_op = rcl_get_zero_initialized_init_options()
+    context = rcl_get_zero_initialized_context()
+    rcl_init_options_init(init_op)
+    rcl_init_with_null(init_op,context)
+    rcl_init_options_fini(init_op)
+    context
+  end
+
   def rclexinit(init_op,context) do
+    IO.puts "hello"
     rcl_init_options_init(init_op)
     rcl_init_with_null(init_op,context)
     rcl_init_options_fini(init_op)
   end
-  def node_init(node,node_name,node_namespace,context,node_op) do
+
+  def nodeinit(context,node_name,node_namespace) do
     node = rcl_get_zero_initialized_node()
     node_op = rcl_node_get_default_options()
     rcl_node_init(node,node_name,node_namespace,context,node_op)
+    node
+  end
+
+  def nodeinit(context,node_name,node_namespace,node_count) do 
+    node_list = Enum.map(1..node_count,fn(n)->
+                rcl_node_init(
+                  rcl_get_zero_initialized_node(),node_name++Integer.to_charlist(n),node_namespace++Integer.to_charlist(n),context,rcl_node_get_default_options()
+                  )
+                end)
+    node_list
+  end
+
+  def single_create_publisher(pub_node,topic_name) do
+    publisher = rcl_get_zero_initialized_publisher()
+    pub_op = rcl_publisher_get_default_options()
+    rcl_publisher_init(publisher,pub_node,topic_name,pub_op)
+    publisher
+  end
+
+  def create_publishers(node_list,topic_name) do
+    Enum.map(node_list,fn(node)->
+      rcl_publisher_init(rcl_get_zero_initialized_publisher(),node,topic_name,rcl_publisher_get_default_options())
+    end)
+  end
+
+  def create_msgs(msg_count) do
+    Enum.map(1..msg_count,fn(n) ->
+      create_empty_msgInt16()
+    end)
   end
 end
