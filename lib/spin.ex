@@ -3,19 +3,6 @@ defmodule RclEx.Spin do
   require IEx
 
   #pubtaskspinとpubtaskspinはパターンマッチで選べるようにできれば...
-  def subtaskspin(takemsg,sub,msginfo,sub_alloc,callback) do
-    case RclEx.rcl_take(sub,takemsg,msginfo,sub_alloc) do
-      {RclEx.Macros.rcl_ret_ok,_,_,_} -> 
-        callback.(takemsg)
-      {RclEx.Macros.rcl_ret_subscription_take_failed,_,_,_} ->
-        IO.puts "take nothing"
-      end
-    :timer.sleep(1000)
-    subtaskspin(takemsg,sub,msginfo,sub_alloc,callback)
-  end
-  def subscription_start(takemsg,sub,msginfo,sub_alloc,callback) do
-    Task.async(fn -> subtaskspin(takemsg,sub,msginfo,sub_alloc,callback) end)
-  end
 
   def pubtaskspin(pub,pubmsg,pub_alloc,callback) do
     case RclEx.rcl_publish(pub,pubmsg,pub_alloc) do
@@ -29,6 +16,17 @@ defmodule RclEx.Spin do
     pubtaskspin(pub,pubmsg,pub_alloc,callback)
   end
 
+  def subtaskspin(takemsg,sub,msginfo,sub_alloc,callback) do
+    case RclEx.rcl_take(sub,takemsg,msginfo,sub_alloc) do
+      {RclEx.Macros.rcl_ret_ok,_,_,_} -> 
+        callback.(takemsg)
+      {RclEx.Macros.rcl_ret_subscription_take_failed,_,_,_} ->
+        IO.puts "take nothing"
+      end
+    :timer.sleep(1000)
+    subtaskspin(takemsg,sub,msginfo,sub_alloc,callback)
+  end
+  
   def singlepublisher_start(pub,pubmsg,callback) do
     pub_alloc = RclEx.create_pub_alloc()
     pub_pid = Task.async(fn -> pubtaskspin(pub,pubmsg,pub_alloc,callback) end)
@@ -39,6 +37,12 @@ defmodule RclEx.Spin do
       Task.async(fn -> 
         pubtaskspin(Enum.at(publisher_list,index),Enum.at(pubmsg_list,index),RclEx.create_pub_alloc(),callback) 
       end)  
+    end)
+  end
+
+  def subscriber_start(subscriber_list,callback) do
+    Enum.map(subscriber_list,fn(subscriber)->
+      Task.async(fn -> subtaskspin(RclEx.create_empty_msgInt16(),subscriber,RclEx.create_msginfo(),RclEx.create_sub_alloc(),callback) end)
     end)
   end
 end

@@ -303,7 +303,6 @@ defmodule RclEx do
     rcl_init_options_fini(init_op)
     context
   end
-
   def rclexinit(init_op,context) do
     IO.puts "hello"
     rcl_init_options_init(init_op)
@@ -311,14 +310,14 @@ defmodule RclEx do
     rcl_init_options_fini(init_op)
   end
 
-  def nodeinit(context,node_name,node_namespace) do
+  def create_singlenode(context,node_name,node_namespace) do
     node = rcl_get_zero_initialized_node()
     node_op = rcl_node_get_default_options()
     rcl_node_init(node,node_name,node_namespace,context,node_op)
     node
   end
 
-  def nodeinit(context,node_name,node_namespace,node_count) do 
+  def create_nodes(context,node_name,node_namespace,node_count) do 
     node_list = Enum.map(1..node_count,fn(n)->
                 rcl_node_init(
                   rcl_get_zero_initialized_node(),node_name++Integer.to_charlist(n),node_namespace++Integer.to_charlist(n),context,rcl_node_get_default_options()
@@ -339,7 +338,12 @@ defmodule RclEx do
       rcl_publisher_init(rcl_get_zero_initialized_publisher(),node,topic_name,rcl_publisher_get_default_options())
     end)
   end
-
+  
+  def create_subscribers(node_list,topic_name) do
+    Enum.map(node_list,fn(node)->
+      rcl_subscription_init(rcl_get_zero_initialized_subscription(),node,topic_name,rcl_subscription_get_default_options())
+    end)
+  end
   def create_msgs(msg_count) do
     Enum.map(1..msg_count,fn(n) ->
       create_empty_msgInt16()
