@@ -316,11 +316,21 @@ defmodule RclEx do
     rcl_node_init(node,node_name,node_namespace,context,node_op)
     node
   end
-
-  def create_nodes(context,node_name,node_namespace,node_count) do 
+  #引数にnamespace入れてる
+  def create_nodes(context,node_name,namespace,node_count) do 
     node_list = Enum.map(1..node_count,fn(n)->
                 rcl_node_init(
-                  rcl_get_zero_initialized_node(),node_name++Integer.to_charlist(n),node_namespace++Integer.to_charlist(n),context,rcl_node_get_default_options()
+                  rcl_get_zero_initialized_node(),node_name++Integer.to_charlist(n),namespace,context,rcl_node_get_default_options()
+                  )
+                end)
+    node_list
+  end
+  #引数にnamespace入れない
+  def create_nodes(context,node_name,node_count) do 
+    namespace = nil
+    node_list = Enum.map(1..node_count,fn(n)->
+                rcl_node_init(
+                  rcl_get_zero_initialized_node(),node_name++Integer.to_charlist(n),namespace,context,rcl_node_get_default_options()
                   )
                 end)
     node_list

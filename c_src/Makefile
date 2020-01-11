@@ -11,7 +11,7 @@ CFLAGS	:= -g -c -fPIC -MMD -MP
 SOFLAGS  := -g -shared
 # -c でオブジェクトだけ全部作って，-fpic -sharedすることで一つの.soにできる
 LINK 	:= -lstdc++
-INCLUDE := -I /usr/lib/erlang/erts-10.5.6/include -I $(ROSDIR)/include
+INCLUDE := -I /usr/lib/erlang/erts-10.6.1/include -I $(ROSDIR)/include
 LDFLAGS	:= -L $(ROSDIR)/lib
 LIBS 	:= -lrcl -lrmw -lrcutils -lfastrtps
 MSGLIBS	:= -lrcl -lrmw -lrcutils -lfastrtps -lrosidl_generator_c -lrosidl_typesupport_c -lstd_msgs__rosidl_generator_c -lstd_msgs__rosidl_typesupport_c -lrosidl_typesupport_introspection_c -lrmw_fastrtps_cpp \

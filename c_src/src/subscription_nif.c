@@ -55,7 +55,7 @@ ERL_NIF_TERM nif_rcl_subscription_get_default_options(ErlNifEnv* env,int argc,co
   );
 */
 ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TERM argv[]){
-  rcl_ret_t* res_ret;
+  int return_value;
   ERL_NIF_TERM ret;
   rcl_subscription_t*  res_sub;
   rcl_node_t* res_node;
@@ -85,16 +85,15 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
   }
   
   //返すrcl_ret_tについて，alloc_resource
-  res_ret = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
-  if(res_ret == NULL) return enif_make_badarg(env);
-  ret = enif_make_resource(env,res_ret);
-  enif_release_resource(res_ret);
+  
+  
   
   //enif_release_resource(res_ret);
   const rosidl_message_type_support_t* res_msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
-  *res_ret = rcl_subscription_init(res_sub,res_node,res_msgtype,topic_buf,res_sub_options);
-  printf("exit subscription_init\n");
-  
+  return_value = rcl_subscription_init(res_sub,res_node,res_msgtype,topic_buf,res_sub_options);
+
+  ret = enif_make_resource(env,res_sub);
+  //enif_release_resource(res_sub);
   return ret;
 }
 

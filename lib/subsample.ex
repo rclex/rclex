@@ -1,13 +1,13 @@
 defmodule SubSample do
   require IEx
   def submain do
-    node_count = 99
+    node_count = 10
 
     #ノードをnode_count分だけ作成
     subscriber_info
      = RclEx.rclexinit                                                       #|> context
-    |> RclEx.create_nodes('test_sub_node',node_count)  #|> node_list,
-    #|> RclEx.create_nodes('test_sub_node','test_sub_namespace_',node_count)
+    #|> RclEx.create_nodes('test_sub_node',node_count)  #|> node_list,
+    |> RclEx.create_nodes('test_sub_node','test_sub_namespace_',node_count)
     #namespaceが必要ない，おぷしょんとして
     #node_countもoption,changes arg
     |> RclEx.create_subscribers('testtopic')                                 #|> subscribers_list
