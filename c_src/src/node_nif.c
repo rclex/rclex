@@ -129,7 +129,7 @@ ERL_NIF_TERM nif_rcl_node_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv
         return enif_make_badarg(env);
     }
     
-    if(!enif_get_string(env,argv[2],name_buf,sizeof(namespace_buf),ERL_NIF_LATIN1)){
+    if(!enif_get_string(env,argv[2],namespace_buf,sizeof(namespace_buf),ERL_NIF_LATIN1)){
         return enif_make_badarg(env);
     }
    
