@@ -66,6 +66,9 @@ defmodule RclEx do
   def rcl_node_init(_a,_b,_c,_d,_e) do
       raise "NIF rcl_node_init/5 not implemented"
   end
+  def rcl_node_init_without_namespace(_a,_b,_c,_d) do
+      raise "NIF rcl_node_init_without_namespace/4 is not implemented"
+  end
   def express_node_init do
       raise "sorry"
   end
@@ -243,27 +246,27 @@ defmodule RclEx do
     raise "NIF rcl_get_zero_initialized_wait_set/0 is not implemented"
   end
 
-#-----------------------------use Agent-------------------------
-  use Agent
-  def publisher_start(pub) do
-    Agent.start_link(fn -> pub end)
-  end
-  def get_topic_name_pub(agent_pid) do
-    Agent.get(agent_pid,fn(n)->rcl_publisher_get_topic_name(n) end)
-  end
-  def publish(agent_pid,message,pub_alloc) do
-    Agent.update(agent_pid,fn(n)->rcl_publish(n,message,pub_alloc) end)
-  end
-
-  def subscription_start(sub,msginfo,sub_alloc) do
-    Agent.start_link(fn -> {:subcription_start,sub,msginfo,sub_alloc} end)
-  end
-
-  def get_topic_name_sub(agent_pid) do
-    Agent.get(agent_pid,fn(n) -> rcl_subscription_get_topic_name(elem(n,1)) end)
-  end
+#-#----------------------------use Agent-------------------------
+  #use Agent
+  #def publisher_start(pub) do
+  #  Agent.start_link(fn -> pub end)
+  #end
+  #def get_topic_name_pub(agent_pid) do
+  #  Agent.get(agent_pid,fn(n)->rcl_publisher_get_topic_name(n) end)
+  #end
+  #def publish(agent_pid,message,pub_alloc) do
+  #  Agent.update(agent_pid,fn(n)->rcl_publish(n,message,pub_alloc) end)
+  #end
 #
-  #def agentspin(agent_pid,takemsg,callback) do
+  #def subscription_start(sub,msginfo,sub_alloc) do
+  #  Agent.start_link(fn -> {:subcription_start,sub,msginfo,sub_alloc} end)
+  #end
+#
+  #def get_topic_name_sub(agent_pid) do
+  #  Agent.get(agent_pid,fn(n) -> rcl_subscription_get_topic_name(elem(n,1)) end)
+  #end
+##
+  ##def agentspin(agent_pid,takemsg,callback) do
   #  Agent.update(agent_pid,
   #    fn(n)->
   #      {ret,sub,msginfo,sub_alloc} = case rcl_take(elem(n,1),takemsg,elem(n,2),elem(n,3)) do
@@ -293,7 +296,7 @@ defmodule RclEx do
   #  :timer.sleep(sleep_msec)
   #  loop(sub,msg,msginfo,sub_alloc,count,sleep_msec)
   #end
-#------------------------より使いやすく-------------------
+#------------------------よりユーザーが使いやすくする関数群-------------------
   require IEx
   def rclexinit do
     init_op = rcl_get_zero_initialized_init_options()
@@ -327,10 +330,9 @@ defmodule RclEx do
   end
   #引数にnamespace入れない
   def create_nodes(context,node_name,node_count) do 
-    namespace = nil
     node_list = Enum.map(1..node_count,fn(n)->
-                rcl_node_init(
-                  rcl_get_zero_initialized_node(),node_name++Integer.to_charlist(n),namespace,context,rcl_node_get_default_options()
+                rcl_node_init_without_namespace(
+                  rcl_get_zero_initialized_node(),node_name++Integer.to_charlist(n),context,rcl_node_get_default_options()
                   )
                 end)
     node_list

@@ -5,5 +5,6 @@ defmodule RclEx.Macros do
   defmacro rcl_ret_bad_alloc, do: 10
   defmacro rmw_ret_invalid_argument, do: 11
   defmacro rcl_ret_publisher_invalid, do: 300
+  defmacro rcl_ret_subscription_invalid, do: 400
   defmacro rcl_ret_subscription_take_failed, do: 401
 end
