@@ -105,7 +105,6 @@ ERL_NIF_TERM express_node_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv
 */
 ERL_NIF_TERM nif_rcl_node_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(argc != 5){
-        
         return enif_make_badarg(env);
     }
     
@@ -143,6 +142,44 @@ ERL_NIF_TERM nif_rcl_node_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv
    
    
     res = rcl_node_init(res_arg_node,name_buf,namespace_buf,res_arg_context,res_arg_options);
+    ret = enif_make_resource(env,res_arg_node);
+    //enif_release_resource(res_arg_node);
+   
+    return ret;
+}
+
+ERL_NIF_TERM nif_rcl_node_init_without_namespace(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+    if(argc != 4){
+        return enif_make_badarg(env);
+    }
+    
+    int res = 0;
+    ERL_NIF_TERM ret;
+
+    rcl_node_t* res_arg_node;
+    rcl_context_t* res_arg_context;
+    const rcl_node_options_t* res_arg_options;
+
+    char name_buf[128];
+    (void)memset(&name_buf,'\0',sizeof(name_buf));
+   
+    if(!enif_get_resource(env, argv[0], rt_node, (void**) &res_arg_node)){
+        return enif_make_badarg(env);
+    }
+   
+    if(!enif_get_string(env,argv[1],name_buf,sizeof(name_buf),ERL_NIF_LATIN1)){
+        return enif_make_badarg(env);
+    }
+   
+    if(!enif_get_resource(env, argv[2], rt_context, (void**) &res_arg_context)){
+        return enif_make_badarg(env);
+    }
+   
+    if(!enif_get_resource(env, argv[3], rt_node_options, (void**) &res_arg_options)){
+        return enif_make_badarg(env);
+    }
+   
+    res = rcl_node_init(res_arg_node,name_buf,"",res_arg_context,res_arg_options);
     ret = enif_make_resource(env,res_arg_node);
     //enif_release_resource(res_arg_node);
    

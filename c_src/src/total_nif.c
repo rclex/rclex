@@ -159,6 +159,7 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_get_zero_initialized_node",0,nif_rcl_get_zero_initialized_node},
     {"rcl_node_get_default_options",0,nif_rcl_node_get_default_options},
     {"rcl_node_init",5,nif_rcl_node_init},
+    {"rcl_node_init_without_namespace",4,nif_rcl_node_init_without_namespace},
     //{"express_node_init",0,express_node_init},
     {"rcl_node_fini",1,nif_rcl_node_fini},
     {"read_guard_condition",1,nif_read_guard_condition},
