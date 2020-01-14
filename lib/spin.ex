@@ -60,9 +60,9 @@ defmodule RclEx.Spin do
         do_nothing()
     end
   end
-  def sub_spin(takemsg,sub,msginfo,sub_alloc,callback,count) do
+  def sub_spin(takemsg,sub,msginfo,sub_alloc,callback) do
     sub_spin_once(takemsg,sub,msginfo,sub_alloc,callback)
-    sub_spin(takemsg,sub,msginfo,sub_alloc,callback,count)
+    sub_spin(takemsg,sub,msginfo,sub_alloc,callback)
   end
   def sub_task_start(subscriber_list,callback) do
     #1 process manages all nodes
@@ -70,7 +70,7 @@ defmodule RclEx.Spin do
     Enum.map(subscriber_list,fn(subscriber)->
     #  Task.async(fn -> sub_spin(RclEx.create_empty_msgInt16(),subscriber,RclEx.create_msginfo(),RclEx.create_sub_alloc(),callback) end)
        Task.Supervisor.start_child(supervisor,RclEx.Spin,:sub_spin,
-       [RclEx.create_empty_msgInt16(),subscriber,RclEx.create_msginfo(),RclEx.create_sub_alloc(),callback,0],
+       [RclEx.create_empty_msgInt16(),subscriber,RclEx.create_msginfo(),RclEx.create_sub_alloc(),callback],
        [restart: :transient])
     end)
     
