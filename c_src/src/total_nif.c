@@ -33,7 +33,7 @@ int open_resource(ErlNifEnv* env){
     const char* namesub4 = "rmw_subscription_allocation_t";
     //for msg
     const char* namemsg1 = "std_msgs__msg__Int16";
-
+    const char* namemsg2 = "std_msgs__msg__String";
     //for timer
     const char* namewait = "rcl_wait_set_t";
     int flags = ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER;
@@ -122,7 +122,9 @@ int open_resource(ErlNifEnv* env){
     rt_msginfo      = enif_open_resource_type(env,mod,namesub3,NULL,flags,NULL);
     rt_sub_alloc    = enif_open_resource_type(env,mod,namesub4,NULL,flags,NULL);
     rt_Int16        = enif_open_resource_type(env,mod,namemsg1,NULL,flags,NULL);
+    rt_String       = enif_open_resource_type(env,mod,namemsg2,NULL,flags,NULL);
     rt_waitset      = enif_open_resource_type(env,mod,namewait,NULL,flags,NULL);
+
     //1〜5まで
     if(rt_node == NULL || rt_ret == NULL || rt_node_options == NULL || rt_context == NULL || rt_init_options == NULL) return -1;
     return 0;
@@ -184,13 +186,18 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_take",4,nif_rcl_take},
     //{"rcl_take_with_null",3,nif_rcl_take_with_null},
     //---------------msg_int16_nif.c-----------
-    {"create_empty_msgInt16",0,nif_create_empty_msgInt16},
+    {"create_empty_int16",0,nif_create_empty_int16},
     {"create_msginfo",0,nif_create_msginfo},
-    {"std_msgs__msg__Int16__init",1,nif_std_msgs__msg__Int16__init},
-    {"std_msgs__msg__Int16__destroy",1,nif_std_msgs__msg__Int16__destroy},
+    {"int16_init",1,nif_std_msgs__msg__Int16__init},
+    {"int16_destroy",1,nif_std_msgs__msg__Int16__destroy},
     {"get_message_type_from_std_msgs_msg_Int16",0,nif_getmsgtype_int16},
-    {"read_data",1,nif_read_data},
-    {"set_data",2,nif_set_data},
+    {"readdata_int16",1,nif_readdata_int16},
+    {"setdata_int16",2,nif_setdata_int16},
+    //----------------msg_string_nif.c----------
+    {"create_empty_string",0,nif_create_empty_string},
+    {"string_init",1,nif_string_init},
+    {"setdata_string",2,nif_setdata_string},
+    {"readdata_string",1,nif_readdata_string},
     //----------------wait_nif.c-----------------
     {"rcl_get_zero_initialized_wait_set",0,nif_rcl_get_zero_initialized_wait_set},
     {"rcl_wait_set_init",8,nif_rcl_wait_set_init},

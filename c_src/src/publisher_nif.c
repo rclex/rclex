@@ -14,7 +14,7 @@ extern "C"
 #include <rosidl_generator_c/message_type_support_struct.h>
 
 #include <std_msgs/msg/int16.h>
-
+#include <std_msgs/msg/string.h>
 //#include "rcl/allocator.h"
 //#include "rcl/error_handling.h"
 //#include "rcl/expand_topic_name.h"
@@ -140,11 +140,12 @@ ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   }
   
   //メッセージ型サポートを直接入れている
-  const rosidl_message_type_support_t* msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
-  return_value = rcl_publisher_init(res_pub,res_node,msgtype,buf,res_options); //segmentation fault
+  //const rosidl_message_type_support_t* msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
+  const rosidl_message_type_support_t* msgtype_pub = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,String);
+  return_value = rcl_publisher_init(res_pub,res_node,msgtype_pub,buf,res_options); //segmentation fault
   ret = enif_make_resource(env,res_pub);
   //enif_release_resource(res_pub);
-  printf("exit publisher_init\n");
+  
   return ret;
 }
 
@@ -172,7 +173,7 @@ ERL_NIF_TERM nif_rcl_publish(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
   //rcl_ret_t* res;
   int return_value;
   rcl_publisher_t* res_pub;
-  std_msgs__msg__Int16* ros_message;  //一旦きめうち
+  std_msgs__msg__String* ros_message;  //一旦きめうち
   rmw_publisher_allocation_t* res_pub_alloc;
   //const void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
   ERL_NIF_TERM ret_pub,ret_pub_alloc;
@@ -182,7 +183,7 @@ ERL_NIF_TERM nif_rcl_publish(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
   if(!enif_get_resource(env, argv[0], rt_pub, (void**) &res_pub)){
     return enif_make_badarg(env);
   }
-  if(!enif_get_resource(env,argv[1],rt_Int16,(void**) &ros_message)){
+  if(!enif_get_resource(env,argv[1],rt_String,(void**) &ros_message)){
         return enif_make_badarg(env);
   }
   if(!enif_get_resource(env, argv[2], rt_pub_alloc, (void**) &res_pub_alloc)){

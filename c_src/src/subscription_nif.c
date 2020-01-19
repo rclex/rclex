@@ -14,7 +14,7 @@ extern "C"
 #include <rosidl_generator_c/message_type_support_struct.h>
 
 #include <std_msgs/msg/int16.h>
-
+#include <std_msgs/msg/string.h>
 ERL_NIF_TERM nif_rcl_get_zero_initialized_subscription(ErlNifEnv* env,int argc,const ERL_NIF_TERM argv[]){
     if(argc != 0){
       return enif_make_badarg(env);
@@ -89,8 +89,9 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
   
   
   //enif_release_resource(res_ret);
-  const rosidl_message_type_support_t* res_msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
-  return_value = rcl_subscription_init(res_sub,res_node,res_msgtype,topic_buf,res_sub_options);
+  //const rosidl_message_type_support_t* res_msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
+  const rosidl_message_type_support_t* msgtype_sub = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,String);
+  return_value = rcl_subscription_init(res_sub,res_node,msgtype_sub,topic_buf,res_sub_options);
 
   ret = enif_make_resource(env,res_sub);
   //enif_release_resource(res_sub);
@@ -178,7 +179,8 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
   rmw_subscription_allocation_t* res_sub_alloc;
   ERL_NIF_TERM ret,ret_sub,ret_msginfo,ret_sub_alloc;
 
-  std_msgs__msg__Int16* ros_message;  //一旦きめうち
+  //std_msgs__msg__Int16* ros_message;  //一旦きめうち
+  std_msgs__msg__String* ros_message;  //一旦きめうち
   //上3つはinclude/rmw/types.hに定義されてる
   //void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
   
@@ -189,7 +191,7 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     return enif_make_badarg(env);
   }
   //resourceを取得するときに型を決めないようにできないか
-  if(!enif_get_resource(env,argv[1], rt_Int16, (void**) &ros_message)){
+  if(!enif_get_resource(env,argv[1], rt_String, (void**) &ros_message)){
     return enif_make_badarg(env);
   }
   if(!enif_get_resource(env, argv[2], rt_msginfo, (void**) &res_msginfo)){

@@ -9,8 +9,10 @@ extern "C"
 #include "node_nif.h"
 #include "publisher_nif.h"
 #include "msg/msg_int16_nif.h"
+#include "msg/msg_string_nif.h"
 #include "subscription_nif.h"
 #include "wait_nif.h"
+
 //各種リソースタイプの宣言やリソースタイプの作成を行う
 //------------------------nif_init.c-------------------
 ErlNifResourceType* rt_ret;
@@ -33,7 +35,8 @@ ErlNifResourceType* rt_msginfo;
 ErlNifResourceType* rt_sub_alloc;
 //----------------------msg_int16_nif.c------------
 ErlNifResourceType* rt_Int16;
-
+//----------------------msg_string_nif.c---------------
+ErlNifResourceType* rt_String;
 //-------------------wait_nif.cで追加------------------------
 ErlNifResourceType* rt_waitset;
 
