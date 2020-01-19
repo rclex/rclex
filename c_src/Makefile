@@ -13,9 +13,9 @@ SOFLAGS  := -g -shared
 LINK 	:= -lstdc++
 INCLUDE := -I /usr/lib/erlang/erts-10.6.1/include -I $(ROSDIR)/include
 LDFLAGS	:= -L $(ROSDIR)/lib
-LIBS 	:= -lrcl -lrmw -lrcutils -lfastrtps
-MSGLIBS	:= -lrcl -lrmw -lrcutils -lfastrtps -lrosidl_generator_c -lrosidl_typesupport_c -lstd_msgs__rosidl_generator_c -lstd_msgs__rosidl_typesupport_c -lrosidl_typesupport_introspection_c -lrmw_fastrtps_cpp \
-						-lfastcdr
+
+MSGLIBS	:= -lrcl -lrmw -lrcutils -lrosidl_generator_c -lrosidl_typesupport_c -lstd_msgs__rosidl_generator_c -lstd_msgs__rosidl_typesupport_c -lrosidl_typesupport_introspection_c  \
+						-lfastcdr -lrmw_opensplice_cpp -lrosidl_typesupport_opensplice_cpp -lfastrtps -lrmw_fastrtps_cpp
 OBJECTS :=$(subst $(SRCDIR),$(OBJDIR), $(SOURCES:.c=.o))
 DEPENDS = $(OBJECTS:.o=.d)
 
@@ -24,7 +24,7 @@ all:$(TARGET)
 #$(TARGET): $(OBJECTS) msg_int16_nif.o int16__functions.o int16__type_support.o
 #	$(CC) $(SOFLAGS) -o $@ $^ $(LDFLAGS) $(MSGLIBS)
 
-$(TARGET): $(OBJECTS) msg_int16_nif.o
+$(TARGET): $(OBJECTS) msg_int16_nif.o msg_string_nif.o
 	$(CC) $(SOFLAGS) -o $@ $^ $(LDFLAGS) $(MSGLIBS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
@@ -33,6 +33,8 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	
 msg_int16_nif.o: $(SRCDIR)/msg/msg_int16_nif.c 
 	$(CC) $(CFLAGS) $(INCLUDE) $< 
+msg_string_nif.o: $(SRCDIR)/msg/msg_string_nif.c
+	$(CC) $(CFLAGS) $(INCLUDE) $<
 #int16__functions.o: /opt/ros/dashing/include/std_msgs/msg/int16__functions.c
 #	$(CC) $(CFLAGS) $(INCLUDE) $< 
 
