@@ -77,7 +77,7 @@ defmodule RclEx.Spin do
     Enum.map(subscriber_list,fn(subscriber)->
     #  Task.async(fn -> sub_spin(RclEx.create_empty_msgInt16(),subscriber,RclEx.create_msginfo(),RclEx.create_sub_alloc(),callback) end)
        Task.Supervisor.start_child(supervisor,RclEx.Spin,:sub_spin,
-       [RclEx.create_empty_msgInt16(),subscriber,RclEx.create_msginfo(),RclEx.create_sub_alloc(),callback],
+       [RclEx.initialize_msg(),subscriber,RclEx.create_msginfo(),RclEx.create_sub_alloc(),callback],
        [restart: :transient])
     end)
     

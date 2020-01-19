@@ -1,10 +1,11 @@
 defmodule PubSample do
 
   def pubmain(node_count) do
-    #rclcppでいうとこのstd::make_shared<std_msgs::msg::Int16>()を,作りたいpubノード分だけ作る
-    msg_list = RclEx.create_msgs(node_count)
+    #rclcppでいうとこのstd::make_shared<std_msgs::msg::String>()を,作りたいpubノード分だけ作る
+    msg_list = RclEx.initialize_msgs(:string,node_count)
+    IO.inspect msg_list
     Enum.map(0..node_count-1,fn(index)->
-      RclEx.set_data(Enum.at(msg_list,index),index)
+      RclEx.setdata_string(Enum.at(msg_list,index),'helloworld'++Integer.to_charlist(index))
     end)
     #ノードをnode_count分だけ作成
     publisher_info
@@ -18,8 +19,8 @@ defmodule PubSample do
     ユーザー定義のコールバック関数
   """
   def callback(pubmsg) do
-    {:ok,number} = RclEx.read_data(pubmsg)
-    IO.puts "pubilshed msg:#{number}"
-    RclEx.set_data(pubmsg,number+1)
+    {:ok,text} = RclEx.readdata_string(pubmsg)
+    IO.puts "pubilshed msg:#{text}"
+    RclEx.setdata_string(pubmsg,text++' world')
   end
 end

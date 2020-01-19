@@ -200,35 +200,50 @@ defmodule RclEx do
   #  raise "NIF rcl_take_with_null is not implemented"
   #end
   #-----------------------------msg_int16.c------------------------------
-  def create_empty_msgInt16 do
-    raise "NIF create_empty_msgInt16/0 is not implemented"
+  def create_empty_int16 do
+    raise "NIF create_empty_int16/0 is not implemented"
   end
   
   def create_msginfo do
     raise "NIF create_msginfo/0 is not implemented"
   end
 
-  def std_msgs__msg__Int16__init(_a) do
+  def int16_init(_a) do
     raise "NIF std_msgs__msg__Int16__init/0 not implemented"
   end
 
-  def std_msgs__msg__Int16__destroy(_a) do
+  def int16_destroy(_a) do
       raise "NIF std_msgs__msg__Int16__destroy/1 not implemented"
   end
 
   def get_message_type_from_std_msgs_msg_Int16 do
       raise "NIF get_message_type_from_std_msgs_msg_Int16/0 not implemented"
   end
-  def read_data(_a) do
-    raise "NIF read_data/1 is not implemented"
+  def readdata_int16(_a) do
+    raise "NIF readdata_int16/1 is not implemented"
   end
-  def set_data(_a,_b) do
-    raise "NIF set_data/2 is not implemented"
+  def setdata_int16(_a,_b) do
+    raise "NIF setdata_int16/2 is not implemented"
   end
   #def cre_int16 do
   #    get_message_type_from_std_msgs_msg_Int16()
   #end
+  #-----------------------msg_string_nif.c-----------------------------
+  
+  def create_empty_string do
+    raise "NIF create_empty_string/0 is not implemented"
+  end
+  def string_init(_a) do
+    raise "NIF string_init/1 is not implemented"
+  end
 
+  #arg..(initialized msg,string,string size)
+  def setdata_string(_a,_b) do
+    raise "NIF setdata_string/2 is not implemented"
+  end
+  def readdata_string(_a) do
+    raise "NIF readdata_string/1 is not implemented"
+  end
   #-----------------------------wait_nif.c------------------------------
   def rcl_get_zero_initialized_wait_set do
     raise "NIF rcl_get_zero_initialized_wait_set/0 is not implemented"
@@ -356,9 +371,20 @@ defmodule RclEx do
       rcl_subscription_init(rcl_get_zero_initialized_subscription(),node,topic_name,rcl_subscription_get_default_options())
     end)
   end
-  def create_msgs(msg_count) do
+
+  def initialize_msg do
+    create_empty_string()
+    |> string_init()
+  end
+
+  def initialize_msgs(:int16,msg_count) do
     Enum.map(1..msg_count,fn(n) ->
-      create_empty_msgInt16()
+      create_empty_int16()
+    end)
+  end
+  def initialize_msgs(:string,msg_count) do
+    Enum.map(1..msg_count,fn(n) ->
+      initialize_msg()
     end)
   end
 end

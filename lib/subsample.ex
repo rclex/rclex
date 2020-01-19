@@ -14,7 +14,7 @@ defmodule SubSample do
   end
   #コールバック関数を記述
   defp callback(msg) do
-    {:ok,received_msg} = RclEx.read_data(msg)
+    {:ok,received_msg} = RclEx.readdata_string(msg)
     IO.puts "received msg:#{received_msg}"
   end
 
