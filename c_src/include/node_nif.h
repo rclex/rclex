@@ -4,6 +4,8 @@ ERL_NIF_TERM nif_rcl_get_zero_initialized_node(ErlNifEnv* env, int argc, const E
 
 ERL_NIF_TERM nif_rcl_node_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
+ERL_NIF_TERM nif_rcl_node_init_without_namespace(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+
 ERL_NIF_TERM nif_rcl_node_fini(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
 

@@ -17,7 +17,7 @@ extern "C"
 #include "rmw/types.h"
 
 //空のInt16メッセージオブジェクトを作る関数
-ERL_NIF_TERM nif_create_empty_msgInt16(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+ERL_NIF_TERM nif_create_empty_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(argc != 0){
         return enif_make_badarg(env);
     }
@@ -93,7 +93,7 @@ ERL_NIF_TERM nif_getmsgtype_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     *res_tmp = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
     return ret;
 }
-ERL_NIF_TERM nif_read_data(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+ERL_NIF_TERM nif_readdata_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(argc != 1){
         return enif_make_badarg(env);
     }
@@ -106,7 +106,7 @@ ERL_NIF_TERM nif_read_data(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
 }
 
 //int16のdataに数値を入れる関数
-ERL_NIF_TERM nif_set_data(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+ERL_NIF_TERM nif_setdata_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(argc != 2){
         return enif_make_badarg(env);
     }

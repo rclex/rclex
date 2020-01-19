@@ -1,18 +1,20 @@
 defmodule Rclex.MixProject do
   use Mix.Project
 
- 
+ @description """
+  ROS2 Client Library written in Elixir.
+ """
   def project do
     [
       app: :rclex,
       version: "0.1.0",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      description: "ROS2 Client Library written in elixir.",
+      description: @description,
       deps: deps()
     ]
   end
-
+  
   # Run "mix help compile.app" to learn about applications.
   def application do
     [

@@ -29,3 +29,5 @@ rclex-*.tar
 core
 
 *.txt
+
+/.elixir_ls/
