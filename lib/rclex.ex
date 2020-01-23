@@ -39,9 +39,9 @@ defmodule RclEx do
       return {:ok,rcl_ret_t}
       arguments...(
           rcl_context_t)
-  """        
+  """
   def rcl_shutdown(_a) do
-      raise "NIF rcl_shutdown/1 not implemented" 
+      raise "NIF rcl_shutdown/1 not implemented"
   end
 
   #-----------------------node_nif.c--------------------------
@@ -73,7 +73,7 @@ defmodule RclEx do
       raise "sorry"
   end
   @doc """
-      return rcl_ret_t 
+      return rcl_ret_t
       argument...rcl_node_t
   """
   def rcl_node_fini(_a) do
@@ -85,7 +85,7 @@ defmodule RclEx do
 
 #------------------------------publisher_nif.c--------------------------
   @doc """
-      return rcl_publisher_t 
+      return rcl_publisher_t
       argument...void
   """
   def rcl_get_zero_initialized_publisher do
@@ -93,7 +93,7 @@ defmodule RclEx do
   end
 
   @doc """
-      return rcl_publisher_options_t 
+      return rcl_publisher_options_t
       argument...void
   """
   def rcl_publisher_get_default_options do
@@ -101,7 +101,7 @@ defmodule RclEx do
   end
 
   @doc """
-      return const char* 
+      return const char*
       argument...rcl_publisher_t*
   """
   def rcl_publisher_get_topic_name(_a) do
@@ -109,7 +109,7 @@ defmodule RclEx do
   end
 
   @doc """
-      return rcl_ret_t 
+      return rcl_ret_t
       argument...rcl_publisher_t*,rcl_node_t*
   """
   def rcl_publisher_fini(_a,_b) do
@@ -117,7 +117,7 @@ defmodule RclEx do
   end
 
   @doc """
-      return rcl_ret_t 
+      return rcl_ret_t
       argument...rcl_publisher_t * publisher,
                   const rcl_node_t * node,
                   const rosidl_message_type_support_t * type_support,
@@ -128,13 +128,13 @@ defmodule RclEx do
       raise "rcl_publisher_init/4 not implemented"
   end
   @doc """
-      return bool 
+      return bool
       argument...rcl_publisher_t*
   """
   def rcl_publisher_is_valid(_a) do
       raise "rcl_publisher_is_valid/1 not implemented"
   end
-  
+
   @doc """
     rcl_ret_t
     rcl_publish(
@@ -174,7 +174,7 @@ defmodule RclEx do
     raise "NIF rcl_subscription_init is not implemented"
   end
   @doc """
-      return rcl_ret_t 
+      return rcl_ret_t
       argument...rcl_subscription_t*,rcl_node_t*
   """
   def rcl_subscription_fini(_a,_b) do
@@ -203,7 +203,7 @@ defmodule RclEx do
   def create_empty_int16 do
     raise "NIF create_empty_int16/0 is not implemented"
   end
-  
+
   def create_msginfo do
     raise "NIF create_msginfo/0 is not implemented"
   end
@@ -229,7 +229,7 @@ defmodule RclEx do
   #    get_message_type_from_std_msgs_msg_Int16()
   #end
   #-----------------------msg_string_nif.c-----------------------------
-  
+
   def create_empty_string do
     raise "NIF create_empty_string/0 is not implemented"
   end
@@ -237,9 +237,15 @@ defmodule RclEx do
     raise "NIF string_init/1 is not implemented"
   end
 
-  #arg..(initialized msg,string,string size)
-  def setdata_string(_a,_b) do
-    raise "NIF setdata_string/2 is not implemented"
+  #arg..(initialized msg,string)
+  def setdata_string(_a,_b,_c) do
+    raise "NIF setdata_string/3 is not implemented"
+  end
+
+  #user API
+  def setdata_string(msg,data) do
+    data_size = String.length(data)
+    setdata_string(msg,String.to_charlist(data),data_size)
   end
   def readdata_string(_a) do
     raise "NIF readdata_string/1 is not implemented"
@@ -285,10 +291,10 @@ defmodule RclEx do
   #  Agent.update(agent_pid,
   #    fn(n)->
   #      {ret,sub,msginfo,sub_alloc} = case rcl_take(elem(n,1),takemsg,elem(n,2),elem(n,3)) do
-  #        {RclEx.Macros.rcl_ret_ok,sub,msginfo,sub_alloc} -> 
+  #        {RclEx.Macros.rcl_ret_ok,sub,msginfo,sub_alloc} ->
   #          IO.puts "subscribed"
   #          #callback.(takemsg)
-  #        {RclEx.Macros.rcl_ret_subscription_take_failed,sub,msginfo,sub_alloc} -> 
+  #        {RclEx.Macros.rcl_ret_subscription_take_failed,sub,msginfo,sub_alloc} ->
   #          IO.puts "rcl_take nothing"
   #          IO.inspect(takemsg)
   #        {_,sub,msginfo,sub_alloc} -> IO.puts "Catch all"
@@ -296,14 +302,14 @@ defmodule RclEx do
   #    end)
 #
   #  :timer.sleep(1000)
-  #  agentspin(agent_pid,takemsg,callback) 
+  #  agentspin(agent_pid,takemsg,callback)
   #end
   #
   #def loop(sub,msg,msginfo,sub_alloc,count,sleep_msec) do
   #  ret = case RclEx.rcl_take(sub,msg,msginfo,sub_alloc) do
   #    {Macro.rcl_ret_ok,sub,msginfo,sub_alloc} -> callback(msg)
   #    {Macro.rcl_ret_subscription_take_failed,sub,msginfo,sub_alloc} -> IO.puts "rcl_take nothing"
-  #    {_,sub,msginfo,sub_alloc} -> "Catch all"  
+  #    {_,sub,msginfo,sub_alloc} -> "Catch all"
   #  end
 
   #  IO.puts "count=> #{count}"
@@ -335,8 +341,8 @@ defmodule RclEx do
     node
   end
   #引数にnamespace入れてる
-  def create_nodes(context,node_name,namespace,node_count) do 
-    node_list = Enum.map(1..node_count,fn(n)->
+  def create_nodes(context,node_name,namespace,num_node) do
+    node_list = Enum.map(1..num_node,fn(n)->
                 rcl_node_init(
                   rcl_get_zero_initialized_node(),node_name++Integer.to_charlist(n),namespace,context,rcl_node_get_default_options()
                   )
@@ -344,8 +350,8 @@ defmodule RclEx do
     node_list
   end
   #引数にnamespace入れない
-  def create_nodes(context,node_name,node_count) do 
-    node_list = Enum.map(1..node_count,fn(n)->
+  def create_nodes(context,node_name,num_node) do
+    node_list = Enum.map(1..num_node,fn(n)->
                 rcl_node_init_without_namespace(
                   rcl_get_zero_initialized_node(),node_name++Integer.to_charlist(n),context,rcl_node_get_default_options()
                   )
@@ -365,7 +371,7 @@ defmodule RclEx do
       rcl_publisher_init(rcl_get_zero_initialized_publisher(),node,topic_name,rcl_publisher_get_default_options())
     end)
   end
-  
+
   def create_subscribers(node_list,topic_name) do
     Enum.map(node_list,fn(node)->
       rcl_subscription_init(rcl_get_zero_initialized_subscription(),node,topic_name,rcl_subscription_get_default_options())
