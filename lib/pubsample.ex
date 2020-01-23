@@ -3,10 +3,8 @@ defmodule PubSample do
   def pubmain(num_node) do
     #rclcppでいうとこのstd::make_shared<std_msgs::msg::String>()を,作りたいpubノード分だけ作る
     msg_list = RclEx.initialize_msgs(:string,num_node)
-    {:ok,data} = File.read("/home/imanishi/rclex/textdata/256byte.txt")
-    #dataに文字列は1mまで入ってる
+    data="hello,world"
     Enum.map(0..num_node-1,fn(index)->
-      #RclEx.setdata_string(Enum.at(msg_list,index),String.to_charlist(data))  #要素数の引数を加える?
       RclEx.setdata_string(Enum.at(msg_list,index),data)
     end)
 
