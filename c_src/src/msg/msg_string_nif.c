@@ -49,26 +49,25 @@ ERL_NIF_TERM nif_string_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
 
 //std_msgs__msg__Stringのdataに文字列を入れる関数
 ERL_NIF_TERM nif_setdata_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
-    if(argc != 2){
+    if(argc != 3){
         return enif_make_badarg(env);
     }
     std_msgs__msg__String* res_msg;
     ERL_NIF_TERM ret;
-
+    int str_size = 0;
     if(!enif_get_resource(env,argv[0],rt_String,(void**)&res_msg)){
         return enif_make_badarg(env);
     }
-
-    char data_buf[128];   //この値がデータサイズの上限を変更する
-    (void)memset(&data_buf,'\0',sizeof(data_buf));
-    int size = 0;
-    if(!enif_get_string(env,argv[1],data_buf,sizeof(data_buf),ERL_NIF_LATIN1)){
+    if(!enif_get_int(env,argv[2],&str_size)){
         return enif_make_badarg(env);
     }
-    
+    char* data_buf = (char*) malloc(str_size);   //この値がデータサイズの上限を変更する
+    //(void)memset(&data_buf,'\0',sizeof(data_buf));
+    if(!enif_get_string(env,argv[1],data_buf,str_size,ERL_NIF_LATIN1)){
+        return enif_make_badarg(env);
+    }
     //String型の構造体に引数の文字列とサイズを入れる．
     rosidl_generator_c__String__assign(res_msg,data_buf);
-
     return enif_make_atom(env,"ok");
 }
 ERL_NIF_TERM nif_readdata_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){

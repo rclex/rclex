@@ -196,7 +196,7 @@ ErlNifFunc nif_funcs[] = {
     //----------------msg_string_nif.c----------
     {"create_empty_string",0,nif_create_empty_string},
     {"string_init",1,nif_string_init},
-    {"setdata_string",2,nif_setdata_string},
+    {"setdata_string",3,nif_setdata_string},
     {"readdata_string",1,nif_readdata_string},
     //----------------wait_nif.c-----------------
     {"rcl_get_zero_initialized_wait_set",0,nif_rcl_get_zero_initialized_wait_set},
