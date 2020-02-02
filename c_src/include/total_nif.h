@@ -38,6 +38,7 @@ ErlNifResourceType* rt_Int16;
 //----------------------msg_string_nif.c---------------
 ErlNifResourceType* rt_String;
 //-------------------wait_nif.cで追加------------------------
+ErlNifResourceType* rt_default_alloc;
 ErlNifResourceType* rt_waitset;
 
 ERL_NIF_TERM atom_ok;

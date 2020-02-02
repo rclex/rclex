@@ -31,3 +31,4 @@ core
 *.txt
 
 /.elixir_ls/
+/.textdata/

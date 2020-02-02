@@ -68,6 +68,7 @@ ERL_NIF_TERM nif_setdata_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM arg
     }
     //String型の構造体に引数の文字列とサイズを入れる．
     rosidl_generator_c__String__assign(res_msg,data_buf);
+    free(data_buf);
     return enif_make_atom(env,"ok");
 }
 ERL_NIF_TERM nif_readdata_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){

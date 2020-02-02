@@ -1,4 +1,6 @@
+
 defmodule RclEx.Subscriber do
+  require Logger
   require RclEx.Macros
   require IEx
   use Timex
@@ -9,30 +11,12 @@ defmodule RclEx.Subscriber do
     #noop
   end
 
-  #def subloop(takemsg,sub,msginfo,sub_alloc,callback) do
-  #  case RclEx.rcl_take(sub,takemsg,msginfo,sub_alloc) do
-  #    {RclEx.Macros.rcl_ret_ok,_,_,_} ->
-  #      callback.(takemsg)
-  #    {RclEx.Macros.rcl_ret_subscription_take_failed,_,_,_} ->
-  #      do_nothing()
-  #    end
-  #  #:timer.sleep(1000)
-  #  subloop(takemsg,sub,msginfo,sub_alloc,callback)
-  #end
-  #def subscriber_spin(subscriber_list,callback) do
-  #  Enum.map(subscriber_list,fn(subscriber)->
-  #    Task.async(fn -> subloop(RclEx.create_empty_msgInt16(),subscriber,RclEx.create_msginfo(),RclEx.create_sub_alloc(),callback) end)
-  #  end)
-  #end
-
-#----------------subscriberのspinを書き直す---------------------
   def sub_spin_once(takemsg,sub,msginfo,sub_alloc,callback) do
     case RclEx.rcl_take(sub,takemsg,msginfo,sub_alloc) do
       {RclEx.Macros.rcl_ret_ok,_,_,_} ->
-        IO.puts("sub time:#{:os.system_time(:microsecond)}")
         #IO.puts "sub ok"
         callback.(takemsg)
-      {RclEx.Macros.rcl_ret_subscription_invalid,_,_,} ->
+      {RclEx.Macros.rcl_ret_subscription_invalid,_,_,_} ->
         IO.puts "subscription invalid"
       {RclEx.Macros.rcl_ret_subscription_take_failed,_,_,_} ->
         do_nothing()
@@ -43,7 +27,7 @@ defmodule RclEx.Subscriber do
     #:timer.sleep(10)
     sub_spin(takemsg,sub,msginfo,sub_alloc,callback)
   end
-  def sub_task_start(subscriber_list,callback) do
+   def sub_task_start(subscriber_list,callback) do
     #1 process manages all nodes
     {:ok,supervisor} = Task.Supervisor.start_link()
     Enum.map(subscriber_list,fn(subscriber)->
@@ -52,7 +36,5 @@ defmodule RclEx.Subscriber do
        [RclEx.initialize_msg(),subscriber,RclEx.create_msginfo(),RclEx.create_sub_alloc(),callback],
        [restart: :transient])
     end)
-
   end
-
 end

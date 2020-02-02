@@ -1,8 +1,11 @@
 {application,rclex,
-             [{applications,[kernel,stdlib,elixir,logger]},
+             [{applications,[kernel,stdlib,elixir,logger,timex]},
               {description," ROS2 Client Library written in Elixir.\n"},
               {modules,['Elixir.PubSample','Elixir.RclEx',
-                        'Elixir.RclEx.Macros','Elixir.RclEx.Spin',
-                        'Elixir.SubSample']},
+                        'Elixir.RclEx.Application','Elixir.RclEx.Macros',
+                        'Elixir.RclEx.Publisher','Elixir.RclEx.Subscriber',
+                        'Elixir.RclEx.Timer','Elixir.RclEx.Wait',
+                        'Elixir.RclEx.WaitAnother','Elixir.SubSample']},
               {registered,[]},
-              {vsn,"0.1.0"}]}.
+              {vsn,"0.1.0"},
+              {mod,{'Elixir.RclEx.Application',[]}}]}.

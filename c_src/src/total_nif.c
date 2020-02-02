@@ -35,7 +35,8 @@ int open_resource(ErlNifEnv* env){
     const char* namemsg1 = "std_msgs__msg__Int16";
     const char* namemsg2 = "std_msgs__msg__String";
     //for timer
-    const char* namewait = "rcl_wait_set_t";
+    const char* namewait1 = "rcl_allocator_t";
+    const char* namewait2 = "rcl_wait_set_t";
     int flags = ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER;
 
     /*
@@ -123,8 +124,11 @@ int open_resource(ErlNifEnv* env){
     rt_sub_alloc    = enif_open_resource_type(env,mod,namesub4,NULL,flags,NULL);
     rt_Int16        = enif_open_resource_type(env,mod,namemsg1,NULL,flags,NULL);
     rt_String       = enif_open_resource_type(env,mod,namemsg2,NULL,flags,NULL);
-    rt_waitset      = enif_open_resource_type(env,mod,namewait,NULL,flags,NULL);
+    
+    rt_default_alloc = enif_open_resource_type(env,mod,namewait1,NULL,flags,NULL);
+    rt_waitset      = enif_open_resource_type(env,mod,namewait2,NULL,flags,NULL);
 
+    
     //1〜5まで
     if(rt_node == NULL || rt_ret == NULL || rt_node_options == NULL || rt_context == NULL || rt_init_options == NULL) return -1;
     return 0;
@@ -199,11 +203,16 @@ ErlNifFunc nif_funcs[] = {
     {"setdata_string",3,nif_setdata_string},
     {"readdata_string",1,nif_readdata_string},
     //----------------wait_nif.c-----------------
+    {"rcl_get_default_allocator",0,nif_rcl_get_default_allocator},
+    //{"create_empty_waitset",0,nif_create_empty_waitset},
     {"rcl_get_zero_initialized_wait_set",0,nif_rcl_get_zero_initialized_wait_set},
-    {"rcl_wait_set_init",8,nif_rcl_wait_set_init},
+    {"rcl_wait_set_init",9,nif_rcl_wait_set_init},
     {"rcl_wait_set_fini",1,nif_rcl_wait_set_fini},
+    {"rcl_wait_set_clear",1,nif_rcl_wait_set_clear},
     {"rcl_wait_set_add_subscription",2,nif_rcl_wait_set_add_subscription},
     {"rcl_wait",2,nif_rcl_wait},
+    {"check_subscription",2,nif_check_subscription},
+    {"get_sublist_from_waitset",1,nif_get_sublist_from_waitset},
 
 };
 
