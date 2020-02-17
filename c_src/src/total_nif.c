@@ -211,7 +211,8 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_wait_set_clear",1,nif_rcl_wait_set_clear},
     {"rcl_wait_set_add_subscription",2,nif_rcl_wait_set_add_subscription},
     {"rcl_wait",2,nif_rcl_wait},
-    {"check_subscription",2,nif_check_subscription},
+    {"check_waitset",2,nif_check_waitset},
+    {"check_subscription",1,nif_check_subscription},
     {"get_sublist_from_waitset",1,nif_get_sublist_from_waitset},
 
 };

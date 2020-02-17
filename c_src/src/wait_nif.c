@@ -233,7 +233,7 @@ ERL_NIF_TERM nif_rcl_wait(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
 
 }
 
-ERL_NIF_TERM nif_check_subscription_another(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+ERL_NIF_TERM nif_check_subscription(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
   if(argc != 1){
       return enif_make_badarg(env);
   }
@@ -248,7 +248,7 @@ ERL_NIF_TERM nif_check_subscription_another(ErlNifEnv* env, int argc, const ERL_
   }
 }
 
-ERL_NIF_TERM nif_check_subscription(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+ERL_NIF_TERM nif_check_waitset(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
   if(argc != 2){
       return enif_make_badarg(env);
   }
