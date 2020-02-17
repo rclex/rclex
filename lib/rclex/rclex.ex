@@ -398,7 +398,7 @@ defmodule RclEx do
   """
   def setdata(msg,data,:string) do
     data_size = String.length(data)
-    setdata_string(msg,String.to_charlist(data),data_size)
+    setdata_string(msg,String.to_charlist(data),data_size+1)
   end
   @doc """
     メッセージからstringデータを取得する
