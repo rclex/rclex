@@ -3,9 +3,7 @@ defmodule RclEx.Publisher do
 
   def publish_once(pub,pubmsg,pub_alloc) do
     case RclEx.rcl_publish(pub,pubmsg,pub_alloc) do
-      {RclEx.Macros.rcl_ret_ok,_,_} ->
-        IO.puts("pub time:#{:os.system_time(:microsecond)}")
-
+      {RclEx.Macros.rcl_ret_ok,_,_} -> IO.puts "ok"
       {RclEx.Macros.rcl_ret_publisher_invalid,_,_} -> IO.puts "Publisher is invalid"
       {RclEx.Macros.rmw_ret_invalid_argument,_,_} -> IO.puts "invalid argument is contained"
       {RclEx.Macros.rcl_ret_error,_,_} -> IO.puts "unspecified error"
@@ -14,6 +12,11 @@ defmodule RclEx.Publisher do
   end
 
 
+  @doc """
+    出版関数
+    スーパーバイザを作成し，パブリッシャの数だけタスクを生成
+    タスクにpublish_onceを実行させる
+  """
   def publish(publisher_list,pubmsg_list) do
     {:ok,supervisor} = Task.Supervisor.start_link()
     Enum.map(0..length(publisher_list)-1,fn(index)->
@@ -29,12 +32,3 @@ defmodule RclEx.Publisher do
     #noop
   end
 end
-
-#defmodule Example do
-#  def sum(a,b) do
-#    a + b
-#  end
-#  def add(a,b) do
-#    sum(a,b)
-#  end
-#end

@@ -5,7 +5,6 @@ defmodule RclEx do
         :erlang.load_nif('/home/imanishi/rclex/rclex',0)
     end
   #-----------------------init_nif.c--------------------------
-  #return rcl_init_options_t
   def rcl_get_zero_initialized_init_options do
     raise "NIF rcl_get_zero_initialized_init_options/0 not implemented"
   end
@@ -16,13 +15,10 @@ defmodule RclEx do
   def rcl_init_options_fini(_a) do
     raise "NIF rcl_init_options_fini/1 is not implemented"
   end
-  #return rcl_context_t
   def rcl_get_zero_initialized_context do
       raise "NIF rcl_get_zero_initialized_context/0 not implemented"
   end
-  #def nif_read_context(_a) do
-  #    raise "NIF nif_read_context/1 is not implemented"
-  #end
+
   @doc """
       return {:ok,rcl_ret_t}
       arguments...(
@@ -196,9 +192,7 @@ defmodule RclEx do
   def rcl_take(_a,_b,_c,_d) do
     raise "NIF rcl_take is not implemented"
   end
-  #def rcl_take_with_null(_a,_b,_c) do
-  #  raise "NIF rcl_take_with_null is not implemented"
-  #end
+
   #-----------------------------msg_int16.c------------------------------
   def create_empty_int16 do
     raise "NIF create_empty_int16/0 is not implemented"
@@ -225,9 +219,7 @@ defmodule RclEx do
   def setdata_int16(_a,_b) do
     raise "NIF setdata_int16/2 is not implemented"
   end
-  #def cre_int16 do
-  #    get_message_type_from_std_msgs_msg_Int16()
-  #end
+
   #-----------------------msg_string_nif.c-----------------------------
 
   def create_empty_string do
@@ -243,10 +235,17 @@ defmodule RclEx do
   end
 
   #user API
-  def setdata_string(msg,data) do
+  @doc """
+    メッセージにデータをセットする
+    現在はstring型のみのサポートになっている
+  """
+  def setdata(msg,data,:string) do
     data_size = String.length(data)
     setdata_string(msg,String.to_charlist(data),data_size)
   end
+  @doc """
+    メッセージからstringデータを取得する
+  """
   def readdata_string(_a) do
     raise "NIF readdata_string/1 is not implemented"
   end
@@ -272,63 +271,21 @@ defmodule RclEx do
   def rcl_wait(_a,_b) do
     raise "NIF rcl_wait/0 is not implemented"
   end
-  def check_subscription(_a,_b) do
-    raise "NIF check_subscription/2 is not implemented"
+  def check_subscription(_a) do
+    raise "NIF check_subscription/1 is not implemented"
+  end
+  def check_waitset(_a,_b) do
+    raise "NIF check_waitset/2 is not implemented"
   end
   def get_sublist_from_waitset(_a) do
     raise "NIF get_sublist_from_waitset/1 is not implemented"
   end
-#-#----------------------------use Agent-------------------------
-  #use Agent
-  #def publisher_start(pub) do
-  #  Agent.start_link(fn -> pub end)
-  #end
-  #def get_topic_name_pub(agent_pid) do
-  #  Agent.get(agent_pid,fn(n)->rcl_publisher_get_topic_name(n) end)
-  #end
-  #def publish(agent_pid,message,pub_alloc) do
-  #  Agent.update(agent_pid,fn(n)->rcl_publish(n,message,pub_alloc) end)
-  #end
-#
-  #def subscription_start(sub,msginfo,sub_alloc) do
-  #  Agent.start_link(fn -> {:subcription_start,sub,msginfo,sub_alloc} end)
-  #end
-#
-  #def get_topic_name_sub(agent_pid) do
-  #  Agent.get(agent_pid,fn(n) -> rcl_subscription_get_topic_name(elem(n,1)) end)
-  #end
-##
-  ##def agentspin(agent_pid,takemsg,callback) do
-  #  Agent.update(agent_pid,
-  #    fn(n)->
-  #      {ret,sub,msginfo,sub_alloc} = case rcl_take(elem(n,1),takemsg,elem(n,2),elem(n,3)) do
-  #        {RclEx.Macros.rcl_ret_ok,sub,msginfo,sub_alloc} ->
-  #          IO.puts "subscribed"
-  #          #callback.(takemsg)
-  #        {RclEx.Macros.rcl_ret_subscription_take_failed,sub,msginfo,sub_alloc} ->
-  #          IO.puts "rcl_take nothing"
-  #          IO.inspect(takemsg)
-  #        {_,sub,msginfo,sub_alloc} -> IO.puts "Catch all"
-  #      end
-  #    end)
-#
-  #  :timer.sleep(1000)
-  #  agentspin(agent_pid,takemsg,callback)
-  #end
-  #
-  #def loop(sub,msg,msginfo,sub_alloc,count,sleep_msec) do
-  #  ret = case RclEx.rcl_take(sub,msg,msginfo,sub_alloc) do
-  #    {Macro.rcl_ret_ok,sub,msginfo,sub_alloc} -> callback(msg)
-  #    {Macro.rcl_ret_subscription_take_failed,sub,msginfo,sub_alloc} -> IO.puts "rcl_take nothing"
-  #    {_,sub,msginfo,sub_alloc} -> "Catch all"
-  #  end
 
-  #  IO.puts "count=> #{count}"
-  #  count = count + 1
-  #  :timer.sleep(sleep_msec)
-  #  loop(sub,msg,msginfo,sub_alloc,count,sleep_msec)
-  #end
 #------------------------ユーザAPI群-------------------
+  @doc """
+    RclEx初期化
+    RCLのコンテキストを有効化
+  """
   def rclexinit do
     init_op = rcl_get_zero_initialized_init_options()
     context = rcl_get_zero_initialized_context()
@@ -337,30 +294,30 @@ defmodule RclEx do
     rcl_init_options_fini(init_op)
     context
   end
-  def rclexinit(init_op,context) do
-    IO.puts "hello"
-    rcl_init_options_init(init_op)
-    rcl_init_with_null(init_op,context)
-    rcl_init_options_fini(init_op)
-  end
 
-
+  @doc """
+    ノードをひとつだけ作成
+  """
   def create_singlenode(context,node_name,node_namespace) do
     node = rcl_get_zero_initialized_node()
     node_op = rcl_node_get_default_options()
     rcl_node_init(node,node_name,node_namespace,context,node_op)
     node
   end
-  #引数にnamespace入れてる
+
+  @doc """
+    複数ノード生成
+    create_nodes/4では名前空間の指定が可能
+  """
   def create_nodes(context,node_name,namespace,num_node) do
-    node_list = Enum.map(1..num_node,fn(n)->
+    node_list = Enum.map(0..num_node-1,fn(n)->
                 rcl_node_init(
                   rcl_get_zero_initialized_node(),node_name++Integer.to_charlist(n),namespace,context,rcl_node_get_default_options()
                   )
                 end)
     node_list
   end
-  #引数にnamespace入れない
+
   def create_nodes(context,node_name,num_node) do
     node_list = Enum.map(1..num_node,fn(n)->
                 rcl_node_init_without_namespace(
@@ -370,6 +327,9 @@ defmodule RclEx do
     node_list
   end
 
+  @doc """
+    パブリッシャおよびサブスクライバをひとつだけ生成
+  """
   def single_create_publisher(pub_node,topic_name) do
     publisher = rcl_get_zero_initialized_publisher()
     pub_op = rcl_publisher_get_default_options()
@@ -377,28 +337,63 @@ defmodule RclEx do
     publisher
   end
 
-  def create_publishers(node_list,topic_name) do
+  def single_create_subscriber(sub_node,topic_name) do
+    subscriber = rcl_get_zero_initialized_subscription()
+    sub_op = rcl_subscription_get_default_options()
+    rcl_subscription_init(subscriber,sub_node,topic_name,sub_op)
+    subscriber
+  end
+
+  @doc """
+    パブリッシャおよびサブスクライバを複数生成
+    :singleもしくは:multiを指定する．
+    :single...一つのトピックに複数の出版者または購読者
+    :multi...1つのトピックに出版者または購読者1つのペアを複数
+  """
+  def create_publishers(node_list,topic_name,:single) do
     Enum.map(node_list,fn(node)->
       rcl_publisher_init(rcl_get_zero_initialized_publisher(),node,topic_name,rcl_publisher_get_default_options())
     end)
   end
 
-  def create_subscribers(node_list,topic_name) do
+  def create_publishers(node_list,topic_name,:multi) do
+    Enum.map(0..length(node_list)-1,fn(index)->
+      RclEx.single_create_publisher(Enum.at(node_list,index),topic_name++Integer.to_charlist(index))
+    end)
+  end
+
+  def create_subscribers(node_list,topic_name,:single) do
     Enum.map(node_list,fn(node)->
       rcl_subscription_init(rcl_get_zero_initialized_subscription(),node,topic_name,rcl_subscription_get_default_options())
     end)
   end
+  def create_subscribers(node_list,topic_name,:multi) do
+    Enum.map(0..length(node_list)-1,fn(index)->
+      RclEx.single_create_subscriber(Enum.at(node_list,index),topic_name++Integer.to_charlist(index))
+    end)
+  end
 
+  @doc """
+    ノード間通信に用いるメッセージの初期化
+    :int16
+  """
   def initialize_msg do
     create_empty_string()
     |> string_init()
   end
-
+  @doc """
+    ノード間通信に用いるメッセージの初期化
+    :int16であればInt16型が使えるようにする(目標)
+  """
   def initialize_msgs(msg_count,:int16) do
     Enum.map(1..msg_count,fn(n) ->
       create_empty_int16()
     end)
   end
+  @doc """
+    ノード間通信に用いるメッセージの初期化
+    :stringであればstring型が使えるようにする(現在使用可能な型)
+  """
   def initialize_msgs(msg_count,:string) do
     Enum.map(1..msg_count,fn(n) ->
       initialize_msg()
@@ -407,3 +402,4 @@ defmodule RclEx do
 
 
 end
+

@@ -1,40 +1,69 @@
-
 defmodule RclEx.Subscriber do
-  require Logger
   require RclEx.Macros
-  require IEx
-  use Timex
-  #pubtaskspinとpubtaskspinはパターンマッチで選べるようにできれば...
 
-
-  defp do_nothing do
-    #noop
-  end
-
-  def sub_spin_once(takemsg,sub,msginfo,sub_alloc,callback) do
-    case RclEx.rcl_take(sub,takemsg,msginfo,sub_alloc) do
-      {RclEx.Macros.rcl_ret_ok,_,_,_} ->
-        #IO.puts "sub ok"
-        callback.(takemsg)
-      {RclEx.Macros.rcl_ret_subscription_invalid,_,_,_} ->
-        IO.puts "subscription invalid"
-      {RclEx.Macros.rcl_ret_subscription_take_failed,_,_,_} ->
-        do_nothing()
+  @doc """
+    購読処理関数
+    購読が正常に行われれば，引数に受け取っていたコールバック関数を実行
+  """
+  def each_subscribe(sub,callback) do
+    if RclEx.check_subscription(sub) do
+      msg = RclEx.initialize_msg()
+      msginfo = RclEx.create_msginfo()
+      sub_alloc = RclEx.create_sub_alloc()
+      case RclEx.rcl_take(sub,msg,msginfo,sub_alloc) do
+        {RclEx.Macros.rcl_ret_ok,_,_,_} ->
+          callback.(msg)
+        {RclEx.Macros.rcl_ret_subscription_invalid,_,_,_} ->
+          IO.puts "subscription invalid"
+        {RclEx.Macros.rcl_ret_subscription_take_failed,_,_,_} ->
+          do_nothing()
+      end
     end
   end
-  def sub_spin(takemsg,sub,msginfo,sub_alloc,callback) do
-    sub_spin_once(takemsg,sub,msginfo,sub_alloc,callback)
-    #:timer.sleep(10)
-    sub_spin(takemsg,sub,msginfo,sub_alloc,callback)
-  end
-   def sub_task_start(subscriber_list,callback) do
-    #1 process manages all nodes
-    {:ok,supervisor} = Task.Supervisor.start_link()
-    Enum.map(subscriber_list,fn(subscriber)->
-    #  Task.async(fn -> sub_spin(RclEx.create_empty_msgInt16(),subscriber,RclEx.create_msginfo(),RclEx.create_sub_alloc(),callback) end)
-       Task.Supervisor.start_child(supervisor,RclEx.Subscriber,:sub_spin,
-       [RclEx.initialize_msg(),subscriber,RclEx.create_msginfo(),RclEx.create_sub_alloc(),callback],
-       [restart: :transient])
+
+  @doc """
+    非同期購読ループ処理
+    waitsetにsubscriberを登録後，
+    出版通知が来れば購読タスクが生成されてそれぞれで購読する．
+  """
+  def subscribe_loop(wait_set,sub_list,callback) do
+    RclEx.rcl_wait_set_clear(wait_set)
+    #waitsetにサブスクライバを追加する
+    Enum.map(sub_list,fn(sub)->RclEx.rcl_wait_set_add_subscription(wait_set,sub) end)
+
+    #wait_setからsubのリストを取りだす
+    waitset_sublist = RclEx.get_sublist_from_waitset(wait_set)
+
+    #待機時間によってCPU使用率，購読までの時間は変わる
+    RclEx.rcl_wait(wait_set,5)
+
+    #購読タスク達のスーパーバイザを作成
+    {:ok,sv} = Task.Supervisor.start_link()
+
+    #購読タスクをサブスクライバの数だけ生成，each_subscribe/2を実行させる．
+    Enum.map(waitset_sublist,fn(sub) ->
+        Task.Supervisor.start_child(sv,RclEx.Subscriber,:each_subscribe,
+        [sub,callback],[restart: :transient])
     end)
+    subscribe_loop(wait_set,sub_list,callback)
+  end
+
+  @doc """
+    購読開始の準備
+    waitsetを作成
+    スーパーバイザを生成
+    監視されるタスクを生成し，購読ループ処理を実行させる
+  """
+  def subscribe_start(sub_list,context,callback) do
+    wait_set =
+    RclEx.rcl_get_zero_initialized_wait_set()
+    |> RclEx.rcl_wait_set_init(length(sub_list),0,0,0,0,0,context,RclEx.rcl_get_default_allocator())
+    {:ok,supervisor} = Task.Supervisor.start_link()
+    Task.Supervisor.start_child(supervisor,RclEx.Subscriber,:subscribe_loop,
+    [wait_set,sub_list,callback],[restart: :transient])
+  end
+
+  defp do_nothing do
   end
 end
+
