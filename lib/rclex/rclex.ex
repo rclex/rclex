@@ -1,10 +1,12 @@
 defmodule RclEx do
   @on_load :load_nifs
-    def load_nifs do
-        IO.puts "load_nifs"
-        :erlang.load_nif('/home/imanishi/rclex/rclex',0)
-    end
+  def load_nifs do
+    IO.puts "load_nifs"
+    nif = elem(File.cwd(),1)<>"/rclex"
+    :erlang.load_nif(String.to_charlist(nif),0)
+  end
   #-----------------------init_nif.c--------------------------
+
   def rcl_get_zero_initialized_init_options do
     raise "NIF rcl_get_zero_initialized_init_options/0 not implemented"
   end
@@ -65,9 +67,7 @@ defmodule RclEx do
   def rcl_node_init_without_namespace(_a,_b,_c,_d) do
       raise "NIF rcl_node_init_without_namespace/4 is not implemented"
   end
-  def express_node_init do
-      raise "sorry"
-  end
+
   @doc """
       return rcl_ret_t
       argument...rcl_node_t
@@ -234,21 +234,6 @@ defmodule RclEx do
     raise "NIF setdata_string/3 is not implemented"
   end
 
-  #user API
-  @doc """
-    メッセージにデータをセットする
-    現在はstring型のみのサポートになっている
-  """
-  def setdata(msg,data,:string) do
-    data_size = String.length(data)
-    setdata_string(msg,String.to_charlist(data),data_size)
-  end
-  @doc """
-    メッセージからstringデータを取得する
-  """
-  def readdata_string(_a) do
-    raise "NIF readdata_string/1 is not implemented"
-  end
   #-----------------------------wait_nif.c------------------------------
   def rcl_get_default_allocator do
     raise "NIF rcl_get_default_allocator/0 is not implemented"
@@ -297,6 +282,7 @@ defmodule RclEx do
 
   @doc """
     ノードをひとつだけ作成
+    名前空間の有無を設定可能
   """
   def create_singlenode(context,node_name,node_namespace) do
     node = rcl_get_zero_initialized_node()
@@ -305,9 +291,15 @@ defmodule RclEx do
     node
   end
 
+  def create_singlenode(context,node_name) do
+    node = rcl_get_zero_initialized_node()
+    node_op = rcl_node_get_default_options()
+    rcl_node_init_without_namespace(node,node_name,context,node_op)
+    node
+  end
   @doc """
     複数ノード生成
-    create_nodes/4では名前空間の指定が可能
+    create_nodes/4ではcreate_nodes/3に加えて名前空間の指定が可能
   """
   def create_nodes(context,node_name,namespace,num_node) do
     node_list = Enum.map(0..num_node-1,fn(n)->
@@ -400,6 +392,19 @@ defmodule RclEx do
     end)
   end
 
-
+  @doc """
+    メッセージにデータをセットする
+    現在はstring型のみのサポートになっている
+  """
+  def setdata(msg,data,:string) do
+    data_size = String.length(data)
+    setdata_string(msg,String.to_charlist(data),data_size)
+  end
+  @doc """
+    メッセージからstringデータを取得する
+  """
+  def readdata_string(_a) do
+    raise "NIF readdata_string/1 is not implemented"
+  end
 end
 
