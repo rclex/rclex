@@ -13,7 +13,6 @@ extern "C"
 #include "../../include/msg/msg_string_nif.h"
 #include "rmw/types.h"
 
-//必要なのはcreate_empty_msg
 
 //空のStringメッセージオブジェクトを作る関数
 ERL_NIF_TERM nif_create_empty_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
@@ -25,7 +24,6 @@ ERL_NIF_TERM nif_create_empty_string(ErlNifEnv* env, int argc, const ERL_NIF_TER
     res = enif_alloc_resource(rt_String,sizeof(std_msgs__msg__String));
     if(res == NULL) return enif_make_badarg(env);
     ret = enif_make_resource(env,res);
-    //enif_release_resource(res);
 
     return ret;
 }
@@ -62,7 +60,6 @@ ERL_NIF_TERM nif_setdata_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM arg
         return enif_make_badarg(env);
     }
     char* data_buf = (char*) malloc(str_size);   //この値がデータサイズの上限を変更する
-    //(void)memset(&data_buf,'\0',sizeof(data_buf));
     if(!enif_get_string(env,argv[1],data_buf,str_size,ERL_NIF_LATIN1)){
         return enif_make_badarg(env);
     }
@@ -79,7 +76,7 @@ ERL_NIF_TERM nif_readdata_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM ar
     if(!enif_get_resource(env,argv[0],rt_String,(void**)&res_msg)){
         return enif_make_badarg(env);
     }
-    return enif_make_tuple2(env,atom_ok,enif_make_string(env,res_msg->data.data,ERL_NIF_LATIN1));
+    return enif_make_string(env,res_msg->data.data,ERL_NIF_LATIN1);
 }
 #ifdef __cplusplus
 }

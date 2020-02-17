@@ -4,11 +4,10 @@ extern "C"
 #endif
 
 #include <erl_nif.h>
+#include <stdio.h>
 #include "../include/init_nif.h"
 #include "../include/total_nif.h"
-#include <stdio.h>
-//#include "./arguments_impl.h" //read_contextに必要
-#include "rcl/rcl.h"    //include先からcontext.hにたどり着く
+#include "rcl/rcl.h" 
 #include "rcl/context.h"
 #include "rcl/init_options.h"
 #include "rcutils/allocator.h"
@@ -73,7 +72,7 @@ ERL_NIF_TERM nif_rcl_init_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM
     rcl_ret_t* res;
     ERL_NIF_TERM ret;
     const rcl_init_options_t* res_options;
-    rcl_context_t* res_context;  //rcl_initの引数でconstがついてない   
+    rcl_context_t* res_context;
     
     if(!enif_get_resource(env, argv[0], rt_init_options, (void**) &res_options)){
 	    return enif_make_badarg(env);
@@ -86,15 +85,10 @@ ERL_NIF_TERM nif_rcl_init_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM
     ret = enif_make_resource(env,res);
     enif_release_resource(res);
     
-   
-    //ポインタも，その指し示す先もconst(変更不可)であることを示す
-    //argc,argvに直接値を入れている
     *res = rcl_init(0,NULL,res_options,res_context);
     printf("finished rcl_init\n");
     return ret;
 }
-
-//return rcl_ret_t
 
 ERL_NIF_TERM nif_rcl_init_options_fini(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     if(argc != 1){
@@ -118,16 +112,7 @@ ERL_NIF_TERM nif_rcl_init_options_fini(ErlNifEnv* env, int argc, const ERL_NIF_T
     return ret;
 
 }
-//コンテキストの中身を見る関数
-/*
-ERL_NIF_TERM nif_read_context(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
-    rcl_context_t* res_context;
-    if(!enif_get_resource(env, argv[0], rt_context, (void**) &res_context)){
-	    return enif_make_badarg(env);
-    }
-    return enif_make_int(env,res_context->global_arguments.impl->log_level);
-}
-*/
+
 ERL_NIF_TERM nif_rcl_shutdown(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
     printf("enter rcl_shutdown\n");
     if(argc != 1){

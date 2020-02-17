@@ -28,23 +28,7 @@ ERL_NIF_TERM nif_rcl_get_default_allocator(ErlNifEnv* env, int argc, const ERL_N
   *res = rcl_get_default_allocator();
   return ret;
 }
-/*
-//空のwaitsetを作成
-ERL_NIF_TERM nif_create_empty_waitset(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
-  if(argc!=0){
-    return enif_make_badarg(env);
-  }
-  rcl_wait_set_t *res;
-  ERL_NIF_TERM ret;
-  
-  res = enif_alloc_resource(rt_waitset,sizeof(rcl_wait_set_t));
-  if(res == NULL) return enif_make_badarg(env);
-  ret = enif_make_resource(env,res);
-  //enif_release_resource(res);
 
-  return ret;
-}
-*/
 //waitsetを作って初期化
 ERL_NIF_TERM nif_rcl_get_zero_initialized_wait_set(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
   if(argc != 0){
@@ -93,7 +77,6 @@ ERL_NIF_TERM nif_rcl_wait_set_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM 
   int e = 0;
   int f = 0;
 
-
   if(!enif_get_int(env,argv[1],&a)){
         return enif_make_badarg(env);
   }
@@ -128,6 +111,7 @@ ERL_NIF_TERM nif_rcl_wait_set_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM 
   size_t number_of_clients = (size_t)d;
   size_t number_of_services = (size_t)e;
   size_t number_of_events = (size_t)f;
+
   rcl_wait_set_init(res_waitset,number_of_subscriptions,number_of_guard_conditions,number_of_timers,number_of_clients,
                             number_of_services,number_of_events,res_context,*res_alloc);
   return ret;
@@ -282,12 +266,8 @@ ERL_NIF_TERM nif_get_sublist_from_waitset(ErlNifEnv* env, int argc, const ERL_NI
   
   int num_of_sub = 0;
   num_of_sub = res_waitset->size_of_subscriptions;
-  //printf("num_of_sub:%d\n",num_of_sub);
   ret = (ERL_NIF_TERM *)malloc(num_of_sub*sizeof(ERL_NIF_TERM));
   for(int i=0;i<num_of_sub;i++){
-    //res_waitset->subscriptions[i] = enif_alloc_resource(rt_sub,sizeof(rcl_subscription_t));
-    //↑が悪さをしてたっぽい
-    //if(*(res_waitset->subscriptions[i]) == NULL) return enif_make_badarg(env);
     ret[i] = enif_make_resource(env,(res_waitset->subscriptions[i]));
   }
   return enif_make_list_from_array(env,ret,num_of_sub);

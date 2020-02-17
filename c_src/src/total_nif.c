@@ -7,12 +7,7 @@ extern "C"
 //リソースタイプを作る．load()から呼び出される.各種nifファイルから見れるようstaticつけない
 int open_resource(ErlNifEnv* env){
     const char* mod = "Elixir.RclEx";
-    /*
-    const char* modinit = "Elixir.RclEx.Init";
-    const char* modnode = "Elixir.RclEx.Node";
-    const char* modpub = "Elixir.RclEx.Publisher";
-    const char* modsub = "Elixir.RclEx.Subscription";
-    */
+   
     //for init_nif.c
     const char* name1 = "rcl_ret_t";
     const char* name2 = "rcl_context_t";
@@ -39,74 +34,6 @@ int open_resource(ErlNifEnv* env){
     const char* namewait2 = "rcl_wait_set_t";
     int flags = ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER;
 
-    /*
-    //リソースの解放処理を行う関数
-    void free_ret(ErlNifEnv* env,void* arg){
-        printf("free_resource_ret\n");
-    }
-    void free_context(ErlNifEnv* env,void* arg){
-        printf("free_context\n");
-    }
-    void free_initoptions(ErlNifEnv* env,void* arg){
-        printf("free_initoptions\n");
-    }
-    void free_node(ErlNifEnv* env,void* arg){
-        printf("free_node:%p\n",arg);
-    }
-    void free_nodeoptions(ErlNifEnv* env,void* arg){
-        printf("free_nodeoptions:%p\n",arg);
-    }
-    void free_pub(ErlNifEnv* env,void* arg){
-        printf("free_pub:%p\n",arg);
-    }
-    void free_puboptions(ErlNifEnv* env,void* arg){
-        printf("free_puboptions:%p\n",arg);
-    }
-    void free_msgtype_support(ErlNifEnv* env,void* arg){
-        printf("free_msgtype_support:%p\n",arg);
-    }
-    void free_puballoc(ErlNifEnv* env,void* arg){
-        printf("free_puballoc:%p\n",arg);
-    }
-    void free_sub(ErlNifEnv* env,void* arg){
-        printf("free_sub:%p\n",arg);
-    }
-    void free_suboptions(ErlNifEnv* env,void* arg){
-        printf("free_suboptions:%p\n",arg);
-    }
-    void free_msginfo(ErlNifEnv* env,void* arg){
-        printf("free_msginfo:%p\n",arg);
-    }
-    void free_suballoc(ErlNifEnv* env,void* arg){
-        printf("free_suballoc:%p\n",arg);
-    }
-    void free_int16(ErlNifEnv* env,void* arg){
-        printf("free_int16:%p\n",arg);
-    }
-    void free_waitset(ErlNifEnv* env,void* arg){
-        printf("free_waitset:%p\n",arg);
-    }
-    
-    rt_ret          = enif_open_resource_type(env,mod,name1,free_ret,flags,NULL);
-    rt_context      = enif_open_resource_type(env,mod,name2,free_context,flags,NULL);
-    rt_init_options = enif_open_resource_type(env,mod,name3,free_initoptions,flags,NULL);
-    rt_node         = enif_open_resource_type(env,mod,name4,free_node,flags,NULL);
-    rt_node_options = enif_open_resource_type(env,mod,name5,free_nodeoptions,flags,NULL);
-    
-    rt_pub          = enif_open_resource_type(env,mod,name6,free_pub,flags,NULL);
-    rt_pub_options  = enif_open_resource_type(env,mod,name7,free_puboptions,flags,NULL);
-    rt_rosidl_msg_type_support = enif_open_resource_type(env,mod,name8,free_msgtype_support,flags,NULL);
-    rt_rmw_pub_allocation = enif_open_resource_type(env,mod,name9,free_puballoc,flags,NULL);
-    
-    rt_sub          = enif_open_resource_type(env,mod,namesub1,free_sub,flags,NULL);
-    rt_sub_options  = enif_open_resource_type(env,mod,namesub2,free_suboptions,flags,NULL);
-    rt_msginfo      = enif_open_resource_type(env,mod,namesub3,free_msginfo,flags,NULL);
-    rt_sub_alloc    = enif_open_resource_type(env,mod,namesub4,free_suballoc,flags,NULL);
-    rt_Int16        = enif_open_resource_type(env,mod,namemsg1,free_int16,flags,NULL);
-    rt_waitset      = enif_open_resource_type(env,mod,namewait,free_waitset,flags,NULL);
-    */
-
-    //RES_TYPE = enif_open_resource_type(env,mod,name,free_res,flags,NULL);
     rt_ret          = enif_open_resource_type(env,mod,name1,NULL,flags,NULL);
     rt_context      = enif_open_resource_type(env,mod,name2,NULL,flags,NULL);
     rt_init_options = enif_open_resource_type(env,mod,name3,NULL,flags,NULL);
@@ -128,8 +55,7 @@ int open_resource(ErlNifEnv* env){
     rt_default_alloc = enif_open_resource_type(env,mod,namewait1,NULL,flags,NULL);
     rt_waitset      = enif_open_resource_type(env,mod,namewait2,NULL,flags,NULL);
 
-    
-    //1〜5まで
+
     if(rt_node == NULL || rt_ret == NULL || rt_node_options == NULL || rt_context == NULL || rt_init_options == NULL) return -1;
     return 0;
 }
@@ -160,13 +86,11 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_get_zero_initialized_context",0,nif_rcl_get_zero_initialized_context},
     {"rcl_init_with_null",2,nif_rcl_init_with_null},
     {"rcl_shutdown",1,nif_rcl_shutdown},
-    //{"nif_read_context",1,nif_read_context},
     //--------------node_nif.c--------------
     {"rcl_get_zero_initialized_node",0,nif_rcl_get_zero_initialized_node},
     {"rcl_node_get_default_options",0,nif_rcl_node_get_default_options},
     {"rcl_node_init",5,nif_rcl_node_init},
     {"rcl_node_init_without_namespace",4,nif_rcl_node_init_without_namespace},
-    //{"express_node_init",0,express_node_init},
     {"rcl_node_fini",1,nif_rcl_node_fini},
     {"read_guard_condition",1,nif_read_guard_condition},
     //--------------publisher_nif.c-------------
@@ -188,7 +112,6 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_subscription_fini",2,nif_rcl_subscription_fini},
     {"rcl_subscription_get_topic_name",1,nif_rcl_subscription_get_topic_name},
     {"rcl_take",4,nif_rcl_take},
-    //{"rcl_take_with_null",3,nif_rcl_take_with_null},
     //---------------msg_int16_nif.c-----------
     {"create_empty_int16",0,nif_create_empty_int16},
     {"create_msginfo",0,nif_create_msginfo},
@@ -204,7 +127,6 @@ ErlNifFunc nif_funcs[] = {
     {"readdata_string",1,nif_readdata_string},
     //----------------wait_nif.c-----------------
     {"rcl_get_default_allocator",0,nif_rcl_get_default_allocator},
-    //{"create_empty_waitset",0,nif_create_empty_waitset},
     {"rcl_get_zero_initialized_wait_set",0,nif_rcl_get_zero_initialized_wait_set},
     {"rcl_wait_set_init",9,nif_rcl_wait_set_init},
     {"rcl_wait_set_fini",1,nif_rcl_wait_set_fini},
@@ -217,14 +139,6 @@ ErlNifFunc nif_funcs[] = {
 
 };
 
-/*
-#ifndef _MSC_VER
-#if defined (__SUNPRO_C) && (__SUNPRO_C >= 0x550)
-__global
-#elif defined __GNUC__
-__attribute__ ((visibility("default")))
-#endif
-*/
 ERL_NIF_INIT(Elixir.RclEx,nif_funcs,&load,&reload,&upgrade,&unload);
 #ifdef __cplusplus
 }

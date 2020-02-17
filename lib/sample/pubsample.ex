@@ -16,11 +16,12 @@ defmodule PubSample do
     #publisherのかずに応じてメッセージを作成する
     n = length(publisher_list)
     msg_list = RclEx.initialize_msgs(n,:string)
-    {:ok,data} = File.read("/home/imanishi/rclex/textdata/hello.txt")
+    {:ok,data} = File.read("textdata/test.txt")
     #データをセット
     Enum.map(0..n-1,fn(index)->
       RclEx.setdata(Enum.at(msg_list,index),data,:string)
     end)
+
     #出版
     #IO.puts("pub time:#{:os.system_time(:microsecond)}")
     RclEx.Publisher.publish(publisher_list,msg_list)

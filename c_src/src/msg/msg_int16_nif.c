@@ -8,11 +8,7 @@ extern "C"
 #include <rosidl_generator_c/message_type_support_struct.h>
 
 #include <std_msgs/msg/int16.h>
-
-//test_reamp_integration.cppを参考
-
 #include "../../include/total_nif.h"
-//#include "../../include/msg/msg_types.h"
 #include "../../include/msg/msg_int16_nif.h"
 #include "rmw/types.h"
 
@@ -80,10 +76,7 @@ ERL_NIF_TERM nif_getmsgtype_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
     if(argc != 0){
         return enif_make_badarg(env);
     }
-    //ほんまはconstがいる
-    //rosidl_message_type_support_t* res_tmp;
     rosidl_message_type_support_t** res_tmp;
-    //const rosidl_message_type_support_t* res;
     ERL_NIF_TERM ret;
     
     res_tmp = enif_alloc_resource(rt_msg_type_support,sizeof(rosidl_message_type_support_t*));

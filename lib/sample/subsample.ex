@@ -12,7 +12,7 @@ defmodule SubSample do
   #コールバック関数を記述
   def callback(msg) do
     #IO.puts("sub time:#{:os.system_time(:microsecond)}")
-    {:ok,received_msg} = RclEx.readdata_string(msg)
+    received_msg = RclEx.readdata_string(msg)
     IO.puts "received msg:#{received_msg}"
   end
 

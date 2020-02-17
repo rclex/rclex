@@ -16,7 +16,7 @@ defmodule Multitopic do
     #publisherのかずに応じてメッセージを作成する
     n = length(publisher_list)
     msg_list = RclEx.initialize_msgs(n,:string)
-    {:ok,data} = File.read("/home/imanishi/rclex/textdata/hello.txt")
+    {:ok,data} = File.read("textdata/test.txt")
     #データをセット
     Enum.map(0..n-1,fn(index)->
       RclEx.setdata(Enum.at(msg_list,index),data,:string)
@@ -34,7 +34,7 @@ defmodule Multitopic do
   end
   #コールバック関数を記述
   def callback_sub(msg) do
-    {:ok,received_msg} = RclEx.readdata_string(msg)
+    received_msg = RclEx.readdata_string(msg)
     IO.puts "received msg:#{received_msg}"
   end
 end
