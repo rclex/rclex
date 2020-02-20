@@ -38,7 +38,7 @@ defmodule RclEx do
       arguments...(
           rcl_context_t)
   """
-  def rcl_shutdown(_a) do
+  def shutdown(_a) do
       raise "NIF rcl_shutdown/1 not implemented"
   end
 
@@ -405,6 +405,50 @@ defmodule RclEx do
   """
   def readdata_string(_a) do
     raise "NIF readdata_string/1 is not implemented"
+  end
+  @doc """
+    ユーザのタスク終了入力を受け付けるAPI.
+    0を入力するとchildに渡されたPIDのタスクを終了する
+  """
+  def waiting_input(sv,child) do
+    num = IO.gets("")
+          |> String.replace("\n","")
+          |> String.to_integer
+    case num do
+      0 -> RclEx.Timer.terminate_timer(sv,child)
+      _ -> waiting_input(sv,child)
+    end
+  end
+
+  @doc """
+    パブリッシャの終了
+  """
+  def publisher_finish(pub_list,node_list) do
+    IO.puts "publishers finish"
+    n = length(pub_list)
+    Enum.map(0..n-1,fn(index)->
+      RclEx.rcl_publisher_fini(Enum.at(pub_list,index),Enum.at(node_list,index))
+    end)
+  end
+  @doc """
+    サブスクライバの終了
+  """  
+  def subscriber_finish(sub_list,node_list) do
+    IO.puts "subscribers finish"
+    n = length(sub_list)
+    Enum.map(0..n-1,fn(index)->
+      RclEx.rcl_subscription_fini(Enum.at(sub_list,index),Enum.at(node_list,index))
+    end)
+  end
+  @doc """
+    ノードの終了
+    ノード関連のメモリを解放する
+  """
+  def node_finish(node_list) do
+    IO.puts "node finish"
+    Enum.map(node_list,fn(node)->
+      RclEx.rcl_node_fini(node)
+    end)
   end
 end
 

@@ -58,9 +58,10 @@ defmodule RclEx.Subscriber do
     wait_set =
     RclEx.rcl_get_zero_initialized_wait_set()
     |> RclEx.rcl_wait_set_init(length(sub_list),0,0,0,0,0,context,RclEx.rcl_get_default_allocator())
-    {:ok,supervisor} = Task.Supervisor.start_link()
-    Task.Supervisor.start_child(supervisor,RclEx.Subscriber,:subscribe_loop,
+    {:ok,sv} = Task.Supervisor.start_link()
+    {:ok,child} = Task.Supervisor.start_child(sv,RclEx.Subscriber,:subscribe_loop,
     [wait_set,sub_list,callback],[restart: :transient])
+    {sv,child}
   end
 
   defp do_nothing do

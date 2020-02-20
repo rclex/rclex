@@ -3,7 +3,7 @@ defmodule RclEx.Publisher do
 
   def publish_once(pub,pubmsg,pub_alloc) do
     case RclEx.rcl_publish(pub,pubmsg,pub_alloc) do
-      {RclEx.Macros.rcl_ret_ok,_,_} -> IO.puts "ok"
+      {RclEx.Macros.rcl_ret_ok,_,_} -> IO.puts "publish ok"
       {RclEx.Macros.rcl_ret_publisher_invalid,_,_} -> IO.puts "Publisher is invalid"
       {RclEx.Macros.rmw_ret_invalid_argument,_,_} -> IO.puts "invalid argument is contained"
       {RclEx.Macros.rcl_ret_error,_,_} -> IO.puts "unspecified error"
