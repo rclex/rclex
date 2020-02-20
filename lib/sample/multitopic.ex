@@ -2,21 +2,27 @@ defmodule Multitopic do
   @moduledoc """
     publisher-topic-subscriberのペアを任意の数だけ作成するサンプル
     create_publishersの引数に:multiを指定
+    別VMでそれぞれ出版購読させることを想定
   """
   def pubmain(num_node) do
-    RclEx.rclexinit
-    |> RclEx.create_nodes('test_pub_node',num_node)   #|> node_list
-    |> RclEx.create_publishers('topic',:multi)        #|> publisher_list
-    |> RclEx.Timer.timer_start(1000,&callback_pub/1,10)
+    context = RclEx.rclexinit
+    node_list = RclEx.create_nodes(context,'test_pub_node',num_node)
+    publisher_list = RclEx.create_publishers(node_list,'topic',:multi)
+    {sv,child} = RclEx.Timer.timer_start(publisher_list,1000,&timer_callback/1,100)
+
+    RclEx.waiting_input(sv,child)
+    RclEx.publisher_finish(publisher_list,node_list)
+    RclEx.node_finish(node_list)
+    RclEx.shutdown(context)
   end
   @doc """
     ユーザー定義のタイマーイベントコールバック関数
   """
-  def callback_pub(publisher_list) do
-    #publisherのかずに応じてメッセージを作成する
+  def timer_callback(publisher_list) do
+
     n = length(publisher_list)
     msg_list = RclEx.initialize_msgs(n,:string)
-    {:ok,data} = File.read("textdata/test.txt")
+    data = "hello,world"
     #データをセット
     Enum.map(0..n-1,fn(index)->
       RclEx.setdata(Enum.at(msg_list,index),data,:string)
@@ -26,11 +32,15 @@ defmodule Multitopic do
   end
 
   def submain(num_node) do
-    #ノードをnode_count分だけ作成
-    context = RclEx.rclexinit()                                                     #|> context
-    RclEx.create_nodes(context,'test_sub_node',num_node)                          #|> node_list,
-    |> RclEx.create_subscribers('topic',:multi)                              #|> subscribers_list
-    |> RclEx.Subscriber.subscribe_start(context,&callback_sub/1)
+
+    context = RclEx.rclexinit()
+    node_list = RclEx.create_nodes(context,'test_sub_node',num_node)
+    subscriber_list = RclEx.create_subscribers(node_list,'topic',:multi)
+    {sv,child} = RclEx.Subscriber.subscribe_start(subscriber_list,context,&callback_sub/1)
+    RclEx.waiting_input(sv,child)
+    RclEx.subscriber_finish(subscriber_list,node_list)
+    RclEx.node_finish(node_list)
+    RclEx.shutdown(context)
   end
   #コールバック関数を記述
   def callback_sub(msg) do

@@ -5,9 +5,14 @@ defmodule SubSample do
   def submain(num_node) do
     #ノードをnum_nodeに指定した数だけ作成
     context = RclEx.rclexinit
-    RclEx.create_nodes(context,'test_sub_node',num_node)         #|> node_list
-    |> RclEx.create_subscribers('testtopic',:single)             #|> subscribers_list
-    |> RclEx.Subscriber.subscribe_start(context,&callback/1)
+    node_list = RclEx.create_nodes(context,'test_sub_node',num_node) 
+    subscriber_list = RclEx.create_subscribers(node_list,'testtopic',:single)
+    {sv,child} = RclEx.Subscriber.subscribe_start(subscriber_list,context,&callback/1)
+    RclEx.waiting_input(sv,child)
+
+    RclEx.subscriber_finish(subscriber_list,node_list)
+    RclEx.node_finish(node_list)
+    RclEx.shutdown(context)
   end
   #コールバック関数を記述
   def callback(msg) do

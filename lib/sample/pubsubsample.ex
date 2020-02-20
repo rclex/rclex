@@ -5,17 +5,23 @@ defmodule PubSubSample do
   def main(num_node) do
     context = RclEx.rclexinit
     node_list = RclEx.create_nodes(context,'test_pubsub_node',num_node)                          #|> node_list,
-    RclEx.create_subscribers(node_list,'testtopic_sub',:single)                           #|> subscribers_list
-    |> RclEx.Subscriber.subscribe_start(context,&sub_callback/1)
+    subscriber_list = RclEx.create_subscribers(node_list,'testtopic_sub',:single)                           #|> subscribers_list
+    {sub_sv,sub_child} = RclEx.Subscriber.subscribe_start(subscriber_list,context,&sub_callback/1)
 
-    RclEx.create_publishers(node_list,'testtopic_pub',:single)
-    |> RclEx.Timer.timer_start(1000,&pub_callback/1,50)
+    publisher_list = RclEx.create_publishers(node_list,'testtopic_pub',:single)
+    {pub_sv,pub_child} = RclEx.Timer.timer_start(publisher_list,1000,&pub_callback/1,100)
+
+    RclEx.waiting_input(pub_sv,pub_child)
+    RclEx.waiting_input(sub_sv,sub_child)
+    RclEx.publisher_finish(publisher_list,node_list)
+    RclEx.subscriber_finish(subscriber_list,node_list)
+    RclEx.node_finish(node_list)
+    RclEx.shutdown(context)
   end
   def pub_callback(publisher_list) do
-    #publisherのかずに応じてメッセージを作成する
     n = length(publisher_list)
     msg_list = RclEx.initialize_msgs(n,:string)
-    {:ok,data} = File.read("textdata/test.txt")
+    data = "hello,world"
     #データをセット
     Enum.map(0..n-1,fn(index)->
       RclEx.setdata(Enum.at(msg_list,index),data,:string)
