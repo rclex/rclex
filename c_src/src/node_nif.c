@@ -130,19 +130,15 @@ ERL_NIF_TERM nif_rcl_node_fini(ErlNifEnv* env,int argc,const ERL_NIF_TERM argv[]
     rcl_ret_t* res;
     ERL_NIF_TERM ret;
 
-    rcl_node_t* res_arg_node;
-    if(!enif_get_resource(env, argv[0], rt_node, (void**) &res_arg_node)){
+    rcl_node_t* res_node;
+    if(!enif_get_resource(env, argv[0], rt_node, (void**) &res_node)){
         return enif_make_badarg(env);
     }
     res = enif_alloc_resource(rt_ret,sizeof(rcl_ret_t));
     if(res == NULL) return enif_make_badarg(env);
-    res_arg_node = enif_alloc_resource(rt_node,sizeof(rcl_node_t));
-    if(res_arg_node == NULL) return enif_make_badarg(env);
-
     ret = enif_make_resource(env,res);
     enif_release_resource(res);
-
-    *res = rcl_node_fini(res_arg_node);
+    *res = rcl_node_fini(res_node);
     return ret;
 } 
 

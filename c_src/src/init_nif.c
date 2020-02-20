@@ -129,9 +129,7 @@ ERL_NIF_TERM nif_rcl_shutdown(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[
     if(res == NULL) return enif_make_badarg(env);
     ret = enif_make_resource(env,res);
     enif_release_resource(res);
-
     *res = rcl_shutdown(res_arg_context);
-
     return enif_make_tuple2(env,atom_ok,ret);
 }
 #ifdef __cplusplus
