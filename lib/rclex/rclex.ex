@@ -378,7 +378,7 @@ defmodule RclEx do
     :int16であればInt16型が使えるようにする(目標)
   """
   def initialize_msgs(msg_count,:int16) do
-    Enum.map(1..msg_count,fn(n) ->
+    Enum.map(1..msg_count,fn(_) ->
       create_empty_int16()
     end)
   end
@@ -387,7 +387,7 @@ defmodule RclEx do
     :stringであればstring型が使えるようにする(現在使用可能な型)
   """
   def initialize_msgs(msg_count,:string) do
-    Enum.map(1..msg_count,fn(n) ->
+    Enum.map(1..msg_count,fn(_) ->
       initialize_msg()
     end)
   end
