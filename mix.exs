@@ -9,12 +9,23 @@ defmodule Rclex.MixProject do
       app: :rclex,
       version: "0.1.0",
       elixir: "~> 1.9",
-      start_permanent: Mix.env() == :prod,
       description: @description,
+      package: package,
+      name: "RclEx",
+      source_url: "https://github.com/tlk-emb/rclex",
+      start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end
 
+  defp package do
+    [
+      name: "rclex",
+      maintainers: ["hiroiimanishi","takasehideki"],
+      licenses: ["Apache-2.0"],
+      links: %{"Github" => "https://github.com/tlk-emb/rclex"}
+    ]
+  end
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
