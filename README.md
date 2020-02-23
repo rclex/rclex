@@ -1,21 +1,25 @@
-# Rclex
 
-**TODO: Add description**
+# RclEx
+ElixirによるROS 2クライアントライブラリです．
+ROS 2共通階層であるRCL（ROS Client Library）APIをElixirコードから呼び出すことで基本的なROS 2の振る舞いをさせています．
+またノード間の出版購読通信およびそれに付随するコールバック関数をプロセスモデルの一つであるタスクに実行させることで軽量にしています．
+これにより，メモリへの負荷を抑えつつ，また耐障害性を高めてノードを大量に生成，通信させることが可能になっています．
 
-## Installation
+# ROS 2とは
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `rclex` to your list of dependencies in `mix.exs`:
+ROS（Robot Operating System）というロボット開発支援フレームワークの次世代版です．
+ROS，ROS 2ともに，機能単位をノードと表現し，ノードを複数組み合わせて所望のさまざまなロボットアプリケーションが作成できます．
+またノード間通信には出版購読通信が主に用いられ，パブリッシャとサブスクライバがトピックという名前でデータを識別してやりとりしています．
 
-```elixir
-def deps do
-  [
-    {:rclex, "~> 0.1.0"}
-  ]
-end
-```
+ROSからの大きな違いとして，通信にDDS（Data Distribution Service）プロトコルが採用されたこと，そしてライブラリが階層構造に分けられ，様々な言語でROS 2クライアントライブラリを開発できるようになったことです．これにより，Elixirでもロボットアプリケーションを開発できるようになりました．
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex).
+詳しくはROS 2の[公式ドキュメント](https://index.ros.org/doc/ros2/)を参照ください．
 
+
+# 使い道
+現時点では以下のことができるよう，RclExAPIを提供しています．
+1. 同一トピックに対して，複数のパブリッシャおよびサブスクライバを大量に作成できる．
+2. パブリッシャ，トピック，サブスクライバが1つずつのペアを大量に作成できる．
+
+# 動かし方
+[こちら](https://github.com/tlk-emb/rclex_samples)を参照してください．サンプルコードとともに使い方を記しています．
