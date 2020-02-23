@@ -5,7 +5,7 @@ defmodule RclEx.KeepSub do
   """
   require Logger
   require RclEx.Macros
-  use Timex
+  #use Timex
 
   defp do_nothing do
     # noop
