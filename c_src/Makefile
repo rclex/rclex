@@ -1,10 +1,11 @@
 CC		:= gcc
 LD	:= ld
-TARGET  := ./rclex.so
-OBJDIR	:= ./obj
+NIFDIR := ${PWD}/c_src
+TARGET  := ${NIFDIR}/rclex.so
+OBJDIR	:= ${NIFDIR}/obj
 ROSDIR := /opt/ros/dashing
 
-SRCDIR	:= ./src
+SRCDIR	:= ${NIFDIR}/src
 SOURCES := $(shell ls $(SRCDIR)/*.c)
 CFLAGS	:= -g -c -fPIC -MMD -MP
 #MMD...オブジェクトの依存関係としてdファイルを出力する
@@ -16,10 +17,9 @@ INCLUDE := -I $(ROSDIR)/include
 INCLUDE += -I$(shell erl -eval 'io:format("~s", [lists:concat([code:root_dir(), "/erts-", erlang:system_info(version), "/include"])])' -s init stop -noshell)
 LDFLAGS	:= -L $(ROSDIR)/lib
 
-# if you want to use another RMW/DDS, add respective libs
-# (e.g. OpenSplice "-lrmw_opensplice_cpp -lrosidl_typesupport_opensplice_cpp"
 MSGLIBS	:= -lrcl -lrmw -lrcutils -lrosidl_generator_c -lrosidl_typesupport_c -lstd_msgs__rosidl_generator_c -lstd_msgs__rosidl_typesupport_c -lrosidl_typesupport_introspection_c  \
 						-lfastcdr -lfastrtps -lrmw_fastrtps_cpp
+						#-lfastcdr -lrmw_opensplice_cpp -lrosidl_typesupport_opensplice_cpp -lfastrtps -lrmw_fastrtps_cpp
 OBJECTS :=$(subst $(SRCDIR),$(OBJDIR), $(SOURCES:.c=.o))
 DEPENDS = $(OBJECTS:.o=.d)
 
@@ -48,6 +48,6 @@ msg_string_nif.o: $(SRCDIR)/msg/msg_string_nif.c
 
 .PHONY: all clean
 clean:
-	rm -f ./*.o ./*.d $(OBJDIR)/*.o $(OBJDIR)/*.d ${TARGET}
+	rm -f ./*.o ./*.d $(OBJDIR)/*.o $(OBJDIR)/*.d ./rclex.so
 
 -include $(DEPENDS)
