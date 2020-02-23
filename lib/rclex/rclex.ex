@@ -2,7 +2,7 @@ defmodule RclEx do
   @on_load :load_nifs
   def load_nifs do
     IO.puts("load_nifs")
-    nif = elem(File.cwd(), 1) <> "/rclex"
+    nif = elem(File.cwd(), 1) <> "/c_src/rclex"
     :erlang.load_nif(String.to_charlist(nif), 0)
   end
 
