@@ -3,8 +3,8 @@ extern "C"
 {
 #endif
 #include <erl_nif.h>
-#include "../include/total_nif.h"
-#include "../include/subscription_nif.h"
+#include "total_nif.h"
+#include "subscription_nif.h"
 #include <stdio.h>
 #include <string.h>
 

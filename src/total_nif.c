@@ -2,7 +2,7 @@
 extern "C"
 {
 #endif
-#include "../include/total_nif.h"
+#include "total_nif.h"
 
 //リソースタイプを作る．load()から呼び出される.各種nifファイルから見れるようstaticつけない
 int open_resource(ErlNifEnv* env){
@@ -139,7 +139,8 @@ ErlNifFunc nif_funcs[] = {
 
 };
 
-ERL_NIF_INIT(Elixir.RclEx,nif_funcs,&load,&reload,&upgrade,&unload);
+//ERL_NIF_INIT(Elixir.RclEx,nif_funcs,&load,&reload,&upgrade,&unload);
+ERL_NIF_INIT(Elixir.RclEx,nif_funcs,load,reload,upgrade,unload)
 #ifdef __cplusplus
 }
 #endif

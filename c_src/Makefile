@@ -1,53 +1,63 @@
-CC		:= gcc
-LD	:= ld
-NIFDIR := ${PWD}/c_src
-TARGET  := ${NIFDIR}/rclex.so
-OBJDIR	:= ${NIFDIR}/obj
-ROSDIR := /opt/ros/dashing
+# set directory for ROSDISTRO
+ROSDIR = /opt/ros/dashing
 
-SRCDIR	:= ${NIFDIR}/src
-SOURCES := $(shell ls $(SRCDIR)/*.c)
-CFLAGS	:= -g -c -fPIC -MMD -MP
-#MMD...オブジェクトの依存関係としてdファイルを出力する
-SOFLAGS  := -g -shared
-# -c でオブジェクトだけ全部作って，-fpic -sharedすることで一つの.soにできる
-LINK 	:= -lstdc++
-#INCLUDE := -I /usr/lib/erlang/erts-10.6.4/include -I $(ROSDIR)/include
-INCLUDE := -I $(ROSDIR)/include
-INCLUDE += -I$(shell erl -eval 'io:format("~s", [lists:concat([code:root_dir(), "/erts-", erlang:system_info(version), "/include"])])' -s init stop -noshell)
-LDFLAGS	:= -L $(ROSDIR)/lib
+CC = gcc
+LD = ld
+RM = rm
 
-MSGLIBS	:= -lrcl -lrmw -lrcutils -lrosidl_generator_c -lrosidl_typesupport_c -lstd_msgs__rosidl_generator_c -lstd_msgs__rosidl_typesupport_c -lrosidl_typesupport_introspection_c  \
-						-lfastcdr -lfastrtps -lrmw_fastrtps_cpp
-						#-lfastcdr -lrmw_opensplice_cpp -lrosidl_typesupport_opensplice_cpp -lfastrtps -lrmw_fastrtps_cpp
-OBJECTS :=$(subst $(SRCDIR),$(OBJDIR), $(SOURCES:.c=.o))
-DEPENDS = $(OBJECTS:.o=.d)
+PREFIX = $(MIX_APP_PATH)/priv
+BUILD  = $(MIX_APP_PATH)/obj
+#BUILD += $(MIX_APP_PATH)/obj/msg
 
-all:$(TARGET)
+NIF = $(PREFIX)/rclex.so
 
-#$(TARGET): $(OBJECTS) msg_int16_nif.o int16__functions.o int16__type_support.o
-#	$(CC) $(SOFLAGS) -o $@ $^ $(LDFLAGS) $(MSGLIBS)
+CFLAGS  += -O2 -Wall -Wextra -Wno-unused-parameter -pedantic -fPIC
+# MMD means generating .d for dependencies of object files
+#CFLAGS  += -MMD -MP
+LDFLAGS += -fPIC -shared -L$(ROSDIR)/lib
 
-$(TARGET): $(OBJECTS) msg_int16_nif.o msg_string_nif.o
-	$(CC) $(SOFLAGS) -o $@ $^ $(LDFLAGS) $(MSGLIBS)
+INCLUDE += -I$(ROSDIR)/include
+# for ROS libs
+INCLUDE	+= -lrcl -lrmw -lrcutils \
+					 -lrosidl_generator_c -lrosidl_typesupport_c \
+					 -lstd_msgs__rosidl_generator_c -lstd_msgs__rosidl_typesupport_c \
+					 -lrosidl_typesupport_introspection_c  \
+					 -lfastcdr -lfastrtps -lrmw_fastrtps_cpp
+# if you wanna use OpenSplice DDS
+#INCLUDE	+= --lrmw_opensplice_cpp -lrosidl_typesupport_opensplice_cpp
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.c
-	@[ -d $(OBJDIR) ]
-	$(CC) $(CFLAGS) $(INCLUDE) -o $@ -c $<
-	
-msg_int16_nif.o: $(SRCDIR)/msg/msg_int16_nif.c 
-	$(CC) $(CFLAGS) $(INCLUDE) $< 
-msg_string_nif.o: $(SRCDIR)/msg/msg_string_nif.c
-	$(CC) $(CFLAGS) $(INCLUDE) $<
-#int16__functions.o: /opt/ros/dashing/include/std_msgs/msg/int16__functions.c
-#	$(CC) $(CFLAGS) $(INCLUDE) $< 
+# Set Erlang-specific compile and linker flags
+ERL_CFLAGS  ?= -I$(ERL_EI_INCLUDE_DIR)
+ERL_LDFLAGS ?= -L$(ERL_EI_LIBDIR)
 
-#int16__type_support.o: /opt/ros/dashing/include/std_msgs/msg/int16__type_support.c
-#	$(CC) $(CFLAGS) $(INCLUDE) $< 
+#SRC = src/fifo_nif.cc
+SRC = c_src/src/total_nif.c c_src/src/init_nif.c c_src/src/node_nif.c c_src/src/publisher_nif.c c_src/src/subscription_nif.c c_src/src/wait_nif.c
+SRC += c_src/src/msg/msg_int16_nif.c c_src/src/msg/msg_string_nif.c
+OBJ = $(SRC:c_src/src/%.c=$(BUILD)/%.o)
+OBJ += $(SRC:c_src/src/msg/%.c=$(BUILD)/msg/%.o)
+HEADERS =$(wildcard c_src/include*.h)
+HEADERS +=$(wildcard c_src/include/msg/*.h)
 
+all: install
 
-.PHONY: all clean
+install: $(PREFIX) $(BUILD) $(NIF)
+
+$(OBJ): $(SRC)
+	$(CC) -c $(ERL_CFLAGS) $(CFLAGS) -o $@ $<
+
+$(BUILD)/%.o: $(SRC)
+	$(CC) -c $(ERL_CFLAGS) $(CFLAGS) -o $@ $<
+
+$(NIF): $(OBJ)
+	$(CC) -o $@ $(ERL_LDFLAGS) $(LDFLAGS) $(INCLUDE) $^
+
+$(PREFIX):
+	mkdir -p $@
+
+$(BUILD):
+	mkdir -p $@
+
 clean:
-	rm -f ./*.o ./*.d $(OBJDIR)/*.o $(OBJDIR)/*.d ./rclex.so
+	$(RM) $(NIF) $(BUILD)/*.o
 
--include $(DEPENDS)
+.PHONY: all clean install

@@ -9,8 +9,8 @@ extern "C"
 
 #include <std_msgs/msg/string.h>
 
-#include "../../include/total_nif.h"
-#include "../../include/msg/msg_string_nif.h"
+#include "total_nif.h"
+#include "msg_string_nif.h"
 #include "rmw/types.h"
 
 

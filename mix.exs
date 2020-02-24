@@ -15,9 +15,10 @@ defmodule Rclex.MixProject do
       source_url: "https://github.com/tlk-emb/rclex",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      compilers: [:elixir_make] ++ Mix.compilers(),
-      elixirc_paths: elixirc_paths(Mix.env()),
-      make_makefile: "c_src/Makefile"
+      build_embedded: true,
+      compilers: [:elixir_make | Mix.compilers()],
+      make_targets: ["all"],
+      make_clean: ["clean"],
     ]
   end
 
@@ -41,11 +42,10 @@ defmodule Rclex.MixProject do
   defp deps do
     [
       {:elixir_make, "~> 0.4", runtime: false},
-      {:timex, "~>3.5"}
+      #{:timex, "~>3.5"}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
   end
 
-  defp elixirc_paths(_), do: ["lib", "c_src"]
 end

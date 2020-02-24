@@ -1,11 +1,13 @@
 defmodule RclEx do
   @on_load :load_nifs
-  def load_nifs do
-    IO.puts("load_nifs")
-    nif = elem(File.cwd(), 1) <> "/c_src/rclex"
-    :erlang.load_nif(String.to_charlist(nif), 0)
-  end
+  @compile {:autoload, false}
 
+  @moduledoc false
+  def load_nifs do
+    nif = Application.app_dir(:rclex, "priv/rclex")
+
+    :erlang.load_nif(to_charlist(nif), 0)
+  end
   # -----------------------init_nif.c--------------------------
 
   def rcl_get_zero_initialized_init_options do
