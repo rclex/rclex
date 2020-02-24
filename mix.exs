@@ -2,7 +2,7 @@ defmodule Rclex.MixProject do
   use Mix.Project
 
   @description """
-   ROS 2 Client Library written in Elixir.
+   ROS 2 Client Library for Elixir.
   """
   def project do
     [
