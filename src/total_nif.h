@@ -8,9 +8,9 @@ extern "C"
 #include "init_nif.h"
 #include "node_nif.h"
 #include "publisher_nif.h"
+#include "subscription_nif.h"
 #include "msg_int16_nif.h"
 #include "msg_string_nif.h"
-#include "subscription_nif.h"
 #include "wait_nif.h"
 
 //各種リソースタイプの宣言やリソースタイプの作成を行う
@@ -48,6 +48,7 @@ ERL_NIF_TERM atom_false;
 //リソースタイプを作る．load()から呼び出される
 int open_resource(ErlNifEnv* env);
 
+/* eliminate top-level warning
 //@on_loadで呼び出す
 static int load(ErlNifEnv* env, void** priv,ERL_NIF_TERM load_info);
 
@@ -56,6 +57,8 @@ static int reload(ErlNifEnv* env,void** priv,ERL_NIF_TERM load_info);
 static int upgrade(ErlNifEnv* env, void** priv,void** old_priv,ERL_NIF_TERM load_info);
 
 static void unload(ErlNifEnv* env, void* priv);
+*/
+
 
 
 
