@@ -7,8 +7,8 @@ extern "C"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/total_nif.h"
-#include "../include/wait_nif.h"
+#include "total_nif.h"
+#include "wait_nif.h"
 
 #include "rcl/wait.h"
 #include "rcl/allocator.h"

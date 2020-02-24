@@ -5,8 +5,8 @@ extern "C"
 
 #include <erl_nif.h>
 #include <stdio.h>
-#include "../include/init_nif.h"
-#include "../include/total_nif.h"
+#include "init_nif.h"
+#include "total_nif.h"
 #include "rcl/rcl.h" 
 #include "rcl/context.h"
 #include "rcl/init_options.h"

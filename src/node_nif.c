@@ -4,8 +4,8 @@ extern "C"
 {
 #endif
 #include <erl_nif.h>
-#include "../include/total_nif.h"
-#include "../include/node_nif.h"
+#include "total_nif.h"
+#include "node_nif.h"
 
 #include <limits.h>
 #include <stdio.h>

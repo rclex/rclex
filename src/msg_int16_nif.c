@@ -8,8 +8,8 @@ extern "C"
 #include <rosidl_generator_c/message_type_support_struct.h>
 
 #include <std_msgs/msg/int16.h>
-#include "../../include/total_nif.h"
-#include "../../include/msg/msg_int16_nif.h"
+#include "total_nif.h"
+#include "msg_int16_nif.h"
 #include "rmw/types.h"
 
 //空のInt16メッセージオブジェクトを作る関数
