@@ -11,7 +11,7 @@ defmodule Rclex.MixProject do
       elixir: "~> 1.9",
       description: @description,
       package: package,
-      name: "RclEx",
+      name: "Rclex",
       source_url: "https://github.com/tlk-emb/rclex",
       start_permanent: Mix.env() == :prod,
       deps: deps(),

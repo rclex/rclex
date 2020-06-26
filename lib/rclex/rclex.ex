@@ -1,4 +1,4 @@
-defmodule RclEx do
+defmodule Rclex do
   @on_load :load_nifs
   @compile {:autoload, false}
 
@@ -296,7 +296,7 @@ defmodule RclEx do
 
   # ------------------------ユーザAPI群-------------------
   @doc """
-    RclEx初期化
+    Rclex初期化
     RCLのコンテキストを有効化
   """
   def rclexinit do
@@ -395,7 +395,7 @@ defmodule RclEx do
 
   def create_publishers(node_list, topic_name, :multi) do
     Enum.map(0..(length(node_list) - 1), fn index ->
-      RclEx.single_create_publisher(
+      Rclex.single_create_publisher(
         Enum.at(node_list, index),
         topic_name ++ Integer.to_charlist(index)
       )
@@ -415,7 +415,7 @@ defmodule RclEx do
 
   def create_subscribers(node_list, topic_name, :multi) do
     Enum.map(0..(length(node_list) - 1), fn index ->
-      RclEx.single_create_subscriber(
+      Rclex.single_create_subscriber(
         Enum.at(node_list, index),
         topic_name ++ Integer.to_charlist(index)
       )
@@ -478,7 +478,7 @@ defmodule RclEx do
       |> String.to_integer()
 
     case num do
-      0 -> RclEx.Timer.terminate_timer(sv, child)
+      0 -> Rclex.Timer.terminate_timer(sv, child)
       _ -> waiting_input(sv, child)
     end
   end
@@ -491,7 +491,7 @@ defmodule RclEx do
     n = length(pub_list)
 
     Enum.map(0..(n - 1), fn index ->
-      RclEx.rcl_publisher_fini(Enum.at(pub_list, index), Enum.at(node_list, index))
+      Rclex.rcl_publisher_fini(Enum.at(pub_list, index), Enum.at(node_list, index))
     end)
   end
 
@@ -503,7 +503,7 @@ defmodule RclEx do
     n = length(sub_list)
 
     Enum.map(0..(n - 1), fn index ->
-      RclEx.rcl_subscription_fini(Enum.at(sub_list, index), Enum.at(node_list, index))
+      Rclex.rcl_subscription_fini(Enum.at(sub_list, index), Enum.at(node_list, index))
     end)
   end
 
@@ -515,7 +515,7 @@ defmodule RclEx do
     IO.puts("node finish")
 
     Enum.map(node_list, fn node ->
-      RclEx.rcl_node_fini(node)
+      Rclex.rcl_node_fini(node)
     end)
   end
 end
