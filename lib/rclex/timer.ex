@@ -1,4 +1,4 @@
-defmodule RclEx.Timer do
+defmodule Rclex.Timer do
   @doc """
     タイマー処理関数
     timer_loop/3はループの上限つき
@@ -38,7 +38,7 @@ defmodule RclEx.Timer do
     {:ok, child} =
       Task.Supervisor.start_child(
         sv,
-        RclEx.Timer,
+        Rclex.Timer,
         :timer_loop,
         [pub_list, time, callback, 0, limit],
         restart: :transient
@@ -51,7 +51,7 @@ defmodule RclEx.Timer do
     {:ok, sv} = Task.Supervisor.start_link()
 
     {:ok, child} =
-      Task.Supervisor.start_child(sv, RclEx.Timer, :timer_loop, [pub_list, time, callback],
+      Task.Supervisor.start_child(sv, Rclex.Timer, :timer_loop, [pub_list, time, callback],
         restart: :transient
       )
 
