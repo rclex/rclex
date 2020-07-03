@@ -12,7 +12,7 @@ We tested following versions
 - Ubuntu 18.04.4 LTS
 - ROS 2 [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
 - Elixir 1.9.1-otp-22
-- Eralng 22.0.7
+- Erlang 22.0.7
 
 Please let us know if you can operate this library with another environment.
 
