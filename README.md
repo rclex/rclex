@@ -1,5 +1,6 @@
 [![Hex version](https://img.shields.io/hexpm/v/rclex.svg "Hex version")](https://hex.pm/packages/rclex)
 [![API docs](https://img.shields.io/hexpm/v/rclex.svg?label=hexdocs "API docs")](https://hexdocs.pm/rclex/readme.html)
+[![License](https://img.shields.io/hexpm/l/rclex.svg)](https://github.com/tlk-emb/rclex/blob/master/LICENSE)
 
 [日本語のREADME](README_ja.md)
 
