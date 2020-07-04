@@ -18,7 +18,7 @@ defmodule Rclex.MixProject do
       build_embedded: true,
       compilers: [:elixir_make | Mix.compilers()],
       make_targets: ["all"],
-      make_clean: ["clean"],
+      make_clean: ["clean"]
     ]
   end
 
@@ -45,5 +45,4 @@ defmodule Rclex.MixProject do
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
-
 end
