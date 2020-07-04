@@ -2,17 +2,21 @@ defmodule Rclex.MixProject do
   use Mix.Project
 
   @description """
-   ROS 2 Client Library for Elixir.
+  ROS 2 Client Library for Elixir.
   """
+
+  @version: "0.3.1"
+  @source_url: "https://github.com/tlk-emb/rclex"
+
   def project do
     [
       app: :rclex,
-      version: "0.3.1",
+      version: @version,
       elixir: "~> 1.9",
       description: @description,
       package: package,
       name: "Rclex",
-      source_url: "https://github.com/tlk-emb/rclex",
+      docs: docs(),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       build_embedded: true,
@@ -43,6 +47,15 @@ defmodule Rclex.MixProject do
     [
       {:elixir_make, "~> 0.4", runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
+    ]
+  end
+
+  defp docs do
+    [
+      extras: ["README.md", "README_ja.md"],
+      main: "readme",
+      source_ref: "v#{@version}",
+      source_url: @source_url
     ]
   end
 end
