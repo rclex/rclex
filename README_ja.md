@@ -1,3 +1,4 @@
+[English README](README.md)
 
 # Rclex
 ElixirによるROS 2クライアントライブラリです．
@@ -23,3 +24,32 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 # 動かし方
 [こちら](https://github.com/tlk-emb/rclex_samples)を参照してください．サンプルコードとともに使い方を記しています．
+
+## 動作環境
+
+下記の環境で動作を確認しています
+
+- Ubuntu 18.04.4 LTS
+- ROS 2 [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
+- Elixir 1.9.1-otp-22
+- Erlang 22.0.7
+
+他の環境でも動作が確認できたら，ぜひお知らせいただけますと幸いです．
+
+## インストール方法
+
+`rclex`は[Hexパッケージとして公開](https://hex.pm/docs/publish)しています．
+
+`mix.exs`の依存関係に`rclex`を追加することで，ご自身のプロジェクトにて使用することができます．
+
+```elixir
+def deps do
+  [
+    {:rclex, "~> 0.3.1"}
+  ]
+end
+```
+
+ドキュメントは[ExDoc](https://github.com/elixir-lang/ex_doc)で生成されて[HexDocs](https://hexdocs.pm)に公開されています．  
+[https://hexdocs.pm/rclex](https://hexdocs.pm/rclex)をご参照ください．
+

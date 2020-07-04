@@ -49,18 +49,20 @@ Please let us know if you can operate this library with another environment.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
+`rclex` is [available in Hex](https://hex.pm/docs/publish).
+
+You can install this package into your project
 by adding `rclex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:rclex, "~> 0.3.0"}
+    {:rclex, "~> 0.3.1"}
   ]
 end
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex).
+and published on [HexDocs](https://hexdocs.pm).  
+You can find the docs at [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex).
 

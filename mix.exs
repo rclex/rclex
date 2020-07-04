@@ -7,7 +7,7 @@ defmodule Rclex.MixProject do
   def project do
     [
       app: :rclex,
-      version: "0.3.0",
+      version: "0.3.1",
       elixir: "~> 1.9",
       description: @description,
       package: package,
