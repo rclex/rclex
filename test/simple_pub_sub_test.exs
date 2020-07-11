@@ -2,9 +2,9 @@ defmodule SimplePubSubTest do
   use ExUnit.Case
 
   test "publish and subscribe message" do
-    spawn(Test.App.SimplePubSub, :pub_main, [1]);
+    spawn(Test.App.SimplePubSub, :pub_main, [1])
 
-    pid = spawn(Test.App.SimplePubSub, :sub_main, [1]);
+    pid = spawn(Test.App.SimplePubSub, :sub_main, [1])
 
     assert Process.alive?(pid)
 
