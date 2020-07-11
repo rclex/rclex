@@ -8,6 +8,7 @@ defmodule Rclex do
 
     :erlang.load_nif(to_charlist(nif), 0)
   end
+
   # -----------------------init_nif.c--------------------------
 
   def rcl_get_zero_initialized_init_options do
