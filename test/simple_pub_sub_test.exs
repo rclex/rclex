@@ -2,13 +2,21 @@ defmodule SimplePubSubTest do
   use ExUnit.Case
 
   test "publish and subscribe message" do
-    spawn(Test.App.SimplePubSub, :pub_main, [1]);
+    
+    num_node = 1
+    context = Rclex.rclexinit()
+    node_list = Rclex.create_nodes(context, 'test_pub_node', num_node)
+    
+    sub_pid = spawn(Test.App.SimplePubSub, :sub_main, [node_list, context])
+    assert Process.alive?(sub_pid)
 
-    pid = spawn(Test.App.SimplePubSub, :sub_main, [1]);
+    pub_pid = spawn(Test.App.SimplePubSub, :pub_main, [node_list])
+    assert Process.alive?(pub_pid)
 
-    assert Process.alive?(pid)
+    Process.sleep(2000)
 
-    Process.sleep(1000)
+    Rclex.node_finish(node_list)
+    Rclex.shutdown(context)
 
     input_file = File.read("pub.txt")
     output_file = File.read("sub.txt")
