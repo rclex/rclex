@@ -1,8 +1,7 @@
 defmodule SimplePubSubTest do
   use ExUnit.Case
 
-  test "publish and subscribe message" do
-    
+  test "publish and subscribe message" do  
     num_node = 1
     context = Rclex.rclexinit()
     node_list = Rclex.create_nodes(context, 'test_pub_node', num_node)
