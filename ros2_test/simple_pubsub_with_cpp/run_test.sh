@@ -7,6 +7,7 @@ colcon build
 source install/setup.bash
 cd $root
 echo $root
+mix compile
 mix run ros2_test/simple_pubsub_with_cpp/rclex/sub_test.exs &
 sleep 1
 cd $testDir
