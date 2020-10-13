@@ -41,7 +41,7 @@ jobs:
 
         - name: ros2 connection test
           run: | 
+            source /opt/ros/dashing/setup.bash
             cd ros2_test
-            pwd
             ./entrypoint.sh
             
