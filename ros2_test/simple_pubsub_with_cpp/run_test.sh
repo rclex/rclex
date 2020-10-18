@@ -15,8 +15,11 @@ ros2 run cpp_pubsub talker &
 wait
 cppPub=`cat cpp_pub.txt`
 exSub=`cat $root/ex_sub.txt`
-echo $cppPub
-echo $exSub
-if test $cppPub != $exSub ; then
+test $cppPub = $exSub
+result=$?
+echo "published message : $cppPub"
+echo "subscribed message : $exSub"
+echo "result : $result"
+if [ $result -ne 0 ]; then
     exit 1
 fi 
