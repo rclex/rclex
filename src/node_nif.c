@@ -170,6 +170,23 @@ ERL_NIF_TERM nif_read_guard_condition(ErlNifEnv* env, int argc, const ERL_NIF_TE
     return enif_make_atom(env,"ok");
 }
 
+/*
+const char *
+ rcl_node_get_name(const rcl_node_t * node);
+*/
+ERL_NIF_TERM nif_rcl_node_get_name(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]){
+    if(argc != 1){
+        return enif_make_badarg(env);
+    }
+    rcl_node_t* res_node;
+
+    if(!enif_get_resource(env, argv[0], rt_node, (void**) &res_node)){
+        return enif_make_badarg(env);
+    }
+
+    return enif_make_atom(env,rcl_node_get_name(res_node));
+}
+
 #ifdef __cplusplus
 }
 #endif

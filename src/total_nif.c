@@ -93,6 +93,7 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_node_init_without_namespace",4,nif_rcl_node_init_without_namespace,0},
     {"rcl_node_fini",1,nif_rcl_node_fini,0},
     {"read_guard_condition",1,nif_read_guard_condition,0},
+    {"rcl_node_get_name",1,nif_rcl_node_get_name,0},
     //--------------publisher_nif.c-------------
     
     {"rcl_get_zero_initialized_publisher",0,nif_rcl_get_zero_initialized_publisher,0},
