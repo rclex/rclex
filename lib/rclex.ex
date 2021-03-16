@@ -89,6 +89,14 @@ defmodule Rclex do
     raise "haha"
   end
 
+    @doc """
+      return char 
+  """
+
+  def rcl_node_get_name(_a) do
+    raise "NIF rcl_node_get_name/1 not implemented"
+  end
+
   # ------------------------------publisher_nif.c--------------------------
   @doc """
       return rcl_publisher_t
@@ -208,6 +216,19 @@ defmodule Rclex do
   """
   def rcl_take(_a, _b, _c, _d) do
     raise "NIF rcl_take is not implemented"
+  end
+
+  # -----------------------------graph_nif.c------------------------------
+  @doc """
+    rcl_ret_t
+    rcl_get_topic_names_and_types(
+      const rcl_node_t * node,
+      rcl_allocator_t * allocator,
+      bool no_demangle,
+      rcl_names_and_types_t * topic_names_and_types);
+  """
+  def rcl_get_topic_names_and_types(_a, _b, _c) do
+    raise "NIF rcl_get_topic_names_and_types is not implemented"
   end
 
   # -----------------------------msg_int16.c------------------------------

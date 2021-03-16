@@ -28,7 +28,7 @@ ROS_LDFLAGS += -lrcl -lrmw -lrcutils \
 # if you want to use OpenSplice DDS
 #ROS_LDFLAGS	+= -lrmw_opensplice_cpp -lrosidl_typesupport_opensplice_cpp
 
-SRC ?= src/total_nif.c src/init_nif.c src/node_nif.c src/publisher_nif.c src/subscription_nif.c src/wait_nif.c
+SRC ?= src/total_nif.c src/init_nif.c src/node_nif.c src/publisher_nif.c src/subscription_nif.c src/wait_nif.c src/graph_nif.c
 SRC += src/msg_int16_nif.c src/msg_string_nif.c
 HEADERS =$(wildcard src/*.h)
 OBJ = $(SRC:src/%.c=$(BUILD)/%.o)

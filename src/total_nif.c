@@ -26,6 +26,8 @@ int open_resource(ErlNifEnv* env){
     const char* namesub2 = "rcl_subscription_options_t";
     const char* namesub3 = "rmw_message_info_t";
     const char* namesub4 = "rmw_subscription_allocation_t";
+    //for graph_nif.c
+    const char* namegraph1 = "rcl_names_and_types_t";
     //for msg
     const char* namemsg1 = "std_msgs__msg__Int16";
     const char* namemsg2 = "std_msgs__msg__String";
@@ -49,6 +51,7 @@ int open_resource(ErlNifEnv* env){
     rt_sub_options  = enif_open_resource_type(env,mod,namesub2,NULL,flags,NULL);
     rt_msginfo      = enif_open_resource_type(env,mod,namesub3,NULL,flags,NULL);
     rt_sub_alloc    = enif_open_resource_type(env,mod,namesub4,NULL,flags,NULL);
+    rt_names_and_types = enif_open_resource_type(env,mod,namegraph1,NULL,flags,NULL);
     rt_Int16        = enif_open_resource_type(env,mod,namemsg1,NULL,flags,NULL);
     rt_String       = enif_open_resource_type(env,mod,namemsg2,NULL,flags,NULL);
     
@@ -113,6 +116,8 @@ ErlNifFunc nif_funcs[] = {
     {"rcl_subscription_fini",2,nif_rcl_subscription_fini,0},
     {"rcl_subscription_get_topic_name",1,nif_rcl_subscription_get_topic_name,0},
     {"rcl_take",4,nif_rcl_take,0},
+    //---------------graph_nif.c-----------
+    {"rcl_get_topic_names_and_types",3,nif_rcl_get_topic_names_and_types,0},
     //---------------msg_int16_nif.c-----------
     {"create_empty_int16",0,nif_create_empty_int16,0},
     {"create_msginfo",0,nif_create_msginfo,0},
