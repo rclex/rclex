@@ -54,7 +54,7 @@ ERL_NIF_TERM nif_rcl_get_topic_names_and_types(ErlNifEnv* env, int argc, const E
     ret = enif_make_resource(env,res_names_and_types);
     res = rcl_get_topic_names_and_types(res_arg_node, res_alloc, false, res_names_and_types);
     
-    int names_length = sizeof(res_names_and_types->names.data)/sizeof(res_names_and_types->names.data[0]);
+    int names_length = res_names_and_types->names.size;
     return enif_make_list_from_array(
         env, 
         res_names_and_types->names.data,
