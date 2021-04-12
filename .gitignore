@@ -33,3 +33,9 @@ rclex-*.tar
 #/.history/
 #core
 #/.textdata/
+
+# for rclcpp
+/ros2_test/*/rclcpp/build/
+/ros2_test/*/rclcpp/include/
+/ros2_test/*/rclcpp/install/
+/ros2_test/*/rclcpp/log/

@@ -1,0 +1,47 @@
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  rclex_test:
+    runs-on: ubuntu-latest
+    container: ros:dashing
+
+    steps:
+        # clone latest branch
+        - name: clone
+          uses: actions/checkout@v2
+
+        - name: setup elixir
+          run: |
+            apt-get update 
+            apt-get install -y wget
+            wget https://packages.erlang-solutions.com/erlang-solutions_2.0_all.deb && sudo dpkg -i erlang-solutions_2.0_all.deb
+            apt-get update
+            apt-cache showpkg elixir | grep 1.9.1
+            apt-get install -y esl-erlang=1:22.0.7-1
+            apt-get install -y elixir=1.9.1-1
+        
+        - name: compile
+          run: |
+            echo 'mix local.hex --force'
+            MIX_ENV=test mix local.hex --force
+            echo 'mix deps.get'
+            MIX_ENV=test mix deps.get
+            echo 'MIX_ENV=test mix compile'
+            MIX_ENV=test mix compile
+
+        - name: mix test 
+          run: |
+            source /opt/ros/dashing/setup.bash
+            echo 'mix test'
+            mix test
+
+        - name: ros2 connection test
+          run: | 
+            source /opt/ros/dashing/setup.bash
+            cd ros2_test
+            ./entrypoint.sh
+            
