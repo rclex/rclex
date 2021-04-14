@@ -6,7 +6,7 @@ defmodule Rclex.MixProject do
   """
 
   @version "0.3.1"
-  @source_url "https://github.com/tlk-emb/rclex"
+  @source_url "https://github.com/rclex/rclex"
 
   def project do
     [
@@ -29,7 +29,7 @@ defmodule Rclex.MixProject do
   defp package do
     %{
       name: "rclex",
-      maintainers: ["hiroiimanishi", "takasehideki"],
+      maintainers: ["takasehideki", "kebus426", "hiroiimanishi"],
       files: [
         "lib",
         "src/*.[ch]",
@@ -40,7 +40,7 @@ defmodule Rclex.MixProject do
         "Makefile"
       ],
       licenses: ["Apache-2.0"],
-      links: %{"Github" => "https://github.com/tlk-emb/rclex"}
+      links: %{"Github" => @source_url}
     }
   end
 
