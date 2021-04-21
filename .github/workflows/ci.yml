@@ -13,7 +13,7 @@ jobs:
         # clone latest branch
         - name: clone
           uses: actions/checkout@v2
-          name: clone rclex_samples
+        - name: clone rclex_samples
           uses: actions/checkout@v2
           with:
             repository: rclex/rclex_samples
