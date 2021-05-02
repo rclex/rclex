@@ -17,6 +17,7 @@ jobs:
           uses: actions/checkout@v2
           with:
             repository: rclex/rclex_connection_tests
+            path: rclex_connection_tests
 
         - name: setup elixir
           run: |
