@@ -13,11 +13,10 @@ jobs:
         # clone latest branch
         - name: clone
           uses: actions/checkout@v2
-        - name: clone rclex_samples
+        - name: clone rclex_connection_tests
           uses: actions/checkout@v2
           with:
-            repository: rclex/rclex_samples
-            path: lib
+            repository: rclex/rclex_connection_tests
 
         - name: setup elixir
           run: |
@@ -47,6 +46,6 @@ jobs:
         - name: ros2 connection test
           run: | 
             source /opt/ros/dashing/setup.bash
-            cd ros2_test
+            cd rclex_connection_tests
             ./entrypoint.sh
             
