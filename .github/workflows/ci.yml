@@ -31,6 +31,12 @@ jobs:
         
         - name: compile
           run: |
+            echo 'cd lib'
+            cd lib
+            echo 'ln -s ../rclex_connection_tests/rclex/lib/test'
+            ln -s ../rclex_connection_tests/rclex/lib/test
+            echo 'cd ../'
+            cd ../
             echo 'mix local.hex --force'
             MIX_ENV=test mix local.hex --force
             echo 'mix deps.get'
