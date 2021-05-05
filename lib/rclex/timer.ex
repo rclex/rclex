@@ -10,13 +10,13 @@ defmodule Rclex.Timer do
     count = count + 1
 
     if(count > limit) do
-      raise "input times repeated"
+      IO.puts "input times repeated"
+    else
+      callback.(publisher_list)
+      # timeはミリ秒
+      :timer.sleep(time)
+      timer_loop(publisher_list, time, callback, count, limit)
     end
-
-    callback.(publisher_list)
-    # timeはミリ秒
-    :timer.sleep(time)
-    timer_loop(publisher_list, time, callback, count, limit)
   end
 
   def timer_loop(publisher_list, time, callback) do
