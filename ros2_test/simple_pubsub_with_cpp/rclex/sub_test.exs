@@ -1,1 +1,0 @@
-Test.App.SimplePubSub.sub_main(1)
