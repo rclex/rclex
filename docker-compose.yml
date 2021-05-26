@@ -1,0 +1,11 @@
+version: '3'
+services:
+
+    rclex_docker:
+        build: .
+        image: rclex_docker
+        volumes:
+            - .:/rclex
+            - ../rclex_connection_tests/rclex/lib/test:/rclex/lib/test
+            - ../rclex_connection_tests:/rclex/rclex_connection_tests
+        tty: true
