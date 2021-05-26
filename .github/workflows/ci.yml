@@ -7,7 +7,7 @@ defaults:
 jobs:
   rclex_test:
     runs-on: ubuntu-latest
-    container: ros:dashing
+    container: rclex/rclex_docker:latest
 
     steps:
         # clone latest branch
@@ -18,16 +18,6 @@ jobs:
           with:
             repository: rclex/rclex_connection_tests
             path: rclex_connection_tests
-
-        - name: setup elixir
-          run: |
-            apt-get update 
-            apt-get install -y wget
-            wget https://packages.erlang-solutions.com/erlang-solutions_2.0_all.deb && sudo dpkg -i erlang-solutions_2.0_all.deb
-            apt-get update
-            apt-cache showpkg elixir | grep 1.9.1
-            apt-get install -y esl-erlang=1:22.0.7-1
-            apt-get install -y elixir=1.9.1-1
         
         - name: compile
           run: |
