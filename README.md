@@ -1,7 +1,7 @@
 [![Hex version](https://img.shields.io/hexpm/v/rclex.svg "Hex version")](https://hex.pm/packages/rclex)
 [![API docs](https://img.shields.io/hexpm/v/rclex.svg?label=hexdocs "API docs")](https://hexdocs.pm/rclex/readme.html)
-[![License](https://img.shields.io/hexpm/l/rclex.svg)](https://github.com/tlk-emb/rclex/blob/master/LICENSE)
-[![test](https://github.com/tlk-emb/rclex/workflows/.github/workflows/ci.yml/badge.svg "test")](https://github.com/tlk-emb/rclex/actions)
+[![License](https://img.shields.io/hexpm/l/rclex.svg)](https://github.com/rclex/rclex/blob/main/LICENSE)
+[![test](https://github.com/rclex/rclex/workflows/.github/workflows/ci.yml/badge.svg "test")](https://github.com/rclex/rclex/actions)
 
 [日本語のREADME](README_ja.md)
 
@@ -38,7 +38,7 @@ Currently, the Rclex API allows for the following:
 
 ## Making it Work
 
-Please reference examples [here](https://github.com/tlk-emb/rclex_samples). Also note the usage alongside the sample code.
+Please reference examples [here](https://github.com/rclex/rclex_samples). Also note the usage alongside the sample code.
 
 
 ## Environments
