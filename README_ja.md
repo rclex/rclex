@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/hexpm/l/rclex.svg)](https://github.com/rclex/rclex/blob/main/LICENSE)
 [![ci](https://github.com/rclex/rclex/workflows/.github/workflows/ci.yml/badge.svg "ci")](https://github.com/rclex/rclex/actions)
 
-[English README](README.md)
+注：READMEは[英語版](README.md)が常に最新かつ確実です．
 
 # Rclex
 ElixirによるROS 2クライアントライブラリです．
@@ -11,7 +11,7 @@ ROS 2共通階層であるRCL（ROS Client Library）APIをElixirコードから
 またノード間の出版購読通信およびそれに付随するコールバック関数をプロセスモデルの一つであるタスクに実行させることで軽量にしています．
 これにより，メモリへの負荷を抑えつつ，また耐障害性を高めてノードを大量に生成，通信させることが可能になっています．
 
-# ROS 2とは
+## ROS 2とは
 
 ROS（Robot Operating System）というロボット開発支援フレームワークの次世代版です．
 ROS，ROS 2ともに，機能単位をノードと表現し，ノードを複数組み合わせて所望のさまざまなロボットアプリケーションが作成できます．
@@ -22,24 +22,29 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 詳しくはROS 2の[公式ドキュメント](https://index.ros.org/doc/ros2/)を参照ください．
 
 
-# 使い道
+## 使い方
+
 現時点では以下のことができるよう，Rclex APIを提供しています．
 1. 同一トピックに対して，複数のパブリッシャおよびサブスクライバを大量に作成できる．
 2. パブリッシャ，トピック，サブスクライバが1つずつのペアを大量に作成できる．
 
-# 動かし方
 [こちら](https://github.com/rclex/rclex_samples)を参照してください．サンプルコードとともに使い方を記しています．
 
-## 動作環境
+## 動作環境（開発環境）
 
-下記の環境で動作を確認しています
+現在，下記の環境を対象として開発を進めています．
 
-- Ubuntu 18.04.4 LTS
+- Ubuntu 18.04.5 LTS
 - ROS 2 [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
 - Elixir 1.9.1-otp-22
-- Erlang 22.0.7
+- Erlang/OTP 22.0.7
 
-他の環境でも動作が確認できたら，ぜひお知らせいただけますと幸いです．
+動作確認として，[rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests)を用いてRclcppで実装されたノードとの通信に関するテストを実施しています．
+
+[GitHub Actions](https://github.com/rclex/rclex/actions)では，複数の環境でのCIを実行しています．ただし，これら全ての環境での動作保証には対応できません．
+
+[Docker Hub](https://hub.docker.com/r/rclex/rclex_docker)にCIで利用しているビルド済みのDockerイメージを公開しています．
+これを用いてRclexを簡単に試行することもできます．
 
 ## インストール方法
 
