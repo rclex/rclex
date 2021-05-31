@@ -10,8 +10,7 @@ jobs:
     container: rclex/rclex_docker:latest
 
     steps:
-        # clone latest branch
-        - name: clone
+        - name: clone rclex
           uses: actions/checkout@v2
           with: 
             repository: rclex/rclex
@@ -22,16 +21,21 @@ jobs:
             repository: rclex/rclex_connection_tests
             path: rclex_connection_tests
 
-        - name: mix test 
+        - name: mix compile
           run: |
             source /opt/ros/dashing/setup.bash
             cd rclex
             mix local.hex --force
             mix deps.get
             mix compile
+
+        - name: mix test
+          run: |
+            source /opt/ros/dashing/setup.bash
+            cd rclex
             mix test
 
-        - name: ros2 connection test
+        - name: connection tests
           run: | 
             source /opt/ros/dashing/setup.bash
             cd rclex_connection_tests
