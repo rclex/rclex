@@ -35,5 +35,5 @@ jobs:
           run: | 
             source /opt/ros/dashing/setup.bash
             cd rclex_connection_tests
-            ./entrypoint.sh
+            ./run-all.sh
 
