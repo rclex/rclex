@@ -1,3 +1,5 @@
+name: ci-all_version
+
 on: [push]
 
 defaults:
