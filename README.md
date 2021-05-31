@@ -1,7 +1,7 @@
 [![Hex version](https://img.shields.io/hexpm/v/rclex.svg "Hex version")](https://hex.pm/packages/rclex)
 [![API docs](https://img.shields.io/hexpm/v/rclex.svg?label=hexdocs "API docs")](https://hexdocs.pm/rclex/readme.html)
 [![License](https://img.shields.io/hexpm/l/rclex.svg)](https://github.com/rclex/rclex/blob/main/LICENSE)
-[![test](https://github.com/rclex/rclex/workflows/.github/workflows/ci.yml/badge.svg "test")](https://github.com/rclex/rclex/actions)
+[![ci](https://github.com/rclex/rclex/workflows/.github/workflows/ci.yml/badge.svg "ci")](https://github.com/rclex/rclex/actions)
 
 [日本語のREADME](README_ja.md)
 
@@ -36,21 +36,25 @@ Currently, the Rclex API allows for the following:
 1. The ability to create a large number of publishers sending to the same topic.
 2. The ability to create large numbers of each combination of publishers, topics, and subscribers.
 
-## Making it Work
-
 Please reference examples [here](https://github.com/rclex/rclex_samples). Also note the usage alongside the sample code.
 
 
-## Environments
+## Supported Environment (for the development)
 
-We tested following versions:
+Currently, we use the following environment as the development target:
 
-- Ubuntu 18.04.4 LTS
+- Ubuntu 18.04.5 LTS
 - ROS 2 [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
 - Elixir 1.9.1-otp-22
-- Erlang 22.0.7
+- Erlang/OTP 22.0.7
 
-Please let us know if you can operate this library with another environment.
+As an operation check, we are testing the communication with the node implemented by Rclcpp using [rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests).
+
+We run CI in multiple different environments on [GitHub Actions](https://github.com/rclex/rclex/actions). 
+However, please note that we cannot guarantee the operation of all of these versions due to our limited development resources.
+
+We also publish [the pre-built Docker image on Docker Hub](https://hub.docker.com/r/rclex/rclex_docker) used in CI.
+You can also try the power of Rclex with it easily.
 
 ## Installation
 

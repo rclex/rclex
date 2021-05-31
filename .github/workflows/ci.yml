@@ -1,4 +1,6 @@
-on: [push, pull_request]
+name: ci-all_version
+
+on: [push]
 
 defaults:
   run:
@@ -7,11 +9,14 @@ defaults:
 jobs:
   rclex_test:
     runs-on: ubuntu-latest
-    container: rclex/rclex_docker:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dockertags: [latest, dashing-ex1.12.0-otp24.0.1, dashing-ex1.11.4-otp23.3.1, dashing-ex1.10.4-otp22.3.4, dashing-ex1.9.4-otp22.3.4, dashing-ex1.9.1-otp22.0.7]
+    container: rclex/rclex_docker:${{ matrix.dockertags }}
 
     steps:
-        # clone latest branch
-        - name: clone
+        - name: clone rclex
           uses: actions/checkout@v2
           with: 
             repository: rclex/rclex
@@ -22,19 +27,23 @@ jobs:
             repository: rclex/rclex_connection_tests
             path: rclex_connection_tests
 
-        - name: mix test 
+        - name: mix compile
           run: |
             source /opt/ros/dashing/setup.bash
-            echo 'mix test'
             cd rclex
             mix local.hex --force
-            MIX_ENV=test mix deps.get
-            MIX_ENV=test mix compile
-            MIX_ENV=test mix test
+            mix deps.get
+            mix compile
 
-        - name: ros2 connection test
+        - name: mix test
+          run: |
+            source /opt/ros/dashing/setup.bash
+            cd rclex
+            mix test
+
+        - name: connection tests
           run: | 
             source /opt/ros/dashing/setup.bash
             cd rclex_connection_tests
-            ./entrypoint.sh
+            ./run-all.sh
 
