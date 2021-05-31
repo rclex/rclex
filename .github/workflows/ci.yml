@@ -25,12 +25,11 @@ jobs:
         - name: mix test 
           run: |
             source /opt/ros/dashing/setup.bash
-            echo 'mix test'
             cd rclex
             mix local.hex --force
-            MIX_ENV=test mix deps.get
-            MIX_ENV=test mix compile
-            MIX_ENV=test mix test
+            mix deps.get
+            mix compile
+            mix test
 
         - name: ros2 connection test
           run: | 
