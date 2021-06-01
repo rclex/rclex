@@ -10,13 +10,14 @@ defmodule Rclex.Timer do
     count = count + 1
 
     if(count > limit) do
-      raise "input times repeated"
+      IO.puts "info: the number of count reaches limit"
+      :ok
+    else
+      callback.(publisher_list)
+      # timeはミリ秒
+      :timer.sleep(time)
+      timer_loop(publisher_list, time, callback, count, limit)
     end
-
-    callback.(publisher_list)
-    # timeはミリ秒
-    :timer.sleep(time)
-    timer_loop(publisher_list, time, callback, count, limit)
   end
 
   def timer_loop(publisher_list, time, callback) do
@@ -52,7 +53,7 @@ defmodule Rclex.Timer do
 
     {:ok, child} =
       Task.Supervisor.start_child(sv, Rclex.Timer, :timer_loop, [pub_list, time, callback],
-        restart: :transient
+        restart: :temporary
       )
 
     {sv, child}
