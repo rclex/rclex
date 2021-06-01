@@ -1,7 +1,7 @@
 [![Hex version](https://img.shields.io/hexpm/v/rclex.svg "Hex version")](https://hex.pm/packages/rclex)
 [![API docs](https://img.shields.io/hexpm/v/rclex.svg?label=hexdocs "API docs")](https://hexdocs.pm/rclex/readme.html)
 [![License](https://img.shields.io/hexpm/l/rclex.svg)](https://github.com/rclex/rclex/blob/main/LICENSE)
-[![ci](https://github.com/rclex/rclex/workflows/.github/workflows/ci.yml/badge.svg "ci")](https://github.com/rclex/rclex/actions)
+[![ci-all_version](https://github.com/rclex/rclex/actions/workflows/ci.yml/badge.svg)](https://github.com/rclex/rclex/actions/workflows/ci.yml)
 
 [日本語のREADME](README_ja.md)
 
