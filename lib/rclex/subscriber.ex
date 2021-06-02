@@ -87,6 +87,15 @@ defmodule Rclex.Subscriber do
     {sv, child}
   end
 
+  @doc """
+    サブスクライバの終了
+    スーパバイザプロセスと実行タスクを停止する
+  """
+  def subscribe_stop(sv, child) do
+    Task.Supervisor.terminate_child(sv, child)
+    Supervisor.stop(sv)
+  end
+
   defp do_nothing do
   end
 end
