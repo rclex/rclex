@@ -36,8 +36,8 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 - Ubuntu 18.04.5 LTS
 - ROS 2 [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
-- Elixir 1.9.1-otp-22
-- Erlang/OTP 22.0.7
+- Elixir 1.11.2-otp-23
+- Erlang/OTP 23.3.1
 
 動作確認として，[rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests)を用いてRclcppで実装されたノードとの通信に関するテストを実施しています．
 
