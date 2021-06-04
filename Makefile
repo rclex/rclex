@@ -1,5 +1,5 @@
 # set directory for ROSDISTRO
-ROS_DIR = /opt/ros/foxy
+ROS_DIR = /opt/ros/dashing
 
 ifeq ($(ROS_DIR), /opt/ros/dashing)
 	ROS_VERSION = DASHING
@@ -7,8 +7,6 @@ ifeq ($(ROS_DIR), /opt/ros/dashing)
 else ifeq ($(ROS_DIR), /opt/ros/foxy)
 	ROS_VERSION = FOXY
 	TYPE_STRUCTURE_DIR = rosidl_runtime_c
-else
-# どうする？
 endif
 
 CC = gcc
