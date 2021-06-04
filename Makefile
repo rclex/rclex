@@ -1,5 +1,5 @@
 # set directory for ROSDISTRO
-ROS_DIR = /opt/ros/foxy
+ROS_DIR = /opt/ros/$(ROS_DISTRO)
 
 ifeq ($(ROS_DIR), /opt/ros/dashing)
 	ROS_VERSION = DASHING
