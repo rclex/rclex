@@ -7,8 +7,10 @@ extern "C"
 #include <rcl/rcl.h>
 #ifdef DASHING
 #include <rosidl_generator_c/message_type_support_struct.h>
+#define __STRING__ASSIGN rosidl_generator_c__String__assign
 #elif FOXY
 #include <rosidl_runtime_c/message_type_support_struct.h>
+#define __STRING__ASSIGN rosidl_runtime_c__String__assign
 #endif
 
 #include <std_msgs/msg/string.h>
@@ -68,7 +70,7 @@ ERL_NIF_TERM nif_setdata_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM arg
         return enif_make_badarg(env);
     }
     //String型の構造体に引数の文字列とサイズを入れる．
-    rosidl_runtime_c__String__assign(res_msg,data_buf);
+    __STRING__ASSIGN(res_msg,data_buf);
     free(data_buf);
     return enif_make_atom(env,"ok");
 }
