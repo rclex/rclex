@@ -9,7 +9,11 @@ extern "C"
 #include <string.h>
 
 #include "rcl/publisher.h"
+#ifdef DASHING
 #include <rosidl_generator_c/message_type_support_struct.h>
+#elseif FOXY
+#include <rosidl_runtime_c/message_type_support_struct.h>
+#endif
 
 #include <std_msgs/msg/int16.h>
 #include <std_msgs/msg/string.h>

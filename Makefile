@@ -1,5 +1,15 @@
 # set directory for ROSDISTRO
-ROSDIR = /opt/ros/dashing
+ROS_DIR = /opt/ros/foxy
+
+ifeq ($(ROS_DIR), /opt/ros/dashing)
+	ROS_VERSION = DASHING
+	TYPE_STRUCTURE_DIR = rosidl_generator_c
+else ifeq ($(ROS_DIR), /opt/ros/foxy)
+	ROS_VERSION = FOXY
+	TYPE_STRUCTURE_DIR = rosidl_runtime_c
+else
+# どうする？
+endif
 
 CC = gcc
 LD = ld
@@ -18,10 +28,10 @@ ERL_CFLAGS  ?= -I$(ERL_EI_INCLUDE_DIR)
 ERL_LDFLAGS ?= -L$(ERL_EI_LIBDIR)
 
 # for ROS libs
-ROS_CFLAGS  ?= -I$(ROSDIR)/include
-ROS_LDFLAGS ?= -L$(ROSDIR)/lib
+ROS_CFLAGS  ?= -I$(ROS_DIR)/include
+ROS_LDFLAGS ?= -L$(ROS_DIR)/lib
 ROS_LDFLAGS += -lrcl -lrmw -lrcutils \
-	-lrosidl_generator_c -lrosidl_typesupport_c \
+	-l$(TYPE_STRUCTURE_DIR) -lrosidl_typesupport_c \
 	-lrosidl_typesupport_introspection_c \
 	-lstd_msgs__rosidl_generator_c -lstd_msgs__rosidl_typesupport_c \
 	-lfastcdr -lfastrtps -lrmw_fastrtps_cpp
@@ -40,7 +50,7 @@ install: $(PREFIX) $(BUILD) $(NIF)
 $(OBJ): $(HEADERS) Makefile
 
 $(BUILD)/%.o: src/%.c
-	$(CC) -c $(ERL_CFLAGS) $(ROS_CFLAGS) $(CFLAGS) -o $@ $<
+	$(CC) -c $(ERL_CFLAGS) $(ROS_CFLAGS) $(CFLAGS) -D$(ROS_VERSION) -o $@ $<
 
 $(NIF): $(OBJ)
 	$(CC) -o $@ $(ERL_LDFLAGS) $(LDFLAGS) $^ $(ROS_LDFLAGS)
