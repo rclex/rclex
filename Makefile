@@ -1,10 +1,10 @@
 # set directory for ROSDISTRO
 ROS_DIR = /opt/ros/$(ROS_DISTRO)
 
-ifeq ($(ROS_DIR), /opt/ros/dashing)
+ifeq ($(ROS_DISTRO), dashing)
 	ROS_VERSION = DASHING
 	TYPE_STRUCTURE_DIR = rosidl_generator_c
-else ifeq ($(ROS_DIR), /opt/ros/foxy)
+else ifeq ($(ROS_DISTRO), foxy)
 	ROS_VERSION = FOXY
 	TYPE_STRUCTURE_DIR = rosidl_runtime_c
 else
