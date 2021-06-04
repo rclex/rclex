@@ -7,7 +7,7 @@ extern "C"
 #include <rcl/rcl.h>
 #ifdef DASHING
 #include <rosidl_generator_c/message_type_support_struct.h>
-#elseif FOXY
+#elif FOXY
 #include <rosidl_runtime_c/message_type_support_struct.h>
 #endif
 
