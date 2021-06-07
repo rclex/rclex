@@ -29,7 +29,7 @@ jobs:
 
         - name: mix compile
           run: |
-            source /opt/ros/dashing/setup.bash
+            source /opt/ros/${ROS_DISTRO}/setup.bash
             cd rclex
             mix local.hex --force
             mix deps.get
@@ -37,13 +37,13 @@ jobs:
 
         - name: mix test
           run: |
-            source /opt/ros/dashing/setup.bash
+            source /opt/ros/${ROS_DISTRO}/setup.bash
             cd rclex
             mix test
 
         - name: connection tests
           run: | 
-            source /opt/ros/dashing/setup.bash
+            source /opt/ros/${ROS_DISTRO}/setup.bash
             cd rclex_connection_tests
             ./run-all.sh
 
