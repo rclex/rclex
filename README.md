@@ -39,21 +39,22 @@ Currently, the Rclex API allows for the following:
 Please reference examples [here](https://github.com/rclex/rclex_samples). Also note the usage alongside the sample code.
 
 
-## Supported Environment (for the development)
+## Recommended Environment
 
 Currently, we use the following environment as the development target:
 
-- Ubuntu 18.04.5 LTS
-- ROS 2 [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
+- Ubuntu 20.04.2 LTS (Focal Fossa)
+- ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
+  - also work well on Ubuntu 18.04.5 LTS and [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
 - Elixir 1.11.2-otp-23
 - Erlang/OTP 23.3.1
 
-As an operation check, we are testing the communication with the node implemented by Rclcpp using [rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests).
+As an operation test, we check the communication with nodes implemented by [rclcpp](https://github.com/ros2/rclcpp) using [rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests).
 
-We run CI in multiple different environments on [GitHub Actions](https://github.com/rclex/rclex/actions). 
+We also run CI in multiple different environments on [GitHub Actions](https://github.com/rclex/rclex/actions). 
 However, please note that we cannot guarantee the operation of all of these versions due to our limited development resources.
 
-We also publish [the pre-built Docker image on Docker Hub](https://hub.docker.com/r/rclex/rclex_docker) used in CI.
+The pre-built Docker images used in CI have published on [Docker Hub](https://hub.docker.com/r/rclex/rclex_docker).
 You can also try the power of Rclex with it easily.
 
 ## Installation

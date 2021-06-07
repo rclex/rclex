@@ -5,7 +5,13 @@ extern "C"
 
 #include <erl_nif.h>
 #include <rcl/rcl.h>
+
+#ifdef DASHING
 #include <rosidl_generator_c/message_type_support_struct.h>
+#elif FOXY
+#include <rosidl_runtime_c/message_type_support_struct.h>
+#endif
+
 
 #include <std_msgs/msg/int16.h>
 #include "total_nif.h"
