@@ -434,21 +434,18 @@ defmodule Rclex do
 
   @doc """
     ノード間通信に用いるメッセージの初期化
-    :int16であればInt16型が使えるようにする(目標)
-  """
-  def initialize_msgs(msg_count, :int16) do
-    Enum.map(1..msg_count, fn _ ->
-      create_empty_int16()
-    end)
-  end
-
-  @doc """
-    ノード間通信に用いるメッセージの初期化
     :stringであればstring型が使えるようにする(現在使用可能な型)
   """
   def initialize_msgs(msg_count, :string) do
     Enum.map(1..msg_count, fn _ ->
       initialize_msg()
+    end)
+  end
+
+  # TODO: :int16であればInt16型が使えるようにする(目標)
+  def initialize_msgs(msg_count, :int16) do
+    Enum.map(1..msg_count, fn _ ->
+      create_empty_int16()
     end)
   end
 
