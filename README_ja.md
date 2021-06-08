@@ -34,8 +34,9 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 現在，下記の環境を対象として開発を進めています．
 
-- Ubuntu 18.04.5 LTS
-- ROS 2 [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
+- Ubuntu 20.04.2 LTS (Focal Fossa)
+- ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
+  - also work well on Ubuntu 18.04.5 LTS and [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
 - Elixir 1.11.2-otp-23
 - Erlang/OTP 23.3.1
 

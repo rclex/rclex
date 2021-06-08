@@ -33,6 +33,3 @@ rclex-*.tar
 #/.history/
 #core
 #/.textdata/
-
-# for connection test
-/lib/test
