@@ -60,10 +60,30 @@ ERL_NIF_TERM nif_rcl_get_topic_names_and_types(ErlNifEnv* env, int argc, const E
     for(int i = 0; i < names_length; i++) {
         names_array[i] = enif_make_string(env, res_names_and_types->names.data[i], ERL_NIF_LATIN1);
     }
-    return enif_make_list_from_array(
-        env, 
-        names_array,
-        names_length);
+    int types_length = res_names_and_types->types->size;
+    ERL_NIF_TERM **types_array = enif_alloc(sizeof(ERL_NIF_TERM *) * names_length);
+    for(int i = 0; i < names_length; i++){
+        types_array[i] =  
+        enif_alloc(sizeof(ERL_NIF_TERM) * types_length);
+    }
+    for(int i = 0; i < names_length; i++) {
+        for(int j = 0; j < types_length; j++){
+            types_array[i][j] = enif_make_string(env, res_names_and_types->types[i].data[j], ERL_NIF_LATIN1);
+        }
+    }
+    return enif_make_tuple2(
+        env,
+        enif_make_list_from_array(
+            env, 
+            names_array,
+            names_length
+        ),
+        enif_make_list_from_array(
+            env, 
+            types_array,
+            names_length
+        )
+    );
 }
 
 #ifdef __cplusplus
