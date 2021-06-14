@@ -1,5 +1,5 @@
 # set directory for ROSDISTRO
-ROS_DIR = /opt/ros/$(ROS_DISTRO)
+ROS_DIR = $(shell which ros2 | sed "s/\/bin\/ros2//")
 
 ifeq ($(ROS_DISTRO), dashing)
 	ROS_VERSION = DASHING
