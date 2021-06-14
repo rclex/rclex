@@ -25,6 +25,7 @@ rclex-*.tar
 ## Original ignoring files
 # for NIFs
 *.so
+*.o
 
 # for VSCode
 /.elixir_ls/
