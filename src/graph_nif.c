@@ -46,43 +46,37 @@ ERL_NIF_TERM nif_rcl_get_topic_names_and_types(ErlNifEnv* env, int argc, const E
         return enif_make_badarg(env);
     }
 */
-    
-   
+
     bool no_demangle = res_no_demangle == "true";
     res_names_and_types = enif_alloc_resource(rt_names_and_types,sizeof(rcl_names_and_types_t));
     if(res_names_and_types == NULL) return enif_make_badarg(env);
     ret = enif_make_resource(env,res_names_and_types);
     (void)memset(&res_names_and_types[0],NULL,sizeof(rcl_names_and_types_t));
     res = rcl_get_topic_names_and_types(res_arg_node, res_alloc, false, res_names_and_types);
-    
+
     int names_length = res_names_and_types->names.size;
-    ERL_NIF_TERM *names_array = enif_alloc(sizeof(ERL_NIF_TERM) * names_length);
+    ERL_NIF_TERM *names_and_types_array = enif_alloc(sizeof(ERL_NIF_TERM) * names_length);
     for(int i = 0; i < names_length; i++) {
-        names_array[i] = enif_make_string(env, res_names_and_types->names.data[i], ERL_NIF_LATIN1);
-    }
-    int types_length = res_names_and_types->types->size;
-    ERL_NIF_TERM **types_array = enif_alloc(sizeof(ERL_NIF_TERM *) * names_length);
-    for(int i = 0; i < names_length; i++){
-        types_array[i] =  
-        enif_alloc(sizeof(ERL_NIF_TERM) * types_length);
-    }
-    for(int i = 0; i < names_length; i++) {
+        int types_length = res_names_and_types->types[i].size;
+        ERL_NIF_TERM *types_array = enif_alloc(sizeof(ERL_NIF_TERM) * types_length);
         for(int j = 0; j < types_length; j++){
-            types_array[i][j] = enif_make_string(env, res_names_and_types->types[i].data[j], ERL_NIF_LATIN1);
+            types_array[j] = enif_make_string(env, res_names_and_types->types[i].data[j], ERL_NIF_LATIN1);
         }
+        names_and_types_array[i] = enif_make_tuple2(
+            env,
+            enif_make_string(env, res_names_and_types->names.data[i], ERL_NIF_LATIN1),
+            enif_make_list_from_array(
+                env,
+                types_array,
+                types_length
+            )
+        );
     }
-    return enif_make_tuple2(
+
+    return enif_make_list_from_array(
         env,
-        enif_make_list_from_array(
-            env, 
-            names_array,
-            names_length
-        ),
-        enif_make_list_from_array(
-            env, 
-            types_array,
-            names_length
-        )
+        names_and_types_array,
+        names_length
     );
 }
 
