@@ -1,6 +1,20 @@
 defmodule RclexTest do
     use ExUnit.Case
 
+    # -----------------------node_nif.c--------------------------
+    test "rcl_node_get_name" do
+        context = Rclex.rclexinit
+        
+        node_name = 'test_node'
+        node_list = Rclex.create_nodes(context,node_name,2)
+        [node_1, node_2] = node_list
+
+        assert Rclex.rcl_node_get_name(node_1) == 'test_node1', 'first node name is test_node1'
+
+        assert Rclex.rcl_node_get_name(node_2) == 'test_node2', 'second node name is test_node2'
+    end
+
+    # -----------------------graph_nif.c--------------------------
     test "rcl_get_topic_names_and_types" do
         context = Rclex.rclexinit
         node_list = Rclex.create_nodes(context,'test_pub_node',1)
@@ -11,8 +25,6 @@ defmodule RclexTest do
         node = hd node_list
 
         names_and_types_tuple_list = Rclex.rcl_get_topic_names_and_types(node,Rclex.rcl_get_default_allocator,false)
-
-        IO.inspect(names_and_types_tuple_list)
 
         [ name_and_types_tuple_1 | [ name_and_types_tuple_2 ] ]= names_and_types_tuple_list
 
