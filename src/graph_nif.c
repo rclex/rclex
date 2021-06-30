@@ -41,18 +41,17 @@ ERL_NIF_TERM nif_rcl_get_topic_names_and_types(ErlNifEnv* env, int argc, const E
     if(!enif_get_resource(env, argv[1], rt_default_alloc, (void**) &res_alloc)){
         return enif_make_badarg(env);
     }
-/*
-    if(!enif_get_string(env, argv[2], res_no_demangle, sizeof(res_no_demangle),ERL_NIF_LATIN1)){
+
+    if(!enif_get_atom(env, argv[2], res_no_demangle, sizeof(res_no_demangle),ERL_NIF_LATIN1)){
         return enif_make_badarg(env);
     }
-*/
-
     bool no_demangle = res_no_demangle == "true";
+    
     res_names_and_types = enif_alloc_resource(rt_names_and_types,sizeof(rcl_names_and_types_t));
     if(res_names_and_types == NULL) return enif_make_badarg(env);
     ret = enif_make_resource(env,res_names_and_types);
     (void)memset(&res_names_and_types[0],NULL,sizeof(rcl_names_and_types_t));
-    res = rcl_get_topic_names_and_types(res_arg_node, res_alloc, false, res_names_and_types);
+    res = rcl_get_topic_names_and_types(res_arg_node, res_alloc, no_demangle, res_names_and_types);
 
     int names_length = res_names_and_types->names.size;
     ERL_NIF_TERM *names_and_types_array = enif_alloc(sizeof(ERL_NIF_TERM) * names_length);
@@ -66,7 +65,7 @@ ERL_NIF_TERM nif_rcl_get_topic_names_and_types(ErlNifEnv* env, int argc, const E
             env,
             enif_make_string(env, res_names_and_types->names.data[i], ERL_NIF_LATIN1),
             enif_make_list_from_array(
-                env,
+                env, 
                 types_array,
                 types_length
             )
