@@ -184,7 +184,7 @@ ERL_NIF_TERM nif_rcl_node_get_name(ErlNifEnv* env, int argc, const ERL_NIF_TERM 
         return enif_make_badarg(env);
     }
 
-    return enif_make_atom(env,rcl_node_get_name(res_node));
+    return enif_make_string(env,rcl_node_get_name(res_node), ERL_NIF_LATIN1);
 }
 
 #ifdef __cplusplus
