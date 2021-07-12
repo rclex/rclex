@@ -10,8 +10,9 @@ defmodule RclexTest do
     [node_1, node_2] = node_list
 
     assert Rclex.rcl_node_get_name(node_1) == 'test_node1', 'first node name is test_node1'
-
     assert Rclex.rcl_node_get_name(node_2) == 'test_node2', 'second node name is test_node2'
+
+    Rclex.node_finish(node_list)
   end
 
   # -----------------------graph_nif.c--------------------------
