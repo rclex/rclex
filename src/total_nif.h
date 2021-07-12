@@ -12,6 +12,7 @@ extern "C"
 #include "msg_int16_nif.h"
 #include "msg_string_nif.h"
 #include "wait_nif.h"
+#include "graph_nif.h"
 
 //各種リソースタイプの宣言やリソースタイプの作成を行う
 //------------------------nif_init.c-------------------
@@ -33,6 +34,8 @@ ErlNifResourceType* rt_sub;
 ErlNifResourceType* rt_sub_options;
 ErlNifResourceType* rt_msginfo;
 ErlNifResourceType* rt_sub_alloc;
+//----------------------graph_nif.c------------
+ErlNifResourceType* rt_names_and_types;
 //----------------------msg_int16_nif.c------------
 ErlNifResourceType* rt_Int16;
 //----------------------msg_string_nif.c---------------
