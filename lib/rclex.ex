@@ -89,7 +89,7 @@ defmodule Rclex do
     raise "haha"
   end
 
-    @doc """
+  @doc """
       return char 
   """
 
