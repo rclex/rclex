@@ -12,6 +12,17 @@ extern "C"
 #include "rcl/init_options.h"
 #include "rcutils/allocator.h"
 
+#ifdef DEBUG_BUILD
+#define DEBUG_PRINTF(fmt, ...)  \
+  do                            \
+  {                             \
+    printf("[%s] ", __FILE__);  \
+    printf(fmt, ##__VA_ARGS__); \
+  } while (0)
+#else
+#define DEBUG_PRINTF(fmt, ...)
+#endif
+
 ERL_NIF_TERM nif_rcl_get_zero_initialized_init_options(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
   if(argc != 0) {
@@ -98,7 +109,7 @@ ERL_NIF_TERM nif_rcl_init_with_null(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   enif_release_resource(res);
 
   *res = rcl_init(0,NULL,res_options,res_context);
-  printf("finished rcl_init\n");
+  DEBUG_PRINTF("finished rcl_init\n");
   return ret;
 }
 
@@ -130,7 +141,7 @@ ERL_NIF_TERM nif_rcl_init_options_fini(ErlNifEnv* env, int argc, const ERL_NIF_T
 
 ERL_NIF_TERM nif_rcl_shutdown(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-  printf("enter rcl_shutdown\n");
+  DEBUG_PRINTF("enter rcl_shutdown\n");
   if(argc != 1) {
     return enif_make_badarg(env);
   }
