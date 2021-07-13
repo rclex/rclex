@@ -21,6 +21,9 @@ NIF = $(PREFIX)/rclex.so
 CFLAGS  ?= -g -O2 -Wall -Wextra -Wno-unused-parameter -pedantic -fPIC
 LDFLAGS ?= -g -shared
 
+# Enabling this line prints debug messages on NIFs code.
+#CFLAGS  += -DDEBUG_BUILD
+
 # Set Erlang-specific compile and linker flags
 ERL_CFLAGS  ?= -I$(ERL_EI_INCLUDE_DIR)
 ERL_LDFLAGS ?= -L$(ERL_EI_LIBDIR)

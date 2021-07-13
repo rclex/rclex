@@ -3,8 +3,8 @@ defmodule Rclex.KeepSub do
     出版の有無にかかわらず購読をし続ける．
     subscribe_loopの中に適宜スリープを挟むことでCPU使用率は下げられる
   """
-  require Logger
   require Rclex.Macros
+  require Logger
 
   defp do_nothing do
     # noop
@@ -16,7 +16,7 @@ defmodule Rclex.KeepSub do
         callback.(takemsg)
 
       {Rclex.Macros.rcl_ret_subscription_invalid(), _, _, _} ->
-        IO.puts("subscription invalid")
+        Logger.error("subscription invalid")
 
       {Rclex.Macros.rcl_ret_subscription_take_failed(), _, _, _} ->
         do_nothing()

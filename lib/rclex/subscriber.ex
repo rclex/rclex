@@ -1,5 +1,6 @@
 defmodule Rclex.Subscriber do
   require Rclex.Macros
+  require Logger
 
   @doc """
     購読処理関数
@@ -16,7 +17,7 @@ defmodule Rclex.Subscriber do
           callback.(msg)
 
         {Rclex.Macros.rcl_ret_subscription_invalid(), _, _, _} ->
-          IO.puts("subscription invalid")
+          Logger.error("subscription invalid")
 
         {Rclex.Macros.rcl_ret_subscription_take_failed(), _, _, _} ->
           do_nothing()
