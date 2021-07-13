@@ -13,6 +13,7 @@ defmodule RclexTest do
     assert Rclex.rcl_node_get_name(node_2) == 'test_node2', 'second node name is test_node2'
 
     Rclex.node_finish(node_list)
+    Rclex.shutdown(context)
   end
 
   # -----------------------graph_nif.c--------------------------
@@ -41,5 +42,6 @@ defmodule RclexTest do
     Rclex.subscriber_finish(subscriber_list, node_list_2)
     Rclex.node_finish(node_list)
     Rclex.node_finish(node_list_2)
+    Rclex.shutdown(context)
   end
 end
