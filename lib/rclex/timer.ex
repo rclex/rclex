@@ -1,4 +1,6 @@
 defmodule Rclex.Timer do
+  require Logger
+
   @doc """
     タイマー処理関数
     timer_loop/3はループの上限つき
@@ -10,7 +12,7 @@ defmodule Rclex.Timer do
     count = count + 1
 
     if(count > limit) do
-      IO.puts("info: the number of count reaches limit")
+      Logger.info("the number of timer loop reaches limit")
       :ok
     else
       callback.(publisher_list)

@@ -2,6 +2,8 @@ defmodule Rclex do
   @on_load :load_nifs
   @compile {:autoload, false}
 
+  require Logger
+
   @moduledoc false
   def load_nifs do
     nif = Application.app_dir(:rclex, "priv/rclex")
@@ -89,8 +91,8 @@ defmodule Rclex do
     raise "haha"
   end
 
-    @doc """
-      return char 
+  @doc """
+      return char
   """
 
   def rcl_node_get_name(_a) do
@@ -506,7 +508,7 @@ defmodule Rclex do
     パブリッシャの終了
   """
   def publisher_finish(pub_list, node_list) do
-    IO.puts("publishers finish")
+    Logger.debug("publishers finish")
     n = length(pub_list)
 
     Enum.map(0..(n - 1), fn index ->
@@ -518,7 +520,7 @@ defmodule Rclex do
     サブスクライバの終了
   """
   def subscriber_finish(sub_list, node_list) do
-    IO.puts("subscribers finish")
+    Logger.debug("subscribers finish")
     n = length(sub_list)
 
     Enum.map(0..(n - 1), fn index ->
@@ -531,7 +533,7 @@ defmodule Rclex do
     ノード関連のメモリを解放する
   """
   def node_finish(node_list) do
-    IO.puts("node finish")
+    Logger.debug("node finish")
 
     Enum.map(node_list, fn node ->
       Rclex.rcl_node_fini(node)
