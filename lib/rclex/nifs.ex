@@ -271,6 +271,10 @@ defmodule Rclex.Nifs do
     raise "NIF string_init/1 is not implemented"
   end
 
+  def readdata_string(_a) do
+    raise "NIF readdata_string/1 is not implemented"
+  end
+
   # arg..(initialized msg,string)
   def setdata_string(_a, _b, _c) do
     raise "NIF setdata_string/3 is not implemented"
@@ -315,13 +319,6 @@ defmodule Rclex.Nifs do
 
   def get_sublist_from_waitset(_a) do
     raise "NIF get_sublist_from_waitset/1 is not implemented"
-  end
-
-  @doc """
-    メッセージからstringデータを取得する
-  """
-  def readdata_string(_a) do
-    raise "NIF readdata_string/1 is not implemented"
   end
 
 end

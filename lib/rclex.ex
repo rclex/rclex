@@ -161,6 +161,13 @@ defmodule Rclex do
   end
 
   @doc """
+    メッセージからstringデータを取得する
+  """
+  def readdata_string(msg) do
+    Nifs.readdata_string(msg)
+  end
+
+  @doc """
     メッセージにデータをセットする
     現在はstring型のみのサポートになっている
   """
