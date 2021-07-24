@@ -253,7 +253,7 @@ defmodule Rclex do
     raise "NIF std_msgs__msg__Int16__destroy/1 not implemented"
   end
 
-  def get_message_type_from_std_msgs_msg_Int16 do
+  def get_message_type_from_std_msgs_msg_int16 do
     raise "NIF get_message_type_from_std_msgs_msg_Int16/0 not implemented"
   end
 
