@@ -10,8 +10,8 @@ defmodule RclexTest do
     node_list = Rclex.create_nodes(context, node_name, 2)
     [node_1, node_2] = node_list
 
-    assert Rclex.Nifs.rcl_node_get_name(node_1) == 'test_node1', 'first node name is test_node1'
-    assert Rclex.Nifs.rcl_node_get_name(node_2) == 'test_node2', 'second node name is test_node2'
+    assert Rclex.node_get_name(node_1) == 'test_node1', 'first node name is test_node1'
+    assert Rclex.node_get_name(node_2) == 'test_node2', 'second node name is test_node2'
 
     Rclex.node_finish(node_list)
     Rclex.shutdown(context)
@@ -28,9 +28,9 @@ defmodule RclexTest do
     node = hd(node_list)
 
     names_and_types_tuple_list =
-      Rclex.Nifs.rcl_get_topic_names_and_types(
+      Rclex.get_topic_names_and_types(
         node,
-        Rclex.Nifs.rcl_get_default_allocator(),
+        Rclex.get_default_allocator(),
         false
       )
 
