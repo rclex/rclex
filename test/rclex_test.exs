@@ -9,11 +9,11 @@ defmodule RclexTest do
     node_list = Rclex.create_nodes(context, node_name, 2)
     [node_1, node_2] = node_list
 
-    assert Rclex.rcl_node_get_name(node_1) == 'test_node1', 'first node name is test_node1'
-    assert Rclex.rcl_node_get_name(node_2) == 'test_node2', 'second node name is test_node2'
+    assert Rclex.Nifs.rcl_node_get_name(node_1) == 'test_node1', 'first node name is test_node1'
+    assert Rclex.Nifs.rcl_node_get_name(node_2) == 'test_node2', 'second node name is test_node2'
 
     Rclex.node_finish(node_list)
-    Rclex.shutdown(context)
+    Rclex.Nifs.shutdown(context)
   end
 
   # -----------------------graph_nif.c--------------------------
@@ -27,7 +27,7 @@ defmodule RclexTest do
     node = hd(node_list)
 
     names_and_types_tuple_list =
-      Rclex.rcl_get_topic_names_and_types(node, Rclex.rcl_get_default_allocator(), false)
+      Rclex.Nifs.rcl_get_topic_names_and_types(node, Rclex.Nifs.rcl_get_default_allocator(), false)
 
     name_and_types_tuple = List.last(names_and_types_tuple_list)
 
@@ -42,6 +42,6 @@ defmodule RclexTest do
     Rclex.subscriber_finish(subscriber_list, node_list_2)
     Rclex.node_finish(node_list)
     Rclex.node_finish(node_list_2)
-    Rclex.shutdown(context)
+    Rclex.Nifs.shutdown(context)
   end
 end

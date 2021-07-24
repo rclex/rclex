@@ -1,10 +1,8 @@
 defmodule Rclex.Nifs do
-  @on_load :load_nifs
+  @on_load {:load_nifs, 0}
   @compile {:autoload, false}
 
-  @moduledoc """
-  T.B.A
-  """
+  @moduledoc false
 
   def load_nifs do
     nif = Application.app_dir(:rclex, "priv/rclex")

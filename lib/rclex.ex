@@ -12,11 +12,11 @@ defmodule Rclex do
     RCLのコンテキストを有効化
   """
   def rclexinit do
-    init_op = rcl_get_zero_initialized_init_options()
-    context = rcl_get_zero_initialized_context()
-    rcl_init_options_init(init_op)
-    rcl_init_with_null(init_op, context)
-    rcl_init_options_fini(init_op)
+    init_op = Nifs.rcl_get_zero_initialized_init_options()
+    context = Nifs.rcl_get_zero_initialized_context()
+    Nifs.rcl_init_options_init(init_op)
+    Nifs.rcl_init_with_null(init_op, context)
+    Nifs.rcl_init_options_fini(init_op)
     context
   end
 
@@ -25,16 +25,16 @@ defmodule Rclex do
     名前空間の有無を設定可能
   """
   def create_singlenode(context, node_name, node_namespace) do
-    node = rcl_get_zero_initialized_node()
-    node_op = rcl_node_get_default_options()
-    rcl_node_init(node, node_name, node_namespace, context, node_op)
+    node = Nifs.rcl_get_zero_initialized_node()
+    node_op = Nifs.rcl_node_get_default_options()
+    Nifs.rcl_node_init(node, node_name, node_namespace, context, node_op)
     node
   end
 
   def create_singlenode(context, node_name) do
-    node = rcl_get_zero_initialized_node()
-    node_op = rcl_node_get_default_options()
-    rcl_node_init_without_namespace(node, node_name, context, node_op)
+    node = Nifs.rcl_get_zero_initialized_node()
+    node_op = Nifs.rcl_node_get_default_options()
+    Nifs.rcl_node_init_without_namespace(node, node_name, context, node_op)
     node
   end
 
@@ -45,12 +45,12 @@ defmodule Rclex do
   def create_nodes(context, node_name, namespace, num_node) do
     node_list =
       Enum.map(0..(num_node - 1), fn n ->
-        rcl_node_init(
-          rcl_get_zero_initialized_node(),
+        Nifs.rcl_node_init(
+          Nifs.rcl_get_zero_initialized_node(),
           node_name ++ Integer.to_charlist(n),
           namespace,
           context,
-          rcl_node_get_default_options()
+          Nifs.rcl_node_get_default_options()
         )
       end)
 
@@ -60,11 +60,11 @@ defmodule Rclex do
   def create_nodes(context, node_name, num_node) do
     node_list =
       Enum.map(1..num_node, fn n ->
-        rcl_node_init_without_namespace(
-          rcl_get_zero_initialized_node(),
+        Nifs.rcl_node_init_without_namespace(
+          Nifs.rcl_get_zero_initialized_node(),
           node_name ++ Integer.to_charlist(n),
           context,
-          rcl_node_get_default_options()
+          Nifs.rcl_node_get_default_options()
         )
       end)
 
@@ -75,16 +75,16 @@ defmodule Rclex do
     パブリッシャおよびサブスクライバをひとつだけ生成
   """
   def single_create_publisher(pub_node, topic_name) do
-    publisher = rcl_get_zero_initialized_publisher()
-    pub_op = rcl_publisher_get_default_options()
-    rcl_publisher_init(publisher, pub_node, topic_name, pub_op)
+    publisher = Nifs.rcl_get_zero_initialized_publisher()
+    pub_op = Nifs.rcl_publisher_get_default_options()
+    Nifs.rcl_publisher_init(publisher, pub_node, topic_name, pub_op)
     publisher
   end
 
   def single_create_subscriber(sub_node, topic_name) do
-    subscriber = rcl_get_zero_initialized_subscription()
-    sub_op = rcl_subscription_get_default_options()
-    rcl_subscription_init(subscriber, sub_node, topic_name, sub_op)
+    subscriber = Nifs.rcl_get_zero_initialized_subscription()
+    sub_op = Nifs.rcl_subscription_get_default_options()
+    Nifs.rcl_subscription_init(subscriber, sub_node, topic_name, sub_op)
     subscriber
   end
 
@@ -96,11 +96,11 @@ defmodule Rclex do
   """
   def create_publishers(node_list, topic_name, :single) do
     Enum.map(node_list, fn node ->
-      rcl_publisher_init(
-        rcl_get_zero_initialized_publisher(),
+      Nifs.rcl_publisher_init(
+        Nifs.rcl_get_zero_initialized_publisher(),
         node,
         topic_name,
-        rcl_publisher_get_default_options()
+        Nifs.rcl_publisher_get_default_options()
       )
     end)
   end
@@ -116,11 +116,11 @@ defmodule Rclex do
 
   def create_subscribers(node_list, topic_name, :single) do
     Enum.map(node_list, fn node ->
-      rcl_subscription_init(
-        rcl_get_zero_initialized_subscription(),
+      Nifs.rcl_subscription_init(
+        Nifs.rcl_get_zero_initialized_subscription(),
         node,
         topic_name,
-        rcl_subscription_get_default_options()
+        Nifs.rcl_subscription_get_default_options()
       )
     end)
   end
@@ -139,8 +139,8 @@ defmodule Rclex do
     :int16
   """
   def initialize_msg do
-    create_empty_string()
-    |> string_init()
+    Nifs.create_empty_string()
+    |> Nifs.string_init()
   end
 
   @doc """
@@ -156,7 +156,7 @@ defmodule Rclex do
   # TODO: :int16であればInt16型が使えるようにする(目標)
   def initialize_msgs(msg_count, :int16) do
     Enum.map(1..msg_count, fn _ ->
-      create_empty_int16()
+      Nifs.create_empty_int16()
     end)
   end
 
@@ -166,7 +166,7 @@ defmodule Rclex do
   """
   def setdata(msg, data, :string) do
     data_size = String.length(data)
-    setdata_string(msg, String.to_charlist(data), data_size + 1)
+    Nifs.setdata_string(msg, String.to_charlist(data), data_size + 1)
   end
 
   @doc """
@@ -193,7 +193,7 @@ defmodule Rclex do
     n = length(pub_list)
 
     Enum.map(0..(n - 1), fn index ->
-      Rclex.rcl_publisher_fini(Enum.at(pub_list, index), Enum.at(node_list, index))
+      Nifs.rcl_publisher_fini(Enum.at(pub_list, index), Enum.at(node_list, index))
     end)
   end
 
@@ -205,7 +205,7 @@ defmodule Rclex do
     n = length(sub_list)
 
     Enum.map(0..(n - 1), fn index ->
-      Rclex.rcl_subscription_fini(Enum.at(sub_list, index), Enum.at(node_list, index))
+      Nifs.rcl_subscription_fini(Enum.at(sub_list, index), Enum.at(node_list, index))
     end)
   end
 
@@ -217,7 +217,7 @@ defmodule Rclex do
     Logger.debug("node finish")
 
     Enum.map(node_list, fn node ->
-      Rclex.rcl_node_fini(node)
+      Rclex.Nifs.rcl_node_fini(node)
     end)
   end
 end
