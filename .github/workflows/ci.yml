@@ -16,46 +16,45 @@ jobs:
     container: rclex/rclex_docker:${{ matrix.dockertags }}
 
     steps:
-        - name: clone rclex
-          uses: actions/checkout@v2
-          with: 
-            repository: rclex/rclex
-            path: rclex
-        - name: clone rclex_connection_tests
-          uses: actions/checkout@v2
-          with:
-            repository: rclex/rclex_connection_tests
-            path: rclex_connection_tests
+      - name: clone rclex
+        uses: actions/checkout@v2
+        with: 
+          repository: rclex/rclex
+          path: rclex
+      - name: clone rclex_connection_tests
+        uses: actions/checkout@v2
+        with:
+          repository: rclex/rclex_connection_tests
+          path: rclex_connection_tests
 
-        - name: mix compile
-          run: |
-            source /opt/ros/${ROS_DISTRO}/setup.bash
-            cd rclex
-            mix local.hex --force
-            mix deps.get
-            mix compile
+      - name: mix compile
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix local.hex --force
+          mix deps.get
+          mix compile
 
-        - name: mix format
-          run: |
-            source /opt/ros/${ROS_DISTRO}/setup.bash
-            cd rclex
-            mix format --check-formatted
+      - name: mix format
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix format --check-formatted
 
-        - name: mix credo
-          run: |
-            source /opt/ros/${ROS_DISTRO}/setup.bash
-            cd rclex
-            mix credo --all
+      - name: mix credo
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix credo --all
 
-        - name: mix test
-          run: |
-            source /opt/ros/${ROS_DISTRO}/setup.bash
-            cd rclex
-            mix test
+      - name: mix test
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix test
 
-        - name: connection tests
-          run: | 
-            source /opt/ros/${ROS_DISTRO}/setup.bash
-            cd rclex_connection_tests
-            ./run-all.sh
-
+      - name: connection tests
+        run: | 
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex_connection_tests
+          ./run-all.sh
