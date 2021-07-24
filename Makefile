@@ -44,6 +44,9 @@ SRC += src/msg_int16_nif.c src/msg_string_nif.c
 HEADERS =$(wildcard src/*.h)
 OBJ = $(SRC:src/%.c=$(BUILD)/%.o)
 
+calling_from_make:
+	mix compile
+
 all: install
 
 install: $(PREFIX) $(BUILD) $(NIF)
@@ -65,4 +68,4 @@ $(BUILD):
 clean:
 	$(RM) $(NIF) $(BUILD)/*.o
 
-.PHONY: all clean install
+.PHONY: all clean calling_from_make install
