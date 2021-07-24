@@ -45,7 +45,7 @@ jobs:
           run: |
             source /opt/ros/${ROS_DISTRO}/setup.bash
             cd rclex
-            mix credo
+            mix credo --all
 
         - name: mix test
           run: |
