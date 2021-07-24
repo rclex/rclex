@@ -4,7 +4,10 @@ defmodule Rclex do
 
   require Logger
 
-  @moduledoc false
+  @moduledoc """
+  T.B.A
+  """
+
   def load_nifs do
     nif = Application.app_dir(:rclex, "priv/rclex")
 

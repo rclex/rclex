@@ -2,6 +2,10 @@ defmodule Rclex.Subscriber do
   require Rclex.Macros
   require Logger
 
+  @moduledoc """
+  T.B.A
+  """
+
   @doc """
     購読処理関数
     購読が正常に行われれば，引数に受け取っていたコールバック関数を実行

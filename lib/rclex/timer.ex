@@ -1,6 +1,10 @@
 defmodule Rclex.Timer do
   require Logger
 
+  @moduledoc """
+  T.B.A
+  """
+
   @doc """
     タイマー処理関数
     timer_loop/3はループの上限つき

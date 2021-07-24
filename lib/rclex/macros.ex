@@ -1,4 +1,8 @@
 defmodule Rclex.Macros do
+  @moduledoc """
+  T.B.A
+  """
+
   defmacro rcl_ret_ok, do: 0
   defmacro rcl_ret_error, do: 1
   defmacro rcl_ret_timeout, do: 2
