@@ -9,7 +9,7 @@ defaults:
     shell: bash
 
 jobs:
-  publish:
+  publish2hex:
     runs-on: ubuntu-latest
     container: 
       image: rclex/rclex_docker:latest
@@ -21,6 +21,7 @@ jobs:
       - name: mix compile
         run: |
           source /opt/ros/${ROS_DISTRO}/setup.bash
+          mix local.hex --force
           mix deps.get
           mix compile
 
