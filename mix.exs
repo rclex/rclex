@@ -44,6 +44,7 @@ defmodule Rclex.MixProject do
         "README.md",
         "README_ja.md",
         "LICENSE",
+        "CHANGELOG.md",
         "Makefile"
       ],
       licenses: ["Apache-2.0"],
@@ -69,7 +70,7 @@ defmodule Rclex.MixProject do
 
   defp docs do
     [
-      extras: ["README.md", "README_ja.md"],
+      extras: ["README.md", "README_ja.md", "CHANGELOG.md"],
       main: "readme",
       source_ref: "v#{@version}",
       source_url: @source_url
