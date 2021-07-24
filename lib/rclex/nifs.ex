@@ -46,7 +46,7 @@ defmodule Rclex.Nifs do
       arguments...(
           rcl_context_t)
   """
-  def shutdown(_a) do
+  def rcl_shutdown(_a) do
     raise "NIF rcl_shutdown/1 not implemented"
   end
 

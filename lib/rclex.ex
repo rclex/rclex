@@ -220,4 +220,11 @@ defmodule Rclex do
       Rclex.Nifs.rcl_node_fini(node)
     end)
   end
+
+  @doc """
+    Rclexの終了
+  """
+  def shutdown(context) do
+    Rclex.Nifs.rcl_shutdown(context)
+  end
 end

@@ -97,7 +97,7 @@ ErlNifFunc nif_funcs[] = {
   {"rcl_init_options_fini",1,nif_rcl_init_options_fini,0},
   {"rcl_get_zero_initialized_context",0,nif_rcl_get_zero_initialized_context,0},
   {"rcl_init_with_null",2,nif_rcl_init_with_null,0},
-  {"shutdown",1,nif_rcl_shutdown,0},
+  {"rcl_shutdown",1,nif_rcl_shutdown,0},
   //--------------node_nif.c--------------
   {"rcl_get_zero_initialized_node",0,nif_rcl_get_zero_initialized_node,0},
   {"rcl_node_get_default_options",0,nif_rcl_node_get_default_options,0},
