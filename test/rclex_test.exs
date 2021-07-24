@@ -1,5 +1,6 @@
 defmodule RclexTest do
   use ExUnit.Case
+  doctest Rclex
 
   # -----------------------node_nif.c--------------------------
   test "rcl_node_get_name" do
