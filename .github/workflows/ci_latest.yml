@@ -1,4 +1,4 @@
-name: ci-all_version
+name: ci-latest
 
 on: [push]
 
@@ -7,12 +7,12 @@ defaults:
     shell: bash
 
 jobs:
-  rclex_test:
+  CI_on_push:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        dockertags: [latest, dashing-ex1.12.0-otp24.0.1, dashing-ex1.11.2-otp23.3.1, dashing-ex1.10.4-otp22.3.4, dashing-ex1.9.4-otp22.3.4, dashing-ex1.9.1-otp22.0.7, foxy-ex1.12.0-otp24.0.1, foxy-ex1.11.2-otp23.3.1]
+        dockertags: [latest]
     container: rclex/rclex_docker:${{ matrix.dockertags }}
 
     steps:
