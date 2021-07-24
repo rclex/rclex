@@ -132,7 +132,7 @@ ErlNifFunc nif_funcs[] = {
   {"create_msginfo",0,nif_create_msginfo,0},
   {"int16_init",1,nif_std_msgs__msg__Int16__init,0},
   {"int16_destroy",1,nif_std_msgs__msg__Int16__destroy,0},
-  {"get_message_type_from_std_msgs_msg_Int16",0,nif_getmsgtype_int16,0},
+  {"get_message_type_from_std_msgs_msg_int16",0,nif_getmsgtype_int16,0},
   {"readdata_int16",1,nif_readdata_int16,0},
   {"setdata_int16",2,nif_setdata_int16,0},
   //----------------msg_string_nif.c----------

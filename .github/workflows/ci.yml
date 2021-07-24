@@ -35,6 +35,18 @@ jobs:
             mix deps.get
             mix compile
 
+        - name: mix format
+          run: |
+            source /opt/ros/${ROS_DISTRO}/setup.bash
+            cd rclex
+            mix format --check-formatted
+
+        - name: mix credo
+          run: |
+            source /opt/ros/${ROS_DISTRO}/setup.bash
+            cd rclex
+            mix credo --all
+
         - name: mix test
           run: |
             source /opt/ros/${ROS_DISTRO}/setup.bash

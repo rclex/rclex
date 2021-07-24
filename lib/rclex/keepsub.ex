@@ -1,10 +1,11 @@
 defmodule Rclex.KeepSub do
+  require Rclex.Macros
+  require Logger
+
   @moduledoc """
     出版の有無にかかわらず購読をし続ける．
     subscribe_loopの中に適宜スリープを挟むことでCPU使用率は下げられる
   """
-  require Rclex.Macros
-  require Logger
 
   defp do_nothing do
     # noop

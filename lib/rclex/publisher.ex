@@ -2,6 +2,10 @@ defmodule Rclex.Publisher do
   require Rclex.Macros
   require Logger
 
+  @moduledoc """
+  T.B.A
+  """
+
   def publish_once(pub, pubmsg, pub_alloc) do
     case Rclex.rcl_publish(pub, pubmsg, pub_alloc) do
       {Rclex.Macros.rcl_ret_ok(), _, _} ->
