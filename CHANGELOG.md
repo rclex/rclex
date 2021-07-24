@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## v0.4.1 on 24 Jul 2021
+
+- New features:
+  - Implement `rcl_node_get_name/1` and `rcl_get_topic_names_and_types/3` #42
+- Code Improvements/Fixes:
+  - Improve code according to the advice from Credo #41 
+  - Use DEBUG_PRINTF and Logger to control print message in library #46 #23 #24
+  - Change the method to obtain ROS_DIR with `which ros2` #38
+  - Add and apply Artistic Style for C source (mix format) #45
+- Enhancements:
+  - Introduce `mix credo` on GHA #48
+  - Create GHA to publish to Hex when tags released #40
+  - Separate ci.yml #49
+  - Improve timing of connection tests [rclex/rclex_connection_tests#12](https://github.com/rclex/rclex_connection_tests/pull/12)
+- Bumps:
+  - `ex_doc` from 0.24.2 to 0.25.0 #47
+
 ## v0.4.0 on 8 Jun 2021
 
 - Support for [ROS 2 Foxy Fitzroy](https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/)!! #32 :tada:
