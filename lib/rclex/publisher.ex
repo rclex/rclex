@@ -1,13 +1,27 @@
 defmodule Rclex.Publisher do
   require Rclex.Macros
+  require Logger
+
+  @moduledoc """
+  T.B.A
+  """
 
   def publish_once(pub, pubmsg, pub_alloc) do
     case Rclex.rcl_publish(pub, pubmsg, pub_alloc) do
-      {Rclex.Macros.rcl_ret_ok(), _, _} -> IO.puts("publish ok")
-      {Rclex.Macros.rcl_ret_publisher_invalid(), _, _} -> IO.puts("Publisher is invalid")
-      {Rclex.Macros.rmw_ret_invalid_argument(), _, _} -> IO.puts("invalid argument is contained")
-      {Rclex.Macros.rcl_ret_error(), _, _} -> IO.puts("unspecified error")
-      {_, _, _} -> do_nothing()
+      {Rclex.Macros.rcl_ret_ok(), _, _} ->
+        Logger.debug("publish ok")
+
+      {Rclex.Macros.rcl_ret_publisher_invalid(), _, _} ->
+        Logger.error("Publisher is invalid")
+
+      {Rclex.Macros.rmw_ret_invalid_argument(), _, _} ->
+        Logger.error("invalid argument is contained")
+
+      {Rclex.Macros.rcl_ret_error(), _, _} ->
+        Logger.error("unspecified error")
+
+      {_, _, _} ->
+        do_nothing()
     end
   end
 

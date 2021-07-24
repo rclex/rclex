@@ -2,7 +2,12 @@ defmodule Rclex do
   @on_load :load_nifs
   @compile {:autoload, false}
 
-  @moduledoc false
+  require Logger
+
+  @moduledoc """
+  T.B.A
+  """
+
   def load_nifs do
     nif = Application.app_dir(:rclex, "priv/rclex")
 
@@ -87,6 +92,14 @@ defmodule Rclex do
 
   def read_guard_condition(_a) do
     raise "haha"
+  end
+
+  @doc """
+      return char
+  """
+
+  def rcl_node_get_name(_a) do
+    raise "NIF rcl_node_get_name/1 not implemented"
   end
 
   # ------------------------------publisher_nif.c--------------------------
@@ -210,6 +223,19 @@ defmodule Rclex do
     raise "NIF rcl_take is not implemented"
   end
 
+  # -----------------------------graph_nif.c------------------------------
+  @doc """
+    rcl_ret_t
+    rcl_get_topic_names_and_types(
+      const rcl_node_t * node,
+      rcl_allocator_t * allocator,
+      bool no_demangle,
+      rcl_names_and_types_t * topic_names_and_types);
+  """
+  def rcl_get_topic_names_and_types(_a, _b, _c) do
+    raise "NIF rcl_get_topic_names_and_types is not implemented"
+  end
+
   # -----------------------------msg_int16.c------------------------------
   def create_empty_int16 do
     raise "NIF create_empty_int16/0 is not implemented"
@@ -227,7 +253,7 @@ defmodule Rclex do
     raise "NIF std_msgs__msg__Int16__destroy/1 not implemented"
   end
 
-  def get_message_type_from_std_msgs_msg_Int16 do
+  def get_message_type_from_std_msgs_msg_int16 do
     raise "NIF get_message_type_from_std_msgs_msg_Int16/0 not implemented"
   end
 
@@ -485,7 +511,7 @@ defmodule Rclex do
     パブリッシャの終了
   """
   def publisher_finish(pub_list, node_list) do
-    IO.puts("publishers finish")
+    Logger.debug("publishers finish")
     n = length(pub_list)
 
     Enum.map(0..(n - 1), fn index ->
@@ -497,7 +523,7 @@ defmodule Rclex do
     サブスクライバの終了
   """
   def subscriber_finish(sub_list, node_list) do
-    IO.puts("subscribers finish")
+    Logger.debug("subscribers finish")
     n = length(sub_list)
 
     Enum.map(0..(n - 1), fn index ->
@@ -510,7 +536,7 @@ defmodule Rclex do
     ノード関連のメモリを解放する
   """
   def node_finish(node_list) do
-    IO.puts("node finish")
+    Logger.debug("node finish")
 
     Enum.map(node_list, fn node ->
       Rclex.rcl_node_fini(node)

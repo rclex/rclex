@@ -5,7 +5,7 @@ defmodule Rclex.MixProject do
   ROS 2 Client Library for Elixir.
   """
 
-  @version "0.4.0"
+  @version "0.4.1"
   @source_url "https://github.com/rclex/rclex"
 
   def project do
@@ -24,11 +24,12 @@ defmodule Rclex.MixProject do
       make_targets: ["all"],
       make_clean: ["clean"],
       make_error_message: """
-      If the error message above says that rcl/rcl.h can't be found, 
-      then the fix is to setup the ROS 2 environment. If you have 
+      If the error message above says that rcl/rcl.h can't be found,
+      then the fix is to setup the ROS 2 environment. If you have
       already installed ROS 2 environment, run the following command.
       `. /opt/ros/${ROS_DISTRO}/setup.bash`
-      """
+      """,
+      aliases: [format: [&format_c/1, "format"]]
     ]
   end
 
@@ -60,6 +61,7 @@ defmodule Rclex.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:elixir_make, "~> 0.4", runtime: false},
       {:ex_doc, "~> 0.22", only: :dev, runtime: false}
     ]
@@ -73,4 +75,18 @@ defmodule Rclex.MixProject do
       source_url: @source_url
     ]
   end
+
+  defp format_c([]) do
+    case System.find_executable("astyle") do
+      nil ->
+        Mix.Shell.IO.info("Install astyle to format C code.")
+
+      astyle ->
+        System.cmd(astyle, ["-n", "--style=1tbs", "-s2", "src/*.c"],
+          into: IO.stream(:stdio, :line)
+        )
+    end
+  end
+
+  defp format_c(_args), do: true
 end
