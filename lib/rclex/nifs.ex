@@ -320,5 +320,4 @@ defmodule Rclex.Nifs do
   def get_sublist_from_waitset(_a) do
     raise "NIF get_sublist_from_waitset/1 is not implemented"
   end
-
 end

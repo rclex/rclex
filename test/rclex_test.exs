@@ -28,7 +28,11 @@ defmodule RclexTest do
     node = hd(node_list)
 
     names_and_types_tuple_list =
-      Rclex.Nifs.rcl_get_topic_names_and_types(node, Rclex.Nifs.rcl_get_default_allocator(), false)
+      Rclex.Nifs.rcl_get_topic_names_and_types(
+        node,
+        Rclex.Nifs.rcl_get_default_allocator(),
+        false
+      )
 
     name_and_types_tuple = List.last(names_and_types_tuple_list)
 
