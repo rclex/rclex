@@ -16,7 +16,7 @@ RM = rm
 PREFIX = $(MIX_APP_PATH)/priv
 BUILD  = $(MIX_APP_PATH)/obj
 
-NIF = $(PREFIX)/rclex.so
+NIF = $(PREFIX)/rclex_nifs.so
 
 CFLAGS  ?= -g -O2 -Wall -Wextra -Wno-unused-parameter -pedantic -fPIC
 LDFLAGS ?= -g -shared

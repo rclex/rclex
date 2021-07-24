@@ -5,7 +5,7 @@ defmodule Rclex.Nifs do
   @moduledoc false
 
   def load_nifs do
-    nif = Application.app_dir(:rclex, "priv/rclex")
+    nif = Application.app_dir(:rclex, "priv/rclex_nifs")
 
     :erlang.load_nif(to_charlist(nif), 0)
   end

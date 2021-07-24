@@ -154,7 +154,6 @@ ErlNifFunc nif_funcs[] = {
 
 };
 
-//ERL_NIF_INIT(Elixir.Rclex.Nifs,nif_funcs,&load,&reload,&upgrade,&unload);
 ERL_NIF_INIT(Elixir.Rclex.Nifs,nif_funcs,&load,&reload,&upgrade,&unload)
 #ifdef __cplusplus
 }
