@@ -1,17 +1,30 @@
-# https://github.com/marketplace/actions/publish-to-hex
+name: publish2hex
+
 on:
   push:
-    tags:
-      - '*'
+    tags: ['v*']
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    container: 
+      image: rclex/rclex_docker:latest
+
     steps:
       - name: Check out
         uses: actions/checkout@v2
 
-      - name: Publish to Hex.pm
-        uses: erlangpack/github-action@v1
-        env:
-          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+      - name: mix compile
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          mix deps.get
+          mix compile
+
+      - name: publish to Hex.pm
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          mix hex.publish --yes
