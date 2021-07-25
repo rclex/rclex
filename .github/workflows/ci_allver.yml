@@ -7,7 +7,7 @@ defaults:
     shell: bash
 
 jobs:
-  build_deps:
+  CI_on_PR:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
