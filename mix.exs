@@ -29,7 +29,8 @@ defmodule Rclex.MixProject do
       already installed ROS 2 environment, run the following command.
       `. /opt/ros/${ROS_DISTRO}/setup.bash`
       """,
-      aliases: [format: [&format_c/1, "format"]]
+      aliases: [format: [&format_c/1, "format"]],
+      dialyzer: [plt_add_apps: [:mix]]
     ]
   end
 
@@ -62,8 +63,9 @@ defmodule Rclex.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:elixir_make, "~> 0.4", runtime: false},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.22", only: :dev, runtime: false}
     ]
   end
