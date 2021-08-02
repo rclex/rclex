@@ -7,7 +7,7 @@ extern "C"
 //リソースタイプを作る．load()から呼び出される.各種nifファイルから見れるようstaticつけない
 int open_resource(ErlNifEnv* env)
 {
-  const char* mod = "Elixir.Rclex";
+  const char* mod = "Elixir.Rclex.Nifs";
 
   //for init_nif.c
   const char* name1 = "rcl_ret_t";
@@ -97,7 +97,7 @@ ErlNifFunc nif_funcs[] = {
   {"rcl_init_options_fini",1,nif_rcl_init_options_fini,0},
   {"rcl_get_zero_initialized_context",0,nif_rcl_get_zero_initialized_context,0},
   {"rcl_init_with_null",2,nif_rcl_init_with_null,0},
-  {"shutdown",1,nif_rcl_shutdown,0},
+  {"rcl_shutdown",1,nif_rcl_shutdown,0},
   //--------------node_nif.c--------------
   {"rcl_get_zero_initialized_node",0,nif_rcl_get_zero_initialized_node,0},
   {"rcl_node_get_default_options",0,nif_rcl_node_get_default_options,0},
@@ -154,8 +154,7 @@ ErlNifFunc nif_funcs[] = {
 
 };
 
-//ERL_NIF_INIT(Elixir.Rclex,nif_funcs,&load,&reload,&upgrade,&unload);
-ERL_NIF_INIT(Elixir.Rclex,nif_funcs,&load,&reload,&upgrade,&unload)
+ERL_NIF_INIT(Elixir.Rclex.Nifs,nif_funcs,&load,&reload,&upgrade,&unload)
 #ifdef __cplusplus
 }
 #endif

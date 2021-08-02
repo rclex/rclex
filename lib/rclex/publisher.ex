@@ -1,4 +1,5 @@
 defmodule Rclex.Publisher do
+  alias Rclex.Nifs
   require Rclex.Macros
   require Logger
 
@@ -7,7 +8,7 @@ defmodule Rclex.Publisher do
   """
 
   def publish_once(pub, pubmsg, pub_alloc) do
-    case Rclex.rcl_publish(pub, pubmsg, pub_alloc) do
+    case Nifs.rcl_publish(pub, pubmsg, pub_alloc) do
       {Rclex.Macros.rcl_ret_ok(), _, _} ->
         Logger.debug("publish ok")
 
@@ -34,17 +35,17 @@ defmodule Rclex.Publisher do
     {:ok, supervisor} = Task.Supervisor.start_link()
 
     Enum.map(0..(length(publisher_list) - 1), fn index ->
-      #  Task.async(fn -> sub_spin(Rclex.create_empty_msgInt16(),subscriber,Rclex.create_msginfo(),Rclex.create_sub_alloc(),callback) end)
+      #  Task.async(fn -> sub_spin(Nifs.create_empty_msgInt16(),subscriber,Nifs.create_msginfo(),Nifs.create_sub_alloc(),callback) end)
       Task.Supervisor.start_child(
         supervisor,
         Rclex.Publisher,
         :publish_once,
-        [Enum.at(publisher_list, index), Enum.at(pubmsg_list, index), Rclex.create_pub_alloc()],
+        [Enum.at(publisher_list, index), Enum.at(pubmsg_list, index), Nifs.create_pub_alloc()],
         restart: :transient
       )
 
       # Task.async(fn ->
-      # publoop(Enum.at(publisher_list,index),Enum.at(pubmsg_list,index),Rclex.create_pub_alloc(),callback)
+      # publoop(Enum.at(publisher_list,index),Enum.at(pubmsg_list,index),Nifs.create_pub_alloc(),callback)
     end)
   end
 

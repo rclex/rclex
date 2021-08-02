@@ -1,4 +1,5 @@
 defmodule Rclex.KeepSub do
+  alias Rclex.Nifs
   require Rclex.Macros
   require Logger
 
@@ -12,7 +13,7 @@ defmodule Rclex.KeepSub do
   end
 
   def take_once(takemsg, sub, msginfo, sub_alloc, callback) do
-    case Rclex.rcl_take(sub, takemsg, msginfo, sub_alloc) do
+    case Nifs.rcl_take(sub, takemsg, msginfo, sub_alloc) do
       {Rclex.Macros.rcl_ret_ok(), _, _, _} ->
         callback.(takemsg)
 
@@ -42,8 +43,8 @@ defmodule Rclex.KeepSub do
         [
           Rclex.initialize_msg(),
           subscriber,
-          Rclex.create_msginfo(),
-          Rclex.create_sub_alloc(),
+          Nifs.create_msginfo(),
+          Nifs.create_sub_alloc(),
           callback
         ],
         restart: :transient

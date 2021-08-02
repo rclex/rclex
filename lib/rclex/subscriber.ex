@@ -1,4 +1,5 @@
 defmodule Rclex.Subscriber do
+  alias Rclex.Nifs
   require Rclex.Macros
   require Logger
 
@@ -11,12 +12,12 @@ defmodule Rclex.Subscriber do
     購読が正常に行われれば，引数に受け取っていたコールバック関数を実行
   """
   def each_subscribe(sub, callback) do
-    if Rclex.check_subscription(sub) do
+    if Nifs.check_subscription(sub) do
       msg = Rclex.initialize_msg()
-      msginfo = Rclex.create_msginfo()
-      sub_alloc = Rclex.create_sub_alloc()
+      msginfo = Nifs.create_msginfo()
+      sub_alloc = Nifs.create_sub_alloc()
 
-      case Rclex.rcl_take(sub, msg, msginfo, sub_alloc) do
+      case Nifs.rcl_take(sub, msg, msginfo, sub_alloc) do
         {Rclex.Macros.rcl_ret_ok(), _, _, _} ->
           callback.(msg)
 
@@ -35,15 +36,15 @@ defmodule Rclex.Subscriber do
     出版通知が来れば購読タスクが生成されてそれぞれで購読する．
   """
   def subscribe_loop(wait_set, sub_list, callback) do
-    Rclex.rcl_wait_set_clear(wait_set)
+    Nifs.rcl_wait_set_clear(wait_set)
     # waitsetにサブスクライバを追加する
-    Enum.map(sub_list, fn sub -> Rclex.rcl_wait_set_add_subscription(wait_set, sub) end)
+    Enum.map(sub_list, fn sub -> Nifs.rcl_wait_set_add_subscription(wait_set, sub) end)
 
     # wait_setからsubのリストを取りだす
-    waitset_sublist = Rclex.get_sublist_from_waitset(wait_set)
+    waitset_sublist = Nifs.get_sublist_from_waitset(wait_set)
 
     # 待機時間によってCPU使用率，購読までの時間は変わる
-    Rclex.rcl_wait(wait_set, 5)
+    Nifs.rcl_wait(wait_set, 5)
 
     # 購読タスク達のスーパーバイザを作成
     {:ok, sv} = Task.Supervisor.start_link()
@@ -66,8 +67,8 @@ defmodule Rclex.Subscriber do
   """
   def subscribe_start(sub_list, context, callback) do
     wait_set =
-      Rclex.rcl_get_zero_initialized_wait_set()
-      |> Rclex.rcl_wait_set_init(
+      Nifs.rcl_get_zero_initialized_wait_set()
+      |> Nifs.rcl_wait_set_init(
         length(sub_list),
         0,
         0,
@@ -75,7 +76,7 @@ defmodule Rclex.Subscriber do
         0,
         0,
         context,
-        Rclex.rcl_get_default_allocator()
+        Nifs.rcl_get_default_allocator()
       )
 
     {:ok, sv} = Task.Supervisor.start_link()
