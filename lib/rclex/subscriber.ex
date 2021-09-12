@@ -65,32 +65,38 @@ defmodule Rclex.Subscriber do
     スーパーバイザを生成
     監視されるタスクを生成し，購読ループ処理を実行させる
   """
-  def subscribe_start(sub_list, context, callback) do
-    wait_set =
-      Nifs.rcl_get_zero_initialized_wait_set()
-      |> Nifs.rcl_wait_set_init(
-        length(sub_list),
-        0,
-        0,
-        0,
-        0,
-        0,
-        context,
-        Nifs.rcl_get_default_allocator()
-      )
+  def subscribe_start(sub_list, context, call_back) do
+    Logger.debug("sub_start")
+    id_list = sub_list
+              |> Enum.map(fn sub -> Rclex.Loop.init_sub(sub, context, call_back)end )
+              |> Enum.map(fn {:ok, pid} -> pid end)
 
-    {:ok, sv} = Task.Supervisor.start_link()
+    {:ok, id_list}
+    # wait_set =
+    #   Nifs.rcl_get_zero_initialized_wait_set()
+    #   |> Nifs.rcl_wait_set_init(
+    #     length(sub_list),
+    #     0,
+    #     0,
+    #     0,
+    #     0,
+    #     0,
+    #     context,
+    #     Nifs.rcl_get_default_allocator()
+    #   )
 
-    {:ok, child} =
-      Task.Supervisor.start_child(
-        sv,
-        Rclex.Subscriber,
-        :subscribe_loop,
-        [wait_set, sub_list, callback],
-        restart: :transient
-      )
+    # {:ok, sv} = Task.Supervisor.start_link()
 
-    {sv, child}
+    # {:ok, child} =
+    #   Task.Supervisor.start_child(
+    #     sv,
+    #     Rclex.Subscriber,
+    #     :subscribe_loop,
+    #     [wait_set, sub_list, callback],
+    #     restart: :transient
+    #   )
+
+    # {sv, child}
   end
 
   @doc """
