@@ -4,15 +4,11 @@ defmodule Rclex.Loop do
     require Logger
     use GenServer
 
-    def init_sub(sub, context, call_back) do
-        GenServer.start_link(__MODULE__, {sub, context, call_back})
+    def start_link(sub_id, sub, context, call_back) do
+        GenServer.start_link(__MODULE__, {sub_id, sub, context, call_back})
     end
 
-    def init_pub(sub, context, call_back) do
-        {:ok, pid} = GenServer.start_link(__MODULE__, {sub, context, call_back})
-    end
-
-    def init({sub, context, call_back}) do
+    def init({sub_id, sub, context, call_back}) do
       wait_set = Nifs.rcl_get_zero_initialized_wait_set()
       |> Nifs.rcl_wait_set_init(
         1,
@@ -24,7 +20,8 @@ defmodule Rclex.Loop do
         context,
         Nifs.rcl_get_default_allocator()
       )
-        {:ok, {wait_set, sub, call_back}} 
+      GenServer.cast(self(), {:loop})
+        {:ok, {sub_id, wait_set, sub, call_back}}
     end
 
     def start_sub(id_list) do
@@ -36,7 +33,7 @@ defmodule Rclex.Loop do
         購読処理関数
         購読が正常に行われれば，引数に受け取っていたコールバック関数を実行
     """
-    def each_subscribe(sub, call_back) do
+    def each_subscribe(sub, call_back, sub_id) do
         if Nifs.check_subscription(sub) do
             msg = Rclex.initialize_msg()
             msginfo = Nifs.create_msginfo()
@@ -44,7 +41,7 @@ defmodule Rclex.Loop do
 
             case Nifs.rcl_take(sub, msg, msginfo, sub_alloc) do
                 {Rclex.Macros.rcl_ret_ok(), _, _, _} ->
-                call_back.(msg)
+                GenServer.cast(Executor, {:subscribe, {sub_id, msg}})
 
                 {Rclex.Macros.rcl_ret_subscription_invalid(), _, _, _} ->
                 Logger.error("subscription invalid")
@@ -55,11 +52,11 @@ defmodule Rclex.Loop do
         end
     end
 
-    def handle_cast({:loop}, {wait_set, sub, call_back}) do
-        {:noreply, {wait_set, sub, call_back}, {:continue, :loop} }
+    def handle_cast({:loop}, {sub_id, wait_set, sub, call_back}) do
+        {:noreply, {sub_id, wait_set, sub, call_back}, {:continue, :loop} }
     end
 
-    def handle_continue(:loop, {wait_set, sub, call_back}) do
+    def handle_continue(:loop, {sub_id, wait_set, sub, call_back}) do
         Nifs.rcl_wait_set_clear(wait_set)
         # waitsetにサブスクライバを追加する
         Nifs.rcl_wait_set_add_subscription(wait_set, sub)
@@ -80,9 +77,9 @@ defmodule Rclex.Loop do
         # )
         # end)
 
-        each_subscribe(waitset_sub, call_back)
+        each_subscribe(waitset_sub, call_back, sub_id)
 
-        {:noreply, {wait_set, sub, call_back}, {:continue, :loop}}
+        {:noreply, {sub_id, wait_set, sub, call_back}, {:continue, :loop}}
     end
 
     def do_nothing() do
