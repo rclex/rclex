@@ -10,13 +10,6 @@ defmodule Rclex.Executor do
     def init(_) do
         {:ok, {}} 
     end
-    
-    def publish(pub_list, msg_list) do
-        Logger.debug("publish queue!!!!")
-        Enum.map((0..length(pub_list) - 1), fn index ->
-            GenServer.call(Executor, {:set_queue, {Enum.at(pub_list, index), :publish, {Enum.at(msg_list, index)}}},500)
-        end)
-    end
 
     @doc """
         購読開始の準備
@@ -33,7 +26,9 @@ defmodule Rclex.Executor do
         プロセスを終了する
     """
     def stop_process(id_list) do
-        Enum.map(fn id -> GenServer.stop(id) end)
+        Enum.map(id_list, fn id -> GenServer.stop(id) end)
+    end
+
     end
     
     def handle_cast({:subscribe, {id, msg}}, state) do
