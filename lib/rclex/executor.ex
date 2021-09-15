@@ -24,8 +24,7 @@ defmodule Rclex.Executor do
     """
     def subscribe_start(sub_list, context, call_back) do
         id_list = sub_list
-                |> Enum.map(fn sub -> Rclex.Subscriber.start_link(sub, context, call_back)end )
-                |> Enum.map(fn {:ok, pid} -> pid end)
+                |> Enum.map(fn sub -> GenServer.call(Executor, {:sub_start_link, sub, context, call_back}) end )
 
         {:ok, id_list}
     end
@@ -44,7 +43,6 @@ defmodule Rclex.Executor do
 
     def handle_call({:sub_start_link, sub, context, call_back}, _from, state) do
         {:ok, pid} = Rclex.Subscriber.start_link(sub, context, call_back)
-        {:ok, pid, state}
+        {:reply, pid, state}
     end
-
 end
