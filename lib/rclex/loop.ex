@@ -5,22 +5,25 @@ defmodule Rclex.Loop do
     use GenServer
 
     def start_link(sub_id, sub, context, call_back) do
+        Logger.debug("loop link start")
         GenServer.start_link(__MODULE__, {sub_id, sub, context, call_back})
     end
 
     def init({sub_id, sub, context, call_back}) do
-      wait_set = Nifs.rcl_get_zero_initialized_wait_set()
-      |> Nifs.rcl_wait_set_init(
-        1,
-        0,
-        0,
-        0,
-        0,
-        0,
-        context,
-        Nifs.rcl_get_default_allocator()
-      )
-      GenServer.cast(self(), {:loop})
+        wait_set = Nifs.rcl_get_zero_initialized_wait_set()
+        |> Nifs.rcl_wait_set_init(
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            context,
+            Nifs.rcl_get_default_allocator()
+        )
+        Logger.debug("init")
+        GenServer.cast(self(), {:loop})
+        Logger.debug("loop start")
         {:ok, {sub_id, wait_set, sub, call_back}}
     end
 
@@ -34,6 +37,7 @@ defmodule Rclex.Loop do
         購読が正常に行われれば，引数に受け取っていたコールバック関数を実行
     """
     def each_subscribe(sub, call_back, sub_id) do
+        #Logger.debug("each subscribe")
         if Nifs.check_subscription(sub) do
             msg = Rclex.initialize_msg()
             msginfo = Nifs.create_msginfo()
@@ -65,7 +69,7 @@ defmodule Rclex.Loop do
         [waitset_sub]= Nifs.get_sublist_from_waitset(wait_set)
 
         # 待機時間によってCPU使用率，購読までの時間は変わる
-        Nifs.rcl_wait(wait_set, 20)
+        Nifs.rcl_wait(wait_set, 100)
 
         # # 購読タスク達のスーパーバイザを作成
         # {:ok, sv} = Task.Supervisor.start_link()
@@ -81,6 +85,16 @@ defmodule Rclex.Loop do
 
         {:noreply, {sub_id, wait_set, sub, call_back}, {:continue, :loop}}
     end
+
+    def handle_cast(:stop, state) do
+        Logger.debug("loop stop")
+        {:stop, :normal, state}
+    end
+
+    def terminate(:normal, {sub, call_back, loop_id}) do
+        Logger.debug("loop terminate")
+        GenServer.cast(loop_id, :stop)
+      end
 
     def do_nothing() do
     end
