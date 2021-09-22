@@ -2,15 +2,32 @@ defmodule Rclex.Publisher do
   alias Rclex.Nifs
   require Rclex.Macros
   require Logger
+  use GenServer
 
   @moduledoc """
   T.B.A
   """
+  
+  @doc """
+    publisherプロセスの生成
+  """
+  def start_link(pub) do
+    GenServer.start_link(__MODULE__, pub)
+  end
+
+  @doc """
+    publisherプロセスの初期化
+  """
+  def init(pub) do
+    {:ok, pub} 
+  end
 
   def publish_once(pub, pubmsg, pub_alloc) do
+    Logger.debug("pubonce")
     case Nifs.rcl_publish(pub, pubmsg, pub_alloc) do
       {Rclex.Macros.rcl_ret_ok(), _, _} ->
-        Logger.debug("publish ok")
+        #Logger.debug("publish ok")
+        Logger.debug(Rclex.readdata_string(pubmsg))
 
       {Rclex.Macros.rcl_ret_publisher_invalid(), _, _} ->
         Logger.error("Publisher is invalid")
@@ -49,7 +66,14 @@ defmodule Rclex.Publisher do
     end)
   end
 
+  def handle_cast({:publish, msg}, pub) do
+    Logger.debug(msg)
+    Rclex.Publisher.publish_once(pub, msg, Nifs.create_pub_alloc())
+    {:ok, pub}
+  end
+
   defp do_nothing do
     # noop
+    Logger.debug("do nothing")
   end
 end
