@@ -42,7 +42,6 @@ defmodule Rclex.Executor do
 
     def publish(id_list, data) do
         n = length(id_list)
-        Logger.debug(n)
         pubmsg_list = Rclex.initialize_msgs(n, :string)
         Enum.map(0..(n - 1), fn index ->
                   Rclex.setdata(Enum.at(pubmsg_list, index), data, :string)

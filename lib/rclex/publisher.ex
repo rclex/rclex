@@ -26,8 +26,7 @@ defmodule Rclex.Publisher do
     Logger.debug("pubonce")
     case Nifs.rcl_publish(pub, pubmsg, pub_alloc) do
       {Rclex.Macros.rcl_ret_ok(), _, _} ->
-        #Logger.debug("publish ok")
-        Logger.debug(Rclex.readdata_string(pubmsg))
+        Logger.debug("publish ok")
 
       {Rclex.Macros.rcl_ret_publisher_invalid(), _, _} ->
         Logger.error("Publisher is invalid")
