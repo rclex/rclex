@@ -67,9 +67,13 @@ defmodule Rclex.Publisher do
   end
 
   def handle_cast({:publish, msg}, pub) do
-    Logger.debug(msg)
+    Logger.debug("handle_cast publish")
     Rclex.Publisher.publish_once(pub, msg, Nifs.create_pub_alloc())
-    {:ok, pub}
+    {:noreply, pub}
+  end
+
+  def terminate(:normal, pub) do
+    Logger.debug("terminate publisher")
   end
 
   defp do_nothing do
