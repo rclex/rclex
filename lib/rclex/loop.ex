@@ -2,9 +2,9 @@ defmodule Rclex.Loop do
     alias Rclex.Nifs
     require Rclex.Macros
     require Logger
-    use GenServer
+    use GenServer, restart: :transient
 
-    def start_link(sub_id, sub, context, call_back) do
+    def start_link({sub_id, sub, context, call_back}) do
         Logger.debug("loop link start")
         GenServer.start_link(__MODULE__, {sub_id, sub, context, call_back})
     end
@@ -69,32 +69,29 @@ defmodule Rclex.Loop do
         [waitset_sub]= Nifs.get_sublist_from_waitset(wait_set)
 
         # 待機時間によってCPU使用率，購読までの時間は変わる
-        Nifs.rcl_wait(wait_set, 100)
-
-        # # 購読タスク達のスーパーバイザを作成
-        # {:ok, sv} = Task.Supervisor.start_link()
-
-        # # 購読タスクをサブスクライバの数だけ生成，each_subscribe/2を実行させる．
-        # Enum.map(waitset_sublist, fn sub ->
-        # Task.Supervisor.start_child(sv, Rclex.Subscriber, :each_subscribe, [sub, call_back],
-        #     restart: :transient
-        # )
-        # end)
+        Nifs.rcl_wait(wait_set, 50)
 
         each_subscribe(waitset_sub, call_back, sub_id)
 
-        {:noreply, {sub_id, wait_set, sub, call_back}, {:continue, :loop}}
+        # 
+        receive do
+            :stop ->
+                Process.send(sub_id, :terminate, [:noconnect])
+                {:stop, :normal, {sub_id, wait_set, sub, call_back}}
+        after
+        # Optional timeout
+            50 ->
+                {:noreply, {sub_id, wait_set, sub, call_back}, {:continue, :loop}}
+        end
     end
 
-    def handle_cast(:stop, state) do
-        Logger.debug("loop stop")
-        {:stop, :normal, state}
+    def terminate(:normal, state) do
+        Logger.debug("loop process killed : normal")
     end
 
-    def terminate(:normal, {sub, call_back, loop_id}) do
-        Logger.debug("loop terminate")
-        GenServer.cast(loop_id, :stop)
-      end
+    def terminate(:shutdown, state) do
+        Logger.debug("loop process killed : shutdown")
+    end
 
     def do_nothing() do
     end

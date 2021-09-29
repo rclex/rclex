@@ -8,6 +8,8 @@ defmodule Rclex.Subscriber do
   T.B.A
   """
 
+  ## TODO: ここでsubscriberを生成、トピック名を覚えておく
+
   @doc """
     subscriberプロセスの生成
   """
@@ -21,7 +23,11 @@ defmodule Rclex.Subscriber do
     subscriberとコールバック関数を状態として持つ。
   """
   def init({sub, context, call_back}) do
-    {:ok, loop_id} = Rclex.Loop.start_link(self(), sub, context, call_back)
+    children = [
+      {Rclex.Loop, {self(), sub, context, call_back}}
+    ]
+    opts = [strategy: :one_for_one, name: :sub_loop]
+    {:ok, loop_id} = Supervisor.start_link(children, opts)
     {:ok, {sub, call_back, loop_id}} 
   end
 
@@ -34,14 +40,17 @@ defmodule Rclex.Subscriber do
   end
 
   def handle_cast(:stop, {sub, call_back, loop_id}) do
-    Logger.debug("sub cast stop")
-    GenServer.cast(loop_id, :stop)
     {:stop, :normal, {sub, call_back, loop_id}}
+  end
+
+  def handle_cast(:stop_loop, {sub, call_back, loop_id}) do
+    Logger.debug("stop_loop")
+    Supervisor.stop(loop_id)
+    {:noreply, {sub, call_back, loop_id}}
   end
 
   def terminate(:normal, {sub, call_back, loop_id}) do
     Logger.debug("sub terminate")
-    GenServer.stop(loop_id)
   end
 
   defp do_nothing do
