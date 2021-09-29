@@ -1,9 +1,9 @@
 defmodule Rclex.Executor do
     require Rclex.Macros
     require Logger
-    use GenServer
+    use GenServer, restart: :transient
 
-    def start() do
+    def start_link(_) do
         GenServer.start_link(__MODULE__, {}, name: Executor)
     end
 

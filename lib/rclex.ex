@@ -17,6 +17,11 @@ defmodule Rclex do
     Nifs.rcl_init_options_init(init_op)
     Nifs.rcl_init_with_null(init_op, context)
     Nifs.rcl_init_options_fini(init_op)
+    children = [
+      Rclex.Executor
+    ]
+    opts = [strategy: :one_for_one, name: :executor]
+    Supervisor.start_link(children, opts)
     context
   end
 
