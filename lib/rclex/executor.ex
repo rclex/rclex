@@ -28,18 +28,26 @@ defmodule Rclex.Executor do
     """
     def stop_process(id_list) do
         Logger.debug("start stop process")
-        Enum.map(id_list, fn id -> GenServer.cast(id, :stop) end)
-        Logger.debug("end end")
+        Enum.map(id_list, fn id -> GenServer.stop(id, :normal, 3000) end)
+        Logger.debug("end subscribe")
         {:ok, "stop process"}
     end
 
-    def publish(id_list, msg_list) do
+    def stop_subscribe(sub_id_list) do
+        Logger.debug("start stop subscribe")
+        Enum.map(sub_id_list, fn id -> GenServer.cast(id, :stop_loop) end)
+        Logger.debug("end loop")
+        {:ok, "stop subscribe"}
+    end
+
+    def publish(id_list, data) do
         n = length(id_list)
+        Logger.debug(n)
         pubmsg_list = Rclex.initialize_msgs(n, :string)
         Enum.map(0..(n - 1), fn index ->
-                  Rclex.setdata(Enum.at(pubmsg_list, index), Enum.at(msg_list, index), :string)
+                  Rclex.setdata(Enum.at(pubmsg_list, index), data, :string)
                 end)
-        Enum.map(0..(length(id_list) - 1), fn index ->
+        Enum.map(0..(n - 1), fn index ->
             GenServer.cast(Enum.at(id_list, index), {:publish, Enum.at(pubmsg_list, index)})
         end)
     end
