@@ -76,11 +76,19 @@ defmodule Rclex.Subscriber do
     {:stop, :normal, state}
   end
 
-  def handle_cast(:stop_loop, state) do
-    Logger.debug("stop_loop")
-    {:ok, supervisor_id} = Map.fetch(state, :supervizor_id)
+  def handle_call(:subscribe_stop, _from, state) do
+    {:ok, supervisor_id} = Map.fetch(state, :supervisor_id)
     Supervisor.stop(supervisor_id)
-    {:noreply, state}
+    new_state = Map.delete(state, :supervisor_id)
+    {:reply, {:ok, "stop_loop"}, new_state}
+  end
+
+  def handle_call({:finish_subscriber, node}, _from, state) do
+    {:ok, sub} = Map.fetch(state, :subscriber)
+    Nifs.rcl_subscription_fini(sub, node)
+    Logger.debug("finish_subscriber")
+    #{:stop, :normal, state}
+    {:reply, {:ok, "subscriber process deleted"}, state}
   end
 
   def terminate(:normal, _) do
