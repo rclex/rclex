@@ -237,6 +237,7 @@ defmodule Rclex do
     Rclexの終了
   """
   def shutdown(context) do
+    Supervisor.stop(:executor)
     Nifs.rcl_shutdown(context)
   end
 
