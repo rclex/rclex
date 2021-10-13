@@ -8,8 +8,15 @@ defmodule Rclex.Executor do
         GenServer.start_link(__MODULE__, {}, name: Executor)
     end
 
+    # 状態はjob queueとnode情報を持つ
     def init(_) do
-        {:ok, %{}} 
+        children = [
+            {Rclex.JobQueue, {}}
+        ]
+        opts = [strategy: :one_for_one]
+        {:ok, id} = Supervisor.start_link(children, opts)
+        GenServer.cast(self(), :start_loop)
+        {:ok, {:queue.new(), %{}}} 
     end
 
     @doc """
@@ -58,6 +65,13 @@ defmodule Rclex.Executor do
     """
     def create_singlenode(context, node_name, node_namespace) do
         GenServer.call(Executor, {:create_singlenode, {context, node_name, node_namespace}})
+        #Process.send(Executor, {self(),}hoge)
+        #どうせ返しているのはnameとかのやつなのでそれを使う、でも良い気がする？
+        #ここエラーハンドリングしないのはやばい気はする
+        #作成は感知したいが...
+        #recieve do
+        # {:ok, node}
+        #
     end
 
     def create_singlenode(context, node_name) do
@@ -76,20 +90,62 @@ defmodule Rclex.Executor do
         GenServer.call(Executor, {:create_nodes, {context, node_name, num_node}})
     end
 
+    def finish_node(node) do
+        GenServer.call(Executor, {:finish_node, node})
+    end
+
     def single_create_subscriber(sub_node, topic_name) do
         subscriber = Nifs.rcl_get_zero_initialized_subscription()
         sub_op = Nifs.rcl_subscription_get_default_options()
         Nifs.rcl_subscription_init(subscriber, sub_node, topic_name, sub_op)
         subscriber
-      end
+    end
     
-    def handle_cast({:subscribe, {id, msg}}, state) do
-        GenServer.cast(id, {:execute, msg})
-        {:noreply, state}
+    # def handle_cast({:subscribe, {id, msg}}, {jobs, nodes}) do
+    #     new_jobs = :queue.in({id, msg}, jobs)
+    #     #GenServer.cast(id, {:execute, msg})
+    #     {:noreply, {new_jobs, nodes}, {:continue, :loop}}
+    # end
+    def handle_cast(:start_loop, state) do
+        {:noreply, state, {:continue, :loop}}
     end
 
-    def handle_call({:create_singlenode, {context, node_name, node_namespace}}, _from, supervisor_ids ) do
-        if Map.has_key?(supervisor_ids, {node_namespace, node_name}) do
+    def handle_continue(:loop, {jobs, nodes}) do
+        {status, job} = GenServer.call(JobQueue, :pop)
+        if status == :pop do
+            Logger.debug("kiteru?")
+            {id, msg} = job
+            GenServer.cast(id, {:execute, msg})
+            receive do
+                :stop ->
+                    {:stop, :normal, {jobs, nodes}}
+                {:finish_node, node} ->
+                    GenServer.call(Executor, {:finish_node, node})
+                    {:noreply, {jobs, nodes}, {:continue, :loop}}
+            after
+            # Optional timeout
+                100 ->
+                    Logger.debug("timeout")
+                    {:noreply, {jobs, nodes}, {:continue, :loop}}
+            end
+        else
+            #Logger.debug("konaine")
+            receive do
+                :stop ->
+                    {:stop, :normal, {jobs, nodes}}
+                {:finish_node, node} ->
+                    GenServer.call(Executor, {:finish_node, node})
+                    {:noreply, {jobs, nodes}, {:continue, :loop}}
+            after
+            # Optional timeout
+                100 ->
+                    {:noreply, {jobs, nodes}, {:continue, :loop}}
+            end
+        end
+    end
+
+    def handle_call({:create_singlenode, {context, node_name, node_namespace}}, _from, {jobs, nodes} ) do
+        if Map.has_key?(nodes, {node_namespace, node_name}) do
             # 同名のノードがすでに存在しているときはエラーを返す
              {:reply, {:error, node_name}}
         else
@@ -101,13 +157,13 @@ defmodule Rclex.Executor do
             ]
             opts = [strategy: :one_for_one]
             {:ok, pid} = Supervisor.start_link(children, opts)
-            new_supervisor_ids = Map.put_new(supervisor_ids, {node_namespace, node_name}, pid)
-            {:reply, {:ok, node_name}, new_supervisor_ids}
+            new_nodes = Map.put_new(nodes, {node_namespace, node_name}, %{supervisor_id: pid})
+            {:reply, {:ok, node_name}, {jobs, new_nodes}}
         end
     end
 
-    def handle_call({:create_singlenode, {context, node_name}}, _from, supervisor_ids ) do
-        if Map.has_key?(supervisor_ids, {"", node_name}) do
+    def handle_call({:create_singlenode, {context, node_name}}, _from, {jobs, nodes} ) do
+        if Map.has_key?(nodes, {"", node_name}) do
             # 同名のノードがすでに存在しているときはエラーを返す
              {:reply, {:error, node_name}}
         else
@@ -119,12 +175,12 @@ defmodule Rclex.Executor do
             ]
             opts = [strategy: :one_for_one]
             {:ok, pid} = Supervisor.start_link(children, opts)
-            new_supervisor_ids = Map.put_new(supervisor_ids, {"", node_name}, pid)
-            {:reply, {:ok, node_name}, new_supervisor_ids}
+            new_nodes = Map.put_new(nodes, {"", node_name}, %{supervisor_id: pid})
+            {:reply, {:ok, node_name}, {jobs, new_nodes}}
         end
     end
 
-    def handle_call({:create_nodes, context, node_name, namespace, num_node}, _from, supervisor_ids) do
+    def handle_call({:create_nodes, context, node_name, namespace, num_node}, _from, {jobs, nodes}) do
         name_list =
         Enum.map(0..(num_node - 1), fn n ->
             node_name ++ Integer.to_charlist(n)
@@ -163,12 +219,12 @@ defmodule Rclex.Executor do
         for n <- 0..(num_node - 1) do
             node_name = Enum.at(name_list, n)
             pid = Enum.at(id_list, n)
-            supervisor_ids = Map.put_new(supervisor_ids, {namespace, node_name}, pid)
+            nodes = Map.put_new(nodes, {namespace, node_name}, %{supervisor_id: pid})
         end
-        {:reply, {:ok, name_list}, supervisor_ids}
+        {:reply, {:ok, name_list}, {jobs, nodes}}
     end
 
-    def handle_call({:create_nodes, context, node_name, num_node}, _from, supervisor_ids) do
+    def handle_call({:create_nodes, context, node_name, num_node}, _from, {jobs, nodes}) do
         name_list =
         Enum.map(0..(num_node - 1), fn n ->
             node_name ++ Integer.to_charlist(n)
@@ -205,9 +261,25 @@ defmodule Rclex.Executor do
         for n <- 0..(num_node - 1) do
             node_name = Enum.at(name_list, n)
             pid = Enum.at(id_list, n)
-            supervisor_ids = Map.put_new(supervisor_ids, {"", node_name}, pid)
+            nodes = Map.put_new(nodes, {"", node_name}, %{supervisor_id: pid})
         end
-        {:reply, {:ok, name_list}, supervisor_ids}
+        {:reply, {:ok, name_list}, {jobs, nodes}}
+    end
+
+    def handle_call({:finish_node, node}, _from, {jobs, nodes}) do
+        Logger.debug("finish_node")
+        GenServer.call({:global, node}, :finish_node)
+        Logger.debug("finish_node2")
+        {:ok, node_info} = Map.fetch(nodes, {"", node})
+
+        {:ok, supervisor_id} = Map.fetch(node_info, :supervisor_id)
+
+        Supervisor.stop(supervisor_id)
+
+        #node情報削除
+        new_nodes = Map.delete(nodes, {"", node})
+
+        {:reply, :ok, {jobs, new_nodes}}
     end
 
     # def handle_call({:sub_start_link, sub, context, call_back},_from, state) do
