@@ -79,4 +79,13 @@ defmodule Rclex.Node do
         Logger.debug(text)
         {:reply, {:ok, sub_identifier}, {node, name, supervisor_ids}}
     end
+
+    def handle_call(:finish_node, _from, {node, name, supervisor_ids}) do
+        Logger.debug("node finish: #{name}")
+        Nifs.rcl_node_fini(node)
+
+        #TODO nodeに紐付いているpub,subをきちんと終了させる
+
+        {:reply, :ok, {node, name, supervisor_ids}}
+    end
 end
