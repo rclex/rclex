@@ -56,7 +56,7 @@ defmodule Rclex.Subscriber do
   def handle_cast({:subscribe_start, {context, call_back}}, state) do
     {:ok, sub} = Map.fetch(state, :subscriber)
     children = [
-      {Rclex.Loop, {self(), sub, context, call_back}}
+      {Rclex.SubLoop, {self(), sub, context, call_back}}
     ]
     opts = [strategy: :one_for_one]
     {:ok, supervisor_id} = Supervisor.start_link(children, opts)
