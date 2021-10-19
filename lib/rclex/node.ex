@@ -21,17 +21,28 @@ defmodule Rclex.Node do
         {:ok, {node, name, %{}}}
     end
 
-    @doc """
-        指定したnodeとtopicのsubscriberプロセスを作成
-        
-    """
     def create_single_subscriber(node_identifier, topic_name) do
         GenServer.call({:global, node_identifier}, {:create_subscriber, node_identifier, topic_name})
     end
 
-    def create_subscribers(node_identifier_list, topic_name) do
+    @doc """
+        サブスクライバを複数生成
+        :singleもしくは:multiを指定する．
+        :single...一つのトピックに複数の出版者または購読者
+        :multi...1つのトピックに出版者または購読者1つのペアを複数
+    """
+
+    def create_subscribers(node_identifier_list, topic_name, :single) do
         sub_identifier_list = 
             Enum.map(node_identifier_list, fn node_identifier -> GenServer.call({:global, node_identifier}, {:create_subscriber, node_identifier, topic_name}) end)
+            |> Enum.map(fn {:ok, sub_identifier} -> sub_identifier end)
+            
+        {:ok, sub_identifier_list}
+    end
+
+    def create_subscribers(node_identifier_list, topic_name, :multi) do
+        sub_identifier_list = 
+            Enum.map(0..(node_identifier_list) - 1, fn index -> GenServer.call({:global, Enum.at(node_identifier_list, index)}, {:create_subscriber, Enum.at(node_identifier_list, index), topic_name ++ Integer.to_charlist(index)}) end)
             |> Enum.map(fn {:ok, sub_identifier} -> sub_identifier end)
             
         {:ok, sub_identifier_list}
@@ -41,9 +52,23 @@ defmodule Rclex.Node do
         GenServer.call({:global, node_identifier}, {:create_publisher, node_identifier, topic_name})
     end
 
-    def create_publishers(node_identifier_list, topic_name) do
+    @doc """
+        パブリッシャを複数生成
+        :singleもしくは:multiを指定する．
+        :single...一つのトピックに複数の出版者または購読者
+        :multi...1つのトピックに出版者または購読者1つのペアを複数
+    """
+
+    def create_publishers(node_identifier_list, topic_name, :single) do
         pub_identifier_list =  
             Enum.map(node_identifier_list, fn node_identifier -> GenServer.call({:global, node_identifier}, {:create_publisher, node_identifier, topic_name}) end)
+            |> Enum.map(fn {:ok, pub_identifier} -> pub_identifier end)
+        {:ok, pub_identifier_list}
+    end
+
+    def create_publishers(node_identifier_list, topic_name, :multi) do
+        pub_identifier_list =  
+            Enum.map(0..length(node_identifier_list) - 1, fn index -> GenServer.call({:global, Enum.at(node_identifier_list, index)}, {:create_publisher, Enum.at(node_identifier_list, index), topic_name ++ Integer.to_charlist(index)}) end)
             |> Enum.map(fn {:ok, pub_identifier} -> pub_identifier end)
         {:ok, pub_identifier_list}
     end
