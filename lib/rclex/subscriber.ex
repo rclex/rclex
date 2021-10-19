@@ -29,9 +29,23 @@ defmodule Rclex.Subscriber do
     GenServer.cast({:global, sub_identifier}, {:start_subscribing, {context, call_back}})
   end
 
+  def start_subscribing(sub_list, context, call_back) do
+    Enum.map(sub_list, fn {node_identifier, topic_name, :sub} ->
+      sub_identifier = node_identifier ++ '/' ++ topic_name
+      GenServer.cast({:global, sub_identifier}, {:start_subscribing, {context, call_back}})
+    end)
+  end
+
   def stop_subscribing({node_identifier, topic_name, :sub}) do
     sub_identifier = node_identifier ++ '/' ++ topic_name
     :ok = GenServer.call({:global, sub_identifier}, :stop_subscribing)
+  end
+
+  def stop_subscribing(sub_list) do
+    Enum.map(sub_list, fn {node_identifier, topic_name, :sub} ->
+      sub_identifier = node_identifier ++ '/' ++ topic_name
+      GenServer.call({:global, sub_identifier}, :stop_subscribing)
+    end)
   end
 
   def handle_cast({:start_subscribing, {context, call_back}}, state) do

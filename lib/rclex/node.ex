@@ -101,6 +101,12 @@ defmodule Rclex.Node do
     :ok = GenServer.call({:global, node_identifier}, {:finish_job, topic_name, role})
   end
 
+  def finish_jobs(job_list) do
+    Enum.map(job_list, fn {node_identifier, topic_name, role} ->
+      GenServer.call({:global, node_identifier}, {:finish_job, topic_name, role})
+    end)
+  end
+
   def handle_call(
         {:create_subscriber, node_identifier, topic_name},
         _,

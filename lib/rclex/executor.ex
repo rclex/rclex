@@ -88,6 +88,13 @@ defmodule Rclex.Executor do
     GenServer.call(Executor, {:finish_node, node_identifier})
   end
 
+  def finish_nodes(node_identifier_list) do
+    Enum.map(
+      node_identifier_list,
+      fn node_identifier -> GenServer.call(Executor, {:finish_node, node_identifier}) end
+    )
+  end
+
   def handle_cast({:execute, {id, msg}}, {nodes}) do
     GenServer.cast(id, {:execute, msg})
     {:noreply, {nodes}}

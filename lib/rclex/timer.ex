@@ -67,12 +67,4 @@ defmodule Rclex.Timer do
       end
     end
   end
-
-  @doc """
-    タイマー処理の終了
-    スーパバイザプロセスと実行タスクを停止する
-  """
-  def terminate_timer(sv, child) do
-    Task.Supervisor.terminate_child(sv, child)
-  end
 end
