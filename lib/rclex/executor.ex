@@ -4,6 +4,10 @@ defmodule Rclex.Executor do
     require Logger
     use GenServer, restart: :transient
 
+    @moduledoc """
+        T.B.A
+    """
+
     def start_link(_) do
         GenServer.start_link(__MODULE__, {}, name: Executor)
     end
@@ -24,15 +28,6 @@ defmodule Rclex.Executor do
         {:ok, id} = Supervisor.start_link(children, opts)
         {:ok, {%{}}}
     end
-
-    @doc """
-        プロセスを終了する
-    """
-    # def stop_process(name_list) do
-    #     Logger.debug("start stop process")
-    #     Enum.map(name_list, fn name -> GenServer.stop({:global, name}, :normal, 3000) end)
-    #     {:ok, "stop process"}
-    # end
 
     @doc """
         ノードをひとつだけ作成
