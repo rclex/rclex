@@ -8,7 +8,13 @@ defmodule Rclex.Executor do
         GenServer.start_link(__MODULE__, {}, name: Executor)
     end
 
-    # 状態はjob queueとnode情報を持つ
+    @doc """
+        Executorプロセスの初期化
+        下位プロセスとしてJobQueue, JobExecutorプロセスを生成する
+        状態: 
+            supervisor_ids :: map()
+            keyがnode_identifer、valueがnode情報。現在はnodeプロセスのsupervisorのidを格納している
+    """
     def init(_) do
         children = [
             {Rclex.JobQueue, {}},
@@ -20,58 +26,23 @@ defmodule Rclex.Executor do
     end
 
     @doc """
-        購読開始の準備
-        監視されるタスクを生成し，購読ループ処理を実行させる
-    """
-    def subscribe_start(sub_list, context, call_back) do
-        Logger.debug("subscribe start")
-        id_list = sub_list
-                |> Enum.map(fn sub -> GenServer.call(Executor, {:sub_start_link, sub, context, call_back}) end )
-        Logger.debug("subscribe start 2")
-        {:ok, id_list}
-    end
-
-    @doc """
         プロセスを終了する
     """
-    def stop_process(id_list) do
-        Logger.debug("start stop process")
-        Enum.map(id_list, fn id -> GenServer.stop({:global, id}, :normal, 3000) end)
-        Logger.debug("end subscribe")
-        {:ok, "stop process"}
-    end
-
-    def stop_subscribe(sub_id_list) do
-        Logger.debug("start stop subscribe")
-        Enum.map(sub_id_list, fn id -> GenServer.cast(id, :stop_loop) end)
-        Logger.debug("end loop")
-        {:ok, "stop subscribe"}
-    end
-
-    def publish(id_list, data) do
-        n = length(id_list)
-        pubmsg_list = Rclex.initialize_msgs(n, :string)
-        Enum.map(0..(n - 1), fn index ->
-                  Rclex.setdata(Enum.at(pubmsg_list, index), data, :string)
-                end)
-        Enum.map(0..(n - 1), fn index ->
-            GenServer.cast(Enum.at(id_list, index), {:publish, Enum.at(pubmsg_list, index)})
-        end)
-    end
+    # def stop_process(name_list) do
+    #     Logger.debug("start stop process")
+    #     Enum.map(name_list, fn name -> GenServer.stop({:global, name}, :normal, 3000) end)
+    #     {:ok, "stop process"}
+    # end
 
     @doc """
         ノードをひとつだけ作成
         名前空間の有無を設定可能
+        返り値: 
+            node_identifier :: string()
+            作成したノードプロセスのnameを返す
     """
     def create_singlenode(context, node_name, node_namespace) do
         GenServer.call(Executor, {:create_singlenode, {context, node_name, node_namespace}})
-        #Process.send(Executor, {self(),}hoge)
-        #どうせ返しているのはnameとかのやつなのでそれを使う、でも良い気がする？
-        #ここエラーハンドリングしないのはやばい気はする
-        #作成は感知したいが...
-        #recieve do
-        # {:ok, node}
-        #
     end
 
     def create_singlenode(context, node_name) do
@@ -81,24 +52,44 @@ defmodule Rclex.Executor do
     @doc """
         複数ノード生成
         create_nodes/4ではcreate_nodes/3に加えて名前空間の指定が可能
+        り値: 
+            node_identifier_list :: Enumerable.t()
+            作成したノードプロセスのnameのリストを返す
     """
     def create_nodes(context, node_name, namespace, num_node) do
-        GenServer.call(Executor, {:create_nodes, {context, node_name, namespace, num_node}})
+        GenServer.call(Executor, {:create_nodes, context, node_name, namespace, num_node})
     end
 
     def create_nodes(context, node_name, num_node) do
-        GenServer.call(Executor, {:create_nodes, {context, node_name, num_node}})
+        GenServer.call(Executor, {:create_nodes, context, node_name, num_node})
     end
 
-    def finish_node(node) do
-        GenServer.call(Executor, {:finish_node, node})
+    def create_timer(call_back, args, time) do
+        GenServer.call(Executor, {:create_timer, {call_back, args, time}})
     end
 
-    def single_create_subscriber(sub_node, topic_name) do
-        subscriber = Nifs.rcl_get_zero_initialized_subscription()
-        sub_op = Nifs.rcl_subscription_get_default_options()
-        Nifs.rcl_subscription_init(subscriber, sub_node, topic_name, sub_op)
-        subscriber
+    def create_timer(call_back, args, time, limit) do
+        GenServer.call(Executor, {:create_timer, {call_back, args, time, limit}})
+    end
+
+    @doc """
+        タイマープロセスを削除する
+        入力
+            timer_id :: pid()
+            削除するタイマープロセスのid
+    """
+    def stop_timer(timer_id) do
+        Supervisor.stop(timer_id)
+    end
+
+    @doc """
+        ノードプロセスを削除する
+        入力
+            node_identifier :: string()
+            削除するnodeのプロセス名
+    """
+    def finish_node(node_identifier) do
+        GenServer.call(Executor, {:finish_node, node_identifier})
     end
     
     def handle_cast({:execute, {id, msg}}, {nodes}) do
@@ -119,8 +110,9 @@ defmodule Rclex.Executor do
             ]
             opts = [strategy: :one_for_one]
             {:ok, pid} = Supervisor.start_link(children, opts)
-            new_nodes = Map.put_new(nodes, {node_namespace, node_name}, %{supervisor_id: pid})
-            {:reply, {:ok, node_name}, {new_nodes}}
+            node_identifier = node_namespace ++ '/' ++ node_name
+            new_nodes = Map.put_new(nodes, node_identifier, %{supervisor_id: pid})
+            {:reply, {:ok, node_identifier}, {new_nodes}}
         end
     end
 
@@ -137,7 +129,7 @@ defmodule Rclex.Executor do
             ]
             opts = [strategy: :one_for_one]
             {:ok, pid} = Supervisor.start_link(children, opts)
-            new_nodes = Map.put_new(nodes, {"", node_name}, %{supervisor_id: pid})
+            new_nodes = Map.put_new(nodes, node_name, %{supervisor_id: pid})
             {:reply, {:ok, node_name}, {new_nodes}}
         end
     end
@@ -178,12 +170,19 @@ defmodule Rclex.Executor do
         )
         |> Enum.map(fn {:ok, pid} -> pid end)
 
-        for n <- 0..(num_node - 1) do
-            node_name = Enum.at(name_list, n)
+        node_identifier_list =
+        Enum.map(name_list, fn name -> namespace ++ "/" ++ name end)
+
+        nodes_list =
+        Enum.map(0..(num_node - 1), fn n ->
+            node_identifier = Enum.at(node_identifier_list, n)
             pid = Enum.at(id_list, n)
-            nodes = Map.put_new(nodes, {namespace, node_name}, %{supervisor_id: pid})
-        end
-        {:reply, {:ok, name_list}, {nodes}}
+            {node_identifier, %{supervisor_id: pid}}
+        end)
+
+        new_nodes = for {k, v} <- nodes_list, into: nodes, do: {k, v}
+        
+        {:reply, {:ok, node_identifier_list}, {new_nodes}}
     end
 
     def handle_call({:create_nodes, context, node_name, num_node}, _from, {nodes}) do
@@ -220,26 +219,47 @@ defmodule Rclex.Executor do
         )
         |> Enum.map(fn {:ok, pid} -> pid end)
 
-        for n <- 0..(num_node - 1) do
+        nodes_list =
+        Enum.map(0..(num_node - 1), fn n ->
             node_name = Enum.at(name_list, n)
             pid = Enum.at(id_list, n)
-            nodes = Map.put_new(nodes, {"", node_name}, %{supervisor_id: pid})
-        end
-        {:reply, {:ok, name_list}, {nodes}}
+            {node_name, %{supervisor_id: pid}}
+        end)
+
+        new_nodes = for {k, v} <- nodes_list, into: nodes, do: {k, v}
+
+        {:reply, {:ok, name_list}, {new_nodes}}
     end
 
-    def handle_call({:finish_node, node}, _from, {nodes}) do
-        Logger.debug("finish_node")
-        GenServer.call({:global, node}, :finish_node)
-        Logger.debug("finish_node2")
-        {:ok, node_info} = Map.fetch(nodes, {"", node})
+    def handle_call({:create_timer, {call_back, args, time}}, _from, state) do
+        children =[
+            {Rclex.Timer, {call_back, args, time}}
+        ]
+        opts = [strategy: :one_for_one]
+        {:ok, pid} = Supervisor.start_link(children, opts)
+        {:reply, {:ok, pid}, state}
+    end
 
-        {:ok, supervisor_id} = Map.fetch(node_info, :supervisor_id)
+    def handle_call({:create_timer, {call_back, args, time, limit}}, _from, state) do
+        children =[
+            {Rclex.Timer, {call_back, args, time, limit}}
+        ]
+        opts = [strategy: :one_for_one]
+        {:ok, pid} = Supervisor.start_link(children, opts)
+        {:reply, {:ok, pid}, state}
+    end
+
+    def handle_call({:finish_node, node_identifier}, _from, {nodes}) do
+        GenServer.call({:global, node_identifier}, :finish_node)
+        {:ok, node} = Map.fetch(nodes, node_identifier)
+
+        {:ok, supervisor_id} = Map.fetch(node, :supervisor_id)
 
         Supervisor.stop(supervisor_id)
 
         #node情報削除
-        new_nodes = Map.delete(nodes, {"", node})
+        new_nodes = Map.delete(nodes, node_identifier)
+        Logger.debug("finish node: #{node_identifier}")
 
         {:reply, :ok, {new_nodes}}
     end
