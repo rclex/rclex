@@ -5,7 +5,6 @@ defmodule Rclex.SubLoop do
     use GenServer, restart: :transient
 
     def start_link({sub_id, sub, context, call_back}) do
-        Logger.debug("loop link start")
         GenServer.start_link(__MODULE__, {sub_id, sub, context, call_back})
     end
 
@@ -21,9 +20,7 @@ defmodule Rclex.SubLoop do
             context,
             Nifs.rcl_get_default_allocator()
         )
-        Logger.debug("init")
         GenServer.cast(self(), {:loop})
-        Logger.debug("loop start")
         {:ok, {sub_id, wait_set, sub, call_back}}
     end
 
