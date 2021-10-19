@@ -21,7 +21,7 @@ defmodule Rclex.Subscriber do
     subscriberを状態として持つ。start_subscribingをした際にcontextとcall_backを追加で状態として持つ。
   """
   def init(sub) do
-    {:ok,  %{subscriber: sub}}
+    {:ok, %{subscriber: sub}}
   end
 
   def start_subscribing({node_identifier, topic_name, :sub}, context, call_back) do
@@ -36,12 +36,16 @@ defmodule Rclex.Subscriber do
 
   def handle_cast({:start_subscribing, {context, call_back}}, state) do
     {:ok, sub} = Map.fetch(state, :subscriber)
+
     children = [
       {Rclex.SubLoop, {self(), sub, context, call_back}}
     ]
+
     opts = [strategy: :one_for_one]
     {:ok, supervisor_id} = Supervisor.start_link(children, opts)
-    {:noreply, %{subscriber: sub, context: context, call_back: call_back, supervisor_id: supervisor_id}}
+
+    {:noreply,
+     %{subscriber: sub, context: context, call_back: call_back, supervisor_id: supervisor_id}}
   end
 
   @doc """

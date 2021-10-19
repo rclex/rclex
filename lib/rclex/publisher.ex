@@ -7,7 +7,7 @@ defmodule Rclex.Publisher do
   @moduledoc """
   T.B.A
   """
-  
+
   @doc """
     publisherプロセスの生成
   """
@@ -19,7 +19,7 @@ defmodule Rclex.Publisher do
     publisherプロセスの初期化
   """
   def init(pub) do
-    {:ok, pub} 
+    {:ok, pub}
   end
 
   def publish_once(pub, pubmsg, pub_alloc) do
@@ -42,10 +42,10 @@ defmodule Rclex.Publisher do
   end
 
   def publish({node_identifier, topic_name, :pub}, data) do
-      msg = Rclex.initialize_msgs(1, :string)
-      Rclex.setdata(Enum.at(msg, 0), data, :string)
-      key = {:global, node_identifier ++ '/' ++ topic_name}
-      GenServer.cast(JobQueue, {:push, {key, Enum.at(msg, 0)}})
+    msg = Rclex.initialize_msgs(1, :string)
+    Rclex.setdata(Enum.at(msg, 0), data, :string)
+    key = {:global, node_identifier ++ '/' ++ topic_name}
+    GenServer.cast(JobQueue, {:push, {key, Enum.at(msg, 0)}})
   end
 
   def handle_cast({:execute, msg}, pub) do

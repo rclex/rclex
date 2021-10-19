@@ -37,11 +37,12 @@ defmodule Rclex.Timer do
 
   def handle_continue(:loop, {callback, args, time}) do
     callback.(args)
+
     receive do
       :stop ->
-          {:stop, :normal, {callback, args, time}}
+        {:stop, :normal, {callback, args, time}}
     after
-    # Optional timeout
+      # Optional timeout
       time ->
         {:noreply, {callback, args, time}, {:continue, :loop}}
     end
@@ -58,9 +59,9 @@ defmodule Rclex.Timer do
       # timeはミリ秒
       receive do
         :stop ->
-            {:stop, :normal, {callback, args, time}}
+          {:stop, :normal, {callback, args, time}}
       after
-      # Optional timeout
+        # Optional timeout
         time ->
           {:noreply, {callback, args, time, count, limit}, {:continue, :loop}}
       end
