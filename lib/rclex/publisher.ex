@@ -41,11 +41,16 @@ defmodule Rclex.Publisher do
     end
   end
 
-  def publish({node_identifier, topic_name, :pub}, data) do
-    msg = Rclex.initialize_msgs(1, :string)
-    Rclex.setdata(Enum.at(msg, 0), data, :string)
-    key = {:global, node_identifier ++ '/' ++ topic_name}
-    GenServer.cast(JobQueue, {:push, {key, Enum.at(msg, 0)}})
+  def publish(publisher_list, data) do
+    n = length(publisher_list)
+
+    Enum.map(0..(n - 1), fn index ->
+      {node_identifier, topic_name, :pub} = Enum.at(publisher_list, index)
+      key = {:global, node_identifier ++ '/' ++ topic_name}
+      GenServer.cast(JobQueue, {:push, {key, Enum.at(data, index)}})
+    end)
+
+    :ok
   end
 
   def handle_cast({:execute, msg}, pub) do
