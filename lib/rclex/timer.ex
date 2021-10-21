@@ -4,6 +4,10 @@ defmodule Rclex.Timer do
   require Logger
   use GenServer, restart: :transient
 
+  @moduledoc """
+    T.B.A
+  """
+
   def start_link({callback, args, time}) do
     GenServer.start_link(__MODULE__, {callback, args, time})
   end

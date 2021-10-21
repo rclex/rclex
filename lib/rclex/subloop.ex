@@ -4,6 +4,10 @@ defmodule Rclex.SubLoop do
   require Logger
   use GenServer, restart: :transient
 
+  @moduledoc """
+    T.B.A
+  """
+
   def start_link({sub_id, sub, context, call_back}) do
     GenServer.start_link(__MODULE__, {sub_id, sub, context, call_back})
   end

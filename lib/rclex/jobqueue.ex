@@ -4,6 +4,10 @@ defmodule Rclex.JobQueue do
   require Logger
   use GenServer, restart: :transient
 
+  @moduledoc """
+    T.B.A
+  """
+
   def start_link(_) do
     GenServer.start_link(__MODULE__, {}, name: JobQueue)
   end
