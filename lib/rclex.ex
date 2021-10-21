@@ -93,20 +93,6 @@ defmodule Rclex do
     Nifs.rcl_shutdown(context)
   end
 
-  @doc """
-    ノード名の取得
-  """
-  def node_get_name(node) do
-    Nifs.rcl_node_get_name(node)
-  end
-
-  @doc """
-    トピックの名前と型の取得
-  """
-  def get_topic_names_and_types(node, allocator, no_demangle) do
-    Nifs.rcl_get_topic_names_and_types(node, allocator, no_demangle)
-  end
-
   def get_default_allocator do
     Nifs.rcl_get_default_allocator()
   end

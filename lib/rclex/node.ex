@@ -107,6 +107,20 @@ defmodule Rclex.Node do
     end)
   end
 
+  @doc """
+    ノード名の取得
+  """
+  def node_get_name(node_identifier) do
+    GenServer.call({:global, node_identifier}, :node_get_name)
+  end
+
+  @doc """
+    トピックの名前と型の取得
+  """
+  def get_topic_names_and_types(node_identifier, allocator, no_demangle) do
+    GenServer.call({:global, node_identifier}, {:get_topic_names_and_types, allocator, no_demangle})
+  end
+
   def handle_call(
         {:create_subscriber, node_identifier, topic_name},
         _,
@@ -183,5 +197,17 @@ defmodule Rclex.Node do
     # TODO nodeに紐付いているpub,subをきちんと終了させる
 
     {:reply, :ok, {node, name, supervisor_ids}}
+  end
+
+  def handle_call(:node_get_name, _from, state) do
+    {node, _, _} = state
+    node_name = Nifs.rcl_node_get_name(node)
+    {:reply, node_name, state}
+  end 
+
+  def handle_call({:get_topic_names_and_types, allocator, no_demangle}, _from, state) do
+    {node, _, _} = state
+    names_and_types_list = Nifs.rcl_get_topic_names_and_types(node, allocator, no_demangle)
+    {:reply, names_and_types_list, state}
   end
 end
