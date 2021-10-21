@@ -118,7 +118,10 @@ defmodule Rclex.Node do
     トピックの名前と型の取得
   """
   def get_topic_names_and_types(node_identifier, allocator, no_demangle) do
-    GenServer.call({:global, node_identifier}, {:get_topic_names_and_types, allocator, no_demangle})
+    GenServer.call(
+      {:global, node_identifier},
+      {:get_topic_names_and_types, allocator, no_demangle}
+    )
   end
 
   def handle_call(
@@ -203,7 +206,7 @@ defmodule Rclex.Node do
     {node, _, _} = state
     node_name = Nifs.rcl_node_get_name(node)
     {:reply, node_name, state}
-  end 
+  end
 
   def handle_call({:get_topic_names_and_types, allocator, no_demangle}, _from, state) do
     {node, _, _} = state
