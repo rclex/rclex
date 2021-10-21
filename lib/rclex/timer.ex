@@ -1,75 +1,74 @@
 defmodule Rclex.Timer do
+  alias Rclex.Nifs
+  require Rclex.Macros
   require Logger
+  use GenServer, restart: :transient
 
   @moduledoc """
-  T.B.A
+    T.B.A
   """
 
-  @doc """
-    タイマー処理関数
-    timer_loop/3はループの上限つき
-    上限後，例外処理が行われる．
-    timer_loop/2はループの上限なし
+  def start_link({callback, args, time}) do
+    GenServer.start_link(__MODULE__, {callback, args, time})
+  end
 
-  """
-  def timer_loop(publisher_list, time, callback, count, limit) do
+  def start_link({callback, args, time, limit}) do
+    GenServer.start_link(__MODULE__, {callback, args, time, limit})
+  end
+
+  def start_link({callback, args, time, limit, name}) do
+    GenServer.start_link(__MODULE__, {callback, args, time, limit}, name: name)
+  end
+
+  # callback: コールバック関数
+  # args: コールバック関数に渡す引数
+  # time: 周期。ミリ秒で指定。
+  # count: 現在何回目の実行か。初期値は0。
+  # limit: 最大実行回数
+  def init({callback, args, time}) do
+    GenServer.cast(self(), :loop)
+    {:ok, {callback, args, time}}
+  end
+
+  def init({callback, args, time, limit}) do
+    GenServer.cast(self(), :loop)
+    {:ok, {callback, args, time, 0, limit}}
+  end
+
+  def handle_cast(:loop, state) do
+    {:noreply, state, {:continue, :loop}}
+  end
+
+  def handle_continue(:loop, {callback, args, time}) do
+    callback.(args)
+
+    receive do
+      :stop ->
+        {:stop, :normal, {callback, args, time}}
+    after
+      # Optional timeout
+      time ->
+        {:noreply, {callback, args, time}, {:continue, :loop}}
+    end
+  end
+
+  def handle_continue(:loop, {callback, args, time, count, limit}) do
     count = count + 1
 
     if count > limit do
       Logger.info("the number of timer loop reaches limit")
-      :ok
+      {:stop, :normal, {}}
     else
-      callback.(publisher_list)
+      callback.(args)
       # timeはミリ秒
-      :timer.sleep(time)
-      timer_loop(publisher_list, time, callback, count, limit)
+      receive do
+        :stop ->
+          {:stop, :normal, {callback, args, time}}
+      after
+        # Optional timeout
+        time ->
+          {:noreply, {callback, args, time, count, limit}, {:continue, :loop}}
+      end
     end
-  end
-
-  def timer_loop(publisher_list, time, callback) do
-    callback.(publisher_list)
-    # timeはミリ秒
-    :timer.sleep(time)
-    timer_loop(publisher_list, time, callback)
-  end
-
-  @doc """
-    タイマーによるループ処理を監視するためのスーパーバイザと
-    実行タスクを生成
-    timer_start/4はループの上限つき
-    timer_start/3はループの上限なし
-  """
-  def timer_start(pub_list, time, callback, limit) do
-    {:ok, sv} = Task.Supervisor.start_link()
-
-    {:ok, child} =
-      Task.Supervisor.start_child(
-        sv,
-        Rclex.Timer,
-        :timer_loop,
-        [pub_list, time, callback, 0, limit],
-        restart: :transient
-      )
-
-    {sv, child}
-  end
-
-  def timer_start(pub_list, time, callback) do
-    {:ok, sv} = Task.Supervisor.start_link()
-
-    {:ok, child} =
-      Task.Supervisor.start_child(sv, Rclex.Timer, :timer_loop, [pub_list, time, callback],
-        restart: :temporary
-      )
-
-    {sv, child}
-  end
-
-  @doc """
-    タイマー処理の終了
-    スーパバイザプロセスと実行タスクを停止する
-  """
-  def terminate_timer(sv, child) do
-    Task.Supervisor.terminate_child(sv, child)
   end
 end

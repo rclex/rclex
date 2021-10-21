@@ -2,106 +2,102 @@ defmodule Rclex.Subscriber do
   alias Rclex.Nifs
   require Rclex.Macros
   require Logger
+  use GenServer
 
   @moduledoc """
   T.B.A
   """
 
   @doc """
-    購読処理関数
-    購読が正常に行われれば，引数に受け取っていたコールバック関数を実行
+    subscriberプロセスの生成
   """
-  def each_subscribe(sub, callback) do
-    if Nifs.check_subscription(sub) do
-      msg = Rclex.initialize_msg()
-      msginfo = Nifs.create_msginfo()
-      sub_alloc = Nifs.create_sub_alloc()
-
-      case Nifs.rcl_take(sub, msg, msginfo, sub_alloc) do
-        {Rclex.Macros.rcl_ret_ok(), _, _, _} ->
-          callback.(msg)
-
-        {Rclex.Macros.rcl_ret_subscription_invalid(), _, _, _} ->
-          Logger.error("subscription invalid")
-
-        {Rclex.Macros.rcl_ret_subscription_take_failed(), _, _, _} ->
-          do_nothing()
-      end
-    end
+  def start_link({sub, process_name}) do
+    Logger.debug("#{process_name} subscriber process start")
+    GenServer.start_link(__MODULE__, sub, name: {:global, process_name})
   end
 
   @doc """
-    非同期購読ループ処理
-    waitsetにsubscriberを登録後，
-    出版通知が来れば購読タスクが生成されてそれぞれで購読する．
+    subscriberプロセスの初期化
+    subscriberを状態として持つ。start_subscribingをした際にcontextとcall_backを追加で状態として持つ。
   """
-  def subscribe_loop(wait_set, sub_list, callback) do
-    Nifs.rcl_wait_set_clear(wait_set)
-    # waitsetにサブスクライバを追加する
-    Enum.map(sub_list, fn sub -> Nifs.rcl_wait_set_add_subscription(wait_set, sub) end)
+  def init(sub) do
+    {:ok, %{subscriber: sub}}
+  end
 
-    # wait_setからsubのリストを取りだす
-    waitset_sublist = Nifs.get_sublist_from_waitset(wait_set)
+  def start_subscribing({node_identifier, topic_name, :sub}, context, call_back) do
+    sub_identifier = node_identifier ++ '/' ++ topic_name
+    GenServer.cast({:global, sub_identifier}, {:start_subscribing, {context, call_back}})
+  end
 
-    # 待機時間によってCPU使用率，購読までの時間は変わる
-    Nifs.rcl_wait(wait_set, 5)
-
-    # 購読タスク達のスーパーバイザを作成
-    {:ok, sv} = Task.Supervisor.start_link()
-
-    # 購読タスクをサブスクライバの数だけ生成，each_subscribe/2を実行させる．
-    Enum.map(waitset_sublist, fn sub ->
-      Task.Supervisor.start_child(sv, Rclex.Subscriber, :each_subscribe, [sub, callback],
-        restart: :transient
-      )
+  def start_subscribing(sub_list, context, call_back) do
+    Enum.map(sub_list, fn {node_identifier, topic_name, :sub} ->
+      sub_identifier = node_identifier ++ '/' ++ topic_name
+      GenServer.cast({:global, sub_identifier}, {:start_subscribing, {context, call_back}})
     end)
+  end
 
-    subscribe_loop(wait_set, sub_list, callback)
+  def stop_subscribing({node_identifier, topic_name, :sub}) do
+    sub_identifier = node_identifier ++ '/' ++ topic_name
+    :ok = GenServer.call({:global, sub_identifier}, :stop_subscribing)
+  end
+
+  def stop_subscribing(sub_list) do
+    Enum.map(sub_list, fn {node_identifier, topic_name, :sub} ->
+      sub_identifier = node_identifier ++ '/' ++ topic_name
+      GenServer.call({:global, sub_identifier}, :stop_subscribing)
+    end)
+  end
+
+  def handle_cast({:start_subscribing, {context, call_back}}, state) do
+    {:ok, sub} = Map.fetch(state, :subscriber)
+
+    children = [
+      {Rclex.SubLoop, {self(), sub, context, call_back}}
+    ]
+
+    opts = [strategy: :one_for_one]
+    {:ok, supervisor_id} = Supervisor.start_link(children, opts)
+
+    {:noreply,
+     %{subscriber: sub, context: context, call_back: call_back, supervisor_id: supervisor_id}}
   end
 
   @doc """
-    購読開始の準備
-    waitsetを作成
-    スーパーバイザを生成
-    監視されるタスクを生成し，購読ループ処理を実行させる
+    コールバックの実行
   """
-  def subscribe_start(sub_list, context, callback) do
-    wait_set =
-      Nifs.rcl_get_zero_initialized_wait_set()
-      |> Nifs.rcl_wait_set_init(
-        length(sub_list),
-        0,
-        0,
-        0,
-        0,
-        0,
-        context,
-        Nifs.rcl_get_default_allocator()
-      )
-
-    {:ok, sv} = Task.Supervisor.start_link()
-
-    {:ok, child} =
-      Task.Supervisor.start_child(
-        sv,
-        Rclex.Subscriber,
-        :subscribe_loop,
-        [wait_set, sub_list, callback],
-        restart: :transient
-      )
-
-    {sv, child}
+  def handle_cast({:execute, msg}, state) do
+    {:ok, call_back} = Map.fetch(state, :call_back)
+    call_back.(msg)
+    {:noreply, state}
   end
 
-  @doc """
-    サブスクライバの終了
-    スーパバイザプロセスと実行タスクを停止する
-  """
-  def subscribe_stop(sv, child) do
-    Task.Supervisor.terminate_child(sv, child)
-    Supervisor.stop(sv)
+  def handle_cast(:stop, state) do
+    {:stop, :normal, state}
   end
 
-  defp do_nothing do
+  def handle_call(:stop_subscribing, _from, state) do
+    {:ok, supervisor_id} = Map.fetch(state, :supervisor_id)
+    Supervisor.stop(supervisor_id)
+    new_state = Map.delete(state, :supervisor_id)
+    {:reply, :ok, new_state}
   end
+
+  def handle_call({:finish, node}, _from, state) do
+    {:ok, sub} = Map.fetch(state, :subscriber)
+    Nifs.rcl_subscription_fini(sub, node)
+    {:reply, {:ok, 'subscriber finished: '}, state}
+  end
+
+  def handle_call({:finish_subscriber, node}, _from, state) do
+    {:ok, sub} = Map.fetch(state, :subscriber)
+    Nifs.rcl_subscription_fini(sub, node)
+    {:reply, :ok, state}
+  end
+
+  def terminate(:normal, _) do
+    Logger.debug("sub terminate")
+  end
+
+  # defp do_nothing do
+  # end
 end
