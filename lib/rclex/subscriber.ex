@@ -65,7 +65,7 @@ defmodule Rclex.Subscriber do
   @doc """
     コールバックの実行
   """
-  def handle_cast({:execute, msg}, state) do
+  def handle_cast({:subscribe, msg}, state) do
     {:ok, call_back} = Map.fetch(state, :call_back)
     call_back.(msg)
     {:noreply, state}
