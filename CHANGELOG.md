@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.5.0 on 01 Nov 2021
+
+- New features:
+  - Implement `Executor` module by using GenServer #61 #67
+- Code Improvements/Fixes:
+  - Hide NIF functions from users #54 #55
+- Bumps:
+  - `ex_doc` to 0.25.5 #63
+  - `elixir_make` to 0.6.3 #62
+- Known issues:
+  - `mix test` sometimes fails, but we don't think it will affect the behavior #68
+
 ## v0.4.1 on 24 Jul 2021
 
 - New features:
