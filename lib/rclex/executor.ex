@@ -95,8 +95,8 @@ defmodule Rclex.Executor do
     )
   end
 
-  def handle_cast({:execute, {id, msg}}, {nodes}) do
-    GenServer.cast(id, {:execute, msg})
+  def handle_cast({:execute, {key, action, args}}, {nodes}) do
+    GenServer.cast(key, {action, args})
     {:noreply, {nodes}}
   end
 
