@@ -39,7 +39,8 @@ defmodule Rclex.SubLoop do
       購読処理関数
       購読が正常に行われれば，引数に受け取っていたコールバック関数を実行
   """
-  def each_subscribe(sub, call_back, sub_id) do
+  # def each_subscribe(sub, call_back, sub_id) do
+  def each_subscribe(sub, sub_id) do
     # Logger.debug("each subscribe")
     if Nifs.check_subscription(sub) do
       msg = Rclex.initialize_msg()
@@ -74,9 +75,9 @@ defmodule Rclex.SubLoop do
     # 待機時間によってCPU使用率，購読までの時間は変わる
     Nifs.rcl_wait(wait_set, 50)
 
-    each_subscribe(waitset_sub, call_back, sub_id)
+    # each_subscribe(waitset_sub, call_back, sub_id)
+    each_subscribe(waitset_sub, sub_id)
 
-    # 
     receive do
       :stop ->
         Process.send(sub_id, :terminate, [:noconnect])
@@ -88,11 +89,13 @@ defmodule Rclex.SubLoop do
     end
   end
 
-  def terminate(:normal, state) do
+  # def terminate(:normal, state) do
+  def terminate(:normal, _) do
     Logger.debug("loop process killed : normal")
   end
 
-  def terminate(:shutdown, state) do
+  # def terminate(:shutdown, state) do
+  def terminate(:shutdown, _) do
     Logger.debug("loop process killed : shutdown")
   end
 
