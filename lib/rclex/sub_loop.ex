@@ -55,7 +55,7 @@ defmodule Rclex.SubLoop do
           Logger.error("subscription invalid")
 
         {Rclex.Macros.rcl_ret_subscription_take_failed(), _, _, _} ->
-          do_nothing
+          do_nothing()
       end
     end
   end
