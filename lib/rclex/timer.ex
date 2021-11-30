@@ -50,4 +50,8 @@ defmodule Rclex.Timer do
     Supervisor.stop(loop_supervisor_id)
     {:stop, :normal, {callback, args, time, loop_supervisor_id}}
   end
+
+  def terminate(:normal, _) do
+    Logger.debug("terminate timer")
+  end
 end

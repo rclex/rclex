@@ -80,7 +80,7 @@ defmodule Rclex do
       |> String.to_integer()
 
     case num do
-      0 -> Rclex.Timer.terminate_timer(sv, child)
+      0 -> Rclex.Timer.terminate(sv, child)
       _ -> waiting_input(sv, child)
     end
   end

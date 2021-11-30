@@ -95,7 +95,7 @@ defmodule Rclex.Subscriber do
   end
 
   def terminate(:normal, _) do
-    Logger.debug("sub terminate")
+    Logger.debug("terminate subscriber")
   end
 
   # defp do_nothing do

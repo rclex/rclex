@@ -91,12 +91,12 @@ defmodule Rclex.SubLoop do
 
   # def terminate(:normal, state) do
   def terminate(:normal, _) do
-    Logger.debug("loop process killed : normal")
+    Logger.debug("sub_loop process killed : normal")
   end
 
   # def terminate(:shutdown, state) do
   def terminate(:shutdown, _) do
-    Logger.debug("loop process killed : shutdown")
+    Logger.debug("sub_loop process killed : shutdown")
   end
 
   def do_nothing() do
