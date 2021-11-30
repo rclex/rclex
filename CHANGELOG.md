@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## v0.5.1 on 30 Nov 2021
+
+- New features:
+  - Implement `Timer.terminate/2` [2915de5](https://github.com/rclex/rclex/commit/2915de5a7bdaa3ca22b56c7900d03a9931e057f9)
+- Code Improvements/Fixes:
+  - Change filename to snake_case according to follow ElixirStyleGuide #72 
+  - Some minor refactoring to remove boring warning in `mix compile` #73
+- Bumps:
+  - `ex_doc` to 0.26.0 #71
+  - `credo` to 1.6.1 #70
+- Known issues:
+  - `mix test` sometimes fails, but we don't think it will affect the behavior #68
+
 ## v0.5.0 on 01 Nov 2021
 
 - New features:
