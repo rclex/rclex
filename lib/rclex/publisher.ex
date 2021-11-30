@@ -63,7 +63,7 @@ defmodule Rclex.Publisher do
     {:reply, {:ok, 'publisher finished: '}, pub}
   end
 
-  def terminate(:normal, pub) do
+  def terminate(:normal, _) do
     Logger.debug("terminate publisher")
   end
 
