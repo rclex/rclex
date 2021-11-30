@@ -15,7 +15,7 @@ defmodule Rclex.Executor do
   @doc """
       Executorプロセスの初期化
       下位プロセスとしてJobQueue, JobExecutorプロセスを生成する
-      状態: 
+      状態:
           supervisor_ids :: map()
           keyがnode_identifer、valueがnode情報。現在はnodeプロセスのsupervisorのidを格納している
   """
@@ -26,14 +26,15 @@ defmodule Rclex.Executor do
     ]
 
     opts = [strategy: :one_for_one]
-    {:ok, id} = Supervisor.start_link(children, opts)
+    # {:ok, id} = Supervisor.start_link(children, opts)
+    {:ok, _} = Supervisor.start_link(children, opts)
     {:ok, {%{}}}
   end
 
   @doc """
       ノードをひとつだけ作成
       名前空間の有無を設定可能
-      返り値: 
+      返り値:
           node_identifier :: string()
           作成したノードプロセスのnameを返す
   """
@@ -48,7 +49,7 @@ defmodule Rclex.Executor do
   @doc """
       複数ノード生成
       create_nodes/4ではcreate_nodes/3に加えて名前空間の指定が可能
-      り値: 
+      返り値:
           node_identifier_list :: Enumerable.t()
           作成したノードプロセスのnameのリストを返す
   """

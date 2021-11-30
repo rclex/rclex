@@ -8,10 +8,6 @@ defmodule Rclex.KeepSub do
     subscribe_loopの中に適宜スリープを挟むことでCPU使用率は下げられる
   """
 
-  defp do_nothing do
-    # noop
-  end
-
   def take_once(takemsg, sub, msginfo, sub_alloc, callback) do
     case Nifs.rcl_take(sub, takemsg, msginfo, sub_alloc) do
       {Rclex.Macros.rcl_ret_ok(), _, _, _} ->
@@ -50,5 +46,9 @@ defmodule Rclex.KeepSub do
         restart: :transient
       )
     end)
+  end
+
+  defp do_nothing do
+    # noop
   end
 end
