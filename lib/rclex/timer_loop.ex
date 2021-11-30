@@ -69,7 +69,4 @@ defmodule Rclex.TimerLoop do
   def terminate(:shutdown, _) do
     Logger.debug("timer_loop process killed : shutdown")
   end
-
-  def do_nothing() do
-  end
 end
