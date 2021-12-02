@@ -33,7 +33,7 @@ defmodule Rclex.JobExecutor do
         {:stop, :normal, state}
     after
       # Optional timeout
-      50 ->
+      5 ->
         {:noreply, state, {:continue, :start_loop}}
     end
   end
