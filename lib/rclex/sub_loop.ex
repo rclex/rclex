@@ -73,7 +73,7 @@ defmodule Rclex.SubLoop do
     [waitset_sub] = Nifs.get_sublist_from_waitset(wait_set)
 
     # 待機時間によってCPU使用率，購読までの時間は変わる
-    Nifs.rcl_wait(wait_set, 50)
+    Nifs.rcl_wait(wait_set, 5)
 
     # each_subscribe(waitset_sub, call_back, sub_id)
     each_subscribe(waitset_sub, sub_id)
@@ -84,7 +84,7 @@ defmodule Rclex.SubLoop do
         {:stop, :normal, {sub_id, wait_set, sub, call_back}}
     after
       # Optional timeout
-      50 ->
+      5 ->
         {:noreply, {sub_id, wait_set, sub, call_back}, {:continue, :loop}}
     end
   end
