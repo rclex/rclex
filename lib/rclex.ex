@@ -69,6 +69,10 @@ defmodule Rclex do
     Nifs.setdata_string(msg, String.to_charlist(data), data_size + 1)
   end
 
+  def setdata(msg, data, :int16) do
+    Nifs.setdata_int16(msg, data)
+  end
+
   @doc """
     ユーザのタスク終了入力を受け付けるAPI.
     0を入力するとchildに渡されたPIDのタスクを終了する
