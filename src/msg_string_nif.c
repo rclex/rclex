@@ -26,9 +26,9 @@ ERL_NIF_TERM nif_create_empty_string(ErlNifEnv* env, int argc, const ERL_NIF_TER
   if(argc != 0) {
     return enif_make_badarg(env);
   }
-  std_msgs__msg__String* res;
+  void* res;
   ERL_NIF_TERM ret;
-  res = enif_alloc_resource(rt_String,sizeof(std_msgs__msg__String));
+  res = enif_alloc_resource(rt_void,sizeof(std_msgs__msg__String));
   if(res == NULL) {
     return enif_make_badarg(env);
   }
@@ -44,12 +44,12 @@ ERL_NIF_TERM nif_string_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]
     return enif_make_badarg(env);
   }
   ERL_NIF_TERM ret;
-  std_msgs__msg__String* res_msg;
-  if(!enif_get_resource(env,argv[0],rt_String,(void**)&res_msg)) {
+  void* res_msg;
+  if(!enif_get_resource(env,argv[0],rt_void,(void**)&res_msg)) {
     return enif_make_badarg(env);
   }
 
-  std_msgs__msg__String__init(res_msg);
+  std_msgs__msg__String__init((std_msgs__msg__String *)res_msg);
   ret = enif_make_resource(env,res_msg);
   return ret;
 
@@ -61,10 +61,10 @@ ERL_NIF_TERM nif_setdata_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM arg
   if(argc != 3) {
     return enif_make_badarg(env);
   }
-  std_msgs__msg__String* res_msg;
+  void* res_msg;
   ERL_NIF_TERM ret;
   int str_size = 0;
-  if(!enif_get_resource(env,argv[0],rt_String,(void**)&res_msg)) {
+  if(!enif_get_resource(env,argv[0],rt_void,(void**)&res_msg)) {
     return enif_make_badarg(env);
   }
   if(!enif_get_int(env,argv[2],&str_size)) {
@@ -75,7 +75,7 @@ ERL_NIF_TERM nif_setdata_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM arg
     return enif_make_badarg(env);
   }
   //String型の構造体に引数の文字列とサイズを入れる．
-  __STRING__ASSIGN(res_msg,data_buf);
+  __STRING__ASSIGN((std_msgs__msg__String *)res_msg,data_buf);
   free(data_buf);
   return enif_make_atom(env,"ok");
 }

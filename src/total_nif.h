@@ -36,6 +36,8 @@ ErlNifResourceType* rt_msginfo;
 ErlNifResourceType* rt_sub_alloc;
 //----------------------graph_nif.c------------
 ErlNifResourceType* rt_names_and_types;
+//----------------------msg------------
+ErlNifResourceType* rt_void;
 //----------------------msg_int16_nif.c------------
 ErlNifResourceType* rt_Int16;
 //----------------------msg_string_nif.c---------------

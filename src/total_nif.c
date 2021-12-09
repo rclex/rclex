@@ -30,6 +30,7 @@ int open_resource(ErlNifEnv* env)
   //for graph_nif.c
   const char* namegraph1 = "rcl_names_and_types_t";
   //for msg
+  const char* namemsg0 = "void";
   const char* namemsg1 = "std_msgs__msg__Int16";
   const char* namemsg2 = "std_msgs__msg__String";
   //for timer
@@ -53,6 +54,7 @@ int open_resource(ErlNifEnv* env)
   rt_msginfo      = enif_open_resource_type(env,mod,namesub3,NULL,flags,NULL);
   rt_sub_alloc    = enif_open_resource_type(env,mod,namesub4,NULL,flags,NULL);
   rt_names_and_types = enif_open_resource_type(env,mod,namegraph1,NULL,flags,NULL);
+  rt_void	  = enif_open_resource_type(env,mod,namemsg0,NULL,flags,NULL);
   rt_Int16        = enif_open_resource_type(env,mod,namemsg1,NULL,flags,NULL);
   rt_String       = enif_open_resource_type(env,mod,namemsg2,NULL,flags,NULL);
 

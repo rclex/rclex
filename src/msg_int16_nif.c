@@ -24,9 +24,9 @@ ERL_NIF_TERM nif_create_empty_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   if(argc != 0) {
     return enif_make_badarg(env);
   }
-  std_msgs__msg__Int16* res;
+  void* res;
   ERL_NIF_TERM ret;
-  res = enif_alloc_resource(rt_Int16,sizeof(std_msgs__msg__Int16));
+  res = enif_alloc_resource(rt_void,sizeof(std_msgs__msg__Int16));
   if(res == NULL) {
     return enif_make_badarg(env);
   }
@@ -122,16 +122,18 @@ ERL_NIF_TERM nif_setdata_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv
   if(argc != 2) {
     return enif_make_badarg(env);
   }
-  std_msgs__msg__Int16* res_msg;
+  void* res_msg;
+  std_msgs__msg__Int16* res_msg_Int16;
   int num = 0;
   ERL_NIF_TERM ret;
-  if(!enif_get_resource(env,argv[0],rt_Int16,(void**)&res_msg)) {
+  if(!enif_get_resource(env,argv[0],rt_void,(void**)&res_msg)) {
     return enif_make_badarg(env);
   }
   if(!enif_get_int(env,argv[1],&num)) {
     return enif_make_badarg(env);
   }
-  res_msg->data = num;
+  res_msg_Int16 = (std_msgs__msg__Int16 *)res_msg;
+  res_msg_Int16->data = num;
   return enif_make_atom(env,"ok");
 }
 
