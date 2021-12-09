@@ -84,11 +84,13 @@ ERL_NIF_TERM nif_readdata_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM ar
   if(argc != 1) {
     return enif_make_badarg(env);
   }
-  std_msgs__msg__String* res_msg;
-  if(!enif_get_resource(env,argv[0],rt_String,(void**)&res_msg)) {
+  void* res_msg;
+  std_msgs__msg__String* res_msg_String;
+  if(!enif_get_resource(env,argv[0],rt_void,(void**)&res_msg)) {
     return enif_make_badarg(env);
   }
-  return enif_make_string(env,res_msg->data.data,ERL_NIF_LATIN1);
+  res_msg_String = (std_msgs__msg__String*)res_msg;
+  return enif_make_string(env,res_msg_String->data.data,ERL_NIF_LATIN1);
 }
 #ifdef __cplusplus
 }

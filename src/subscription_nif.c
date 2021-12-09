@@ -95,7 +95,7 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
     return enif_make_badarg(env);
   }
 
-  //const rosidl_message_type_support_t* res_msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
+  //const rosidl_message_type_support_t* msgtype_sub = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
   const rosidl_message_type_support_t* msgtype_sub = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,String);
   return_value = rcl_subscription_init(res_sub,res_node,msgtype_sub,topic_buf,res_sub_options);
 
@@ -190,9 +190,7 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
   rmw_subscription_allocation_t* res_sub_alloc;
   ERL_NIF_TERM ret,ret_sub,ret_msginfo,ret_sub_alloc;
 
-  //std_msgs__msg__Int16* ros_message;  //きめうち
-  std_msgs__msg__String* ros_message;  //きめうち
-  //void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
+  void * ros_message;
 
   if(argc != 4) {
     return enif_make_badarg(env);
@@ -200,7 +198,7 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
   if(!enif_get_resource(env, argv[0], rt_sub, (void**) &res_sub)) {
     return enif_make_badarg(env);
   }
-  if(!enif_get_resource(env,argv[1], rt_String, (void**) &ros_message)) {
+  if(!enif_get_resource(env,argv[1], rt_void, (void**) &ros_message)) {
     return enif_make_badarg(env);
   }
   if(!enif_get_resource(env, argv[2], rt_msginfo, (void**) &res_msginfo)) {
