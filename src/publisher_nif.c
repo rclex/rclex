@@ -104,14 +104,15 @@ ERL_NIF_TERM nif_rcl_publisher_fini(ErlNifEnv* env, int argc, const ERL_NIF_TERM
 */
 ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-  if(argc != 4) {
+  if(argc != 5) {
     return enif_make_badarg(env);
   }
   int return_value = 0;
   ERL_NIF_TERM ret;
   rcl_publisher_t*  res_pub;
   rcl_node_t* res_node;
-  //rosidl_message_type_support_t* res_idl;
+  void* res_ts_tmp;
+  rosidl_message_type_support_t** res_ts;
   rcl_publisher_options_t* res_options;
 
   if(!enif_get_resource(env, argv[0], rt_pub, (void**) &res_pub)) {
@@ -126,14 +127,15 @@ ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   if(!enif_get_string(env,argv[2],buf,sizeof(buf),ERL_NIF_LATIN1)) {
     return enif_make_badarg(env);
   }
-  if(!enif_get_resource(env, argv[3], rt_pub_options, (void**) &res_options)) {
+  if(!enif_get_resource(env, argv[3], rt_void, (void**) &res_ts_tmp)) {
+    return enif_make_badarg(env);
+  }
+  if(!enif_get_resource(env, argv[4], rt_pub_options, (void**) &res_options)) {
     return enif_make_badarg(env);
   }
 
-  //メッセージ型サポートを直接入れている
-  //const rosidl_message_type_support_t* msgtype_pub = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
-  const rosidl_message_type_support_t* msgtype_pub = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,String);
-  return_value = rcl_publisher_init(res_pub,res_node,msgtype_pub,buf,res_options); //segmentation fault
+  res_ts = (rosidl_message_type_support_t**) res_ts_tmp;
+  return_value = rcl_publisher_init(res_pub,res_node,*res_ts,buf,res_options); //segmentation fault
   ret = enif_make_resource(env,res_pub);
 
   return ret;

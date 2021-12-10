@@ -29,48 +29,58 @@ defmodule Rclex do
 
   @doc """
     ノード間通信に用いるメッセージの初期化
-    :int16
   """
-  def initialize_msg do
+  def initialize_msg(:string) do
     Nifs.create_empty_string()
     |> Nifs.string_init()
   end
+  def initialize_msg(:int16) do
+    Nifs.create_empty_int16()
+  end
 
   @doc """
-    ノード間通信に用いるメッセージの初期化
-    :stringであればstring型が使えるようにする(現在使用可能な型)
+    ノード間通信に用いるメッセージリストの初期化
   """
   def initialize_msgs(msg_count, :string) do
     Enum.map(1..msg_count, fn _ ->
-      initialize_msg()
+      initialize_msg(:string)
     end)
   end
-
-  # TODO: :int16であればInt16型が使えるようにする(目標)
   def initialize_msgs(msg_count, :int16) do
     Enum.map(1..msg_count, fn _ ->
-      Nifs.create_empty_int16()
+      initialize_msg(:int16)
     end)
   end
 
   @doc """
-    メッセージからstringデータを取得する
+    メッセージからデータを取得する
   """
-  def readdata_string(msg) do
+  def readdata(msg, :string) do
     Nifs.readdata_string(msg)
+  end
+ def readdata(msg, :int16) do
+    Nifs.readdata_int16(msg)
   end
 
   @doc """
     メッセージにデータをセットする
-    現在はstring型のみのサポートになっている
   """
   def setdata(msg, data, :string) do
     data_size = String.length(data)
     Nifs.setdata_string(msg, String.to_charlist(data), data_size + 1)
   end
-
-  def setdata(msg, data, :int16) do
+ def setdata(msg, data, :int16) do
     Nifs.setdata_int16(msg, data)
+  end
+
+  @doc """
+    型サポートを取得する
+  """
+  def get_typesupport(:string) do
+    Nifs.getmsgtype_String()
+  end
+  def get_typesupport(:int16) do
+    Nifs.getmsgtype_int16()
   end
 
   @doc """

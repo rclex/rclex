@@ -114,7 +114,7 @@ ErlNifFunc nif_funcs[] = {
   {"rcl_publisher_get_default_options",0,nif_rcl_publisher_get_default_options,0},
   {"rcl_publisher_get_topic_name",1,nif_rcl_publisher_get_topic_name,0},
   {"rcl_publisher_fini",2,nif_rcl_publisher_fini,0},
-  {"rcl_publisher_init",4,nif_rcl_publisher_init,0},
+  {"rcl_publisher_init",5,nif_rcl_publisher_init,0},
   {"rcl_publisher_is_valid",1,nif_rcl_publisher_is_valid,0},
   {"rcl_publish",3,nif_rcl_publish,0},
   {"create_pub_alloc",0,nif_create_pub_alloc,0},
@@ -134,12 +134,13 @@ ErlNifFunc nif_funcs[] = {
   {"create_msginfo",0,nif_create_msginfo,0},
   {"int16_init",1,nif_std_msgs__msg__Int16__init,0},
   {"int16_destroy",1,nif_std_msgs__msg__Int16__destroy,0},
-  {"get_message_type_from_std_msgs_msg_int16",0,nif_getmsgtype_int16,0},
+  {"getmsgtype_int16",0,nif_getmsgtype_int16,0},
   {"readdata_int16",1,nif_readdata_int16,0},
   {"setdata_int16",2,nif_setdata_int16,0},
   //----------------msg_string_nif.c----------
   {"create_empty_string",0,nif_create_empty_string,0},
   {"string_init",1,nif_string_init,0},
+  {"getmsgtype_String",0,nif_getmsgtype_String,0},
   {"setdata_string",3,nif_setdata_string,0},
   {"readdata_string",1,nif_readdata_string,0},
   //----------------wait_nif.c-----------------

@@ -20,6 +20,26 @@ extern "C"
 #include "rmw/types.h"
 
 
+ERL_NIF_TERM nif_getmsgtype_String(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+  if(argc != 0) {
+    return enif_make_badarg(env);
+  }
+  void* res_tmp;
+  rosidl_message_type_support_t** res;
+  ERL_NIF_TERM ret;
+
+  res_tmp = enif_alloc_resource(rt_void,sizeof(rosidl_message_type_support_t*));
+  if(res_tmp == NULL) {
+    return enif_make_badarg(env);
+  }
+  ret = enif_make_resource(env,res_tmp);
+  enif_release_resource(res_tmp);
+  res = (rosidl_message_type_support_t**) res_tmp;
+  *res = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,String);
+  return ret;
+}
+
 //空のStringメッセージオブジェクトを作る関数
 ERL_NIF_TERM nif_create_empty_string(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {

@@ -139,7 +139,7 @@ defmodule Rclex.Nifs do
                   const char * topic_name,
                   const rcl_publisher_options_t * options
   """
-  def rcl_publisher_init(_a, _b, _c, _d) do
+  def rcl_publisher_init(_a, _b, _c, _d, _e) do
     raise "rcl_publisher_init/4 not implemented"
   end
 
@@ -249,8 +249,8 @@ defmodule Rclex.Nifs do
     raise "NIF std_msgs__msg__Int16__destroy/1 not implemented"
   end
 
-  def get_message_type_from_std_msgs_msg_int16 do
-    raise "NIF get_message_type_from_std_msgs_msg_Int16/0 not implemented"
+  def getmsgtype_int16 do
+    raise "NIF getmsgtype_Int16/0 not implemented"
   end
 
   def readdata_int16(_a) do
@@ -269,6 +269,10 @@ defmodule Rclex.Nifs do
 
   def string_init(_a) do
     raise "NIF string_init/1 is not implemented"
+  end
+
+  def getmsgtype_String do
+    raise "NIF getmsgtype_String/0 not implemented"
   end
 
   def readdata_string(_a) do

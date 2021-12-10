@@ -59,8 +59,8 @@ defmodule Rclex.Node do
     {:ok, sub_identifier_list}
   end
 
-  def create_single_publisher(node_identifier, topic_name) do
-    GenServer.call({:global, node_identifier}, {:create_publisher, node_identifier, topic_name})
+  def create_single_publisher(node_identifier, msg_type, topic_name) do
+    GenServer.call({:global, node_identifier}, {:create_publisher, node_identifier, msg_type, topic_name})
   end
 
   @doc """
@@ -70,12 +70,12 @@ defmodule Rclex.Node do
       :multi...1つのトピックに出版者または購読者1つのペアを複数
   """
 
-  def create_publishers(node_identifier_list, topic_name, :single) do
+  def create_publishers(node_identifier_list, msg_type, topic_name, :single) do
     pub_identifier_list =
       Enum.map(node_identifier_list, fn node_identifier ->
         GenServer.call(
           {:global, node_identifier},
-          {:create_publisher, node_identifier, topic_name}
+          {:create_publisher, node_identifier, msg_type, topic_name}
         )
       end)
       |> Enum.map(fn {:ok, pub_identifier} -> pub_identifier end)
@@ -83,13 +83,13 @@ defmodule Rclex.Node do
     {:ok, pub_identifier_list}
   end
 
-  def create_publishers(node_identifier_list, topic_name, :multi) do
+  def create_publishers(node_identifier_list, msg_type, topic_name, :multi) do
     pub_identifier_list =
       Enum.map(0..(length(node_identifier_list) - 1), fn index ->
         GenServer.call(
           {:global, Enum.at(node_identifier_list, index)},
           {:create_publisher, Enum.at(node_identifier_list, index),
-           topic_name ++ Integer.to_charlist(index)}
+           msg_type, topic_name ++ Integer.to_charlist(index)}
         )
       end)
       |> Enum.map(fn {:ok, pub_identifier} -> pub_identifier end)
@@ -145,13 +145,14 @@ defmodule Rclex.Node do
   end
 
   def handle_call(
-        {:create_publisher, node_identifier, topic_name},
+        {:create_publisher, node_identifier, msg_type, topic_name},
         _,
         {node, name, supervisor_ids}
       ) do
     publisher = Nifs.rcl_get_zero_initialized_publisher()
     pub_op = Nifs.rcl_publisher_get_default_options()
-    pub = Nifs.rcl_publisher_init(publisher, node, topic_name, pub_op)
+    pub_ts =Rclex.get_typesupport(msg_type)
+    pub = Nifs.rcl_publisher_init(publisher, node, topic_name, pub_ts, pub_op)
 
     children = [
       {Rclex.Publisher, {pub, node_identifier ++ '/' ++ topic_name}}

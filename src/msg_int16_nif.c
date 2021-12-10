@@ -91,16 +91,18 @@ ERL_NIF_TERM nif_getmsgtype_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM a
   if(argc != 0) {
     return enif_make_badarg(env);
   }
-  rosidl_message_type_support_t** res_tmp;
+  void* res_tmp;
+  rosidl_message_type_support_t** res;
   ERL_NIF_TERM ret;
 
-  res_tmp = enif_alloc_resource(rt_msg_type_support,sizeof(rosidl_message_type_support_t*));
+  res_tmp = enif_alloc_resource(rt_void,sizeof(rosidl_message_type_support_t*));
   if(res_tmp == NULL) {
     return enif_make_badarg(env);
   }
   ret = enif_make_resource(env,res_tmp);
   enif_release_resource(res_tmp);
-  *res_tmp = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
+  res = (rosidl_message_type_support_t**) res_tmp;
+  *res = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
   return ret;
 }
 ERL_NIF_TERM nif_readdata_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
