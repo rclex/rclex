@@ -70,34 +70,31 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
   ERL_NIF_TERM ret;
   rcl_subscription_t*  res_sub;
   rcl_node_t* res_node;
-  //rosidl_message_type_support_t* res_msgtype;
+  void* res_ts_tmp;
+  rosidl_message_type_support_t** res_ts;
   rcl_subscription_options_t* res_sub_options;
 
   if(!enif_get_resource(env, argv[0], rt_sub, (void**) &res_sub)) {
     return enif_make_badarg(env);
   }
-
   if(!enif_get_resource(env, argv[1], rt_node, (void**) &res_node)) {
     return enif_make_badarg(env);
   }
-  /*
-  if(!enif_get_resource(env, argv[2], rt_msg_type_support, (void**) &res_msgtype)){
-    return enif_make_badarg(env);
-  }
-  */
+
   char topic_buf[128]; //トピック名を格納するためのバッファ
   (void)memset(&topic_buf,'\0',sizeof(topic_buf));
   if(!enif_get_string(env,argv[2],topic_buf,sizeof(topic_buf),ERL_NIF_LATIN1)) {
     return enif_make_badarg(env);
   }
-
-  if(!enif_get_resource(env, argv[3], rt_sub_options, (void**) &res_sub_options)) {
+  if(!enif_get_resource(env, argv[3], rt_void, (void**) &res_ts_tmp)){
+    return enif_make_badarg(env);
+  }
+  if(!enif_get_resource(env, argv[4], rt_sub_options, (void**) &res_sub_options)) {
     return enif_make_badarg(env);
   }
 
-  //const rosidl_message_type_support_t* msgtype_sub = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
-  const rosidl_message_type_support_t* msgtype_sub = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,String);
-  return_value = rcl_subscription_init(res_sub,res_node,msgtype_sub,topic_buf,res_sub_options);
+  res_ts = (rosidl_message_type_support_t**) res_ts_tmp;
+  return_value = rcl_subscription_init(res_sub,res_node,*res_ts,topic_buf,res_sub_options);
 
   ret = enif_make_resource(env,res_sub);
   return ret;

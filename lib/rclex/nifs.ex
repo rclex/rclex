@@ -190,7 +190,7 @@ defmodule Rclex.Nifs do
       const rcl_subscription_options_t * options
   );
   """
-  def rcl_subscription_init(_a, _b, _c, _d) do
+  def rcl_subscription_init(_a, _b, _c, _d, _e) do
     raise "NIF rcl_subscription_init is not implemented"
   end
 

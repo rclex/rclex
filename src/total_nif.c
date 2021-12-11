@@ -123,7 +123,7 @@ ErlNifFunc nif_funcs[] = {
   {"rcl_get_zero_initialized_subscription",0,nif_rcl_get_zero_initialized_subscription,0},
   {"rcl_subscription_get_default_options",0,nif_rcl_subscription_get_default_options,0},
   {"create_sub_alloc",0,nif_create_sub_alloc,0},
-  {"rcl_subscription_init",4,nif_rcl_subscription_init,0},
+  {"rcl_subscription_init",5,nif_rcl_subscription_init,0},
   {"rcl_subscription_fini",2,nif_rcl_subscription_fini,0},
   {"rcl_subscription_get_topic_name",1,nif_rcl_subscription_get_topic_name,0},
   {"rcl_take",4,nif_rcl_take,0},

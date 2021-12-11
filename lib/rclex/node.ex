@@ -21,8 +21,8 @@ defmodule Rclex.Node do
     {:ok, {node, name, %{}}}
   end
 
-  def create_single_subscriber(node_identifier, topic_name) do
-    GenServer.call({:global, node_identifier}, {:create_subscriber, node_identifier, topic_name})
+  def create_single_subscriber(node_identifier, msg_type, topic_name) do
+    GenServer.call({:global, node_identifier}, {:create_subscriber, node_identifier, msg_type, topic_name})
   end
 
   @doc """
@@ -32,12 +32,12 @@ defmodule Rclex.Node do
       :multi...1つのトピックに出版者または購読者1つのペアを複数
   """
 
-  def create_subscribers(node_identifier_list, topic_name, :single) do
+  def create_subscribers(node_identifier_list, msg_type, topic_name, :single) do
     sub_identifier_list =
       Enum.map(node_identifier_list, fn node_identifier ->
         GenServer.call(
           {:global, node_identifier},
-          {:create_subscriber, node_identifier, topic_name}
+          {:create_subscriber, node_identifier, msg_type, topic_name}
         )
       end)
       |> Enum.map(fn {:ok, sub_identifier} -> sub_identifier end)
@@ -45,13 +45,13 @@ defmodule Rclex.Node do
     {:ok, sub_identifier_list}
   end
 
-  def create_subscribers(node_identifier_list, topic_name, :multi) do
+  def create_subscribers(node_identifier_list, msg_type, topic_name, :multi) do
     sub_identifier_list =
       Enum.map(0..(node_identifier_list - 1), fn index ->
         GenServer.call(
           {:global, Enum.at(node_identifier_list, index)},
           {:create_subscriber, Enum.at(node_identifier_list, index),
-           topic_name ++ Integer.to_charlist(index)}
+           msg_type, topic_name ++ Integer.to_charlist(index)}
         )
       end)
       |> Enum.map(fn {:ok, sub_identifier} -> sub_identifier end)
@@ -125,16 +125,17 @@ defmodule Rclex.Node do
   end
 
   def handle_call(
-        {:create_subscriber, node_identifier, topic_name},
+        {:create_subscriber, node_identifier, msg_type, topic_name},
         _,
         {node, name, supervisor_ids}
       ) do
     subscriber = Nifs.rcl_get_zero_initialized_subscription()
     sub_op = Nifs.rcl_subscription_get_default_options()
-    sub = Nifs.rcl_subscription_init(subscriber, node, topic_name, sub_op)
+    sub_ts = Rclex.get_typesupport(msg_type)
+    sub = Nifs.rcl_subscription_init(subscriber, node, topic_name, sub_ts, sub_op)
 
     children = [
-      {Rclex.Subscriber, {sub, node_identifier ++ '/' ++ topic_name}}
+      {Rclex.Subscriber, {sub, msg_type, node_identifier ++ '/' ++ topic_name}}
     ]
 
     opts = [strategy: :one_for_one]
@@ -151,7 +152,7 @@ defmodule Rclex.Node do
       ) do
     publisher = Nifs.rcl_get_zero_initialized_publisher()
     pub_op = Nifs.rcl_publisher_get_default_options()
-    pub_ts =Rclex.get_typesupport(msg_type)
+    pub_ts = Rclex.get_typesupport(msg_type)
     pub = Nifs.rcl_publisher_init(publisher, node, topic_name, pub_ts, pub_op)
 
     children = [

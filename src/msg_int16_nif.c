@@ -110,12 +110,13 @@ ERL_NIF_TERM nif_readdata_int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM arg
   if(argc != 1) {
     return enif_make_badarg(env);
   }
-  std_msgs__msg__Int16* res_msg;
-  ERL_NIF_TERM ret;
-  if(!enif_get_resource(env,argv[0],rt_Int16,(void**)&res_msg)) {
+  void* res_msg;
+  std_msgs__msg__Int16* res_msg_Int16;
+  if(!enif_get_resource(env,argv[0],rt_void,(void**)&res_msg)) {
     return enif_make_badarg(env);
   }
-  return enif_make_tuple2(env,atom_ok,enif_make_int(env,res_msg->data));
+  res_msg_Int16 = (std_msgs__msg__Int16*)res_msg;
+  return enif_make_int(env,res_msg_Int16->data);
 }
 
 //int16のdataに数値を入れる関数

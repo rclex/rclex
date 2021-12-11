@@ -8,11 +8,11 @@ defmodule Rclex.SubLoop do
     T.B.A
   """
 
-  def start_link({sub_id, sub, context, call_back}) do
-    GenServer.start_link(__MODULE__, {sub_id, sub, context, call_back})
+  def start_link({sub_id, sub, msg_type, context, call_back}) do
+    GenServer.start_link(__MODULE__, {sub_id, sub, msg_type, context, call_back})
   end
 
-  def init({sub_id, sub, context, call_back}) do
+  def init({sub_id, sub, msg_type, context, call_back}) do
     wait_set =
       Nifs.rcl_get_zero_initialized_wait_set()
       |> Nifs.rcl_wait_set_init(
@@ -27,7 +27,7 @@ defmodule Rclex.SubLoop do
       )
 
     GenServer.cast(self(), {:loop})
-    {:ok, {sub_id, wait_set, sub, call_back}}
+    {:ok, {sub_id, wait_set, sub, msg_type, call_back}}
   end
 
   def start_sub(id_list) do
@@ -40,10 +40,10 @@ defmodule Rclex.SubLoop do
       購読が正常に行われれば，引数に受け取っていたコールバック関数を実行
   """
   # def each_subscribe(sub, call_back, sub_id) do
-  def each_subscribe(sub, sub_id) do
+  def each_subscribe(sub, sub_id, msg_type) do
     # Logger.debug("each subscribe")
     if Nifs.check_subscription(sub) do
-      msg = Rclex.initialize_msg()
+      msg = Rclex.initialize_msg(msg_type)
       msginfo = Nifs.create_msginfo()
       sub_alloc = Nifs.create_sub_alloc()
 
@@ -60,11 +60,11 @@ defmodule Rclex.SubLoop do
     end
   end
 
-  def handle_cast({:loop}, {sub_id, wait_set, sub, call_back}) do
-    {:noreply, {sub_id, wait_set, sub, call_back}, {:continue, :loop}}
+  def handle_cast({:loop}, {sub_id, wait_set, sub, msg_type, call_back}) do
+    {:noreply, {sub_id, wait_set, sub, msg_type, call_back}, {:continue, :loop}}
   end
 
-  def handle_continue(:loop, {sub_id, wait_set, sub, call_back}) do
+  def handle_continue(:loop, {sub_id, wait_set, sub, msg_type, call_back}) do
     Nifs.rcl_wait_set_clear(wait_set)
     # waitsetにサブスクライバを追加する
     Nifs.rcl_wait_set_add_subscription(wait_set, sub)
@@ -76,16 +76,16 @@ defmodule Rclex.SubLoop do
     Nifs.rcl_wait(wait_set, 5)
 
     # each_subscribe(waitset_sub, call_back, sub_id)
-    each_subscribe(waitset_sub, sub_id)
+    each_subscribe(waitset_sub, sub_id, msg_type)
 
     receive do
       :stop ->
         Process.send(sub_id, :terminate, [:noconnect])
-        {:stop, :normal, {sub_id, wait_set, sub, call_back}}
+        {:stop, :normal, {sub_id, wait_set, sub, msg_type, call_back}}
     after
       # Optional timeout
       5 ->
-        {:noreply, {sub_id, wait_set, sub, call_back}, {:continue, :loop}}
+        {:noreply, {sub_id, wait_set, sub, msg_type, call_back}, {:continue, :loop}}
     end
   end
 
