@@ -232,58 +232,6 @@ defmodule Rclex.Nifs do
     raise "NIF rcl_get_topic_names_and_types is not implemented"
   end
 
-  # -----------------------------msg_int16.c------------------------------
-  def create_empty_int16 do
-    raise "NIF create_empty_int16/0 is not implemented"
-  end
-
-  def create_msginfo do
-    raise "NIF create_msginfo/0 is not implemented"
-  end
-
-  def int16_init(_a) do
-    raise "NIF std_msgs__msg__Int16__init/0 not implemented"
-  end
-
-  def int16_destroy(_a) do
-    raise "NIF std_msgs__msg__Int16__destroy/1 not implemented"
-  end
-
-  def getmsgtype_int16 do
-    raise "NIF getmsgtype_Int16/0 not implemented"
-  end
-
-  def readdata_int16(_a) do
-    raise "NIF readdata_int16/1 is not implemented"
-  end
-
-  def setdata_int16(_a, _b) do
-    raise "NIF setdata_int16/2 is not implemented"
-  end
-
-  # -----------------------msg_string_nif.c-----------------------------
-
-  def create_empty_string do
-    raise "NIF create_empty_string/0 is not implemented"
-  end
-
-  def string_init(_a) do
-    raise "NIF string_init/1 is not implemented"
-  end
-
-  def getmsgtype_String do
-    raise "NIF getmsgtype_String/0 not implemented"
-  end
-
-  def readdata_string(_a) do
-    raise "NIF readdata_string/1 is not implemented"
-  end
-
-  # arg..(initialized msg,string)
-  def setdata_string(_a, _b, _c) do
-    raise "NIF setdata_string/3 is not implemented"
-  end
-
   # -----------------------------wait_nif.c------------------------------
   def rcl_get_default_allocator do
     raise "NIF rcl_get_default_allocator/0 is not implemented"
@@ -323,5 +271,43 @@ defmodule Rclex.Nifs do
 
   def get_sublist_from_waitset(_a) do
     raise "NIF get_sublist_from_waitset/1 is not implemented"
+  end
+
+  # ------------------------------msg_nif.c----------------------------
+  def create_msginfo do
+    raise "NIF create_msginfo/0 is not implemented"
+  end
+
+  # ---------------------------<msgtype>_nif.c-------------------------
+  def get_typesupport_std_msgs__msg__String do
+    raise "NIF get_typesupport_std_msgs__msg__String/0 is not implemented"
+  end
+  def create_empty_msg_std_msgs__msg__String do
+    raise "NIF create_empty_msg_std_msgs__msg__String/0 is not implemented"
+  end
+  def init_msg_std_msgs__msg__String(_) do
+    raise "NIF init_msg_std_msgs__msg__String/1 is not implemented"
+  end
+  def setdata_std_msgs__msg__String(_,_,_) do
+    raise "NIF setdata_std_msgs__msg__String/3 is not implemented"
+  end
+  def readdata_std_msgs__msg__String(_) do
+    raise "NIF readdata_std_msgs__msg__String/1 is not implemented"
+  end
+
+  def get_typesupport_std_msgs__msg__Int16 do
+    raise "NIF get_typesupport_std_msgs__msg__Int16/0 is not implemented"
+  end
+  def create_empty_msg_std_msgs__msg__Int16 do
+    raise "NIF create_empty_msg_std_msgs__msg__Int16/0 is not implemented"
+  end
+  def init_msg_std_msgs__msg__Int16(_) do
+    raise "NIF init_msg_std_msgs__msg__Int16/1 is not implemented"
+  end
+  def setdata_std_msgs__msg__Int16(_,_) do
+    raise "NIF setdata_std_msgs__msg__Int16/2 is not implemented"
+  end
+  def readdata_std_msgs__msg__Int16(_) do
+    raise "NIF readdata_std_msgs__msg__Int16/1 is not implemented"
   end
 end

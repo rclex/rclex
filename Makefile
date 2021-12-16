@@ -18,7 +18,7 @@ BUILD  = $(MIX_APP_PATH)/obj
 
 NIF = $(PREFIX)/rclex_nifs.so
 
-CFLAGS  ?= -g -O2 -Wall -Wextra -Wno-unused-parameter -pedantic -fPIC
+CFLAGS  ?= -g -O2 -Wall -Wextra -Wno-unused-parameter -pedantic -fPIC -I src
 LDFLAGS ?= -g -shared
 
 # Enabling this line prints debug messages on NIFs code.
@@ -39,10 +39,9 @@ ROS_LDFLAGS += -lrcl -lrmw -lrcutils \
 # if you want to use OpenSplice DDS
 #ROS_LDFLAGS	+= -lrmw_opensplice_cpp -lrosidl_typesupport_opensplice_cpp
 
-SRC ?= src/total_nif.c src/init_nif.c src/node_nif.c src/publisher_nif.c src/subscription_nif.c src/wait_nif.c src/graph_nif.c
-SRC += src/msg_int16_nif.c src/msg_string_nif.c
-HEADERS =$(wildcard src/*.h)
-OBJ = $(SRC:src/%.c=$(BUILD)/%.o)
+SRC ?= $(wildcard src/*.c) $(wildcard src/std_msgs/msg/*.c)
+HEADERS ?= $(wildcard src/*.h) $(wildcard src/std_msgs/msg/*.h)
+OBJ ?= $(SRC:%.c=%.o)
 
 calling_from_make:
 	mix compile
@@ -53,7 +52,7 @@ install: $(PREFIX) $(BUILD) $(NIF)
 
 $(OBJ): $(HEADERS) Makefile
 
-$(BUILD)/%.o: src/%.c
+%.o: %.c
 	$(CC) -c $(ERL_CFLAGS) $(ROS_CFLAGS) $(CFLAGS) -D$(ROS_VERSION) -o $@ $<
 
 $(NIF): $(OBJ)
@@ -63,7 +62,7 @@ $(PREFIX):
 	mkdir -p $@
 
 $(BUILD):
-	mkdir -p $@
+	mkdir -p {$@,$@/std_msgs/msg}
 
 clean:
 	$(RM) $(NIF) $(BUILD)/*.o

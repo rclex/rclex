@@ -9,10 +9,11 @@ extern "C"
 #include "node_nif.h"
 #include "publisher_nif.h"
 #include "subscription_nif.h"
-#include "msg_int16_nif.h"
-#include "msg_string_nif.h"
 #include "wait_nif.h"
 #include "graph_nif.h"
+#include "msg_nif.h"
+#include "std_msgs/msg/std_msgs__msg__String_nif.h"
+#include "std_msgs/msg/std_msgs__msg__Int16_nif.h"
 
 //各種リソースタイプの宣言やリソースタイプの作成を行う
 //------------------------nif_init.c-------------------
@@ -36,15 +37,11 @@ ErlNifResourceType* rt_msginfo;
 ErlNifResourceType* rt_sub_alloc;
 //----------------------graph_nif.c------------
 ErlNifResourceType* rt_names_and_types;
-//----------------------msg------------
-ErlNifResourceType* rt_void;
-//----------------------msg_int16_nif.c------------
-ErlNifResourceType* rt_Int16;
-//----------------------msg_string_nif.c---------------
-ErlNifResourceType* rt_String;
 //-------------------wait_nif.cで追加------------------------
 ErlNifResourceType* rt_default_alloc;
 ErlNifResourceType* rt_waitset;
+//--------------------<msgtype>_nif.c--------------------
+ErlNifResourceType* rt_void;
 
 ERL_NIF_TERM atom_ok;
 ERL_NIF_TERM atom_true;

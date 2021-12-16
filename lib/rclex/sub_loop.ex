@@ -43,7 +43,7 @@ defmodule Rclex.SubLoop do
   def each_subscribe(sub, sub_id, msg_type) do
     # Logger.debug("each subscribe")
     if Nifs.check_subscription(sub) do
-      msg = Rclex.initialize_msg(msg_type)
+      msg = Rclex.Msg.initialize(msg_type)
       msginfo = Nifs.create_msginfo()
       sub_alloc = Nifs.create_sub_alloc()
 

@@ -131,7 +131,7 @@ defmodule Rclex.Node do
       ) do
     subscriber = Nifs.rcl_get_zero_initialized_subscription()
     sub_op = Nifs.rcl_subscription_get_default_options()
-    sub_ts = Rclex.get_typesupport(msg_type)
+    sub_ts = Rclex.Msg.typesupport(msg_type)
     sub = Nifs.rcl_subscription_init(subscriber, node, topic_name, sub_ts, sub_op)
 
     children = [
@@ -152,7 +152,7 @@ defmodule Rclex.Node do
       ) do
     publisher = Nifs.rcl_get_zero_initialized_publisher()
     pub_op = Nifs.rcl_publisher_get_default_options()
-    pub_ts = Rclex.get_typesupport(msg_type)
+    pub_ts = Rclex.Msg.typesupport(msg_type)
     pub = Nifs.rcl_publisher_init(publisher, node, topic_name, pub_ts, pub_op)
 
     children = [
