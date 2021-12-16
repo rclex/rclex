@@ -46,7 +46,11 @@ defmodule Rclex.Publisher do
 
     Enum.map(0..(n - 1), fn index ->
       {node_identifier, topic_name, :pub} = Enum.at(publisher_list, index)
-      GenServer.cast({:global, node_identifier ++ '/' ++ topic_name}, {:publish, Enum.at(data, index)})
+
+      GenServer.cast(
+        {:global, node_identifier ++ '/' ++ topic_name},
+        {:publish, Enum.at(data, index)}
+      )
     end)
 
     :ok
