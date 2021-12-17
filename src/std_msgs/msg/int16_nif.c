@@ -15,7 +15,7 @@ extern "C"
 
 #include <std_msgs/msg/int16.h>
 #include "total_nif.h"
-#include "std_msgs/msg/std_msgs__msg__Int16_nif.h"
+#include "std_msgs/msg/int16_nif.h"
 
 ERL_NIF_TERM nif_get_typesupport_std_msgs__msg__Int16(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {

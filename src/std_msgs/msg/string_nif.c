@@ -15,7 +15,7 @@ extern "C"
 
 #include <std_msgs/msg/string.h>
 #include "total_nif.h"
-#include "std_msgs/msg/std_msgs__msg__String_nif.h"
+#include "std_msgs/msg/string_nif.h"
 
 ERL_NIF_TERM nif_get_typesupport_std_msgs__msg__String(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {

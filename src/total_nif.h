@@ -12,8 +12,9 @@ extern "C"
 #include "wait_nif.h"
 #include "graph_nif.h"
 #include "msg_nif.h"
-#include "std_msgs/msg/std_msgs__msg__String_nif.h"
-#include "std_msgs/msg/std_msgs__msg__Int16_nif.h"
+#include "std_msgs/msg/string_nif.h"
+#include "std_msgs/msg/int16_nif.h"
+#include "smp_msgs/msg/namenumber_nif.h"
 
 //各種リソースタイプの宣言やリソースタイプの作成を行う
 //------------------------nif_init.c-------------------

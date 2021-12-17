@@ -24,7 +24,7 @@ rclex-*.tar
 
 ## Original ignoring files
 # for NIFs
-*.so
+#*.so
 *.o
 
 # for VSCode
