@@ -41,7 +41,6 @@ jobs:
       - name: Build dependencies
         if: steps.mix-cache.outputs.cache-hit != 'true'
         run: |
-          source /opt/ros/${ROS_DISTRO}/setup.bash
           cd rclex
           mix local.hex --force
           mix deps.get
@@ -49,13 +48,11 @@ jobs:
 
       - name: mix format
         run: |
-          source /opt/ros/${ROS_DISTRO}/setup.bash
           cd rclex
           mix format --check-formatted
 
       - name: mix test
         run: |
-          source /opt/ros/${ROS_DISTRO}/setup.bash
           cd rclex
           mix local.hex --force
           mix test
