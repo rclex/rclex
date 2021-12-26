@@ -134,24 +134,10 @@ ErlNifFunc nif_funcs[] = {
   {"check_waitset",2,nif_check_waitset,0},
   {"check_subscription",1,nif_check_subscription,0},
   {"get_sublist_from_waitset",1,nif_get_sublist_from_waitset,0},
+  //-----<custom_msgtype>_nif.c-----start-----
+  //-----<custom_msgtype>_nif.c-----end-----
   //-------------------msg_nif.c------------------
-  {"create_msginfo",0,nif_create_msginfo,0},
-  //----------------<msgtype>_nif.c---------------
-  {"get_typesupport_std_msgs__msg__String", 0, nif_get_typesupport_std_msgs__msg__String, 0},
-  {"create_empty_msg_std_msgs__msg__String", 0, nif_create_empty_msg_std_msgs__msg__String, 0},
-  {"init_msg_std_msgs__msg__String", 1, nif_init_msg_std_msgs__msg__String, 0},
-  {"setdata_std_msgs__msg__String", 3, nif_setdata_std_msgs__msg__String, 0},
-  {"readdata_std_msgs__msg__String", 1, nif_readdata_std_msgs__msg__String, 0},
-  {"get_typesupport_std_msgs__msg__Int16", 0, nif_get_typesupport_std_msgs__msg__Int16, 0},
-  {"create_empty_msg_std_msgs__msg__Int16", 0, nif_create_empty_msg_std_msgs__msg__Int16, 0},
-  {"init_msg_std_msgs__msg__Int16", 1, nif_init_msg_std_msgs__msg__Int16, 0},
-  {"setdata_std_msgs__msg__Int16", 2, nif_setdata_std_msgs__msg__Int16, 0},
-  {"readdata_std_msgs__msg__Int16", 1, nif_readdata_std_msgs__msg__Int16, 0},
-  {"get_typesupport_smp_msgs__msg__Namenumber", 0, nif_get_typesupport_smp_msgs__msg__Namenumber, 0},
-  {"create_empty_msg_smp_msgs__msg__Namenumber", 0, nif_create_empty_msg_smp_msgs__msg__Namenumber, 0},
-  {"init_msg_smp_msgs__msg__Namenumber", 1, nif_init_msg_smp_msgs__msg__Namenumber, 0},
-  {"setdata_smp_msgs__msg__Namenumber", 4, nif_setdata_smp_msgs__msg__Namenumber, 0},
-  {"readdata_smp_msgs__msg__Namenumber", 1, nif_readdata_smp_msgs__msg__Namenumber, 0}
+  {"create_msginfo",0,nif_create_msginfo,0}
 };
 
 ERL_NIF_INIT(Elixir.Rclex.Nifs,nif_funcs,&load,&reload,&upgrade,&unload)

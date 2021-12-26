@@ -12,9 +12,8 @@ extern "C"
 #include "wait_nif.h"
 #include "graph_nif.h"
 #include "msg_nif.h"
-#include "std_msgs/msg/string_nif.h"
-#include "std_msgs/msg/int16_nif.h"
-#include "smp_msgs/msg/namenumber_nif.h"
+//-----<custom_msgtype>_nif.h-----start-----
+//-----<custom_msgtype>_nif.h-----end-----
 
 //各種リソースタイプの宣言やリソースタイプの作成を行う
 //------------------------nif_init.c-------------------
@@ -41,7 +40,7 @@ ErlNifResourceType* rt_names_and_types;
 //-------------------wait_nif.cで追加------------------------
 ErlNifResourceType* rt_default_alloc;
 ErlNifResourceType* rt_waitset;
-//--------------------<msgtype>_nif.c--------------------
+//--------------------<custom_msgtype>_nif.c--------------------
 ErlNifResourceType* rt_void;
 
 ERL_NIF_TERM atom_ok;

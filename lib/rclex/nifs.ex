@@ -278,52 +278,6 @@ defmodule Rclex.Nifs do
     raise "NIF create_msginfo/0 is not implemented"
   end
 
-  # ---------------------------<msgtype>_nif.c-------------------------
-  def get_typesupport_std_msgs__msg__String do
-    raise "NIF get_typesupport_std_msgs__msg__String/0 is not implemented"
-  end
-  def create_empty_msg_std_msgs__msg__String do
-    raise "NIF create_empty_msg_std_msgs__msg__String/0 is not implemented"
-  end
-  def init_msg_std_msgs__msg__String(_) do
-    raise "NIF init_msg_std_msgs__msg__String/1 is not implemented"
-  end
-  def setdata_std_msgs__msg__String(_,_,_) do
-    raise "NIF setdata_std_msgs__msg__String/3 is not implemented"
-  end
-  def readdata_std_msgs__msg__String(_) do
-    raise "NIF readdata_std_msgs__msg__String/1 is not implemented"
-  end
-
-  def get_typesupport_std_msgs__msg__Int16 do
-    raise "NIF get_typesupport_std_msgs__msg__Int16/0 is not implemented"
-  end
-  def create_empty_msg_std_msgs__msg__Int16 do
-    raise "NIF create_empty_msg_std_msgs__msg__Int16/0 is not implemented"
-  end
-  def init_msg_std_msgs__msg__Int16(_) do
-    raise "NIF init_msg_std_msgs__msg__Int16/1 is not implemented"
-  end
-  def setdata_std_msgs__msg__Int16(_,_) do
-    raise "NIF setdata_std_msgs__msg__Int16/2 is not implemented"
-  end
-  def readdata_std_msgs__msg__Int16(_) do
-    raise "NIF readdata_std_msgs__msg__Int16/1 is not implemented"
-  end
-
-  def get_typesupport_smp_msgs__msg__Namenumber do
-    raise "NIF get_typesupport_smp_msgs__msg__Namenumber/0 is not implemented"
-  end
-  def create_empty_msg_smp_msgs__msg__Namenumber do
-    raise "NIF create_empty_msg_smp_msgs__msg__Namenumber/0 is not implemented"
-  end
-  def init_msg_smp_msgs__msg__Namenumber(_) do
-    raise "NIF init_msg_smp_msgs__msg__Namenumber/1 is not implemented"
-  end
-  def setdata_smp_msgs__msg__Namenumber(_,_,_,_) do
-    raise "NIF setdata_smp_msgs__msg__Namenumber/4 is not implemented"
-  end
-  def readdata_smp_msgs__msg__Namenumber(_) do
-    raise "NIF readdata_smp_msgs__msg__Namenumber/1 is not implemented"
-  end
+  # -----<custom_msgtype>_nif.c-----start-----
+  # -----<custom_msgtype>_nif.c-----end-----
 end

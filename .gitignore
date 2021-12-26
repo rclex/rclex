@@ -24,7 +24,7 @@ rclex-*.tar
 
 ## Original ignoring files
 # for NIFs
-#*.so
+*.so
 *.o
 
 # for VSCode
@@ -34,3 +34,8 @@ rclex-*.tar
 #/.history/
 #core
 #/.textdata/
+
+# for msgtype
+#/packages.txt
+/src/*/msg/
+/lib/rclex/*/msg/

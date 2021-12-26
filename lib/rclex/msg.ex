@@ -34,7 +34,7 @@ end
 Type name	Elixir
 ---------------------------
 bool 		bool(atom)
-byte		binary
+byte		integer
 char		integer
 float32		float
 float64		float
