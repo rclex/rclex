@@ -20,14 +20,6 @@ defmodule Rclex.Executor do
           keyがnode_identifer、valueがnode情報。現在はnodeプロセスのsupervisorのidを格納している
   """
   def init(_) do
-    children = [
-      {Rclex.JobQueue, {}},
-      {Rclex.JobExecutor, {}}
-    ]
-
-    opts = [strategy: :one_for_one]
-    # {:ok, id} = Supervisor.start_link(children, opts)
-    {:ok, _} = Supervisor.start_link(children, opts)
     {:ok, {%{}}}
   end
 
@@ -61,12 +53,12 @@ defmodule Rclex.Executor do
     GenServer.call(Executor, {:create_nodes, context, node_name, num_node})
   end
 
-  def create_timer(call_back, args, time) do
-    GenServer.call(Executor, {:create_timer, {call_back, args, time}})
+  def create_timer(call_back, args, time, timer_name) do
+    GenServer.call(Executor, {:create_timer, {call_back, args, time, timer_name}})
   end
 
-  def create_timer(call_back, args, time, limit) do
-    GenServer.call(Executor, {:create_timer, {call_back, args, time, limit}})
+  def create_timer(call_back, args, time, timer_name, limit) do
+    GenServer.call(Executor, {:create_timer, {call_back, args, time, timer_name, limit}})
   end
 
   @doc """
@@ -96,10 +88,10 @@ defmodule Rclex.Executor do
     )
   end
 
-  def handle_cast({:execute, {key, action, args}}, {nodes}) do
-    GenServer.cast(key, {action, args})
-    {:noreply, {nodes}}
-  end
+  # def handle_cast({:execute, {key, action, args}}, {nodes}) do
+  #   GenServer.cast(key, {action, args})
+  #   {:noreply, {nodes}}
+  # end
 
   def handle_call({:create_singlenode, {context, node_name, node_namespace}}, _from, {nodes}) do
     if Map.has_key?(nodes, {node_namespace, node_name}) do
@@ -116,7 +108,7 @@ defmodule Rclex.Executor do
 
       opts = [strategy: :one_for_one]
       {:ok, pid} = Supervisor.start_link(children, opts)
-      node_identifier = node_namespace ++ '/' ++ node_name
+      node_identifier = "#{node_namespace}/{node_name}"
       new_nodes = Map.put_new(nodes, node_identifier, %{supervisor_id: pid})
       {:reply, {:ok, node_identifier}, {new_nodes}}
     end
@@ -177,7 +169,7 @@ defmodule Rclex.Executor do
       end)
       |> Enum.map(fn {:ok, pid} -> pid end)
 
-    node_identifier_list = Enum.map(name_list, fn name -> namespace ++ "/" ++ name end)
+    node_identifier_list = Enum.map(name_list, fn name -> "#{namespace}/#{name}" end)
 
     nodes_list =
       Enum.map(0..(num_node - 1), fn n ->
@@ -236,9 +228,9 @@ defmodule Rclex.Executor do
     {:reply, {:ok, name_list}, {new_nodes}}
   end
 
-  def handle_call({:create_timer, {call_back, args, time}}, _from, state) do
+  def handle_call({:create_timer, {call_back, args, time, timer_name}}, _from, state) do
     children = [
-      {Rclex.Timer, {call_back, args, time}}
+      {Rclex.Timer, {call_back, args, time, timer_name}}
     ]
 
     opts = [strategy: :one_for_one]
@@ -246,9 +238,9 @@ defmodule Rclex.Executor do
     {:reply, {:ok, pid}, state}
   end
 
-  def handle_call({:create_timer, {call_back, args, time, limit}}, _from, state) do
+  def handle_call({:create_timer, {call_back, args, time, timer_name, limit}}, _from, state) do
     children = [
-      {Rclex.Timer, {call_back, args, time, limit}}
+      {Rclex.Timer, {call_back, args, time, timer_name, limit}}
     ]
 
     opts = [strategy: :one_for_one]

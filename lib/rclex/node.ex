@@ -13,12 +13,32 @@ defmodule Rclex.Node do
   end
 
   def start_link(node, node_name, node_namespace) do
-    name = node_namespace ++ '/' ++ node_name
-    GenServer.start_link(__MODULE__, {node, name}, name: {:global, name})
+    node_identifier = "#{node_namespace}/#{node_name}"
+    children = [
+      {Rclex.JobQueue, {node_identifier}},
+      {Rclex.JobExecutor, {node_identifier}}
+    ]
+
+    opts = [strategy: :one_for_one]
+    {:ok, id} = Supervisor.start_link(children, opts)
+    # supervisor_idsにはJob、Publisher、Subscriberのsupervisor_idを入れる
+    # Publisher、Subscriberは第2クエリとしてトピック名を指定する
+    supervisor_ids = Map.put_new(%{}, {:job, "supervisor"}, id)
+    GenServer.start_link(__MODULE__, {node, node_identifier, supervisor_ids}, name: {:global, node_identifier})
   end
 
-  def init({node, name}) do
-    {:ok, {node, name, %{}}}
+  def init({node, node_name}) do
+    children = [
+      {Rclex.JobQueue, {node_name}},
+      {Rclex.JobExecutor, {node_name}}
+    ]
+
+    opts = [strategy: :one_for_one]
+    {:ok, id} = Supervisor.start_link(children, opts)
+    # supervisor_idsにはJob、Publisher、Subscriberのsupervisor_idを入れる
+    # Publisher、Subscriberは第2クエリとしてトピック名を指定する
+    supervisor_ids = Map.put_new(%{}, {:job, "supervisor"}, id)
+    {:ok, {node, node_name, supervisor_ids}}
   end
 
   def create_single_subscriber(node_identifier, topic_name) do
@@ -134,7 +154,7 @@ defmodule Rclex.Node do
     sub = Nifs.rcl_subscription_init(subscriber, node, topic_name, sub_op)
 
     children = [
-      {Rclex.Subscriber, {sub, node_identifier ++ '/' ++ topic_name}}
+      {Rclex.Subscriber, {sub, "#{node_identifier}/#{topic_name}/sub"}}
     ]
 
     opts = [strategy: :one_for_one]
@@ -154,20 +174,23 @@ defmodule Rclex.Node do
     pub = Nifs.rcl_publisher_init(publisher, node, topic_name, pub_op)
 
     children = [
-      {Rclex.Publisher, {pub, node_identifier ++ '/' ++ topic_name}}
+      {Rclex.Publisher, {pub, "#{node_identifier}/#{topic_name}/pub"}}
     ]
 
     opts = [strategy: :one_for_one]
     {:ok, id} = Supervisor.start_link(children, opts)
     new_supervisor_ids = Map.put_new(supervisor_ids, {:pub, topic_name}, id)
-    Logger.debug(node_identifier ++ '/' ++ topic_name)
+    Logger.debug("#{node_identifier}/#{topic_name}/pub")
     {:reply, {:ok, {node_identifier, topic_name, :pub}}, {node, name, new_supervisor_ids}}
   end
 
+
+  # Publisher、Subscriberを終了する
+  # roleには"pub"、"sub"のどちらかを指定する
   def handle_call({:finish_job, topic_name, role}, _from, {node, name, supervisor_ids}) do
     {:ok, supervisor_id} = Map.fetch(supervisor_ids, {role, topic_name})
 
-    key = name ++ '/' ++ topic_name
+    key = "#{name}/#{topic_name}/#{role}"
 
     {:ok, text} = GenServer.call({:global, key}, {:finish, node})
 
@@ -175,31 +198,35 @@ defmodule Rclex.Node do
 
     Supervisor.stop(supervisor_id)
 
-    new_supervisor_ids = Map.delete(supervisor_ids, topic_name)
+    new_supervisor_ids = Map.delete(supervisor_ids, {role, topic_name})
 
     {:reply, :ok, {node, name, new_supervisor_ids}}
   end
 
-  def handle_call({:finish_subscriber, topic_name}, _from, {node, name, supervisor_ids}) do
-    {:ok, supervisor_id} = Map.fetch(supervisor_ids, {:sub, topic_name})
+  # def handle_call({:finish_subscriber, topic_name}, _from, {node, node_name, supervisor_ids}) do
+  #   {:ok, supervisor_id} = Map.fetch(supervisor_ids, {:sub, topic_name})
 
-    sub_key = name ++ '/' ++ topic_name
+  #   sub_key = "#{node_name}/sub/#{topic_name}"
 
-    :ok = GenServer.call({:global, sub_key}, {:finish_subscriber, node})
+  #   :ok = GenServer.call({:global, sub_key}, {:finish_subscriber, node})
 
-    Supervisor.stop(supervisor_id)
+  #   Supervisor.stop(supervisor_id)
 
-    new_supervisor_ids = Map.delete(supervisor_ids, topic_name)
+  #   new_supervisor_ids = Map.delete(supervisor_ids, topic_name)
 
-    {:reply, :ok, {node, name, new_supervisor_ids}}
-  end
+  #   {:reply, :ok, {node, node_name, new_supervisor_ids}}
+  # end
 
   def handle_call(:finish_node, _from, {node, name, supervisor_ids}) do
     Nifs.rcl_node_fini(node)
 
+    {:ok, supervisor_id} = Map.fetch(supervisor_ids, {:job, "supervisor"})
+    Supervisor.stop(supervisor_id)
+    new_supervisor_ids = Map.delete(supervisor_ids, {:job, "supervisor"})
+
     # TODO nodeに紐付いているpub,subをきちんと終了させる
 
-    {:reply, :ok, {node, name, supervisor_ids}}
+    {:reply, :ok, {node, name, new_supervisor_ids}}
   end
 
   def handle_call(:node_get_name, _from, state) do
