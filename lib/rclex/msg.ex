@@ -1,4 +1,8 @@
 defmodule Rclex.Msg do
+  @moduledoc """
+      T.B.A
+  """
+
   def typesupport(msg_type) do
     get_struct(msg_type) |> Rclex.MsgProt.typesupport()
   end
@@ -8,7 +12,8 @@ defmodule Rclex.Msg do
   end
 
   def initialize_msgs(msg_count, msg_type) do
-    str = get_struct(msg_type);
+    str = get_struct(msg_type)
+
     Enum.map(1..msg_count, fn _ ->
       Rclex.MsgProt.initialize(str)
     end)

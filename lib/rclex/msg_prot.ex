@@ -4,5 +4,3 @@ defprotocol Rclex.MsgProt do
   def set(data, msg)
   def read(msg_type, msg)
 end
-
-

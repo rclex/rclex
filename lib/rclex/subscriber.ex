@@ -60,7 +60,13 @@ defmodule Rclex.Subscriber do
     {:ok, supervisor_id} = Supervisor.start_link(children, opts)
 
     {:noreply,
-     %{subscriber: sub, msgtype: msg_type, context: context, call_back: call_back, supervisor_id: supervisor_id}}
+     %{
+       subscriber: sub,
+       msgtype: msg_type,
+       context: context,
+       call_back: call_back,
+       supervisor_id: supervisor_id
+     }}
   end
 
   @doc """

@@ -22,7 +22,10 @@ defmodule Rclex.Node do
   end
 
   def create_single_subscriber(node_identifier, msg_type, topic_name) do
-    GenServer.call({:global, node_identifier}, {:create_subscriber, node_identifier, msg_type, topic_name})
+    GenServer.call(
+      {:global, node_identifier},
+      {:create_subscriber, node_identifier, msg_type, topic_name}
+    )
   end
 
   @doc """
@@ -50,8 +53,8 @@ defmodule Rclex.Node do
       Enum.map(0..(node_identifier_list - 1), fn index ->
         GenServer.call(
           {:global, Enum.at(node_identifier_list, index)},
-          {:create_subscriber, Enum.at(node_identifier_list, index),
-           msg_type, topic_name ++ Integer.to_charlist(index)}
+          {:create_subscriber, Enum.at(node_identifier_list, index), msg_type,
+           topic_name ++ Integer.to_charlist(index)}
         )
       end)
       |> Enum.map(fn {:ok, sub_identifier} -> sub_identifier end)
@@ -60,7 +63,10 @@ defmodule Rclex.Node do
   end
 
   def create_single_publisher(node_identifier, msg_type, topic_name) do
-    GenServer.call({:global, node_identifier}, {:create_publisher, node_identifier, msg_type, topic_name})
+    GenServer.call(
+      {:global, node_identifier},
+      {:create_publisher, node_identifier, msg_type, topic_name}
+    )
   end
 
   @doc """
@@ -88,8 +94,8 @@ defmodule Rclex.Node do
       Enum.map(0..(length(node_identifier_list) - 1), fn index ->
         GenServer.call(
           {:global, Enum.at(node_identifier_list, index)},
-          {:create_publisher, Enum.at(node_identifier_list, index),
-           msg_type, topic_name ++ Integer.to_charlist(index)}
+          {:create_publisher, Enum.at(node_identifier_list, index), msg_type,
+           topic_name ++ Integer.to_charlist(index)}
         )
       end)
       |> Enum.map(fn {:ok, pub_identifier} -> pub_identifier end)

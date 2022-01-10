@@ -27,7 +27,6 @@ defmodule Rclex do
     context
   end
 
-
   @doc """
     ユーザのタスク終了入力を受け付けるAPI.
     0を入力するとchildに渡されたPIDのタスクを終了する
