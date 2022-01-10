@@ -25,34 +25,34 @@ defmodule Rclex.Subscriber do
   end
 
   def start_subscribing({node_identifier, topic_name, :sub}, context, call_back) do
-    sub_identifier = node_identifier ++ '/' ++ topic_name
-    GenServer.cast({:global, sub_identifier}, {:start_subscribing, {context, call_back}})
+    sub_identifier = "#{node_identifier}/#{topic_name}/sub"
+    GenServer.cast({:global, sub_identifier}, {:start_subscribing, {context, call_back, node_identifier}})
   end
 
   def start_subscribing(sub_list, context, call_back) do
     Enum.map(sub_list, fn {node_identifier, topic_name, :sub} ->
-      sub_identifier = node_identifier ++ '/' ++ topic_name
-      GenServer.cast({:global, sub_identifier}, {:start_subscribing, {context, call_back}})
+      sub_identifier = "#{node_identifier}/#{topic_name}/sub"
+      GenServer.cast({:global, sub_identifier}, {:start_subscribing, {context, call_back, node_identifier, topic_name}})
     end)
   end
 
   def stop_subscribing({node_identifier, topic_name, :sub}) do
-    sub_identifier = node_identifier ++ '/' ++ topic_name
+    sub_identifier = "#{node_identifier}/#{topic_name}/sub"
     :ok = GenServer.call({:global, sub_identifier}, :stop_subscribing)
   end
 
   def stop_subscribing(sub_list) do
     Enum.map(sub_list, fn {node_identifier, topic_name, :sub} ->
-      sub_identifier = node_identifier ++ '/' ++ topic_name
+      sub_identifier = "#{node_identifier}/#{topic_name}/sub"
       GenServer.call({:global, sub_identifier}, :stop_subscribing)
     end)
   end
 
-  def handle_cast({:start_subscribing, {context, call_back}}, state) do
+  def handle_cast({:start_subscribing, {context, call_back, node_identifier, topic_name}}, state) do
     {:ok, sub} = Map.fetch(state, :subscriber)
 
     children = [
-      {Rclex.SubLoop, {self(), sub, context, call_back}}
+      {Rclex.SubLoop, {node_identifier, topic_name, sub, context, call_back}}
     ]
 
     opts = [strategy: :one_for_one]
