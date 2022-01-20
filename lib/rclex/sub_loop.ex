@@ -50,7 +50,10 @@ defmodule Rclex.SubLoop do
 
       case Nifs.rcl_take(sub, msg, msginfo, sub_alloc) do
         {Rclex.Macros.rcl_ret_ok(), _, _, _} ->
-          GenServer.cast({:global, "#{node_identifier}/JobQueue"}, {:push, {sub_key, :subscribe, msg}})
+          GenServer.cast(
+            {:global, "#{node_identifier}/JobQueue"},
+            {:push, {sub_key, :subscribe, msg}}
+          )
 
         {Rclex.Macros.rcl_ret_subscription_invalid(), _, _, _} ->
           Logger.error("subscription invalid")

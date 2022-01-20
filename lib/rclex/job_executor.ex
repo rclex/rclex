@@ -14,7 +14,9 @@ defmodule Rclex.JobExecutor do
   end
 
   def start_link({target_identifier, change_order}) do
-    GenServer.start_link(__MODULE__, {change_order}, name: {:global, "#{target_identifier}/JobExecutor"})
+    GenServer.start_link(__MODULE__, {change_order},
+      name: {:global, "#{target_identifier}/JobExecutor"}
+    )
   end
 
   def init({}) do
@@ -30,6 +32,7 @@ defmodule Rclex.JobExecutor do
   def handle_cast({:execute, job_queue}, {}) do
     :queue.to_list(job_queue)
     |> Enum.map(fn {key, action, args} -> GenServer.cast(key, {action, args}) end)
+
     {:noreply, {}}
   end
 
@@ -37,6 +40,7 @@ defmodule Rclex.JobExecutor do
     :queue.to_list(job_queue)
     |> change_order.()
     |> Enum.map(fn {key, action, args} -> GenServer.cast(key, {action, args}) end)
+
     {:noreply, {change_order}}
   end
 end

@@ -8,11 +8,15 @@ defmodule Rclex.Timer do
   """
 
   def start_link({callback, args, time, timer_name}) do
-    GenServer.start_link(__MODULE__, {callback, args, time, timer_name}, name: {:global, "#{timer_name}/Timer"})
+    GenServer.start_link(__MODULE__, {callback, args, time, timer_name},
+      name: {:global, "#{timer_name}/Timer"}
+    )
   end
 
   def start_link({callback, args, time, timer_name, limit}) do
-    GenServer.start_link(__MODULE__, {callback, args, time, timer_name, limit}, name: {:global, "#{timer_name}/Timer"})
+    GenServer.start_link(__MODULE__, {callback, args, time, timer_name, limit},
+      name: {:global, "#{timer_name}/Timer"}
+    )
   end
 
   # callback: コールバック関数
@@ -28,7 +32,7 @@ defmodule Rclex.Timer do
 
     opts = [strategy: :one_for_one]
     {:ok, job_supervisor_id} = Supervisor.start_link(job_children, opts)
-    
+
     children = [
       {Rclex.TimerLoop, {timer_name, time}}
     ]

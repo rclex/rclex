@@ -14,6 +14,7 @@ defmodule Rclex.Node do
 
   def start_link(node, node_name, node_namespace) do
     node_identifier = "#{node_namespace}/#{node_name}"
+
     children = [
       {Rclex.JobQueue, {node_identifier}},
       {Rclex.JobExecutor, {node_identifier}}
@@ -24,7 +25,10 @@ defmodule Rclex.Node do
     # supervisor_idsにはJob、Publisher、Subscriberのsupervisor_idを入れる
     # Publisher、Subscriberは第2クエリとしてトピック名を指定する
     supervisor_ids = Map.put_new(%{}, {:job, "supervisor"}, id)
-    GenServer.start_link(__MODULE__, {node, node_identifier, supervisor_ids}, name: {:global, node_identifier})
+
+    GenServer.start_link(__MODULE__, {node, node_identifier, supervisor_ids},
+      name: {:global, node_identifier}
+    )
   end
 
   def init({node, node_name}) do
@@ -183,7 +187,6 @@ defmodule Rclex.Node do
     Logger.debug("#{node_identifier}/#{topic_name}/pub")
     {:reply, {:ok, {node_identifier, topic_name, :pub}}, {node, name, new_supervisor_ids}}
   end
-
 
   # Publisher、Subscriberを終了する
   # roleには"pub"、"sub"のどちらかを指定する

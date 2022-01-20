@@ -13,11 +13,15 @@ defmodule Rclex.JobQueue do
   # 設定しない場合は1になる
 
   def start_link({target_identifier}) do
-    GenServer.start_link(__MODULE__, {target_identifier, 1}, name: {:global, "#{target_identifier}/JobQueue"})
+    GenServer.start_link(__MODULE__, {target_identifier, 1},
+      name: {:global, "#{target_identifier}/JobQueue"}
+    )
   end
 
   def start_link({target_identifier, queue_length}) do
-    GenServer.start_link(__MODULE__, {target_identifier, queue_length}, name: {:global, "#{target_identifier}/JobQueue"})
+    GenServer.start_link(__MODULE__, {target_identifier, queue_length},
+      name: {:global, "#{target_identifier}/JobQueue"}
+    )
   end
 
   def init({target_identifier, queue_length}) do
@@ -26,6 +30,7 @@ defmodule Rclex.JobQueue do
 
   def handle_cast({:push, job}, {target_identifier, queue_length, job_queue}) do
     new_job_queue = :queue.in(job, job_queue)
+
     if :queue.len(job_queue) >= queue_length do
       GenServer.cast({:global, "#{target_identifier}/JobExecutor"}, {:execute, new_job_queue})
       {:noreply, {target_identifier, queue_length, :queue.new()}}
