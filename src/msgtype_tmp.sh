@@ -17,7 +17,18 @@ local data=$2
 local res=$3
 local tmp=$4
 
-if [ $membertype = "bool" ]; then
+if [[ $membertype =~ __msg__ ]]; then
+setread_structmembers "$membertype" "$tmp" "$res."
+cat << __DOC__
+  int ${tmp}_arity;
+  const ERL_NIF_TERM* ${tmp};
+  if(!enif_get_tuple(env,${data},&${tmp}_arity,&${tmp})) {
+    return enif_make_badarg(env);
+  }
+${member_set[$membertype]}
+__DOC__
+
+elif [ $membertype = "bool" ]; then
 cat << __DOC__
   unsigned ${tmp};
   if(!enif_get_atom_length(env,${data},&${tmp},ERL_NIF_LATIN1)) {
@@ -73,17 +84,6 @@ cat << __DOC__
   free(${tmp});
 __DOC__
 
-elif [[ $membertype =~ __msg__ ]]; then
-setread_structmembers "$membertype" "$tmp" "$res."
-cat << __DOC__
-  int ${tmp}_arity;
-  const ERL_NIF_TERM* ${tmp};
-  if(!enif_get_tuple(env,${data},&${tmp}_arity,&${tmp})) {
-    return enif_make_badarg(env);
-  }
-${member_set[$membertype]}
-__DOC__
-
 fi
 }
 
@@ -92,7 +92,13 @@ read_structmember()
 local membertype=$1
 local res=$2
 
-if [ $membertype = "bool" ]; then
+if [[ $membertype =~ __msg__ ]]; then
+setread_structmembers "$membertype" "$tmp" "$res."
+cat << __DOC__
+    ${member_read[$membertype]}
+__DOC__
+
+elif [ $membertype = "bool" ]; then
 cat <<< "    enif_make_atom(env,(${res}?\"true\":\"false\"))"
 
 elif [[ $membertype =~ int ]]; then
@@ -106,12 +112,6 @@ cat <<< "    enif_make_string(env,${res}.data,ERL_NIF_LATIN1)"
 
 elif [ $membertype = "rosidl_runtime_c__U16String" ]; then
 cat <<< "    enif_make_string(env,(char*)(${res}.data),ERL_NIF_LATIN1)"
-
-elif [[ $membertype =~ __msg__ ]]; then
-setread_structmembers "$membertype" "$tmp" "$res."
-cat << __DOC__
-    ${member_read[$membertype]}
-__DOC__
 
 fi
 }

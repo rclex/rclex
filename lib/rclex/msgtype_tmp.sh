@@ -20,7 +20,9 @@ declare -A struct_return
 typedef_structmember()
 {
 local membertype=$1
-if [ $membertype = "bool" ]; then
+if [[ $membertype =~ __msg__ ]]; then
+	echo "${member_types[$membertype]}"
+elif [ $membertype = "bool" ]; then
 	echo "boolean"
 elif [[ $membertype =~ int ]]; then
 	echo "integer"
@@ -28,8 +30,6 @@ elif [[ $membertype =~ float|double ]]; then
 	echo "float"
 elif [[ $membertype =~ rosidl_runtime_c__(U16)?String ]]; then
 	echo "[integer]"
-elif [[ $membertype =~ __msg__ ]]; then
-	echo "${member_types[$membertype]}"
 fi
 }
 
