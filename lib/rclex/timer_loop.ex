@@ -31,7 +31,7 @@ defmodule Rclex.TimerLoop do
 
   def handle_continue(:loop, {timer_name, time}) do
     timer_id = {:global, "#{timer_name}/Timer"}
-    GenServer.cast("#{timer_name}/JobQueue", {:push, {timer_id, :execute, {}}})
+    GenServer.cast({:global, "#{timer_name}/JobQueue"}, {:push, {timer_id, :execute, {}}})
 
     receive do
       :stop ->
