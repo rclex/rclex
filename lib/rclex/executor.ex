@@ -1,4 +1,4 @@
-defmodule Rclex.Executor do
+defmodule Rclex.ResourceServer do
   alias Rclex.Nifs
   require Rclex.Macros
   require Logger
@@ -9,12 +9,11 @@ defmodule Rclex.Executor do
   """
 
   def start_link(_) do
-    GenServer.start_link(__MODULE__, {}, name: Executor)
+    GenServer.start_link(__MODULE__, {}, name: ResourceServer)
   end
 
   @doc """
-      Executorプロセスの初期化
-      下位プロセスとしてJobQueue, JobExecutorプロセスを生成する
+      ResourceServerプロセスの初期化
       状態:
           supervisor_ids :: map()
           keyがnode_identifer、valueがnode情報。現在はnodeプロセスのsupervisorのidを格納している
@@ -31,11 +30,11 @@ defmodule Rclex.Executor do
           作成したノードプロセスのnameを返す
   """
   def create_singlenode(context, node_name, node_namespace) do
-    GenServer.call(Executor, {:create_singlenode, {context, node_name, node_namespace}})
+    GenServer.call(ResourceServer, {:create_singlenode, {context, node_name, node_namespace}})
   end
 
   def create_singlenode(context, node_name) do
-    GenServer.call(Executor, {:create_singlenode, {context, node_name}})
+    GenServer.call(ResourceServer, {:create_singlenode, {context, node_name}})
   end
 
   @doc """
@@ -46,19 +45,19 @@ defmodule Rclex.Executor do
           作成したノードプロセスのnameのリストを返す
   """
   def create_nodes(context, node_name, namespace, num_node) do
-    GenServer.call(Executor, {:create_nodes, context, node_name, namespace, num_node})
+    GenServer.call(ResourceServer, {:create_nodes, context, node_name, namespace, num_node})
   end
 
   def create_nodes(context, node_name, num_node) do
-    GenServer.call(Executor, {:create_nodes, context, node_name, num_node})
+    GenServer.call(ResourceServer, {:create_nodes, context, node_name, num_node})
   end
 
   def create_timer(call_back, args, time, timer_name) do
-    GenServer.call(Executor, {:create_timer, {call_back, args, time, timer_name}})
+    GenServer.call(ResourceServer, {:create_timer, {call_back, args, time, timer_name}})
   end
 
   def create_timer(call_back, args, time, timer_name, limit) do
-    GenServer.call(Executor, {:create_timer, {call_back, args, time, timer_name, limit}})
+    GenServer.call(ResourceServer, {:create_timer, {call_back, args, time, timer_name, limit}})
   end
 
   @doc """
@@ -78,13 +77,13 @@ defmodule Rclex.Executor do
           削除するnodeのプロセス名
   """
   def finish_node(node_identifier) do
-    GenServer.call(Executor, {:finish_node, node_identifier})
+    GenServer.call(ResourceServer, {:finish_node, node_identifier})
   end
 
   def finish_nodes(node_identifier_list) do
     Enum.map(
       node_identifier_list,
-      fn node_identifier -> GenServer.call(Executor, {:finish_node, node_identifier}) end
+      fn node_identifier -> GenServer.call(ResourceServer, {:finish_node, node_identifier}) end
     )
   end
 
