@@ -22,9 +22,15 @@ defmodule RclexTest do
     context = Rclex.rclexinit()
 
     {:ok, node_list} = Rclex.ResourceServer.create_nodes(context, 'test_pub_node', 1)
-    {:ok, publisher_list} = Rclex.Node.create_publishers(node_list, 'testtopic', :single)
+
+    {:ok, publisher_list} =
+      Rclex.Node.create_publishers(node_list, 'StdMsgs.Msg.String', 'testtopic', :single)
+
     {:ok, node_list_2} = Rclex.ResourceServer.create_nodes(context, 'test_sub_node', 1)
-    {:ok, subscriber_list} = Rclex.Node.create_subscribers(node_list_2, 'testtopic', :single)
+
+    {:ok, subscriber_list} =
+      Rclex.Node.create_subscribers(node_list_2, 'StdMsgs.Msg.String', 'testtopic', :single)
+
     node = hd(node_list)
 
     names_and_types_tuple_list =
