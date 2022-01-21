@@ -19,10 +19,10 @@ defmodule Rclex do
     Nifs.rcl_init_options_fini(init_op)
 
     children = [
-      Rclex.Executor
+      Rclex.ResourceServer
     ]
 
-    opts = [strategy: :one_for_one, name: :executor]
+    opts = [strategy: :one_for_one, name: :resource_server]
     Supervisor.start_link(children, opts)
     context
   end
@@ -89,7 +89,7 @@ defmodule Rclex do
     Rclexの終了
   """
   def shutdown(context) do
-    Supervisor.stop(:executor)
+    Supervisor.stop(:resource_server)
     Nifs.rcl_shutdown(context)
   end
 

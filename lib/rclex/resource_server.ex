@@ -1,4 +1,4 @@
-defmodule Rclex.Executor do
+defmodule Rclex.ResourceServer do
   alias Rclex.Nifs
   require Rclex.Macros
   require Logger
@@ -9,25 +9,16 @@ defmodule Rclex.Executor do
   """
 
   def start_link(_) do
-    GenServer.start_link(__MODULE__, {}, name: Executor)
+    GenServer.start_link(__MODULE__, {}, name: ResourceServer)
   end
 
   @doc """
-      Executorプロセスの初期化
-      下位プロセスとしてJobQueue, JobExecutorプロセスを生成する
+      ResourceServerプロセスの初期化
       状態:
           supervisor_ids :: map()
           keyがnode_identifer、valueがnode情報。現在はnodeプロセスのsupervisorのidを格納している
   """
   def init(_) do
-    children = [
-      {Rclex.JobQueue, {}},
-      {Rclex.JobExecutor, {}}
-    ]
-
-    opts = [strategy: :one_for_one]
-    # {:ok, id} = Supervisor.start_link(children, opts)
-    {:ok, _} = Supervisor.start_link(children, opts)
     {:ok, {%{}}}
   end
 
@@ -39,11 +30,11 @@ defmodule Rclex.Executor do
           作成したノードプロセスのnameを返す
   """
   def create_singlenode(context, node_name, node_namespace) do
-    GenServer.call(Executor, {:create_singlenode, {context, node_name, node_namespace}})
+    GenServer.call(ResourceServer, {:create_singlenode, {context, node_name, node_namespace}})
   end
 
   def create_singlenode(context, node_name) do
-    GenServer.call(Executor, {:create_singlenode, {context, node_name}})
+    GenServer.call(ResourceServer, {:create_singlenode, {context, node_name}})
   end
 
   @doc """
@@ -54,29 +45,30 @@ defmodule Rclex.Executor do
           作成したノードプロセスのnameのリストを返す
   """
   def create_nodes(context, node_name, namespace, num_node) do
-    GenServer.call(Executor, {:create_nodes, context, node_name, namespace, num_node})
+    GenServer.call(ResourceServer, {:create_nodes, context, node_name, namespace, num_node})
   end
 
   def create_nodes(context, node_name, num_node) do
-    GenServer.call(Executor, {:create_nodes, context, node_name, num_node})
+    GenServer.call(ResourceServer, {:create_nodes, context, node_name, num_node})
   end
 
-  def create_timer(call_back, args, time) do
-    GenServer.call(Executor, {:create_timer, {call_back, args, time}})
+  def create_timer(call_back, args, time, timer_name) do
+    GenServer.call(ResourceServer, {:create_timer, {call_back, args, time, timer_name}})
   end
 
-  def create_timer(call_back, args, time, limit) do
-    GenServer.call(Executor, {:create_timer, {call_back, args, time, limit}})
+  def create_timer(call_back, args, time, timer_name, limit) do
+    GenServer.call(ResourceServer, {:create_timer, {call_back, args, time, timer_name, limit}})
   end
 
   @doc """
       タイマープロセスを削除する
       入力
-          timer_id :: pid()
-          削除するタイマープロセスのid
+          timer_identifier :: ()
+          削除するタイマープロセスの識別子
+          {:global, timer_identifier}がタイマープロセス名になる
   """
-  def stop_timer(timer_id) do
-    Supervisor.stop(timer_id)
+  def stop_timer(timer_identifier) do
+    GenServer.call(ResourceServer, {:stop_timer, timer_identifier})
   end
 
   @doc """
@@ -86,23 +78,18 @@ defmodule Rclex.Executor do
           削除するnodeのプロセス名
   """
   def finish_node(node_identifier) do
-    GenServer.call(Executor, {:finish_node, node_identifier})
+    GenServer.call(ResourceServer, {:finish_node, node_identifier})
   end
 
   def finish_nodes(node_identifier_list) do
     Enum.map(
       node_identifier_list,
-      fn node_identifier -> GenServer.call(Executor, {:finish_node, node_identifier}) end
+      fn node_identifier -> GenServer.call(ResourceServer, {:finish_node, node_identifier}) end
     )
   end
 
-  def handle_cast({:execute, {key, action, args}}, {nodes}) do
-    GenServer.cast(key, {action, args})
-    {:noreply, {nodes}}
-  end
-
-  def handle_call({:create_singlenode, {context, node_name, node_namespace}}, _from, {nodes}) do
-    if Map.has_key?(nodes, {node_namespace, node_name}) do
+  def handle_call({:create_singlenode, {context, node_name, node_namespace}}, _from, {resources}) do
+    if Map.has_key?(resources, {node_namespace, node_name}) do
       # 同名のノードがすでに存在しているときはエラーを返す
       {:reply, {:error, node_name}}
     else
@@ -116,14 +103,14 @@ defmodule Rclex.Executor do
 
       opts = [strategy: :one_for_one]
       {:ok, pid} = Supervisor.start_link(children, opts)
-      node_identifier = node_namespace ++ '/' ++ node_name
-      new_nodes = Map.put_new(nodes, node_identifier, %{supervisor_id: pid})
-      {:reply, {:ok, node_identifier}, {new_nodes}}
+      node_identifier = "#{node_namespace}/#{node_name}"
+      new_resources = Map.put_new(resources, node_identifier, %{supervisor_id: pid})
+      {:reply, {:ok, node_identifier}, {new_resources}}
     end
   end
 
-  def handle_call({:create_singlenode, {context, node_name}}, _from, {nodes}) do
-    if Map.has_key?(nodes, {"", node_name}) do
+  def handle_call({:create_singlenode, {context, node_name}}, _from, {resources}) do
+    if Map.has_key?(resources, {"", node_name}) do
       # 同名のノードがすでに存在しているときはエラーを返す
       {:reply, {:error, node_name}}
     else
@@ -137,12 +124,12 @@ defmodule Rclex.Executor do
 
       opts = [strategy: :one_for_one]
       {:ok, pid} = Supervisor.start_link(children, opts)
-      new_nodes = Map.put_new(nodes, node_name, %{supervisor_id: pid})
-      {:reply, {:ok, node_name}, {new_nodes}}
+      new_resources = Map.put_new(resources, node_name, %{supervisor_id: pid})
+      {:reply, {:ok, node_name}, {new_resources}}
     end
   end
 
-  def handle_call({:create_nodes, context, node_name, namespace, num_node}, _from, {nodes}) do
+  def handle_call({:create_nodes, context, node_name, namespace, num_node}, _from, {resources}) do
     name_list =
       Enum.map(0..(num_node - 1), fn n ->
         node_name ++ Integer.to_charlist(n)
@@ -177,7 +164,7 @@ defmodule Rclex.Executor do
       end)
       |> Enum.map(fn {:ok, pid} -> pid end)
 
-    node_identifier_list = Enum.map(name_list, fn name -> namespace ++ "/" ++ name end)
+    node_identifier_list = Enum.map(name_list, fn name -> "#{namespace}/#{name}" end)
 
     nodes_list =
       Enum.map(0..(num_node - 1), fn n ->
@@ -186,12 +173,12 @@ defmodule Rclex.Executor do
         {node_identifier, %{supervisor_id: pid}}
       end)
 
-    new_nodes = for {k, v} <- nodes_list, into: nodes, do: {k, v}
+    new_resources = for {k, v} <- nodes_list, into: resources, do: {k, v}
 
-    {:reply, {:ok, node_identifier_list}, {new_nodes}}
+    {:reply, {:ok, node_identifier_list}, {new_resources}}
   end
 
-  def handle_call({:create_nodes, context, node_name, num_node}, _from, {nodes}) do
+  def handle_call({:create_nodes, context, node_name, num_node}, _from, {resources}) do
     name_list =
       Enum.map(0..(num_node - 1), fn n ->
         node_name ++ Integer.to_charlist(n)
@@ -231,44 +218,74 @@ defmodule Rclex.Executor do
         {node_name, %{supervisor_id: pid}}
       end)
 
-    new_nodes = for {k, v} <- nodes_list, into: nodes, do: {k, v}
+    new_resources = for {k, v} <- nodes_list, into: resources, do: {k, v}
 
-    {:reply, {:ok, name_list}, {new_nodes}}
+    {:reply, {:ok, name_list}, {new_resources}}
   end
 
-  def handle_call({:create_timer, {call_back, args, time}}, _from, state) do
-    children = [
-      {Rclex.Timer, {call_back, args, time}}
-    ]
+  def handle_call({:create_timer, {call_back, args, time, timer_name}}, _from, {resources}) do
+    timer_identifier = "#{timer_name}/Timer"
 
-    opts = [strategy: :one_for_one]
-    {:ok, pid} = Supervisor.start_link(children, opts)
-    {:reply, {:ok, pid}, state}
+    if Map.has_key?(resources, {"", timer_identifier}) do
+      # 同名のノードがすでに存在しているときはエラーを返す
+      {:reply, {:error, timer_name}}
+    else
+      children = [
+        {Rclex.Timer, {call_back, args, time, timer_name}}
+      ]
+
+      opts = [strategy: :one_for_one]
+      {:ok, pid} = Supervisor.start_link(children, opts)
+      new_resources = Map.put_new(resources, timer_identifier, %{supervisor_id: pid})
+      {:reply, {:ok, timer_identifier}, {new_resources}}
+    end
   end
 
-  def handle_call({:create_timer, {call_back, args, time, limit}}, _from, state) do
-    children = [
-      {Rclex.Timer, {call_back, args, time, limit}}
-    ]
+  def handle_call({:create_timer, {call_back, args, time, timer_name, limit}}, _from, {resources}) do
+    timer_identifier = "#{timer_name}/Timer"
 
-    opts = [strategy: :one_for_one]
-    {:ok, pid} = Supervisor.start_link(children, opts)
-    {:reply, {:ok, pid}, state}
+    if Map.has_key?(resources, {"", timer_identifier}) do
+      # 同名のノードがすでに存在しているときはエラーを返す
+      {:reply, {:error, timer_name}}
+    else
+      children = [
+        {Rclex.Timer, {call_back, args, time, timer_name, limit}}
+      ]
+
+      opts = [strategy: :one_for_one]
+      {:ok, pid} = Supervisor.start_link(children, opts)
+      new_resources = Map.put_new(resources, timer_identifier, %{supervisor_id: pid})
+      {:reply, {:ok, timer_identifier}, {new_resources}}
+    end
   end
 
-  def handle_call({:finish_node, node_identifier}, _from, {nodes}) do
+  def handle_call({:finish_node, node_identifier}, _from, {resources}) do
     GenServer.call({:global, node_identifier}, :finish_node)
-    {:ok, node} = Map.fetch(nodes, node_identifier)
+    {:ok, node} = Map.fetch(resources, node_identifier)
 
     {:ok, supervisor_id} = Map.fetch(node, :supervisor_id)
 
     Supervisor.stop(supervisor_id)
 
     # node情報削除
-    new_nodes = Map.delete(nodes, node_identifier)
+    new_resources = Map.delete(resources, node_identifier)
     Logger.debug("finish node: #{node_identifier}")
 
-    {:reply, :ok, {new_nodes}}
+    {:reply, :ok, {new_resources}}
+  end
+
+  def handle_call({:stop_timer, timer_identifier}, _from, {resources}) do
+    # :ok = GenServer.call({:global, timer_identifier}, :stop)
+    {:ok, timer} = Map.fetch(resources, timer_identifier)
+
+    {:ok, supervisor_id} = Map.fetch(timer, :supervisor_id)
+
+    Supervisor.stop(supervisor_id)
+
+    # timer情報削除
+    new_resources = Map.delete(resources, timer_identifier)
+    Logger.debug("finish timer: #{timer_identifier}")
+    {:reply, :ok, {new_resources}}
   end
 
   def handle_info({_, _, reason}, state) do

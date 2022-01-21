@@ -7,49 +7,51 @@ defmodule Rclex.TimerLoop do
       T.B.A
   """
 
-  def start_link({timer_id, time}) do
-    GenServer.start_link(__MODULE__, {timer_id, time})
+  def start_link({timer_name, time}) do
+    GenServer.start_link(__MODULE__, {timer_name, time})
   end
 
-  def start_link({timer_id, time, limit}) do
-    GenServer.start_link(__MODULE__, {timer_id, time, limit})
+  def start_link({timer_name, time, limit}) do
+    GenServer.start_link(__MODULE__, {timer_name, time, limit})
   end
 
-  def init({timer_id, time}) do
+  def init({timer_name, time}) do
     GenServer.cast(self(), :loop)
-    {:ok, {timer_id, time}}
+    {:ok, {timer_name, time}}
   end
 
-  def init({timer_id, time, limit}) do
+  def init({timer_name, time, limit}) do
     GenServer.cast(self(), :loop)
-    {:ok, {timer_id, time, 0, limit}}
+    {:ok, {timer_name, time, 0, limit}}
   end
 
   def handle_cast(:loop, state) do
     {:noreply, state, {:continue, :loop}}
   end
 
-  def handle_continue(:loop, {timer_id, time}) do
-    GenServer.cast(JobQueue, {:push, {timer_id, :execute, {}}})
+  def handle_continue(:loop, {timer_name, time}) do
+    timer_id = {:global, "#{timer_name}/Timer"}
+    GenServer.cast({:global, "#{timer_name}/JobQueue"}, {:push, {timer_id, :execute, {}}})
 
     receive do
       :stop ->
-        {:stop, :normal, {timer_id, time}}
+        {:stop, :normal, {timer_name, time}}
     after
       # Optional timeout
       time ->
-        {:noreply, {timer_id, time}, {:continue, :loop}}
+        {:noreply, {timer_name, time}, {:continue, :loop}}
     end
   end
 
-  def handle_continue(:loop, {timer_id, time, count, limit}) do
+  def handle_continue(:loop, {timer_name, time, count, limit}) do
+    timer_id = {:global, "#{timer_name}/Timer"}
     count = count + 1
 
     if count > limit do
-      GenServer.cast(JobQueue, {:push, {timer_id, :stop, {}}})
+      GenServer.cast({:global, "#{timer_name}/JobQueue"}, {:push, {timer_id, :stop, {}}})
       {:noreply, :normal, {}}
     else
-      GenServer.cast(JobQueue, {:push, {timer_id, :execute, {}}})
+      GenServer.cast({:global, "#{timer_name}/JobQueue"}, {:push, {timer_id, :execute, {}}})
       # timeはミリ秒
       receive do
         :stop ->
@@ -57,7 +59,7 @@ defmodule Rclex.TimerLoop do
       after
         # Optional timeout
         time ->
-          {:noreply, {timer_id, time, count, limit}, {:continue, :loop}}
+          {:noreply, {timer_name, time, count, limit}, {:continue, :loop}}
       end
     end
   end
