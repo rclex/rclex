@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.5.2 on 30 Nov 2022
+## v0.5.2 on 21 Jan 2022
 
 - New features:
   - Add timer name in args of `create_timer/4` and `create_timer/5` to treat timer ID ddf99cf
