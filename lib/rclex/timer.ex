@@ -65,7 +65,13 @@ defmodule Rclex.Timer do
     {:noreply, {callback, args, time, loop_supervisor_id, job_supervisor_id}}
   end
 
-  def handle_cast({:stop, _}, {callback, args, time, loop_supervisor_id, job_supervisor_id}) do
+  def handle_call(:stop, _from, {callback, args, time, loop_supervisor_id, job_supervisor_id}) do
+    Logger.debug("stop timer")
+    Supervisor.stop(loop_supervisor_id)
+    {:reply, :ok, {callback, args, time, loop_supervisor_id, job_supervisor_id}}
+  end
+
+  def handle_call({:stop, _}, _from, {callback, args, time, loop_supervisor_id, job_supervisor_id}) do
     Logger.info("the number of timer loop reaches limit")
     Supervisor.stop(loop_supervisor_id)
     {:stop, :normal, {callback, args, time, loop_supervisor_id, job_supervisor_id}}
