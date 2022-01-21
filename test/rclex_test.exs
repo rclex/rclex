@@ -7,13 +7,13 @@ defmodule RclexTest do
     context = Rclex.rclexinit()
 
     node_name = 'test_node'
-    {:ok, node_list} = Rclex.Executor.create_nodes(context, node_name, 2)
+    {:ok, node_list} = Rclex.ResourceServer.create_nodes(context, node_name, 2)
     [node_0, node_1] = node_list
 
     assert Rclex.Node.node_get_name(node_0) == 'test_node0', 'first node name is test_node0'
     assert Rclex.Node.node_get_name(node_1) == 'test_node1', 'second node name is test_node1'
 
-    Rclex.Executor.finish_nodes(node_list)
+    Rclex.ResourceServer.finish_nodes(node_list)
     Rclex.shutdown(context)
   end
 
@@ -21,12 +21,12 @@ defmodule RclexTest do
   test "rcl_get_topic_names_and_types" do
     context = Rclex.rclexinit()
 
-    {:ok, node_list} = Rclex.Executor.create_nodes(context, 'test_pub_node', 1)
+    {:ok, node_list} = Rclex.ResourceServer.create_nodes(context, 'test_pub_node', 1)
 
     {:ok, publisher_list} =
       Rclex.Node.create_publishers(node_list, 'StdMsgs.Msg.String', 'testtopic', :single)
 
-    {:ok, node_list_2} = Rclex.Executor.create_nodes(context, 'test_sub_node', 1)
+    {:ok, node_list_2} = Rclex.ResourceServer.create_nodes(context, 'test_sub_node', 1)
 
     {:ok, subscriber_list} =
       Rclex.Node.create_subscribers(node_list_2, 'StdMsgs.Msg.String', 'testtopic', :single)
@@ -51,8 +51,8 @@ defmodule RclexTest do
 
     Rclex.Node.finish_jobs(publisher_list)
     Rclex.Node.finish_jobs(subscriber_list)
-    Rclex.Executor.finish_nodes(node_list)
-    Rclex.Executor.finish_nodes(node_list_2)
+    Rclex.ResourceServer.finish_nodes(node_list)
+    Rclex.ResourceServer.finish_nodes(node_list_2)
     Rclex.shutdown(context)
   end
 end
