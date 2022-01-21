@@ -86,7 +86,7 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
   if(!enif_get_string(env,argv[2],topic_buf,sizeof(topic_buf),ERL_NIF_LATIN1)) {
     return enif_make_badarg(env);
   }
-  if(!enif_get_resource(env, argv[3], rt_void, (void**) &res_ts_tmp)){
+  if(!enif_get_resource(env, argv[3], rt_void, (void**) &res_ts_tmp)) {
     return enif_make_badarg(env);
   }
   if(!enif_get_resource(env, argv[4], rt_sub_options, (void**) &res_sub_options)) {
