@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v0.5.2 on 30 Nov 2022
+
+- New features:
+  - Add timer name in args of `create_timer/4` and `create_timer/5` to treat timer ID ddf99cf
+  - Implement `ResourceServer` module #83
+    - `JobExecutor` and `JobQueue` will be created for each node and timer
+    - `Executor` has been obsoleted and changed to the above feature
+- Code Improvements/Fixes:
+  - change wait time 50 to 5 milliseconds #76
+  - change docker tags for CI test #78
+- Bumps:
+  - `ex_doc` to 0.27.3 #80
+  - `credo` to 1.6.2 #82
+- Known issues:
+  - `mix test` sometimes fails, but we don't think it will affect the behavior #68
+
 ## v0.5.1 on 30 Nov 2021
 
 - New features:
