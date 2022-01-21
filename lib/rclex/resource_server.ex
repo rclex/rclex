@@ -273,7 +273,7 @@ defmodule Rclex.ResourceServer do
   end
 
   def handle_call({:stop_timer, timer_identifier}, _from, {resources}) do
-    :ok = GenServer.call({:global, timer_identifier}, :stop)
+    #:ok = GenServer.call({:global, timer_identifier}, :stop)
     {:ok, timer} = Map.fetch(resources, timer_identifier)
 
     {:ok, supervisor_id} = Map.fetch(timer, :supervisor_id)
