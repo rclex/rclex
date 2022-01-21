@@ -225,6 +225,7 @@ defmodule Rclex.ResourceServer do
 
   def handle_call({:create_timer, {call_back, args, time, timer_name}}, _from, {resources}) do
     timer_identifier = "#{timer_name}/Timer"
+
     if Map.has_key?(resources, {"", timer_identifier}) do
       # 同名のノードがすでに存在しているときはエラーを返す
       {:reply, {:error, timer_name}}
@@ -242,6 +243,7 @@ defmodule Rclex.ResourceServer do
 
   def handle_call({:create_timer, {call_back, args, time, timer_name, limit}}, _from, {resources}) do
     timer_identifier = "#{timer_name}/Timer"
+
     if Map.has_key?(resources, {"", timer_identifier}) do
       # 同名のノードがすでに存在しているときはエラーを返す
       {:reply, {:error, timer_name}}
@@ -273,7 +275,7 @@ defmodule Rclex.ResourceServer do
   end
 
   def handle_call({:stop_timer, timer_identifier}, _from, {resources}) do
-    #:ok = GenServer.call({:global, timer_identifier}, :stop)
+    # :ok = GenServer.call({:global, timer_identifier}, :stop)
     {:ok, timer} = Map.fetch(resources, timer_identifier)
 
     {:ok, supervisor_id} = Map.fetch(timer, :supervisor_id)
