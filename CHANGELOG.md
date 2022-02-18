@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## v0.5.3 on 18 Feb 2022
+
+- New features:
+  - Add following APIs #92 
+    - `create_singlenode_with_executor_setting/3`
+      - can specify `executor_setting` in addition to args in `create_singlenode/3`
+      - `{queue_length}` means the maximum length of `job_queue` under the created nodes
+      - `change_order` (in `{queue_length, change_order}`) means a function that adjusts the execution order of `job_exe`
+    - `create_nodes_with_executor_setting/4`, `create_timer_with_executor_setting/5` and `create_timer_with_executor_setting/6`: same with the above
+- Code Improvements/Fixes: none
+- Bumps:
+  - `ex_doc` to 0.28.0 #90
+  - `credo` to 1.6.3 #91
+- Known issues:
+  - `mix test` sometimes fails, but we don't think it will affect the behavior #68
+- Full Changelog: https://github.com/rclex/rclex/compare/v0.5.2...v0.5.3
+
 ## v0.5.2 on 21 Jan 2022
 
 - New features:
