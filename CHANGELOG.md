@@ -15,6 +15,7 @@
   - `credo` to 1.6.2 #82
 - Known issues:
   - `mix test` sometimes fails, but we don't think it will affect the behavior #68
+- Full Changelog: https://github.com/rclex/rclex/compare/v0.5.1...v0.5.2
 
 ## v0.5.1 on 30 Nov 2021
 
@@ -28,6 +29,7 @@
   - `credo` to 1.6.1 #70
 - Known issues:
   - `mix test` sometimes fails, but we don't think it will affect the behavior #68
+- Full Changelog: https://github.com/rclex/rclex/compare/v0.5.0...v0.5.1
 
 ## v0.5.0 on 01 Nov 2021
 
@@ -40,6 +42,7 @@
   - `elixir_make` to 0.6.3 #62
 - Known issues:
   - `mix test` sometimes fails, but we don't think it will affect the behavior #68
+- Full Changelog: https://github.com/rclex/rclex/compare/v0.4.1...v0.5.0
 
 ## v0.4.1 on 24 Jul 2021
 
@@ -57,9 +60,11 @@
   - Improve timing of connection tests [rclex/rclex_connection_tests#12](https://github.com/rclex/rclex_connection_tests/pull/12)
 - Bumps:
   - `ex_doc` from 0.24.2 to 0.25.0 #47
+- Full Changelog: https://github.com/rclex/rclex/compare/v0.4.0...v0.4.1
 
 ## v0.4.0 on 8 Jun 2021
 
+- Please welcome @kebus426 as a new maintainer! 
 - Support for [ROS 2 Foxy Fitzroy](https://index.ros.org/doc/ros2/Releases/Release-Foxy-Fitzroy/)!! #32 :tada:
 - Recommended environment is now Ubuntu 20.04.2 LTS / ROS 2 Foxy / Elixir 1.11.2-otp-23 / Erlang/OTP 23.3.1
   - also work well on Ubuntu 18.04.5 LTS and Dashing Diademata
@@ -69,7 +74,7 @@
 - Implement subsucribe_stop/2 #30
 - Fix bug on timer_loop/4 #29 #21 
 - Create [rclex Organization](https://github.com/rclex) and change source URL #18
-- Please welcome @kebus426 as a new maintainer! 
+- Full Changelog: https://github.com/rclex/rclex/compare/v0.3.1...v0.4.0
 
 ## v0.3.1 on 4 Jul 2020
 
