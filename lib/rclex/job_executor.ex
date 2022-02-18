@@ -24,7 +24,7 @@ defmodule Rclex.JobExecutor do
     {:ok, {}}
   end
 
-  def init(change_order) do
+  def init({change_order}) do
     Logger.debug("JobExecutor start")
     {:ok, {change_order}}
   end
@@ -37,8 +37,8 @@ defmodule Rclex.JobExecutor do
   end
 
   def handle_cast({:execute, job_queue}, {change_order}) do
-    :queue.to_list(job_queue)
-    |> change_order.()
+    job_list = :queue.to_list(job_queue)
+    change_order.(job_list)
     |> Enum.map(fn {key, action, args} -> GenServer.cast(key, {action, args}) end)
 
     {:noreply, {change_order}}
