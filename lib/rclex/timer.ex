@@ -20,13 +20,17 @@ defmodule Rclex.Timer do
   end
 
   def start_link({callback, args, time, timer_name, :executor_setting, executor_settings}) do
-    GenServer.start_link(__MODULE__, {callback, args, time, timer_name, :executor_setting, executor_settings},
+    GenServer.start_link(
+      __MODULE__,
+      {callback, args, time, timer_name, :executor_setting, executor_settings},
       name: {:global, "#{timer_name}/Timer"}
     )
   end
 
   def start_link({callback, args, time, timer_name, limit, :executor_setting, executor_settings}) do
-    GenServer.start_link(__MODULE__, {callback, args, time, timer_name, limit, :executor_setting, executor_settings},
+    GenServer.start_link(
+      __MODULE__,
+      {callback, args, time, timer_name, limit, :executor_setting, executor_settings},
       name: {:global, "#{timer_name}/Timer"}
     )
   end
@@ -130,7 +134,9 @@ defmodule Rclex.Timer do
     {:ok, {callback, args, time, loop_supervisor_id, job_supervisor_id}}
   end
 
-  def init({callback, args, time, timer_name, limit, :executor_setting, {queue_length, change_order}}) do
+  def init(
+        {callback, args, time, timer_name, limit, :executor_setting, {queue_length, change_order}}
+      ) do
     job_children = [
       {Rclex.JobQueue, {timer_name, queue_length}},
       {Rclex.JobExecutor, {timer_name, change_order}}

@@ -17,15 +17,15 @@ defmodule Rclex.Node do
   end
 
   def start_link({node, node_name, :executor_setting, {queue_length, change_order}}) do
-    GenServer.start_link(__MODULE__, {node, node_name, queue_length, change_order}, name: {:global, node_name})
+    GenServer.start_link(__MODULE__, {node, node_name, queue_length, change_order},
+      name: {:global, node_name}
+    )
   end
 
   def start_link({node, node_name, node_namespace}) do
     node_identifier = "#{node_namespace}/#{node_name}"
 
-    GenServer.start_link(__MODULE__, {node, node_identifier},
-      name: {:global, node_identifier}
-    )
+    GenServer.start_link(__MODULE__, {node, node_identifier}, name: {:global, node_identifier})
   end
 
   def start_link({node, node_name, node_namespace, :executor_setting, {queue_length}}) do
@@ -36,7 +36,9 @@ defmodule Rclex.Node do
     )
   end
 
-  def start_link({node, node_name, node_namespace, :executor_setting, {queue_length, change_order}}) do
+  def start_link(
+        {node, node_name, node_namespace, :executor_setting, {queue_length, change_order}}
+      ) do
     node_identifier = "#{node_namespace}/#{node_name}"
 
     GenServer.start_link(__MODULE__, {node, node_identifier, queue_length, change_order},
