@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v0.5.3 on 18 Feb 2022
+## v0.5.3 on 22 Feb 2022
 
 - New features:
   - Add following APIs #92 
@@ -11,7 +11,7 @@
     - `create_nodes_with_executor_setting/4`, `create_timer_with_executor_setting/5` and `create_timer_with_executor_setting/6`: same with the above
 - Code Improvements/Fixes: none
 - Bumps:
-  - `ex_doc` to 0.28.0 #90
+  - `ex_doc` to 0.28.1 #96
   - `credo` to 1.6.3 #91
 - Known issues:
   - `mix test` sometimes fails, but we don't think it will affect the behavior #68
