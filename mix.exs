@@ -20,7 +20,7 @@ defmodule Rclex.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       build_embedded: true,
-      compilers: [:elixir_make | Mix.compilers()],
+      compilers: [:put_pkglist, :elixir_make] ++ Mix.compilers(),
       make_targets: ["all"],
       make_clean: ["clean"],
       make_error_message: """
@@ -66,7 +66,8 @@ defmodule Rclex.MixProject do
       {:elixir_make, "~> 0.4", runtime: false},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:ex_doc, "~> 0.22", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.22", only: :dev, runtime: false},
+      {:rclex_make, path: "rclex_make", runtime: false}
     ]
   end
 
