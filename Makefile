@@ -11,7 +11,7 @@ endif
 
 MSGTYPES = $(shell cat packages.txt)
 MSGTYPE_FILES = $(shell echo $(MSGTYPES) | sed -e "s/\([A-Z]\)/_\L\1/g" -e "s/\/_/\//g")
-MSGTYPE_FUNCS = $(subst /,__,$(MSGTYPES))
+MSGTYPE_FUNCS = $(subst /,_,$(MSGTYPE_FILES))
 MSGPKGS = $(sort $(foreach msgtype,$(MSGTYPES),$(firstword $(subst /,$() ,$(msgtype)))))
 MSGPKG_DIRS = $(shell for msgpkg in $(MSGPKGS); do ros2 pkg prefix $$msgpkg; done)
 MT_SEQ = $(shell seq 1 $(words $(MSGTYPES)))

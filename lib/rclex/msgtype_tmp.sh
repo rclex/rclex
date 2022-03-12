@@ -9,6 +9,7 @@ typename=${msgtypename##*/}
 typename_low=$(echo "$typename" | sed -e "s/\([A-Z]\)/_\L\1/g" -e "s/_//")
 filename=${pkgname}/msg/${typename_low}
 structname=${pkgname}__msg__${typename}
+funcname=${pkgname}_msg_${typename_low}
 modulename=${pkgname_upp}.Msg.${typename}
 
 declare -A member_define
@@ -131,17 +132,17 @@ defimpl Rclex.MsgProt, for: Rclex.${modulename} do
   alias Rclex.Nifs, as: Nifs
 
   def typesupport(_) do
-    Nifs.get_typesupport_${structname}()
+    Nifs.get_typesupport_${funcname}()
   end
   def initialize(_) do
-    Nifs.create_empty_msg_${structname}()
-    |> Nifs.init_msg_${structname}()
+    Nifs.create_empty_msg_${funcname}()
+    |> Nifs.init_msg_${funcname}()
   end
   def set(data, msg) do
-    Nifs.setdata_${structname}(msg, ${member_set[$structname]})
+    Nifs.setdata_${funcname}(msg, ${member_set[$structname]})
   end
   def read(_, msg) do
-    ${member_read[$structname]} = Nifs.readdata_${structname}(msg)
+    ${member_read[$structname]} = Nifs.readdata_${funcname}(msg)
     ${struct_return[$structname]}
   end
 end

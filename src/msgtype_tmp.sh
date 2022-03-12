@@ -6,6 +6,7 @@ typename=${msgtypename##*/}
 typename_low=$(echo "$typename" | sed -e "s/\([A-Z]\)/_\L\1/g" -e "s/_//")
 filename=${pkgname}/msg/${typename_low}
 structname=${pkgname}__msg__${typename}
+funcname=${pkgname}_msg_${typename_low}
 
 declare -A member_set
 declare -A member_read
@@ -229,7 +230,7 @@ cat << __DOC__ > src/${filename}_nif.c
 #include "${filename}_nif.h"
 #include "total_nif.h"
 
-ERL_NIF_TERM nif_get_typesupport_${structname}(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM nif_get_typesupport_${funcname}(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
   if(argc != 0) {
     return enif_make_badarg(env);
@@ -250,7 +251,7 @@ ERL_NIF_TERM nif_get_typesupport_${structname}(ErlNifEnv* env, int argc, const E
   return ret;
 }
 
-ERL_NIF_TERM nif_create_empty_msg_${structname}(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM nif_create_empty_msg_${funcname}(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
   if(argc != 0) {
     return enif_make_badarg(env);
@@ -268,7 +269,7 @@ ERL_NIF_TERM nif_create_empty_msg_${structname}(ErlNifEnv* env, int argc, const 
   return ret;
 }
 
-ERL_NIF_TERM nif_init_msg_${structname}(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM nif_init_msg_${funcname}(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
   if(argc != 1) {
     return enif_make_badarg(env);
@@ -286,7 +287,7 @@ ERL_NIF_TERM nif_init_msg_${structname}(ErlNifEnv* env, int argc, const ERL_NIF_
 
 }
 
-ERL_NIF_TERM nif_setdata_${structname}(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM nif_setdata_${funcname}(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
   if(argc != 2) {
     return enif_make_badarg(env);
@@ -306,7 +307,7 @@ ${member_set[$structname]}
   return enif_make_atom(env,"ok");
 }
 
-ERL_NIF_TERM nif_readdata_${structname}(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM nif_readdata_${funcname}(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
   if(argc != 1) {
     return enif_make_badarg(env);
