@@ -74,7 +74,7 @@ Currently, the Rclex API allows for the following:
 1. The ability to create a large number of publishers sending to the same topic.
 2. The ability to create large numbers of each combination of publishers, topics, and subscribers.
 
-Please reference examples [here](https://github.com/rclex/rclex_samples). Also note the usage alongside the sample code.
+Please reference examples [here](https://github.com/rclex/rclex_examples). Also note the usage alongside the sample code.
 
 ## Maintainers and developers (including past)
 
