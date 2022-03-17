@@ -62,3 +62,10 @@ end
 2. パブリッシャ，トピック，サブスクライバが1つずつのペアを大量に作成できる．
 
 [こちら](https://github.com/rclex/rclex_samples)を参照してください．サンプルコードとともに使い方を記しています．
+
+## 主な管理者と開発者（過去分も含む）
+
+- [@takasehideki](https://github.com/takasehideki)
+- [@HiroiImanishi](https://github.com/HiroiImanishi)
+- [@kebus426](https://github.com/kebus426)
+- [@shiroro466](https://github.com/shiroro466)

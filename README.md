@@ -75,3 +75,10 @@ Currently, the Rclex API allows for the following:
 2. The ability to create large numbers of each combination of publishers, topics, and subscribers.
 
 Please reference examples [here](https://github.com/rclex/rclex_samples). Also note the usage alongside the sample code.
+
+## Maintainers and developers (including past)
+
+- [@takasehideki](https://github.com/takasehideki)
+- [@HiroiImanishi](https://github.com/HiroiImanishi)
+- [@kebus426](https://github.com/kebus426)
+- [@shiroro466](https://github.com/shiroro466)

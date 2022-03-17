@@ -37,7 +37,6 @@ defmodule Rclex.MixProject do
   defp package do
     %{
       name: "rclex",
-      maintainers: ["takasehideki", "kebus426", "hiroiimanishi"],
       files: [
         "lib",
         "src/*.[ch]",
