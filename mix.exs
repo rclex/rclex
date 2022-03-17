@@ -66,7 +66,7 @@ defmodule Rclex.MixProject do
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.22", only: :dev, runtime: false},
-      {:rclex_gen_msgs, git: "https://github.com/rclex/rclex_gen_msgs.git"}
+      {:rclex_gen_msgs, "~> 0.1.0", runtime: false}
     ]
   end
 
