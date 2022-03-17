@@ -21,15 +21,6 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 詳しくはROS 2の[公式ドキュメント](https://index.ros.org/doc/ros2/)を参照ください．
 
-
-## 使い方
-
-現時点では以下のことができるよう，Rclex APIを提供しています．
-1. 同一トピックに対して，複数のパブリッシャおよびサブスクライバを大量に作成できる．
-2. パブリッシャ，トピック，サブスクライバが1つずつのペアを大量に作成できる．
-
-[こちら](https://github.com/rclex/rclex_samples)を参照してください．サンプルコードとともに使い方を記しています．
-
 ## 動作環境（開発環境）
 
 現在，下記の環境を対象として開発を進めています．
@@ -64,3 +55,10 @@ end
 ドキュメントは[ExDoc](https://github.com/elixir-lang/ex_doc)で生成されて[HexDocs](https://hexdocs.pm)に公開されています．  
 [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex)をご参照ください．
 
+## 使い方
+
+現時点では以下のことができるよう，Rclex APIを提供しています．
+1. 同一トピックに対して，複数のパブリッシャおよびサブスクライバを大量に作成できる．
+2. パブリッシャ，トピック，サブスクライバが1つずつのペアを大量に作成できる．
+
+[こちら](https://github.com/rclex/rclex_samples)を参照してください．サンプルコードとともに使い方を記しています．
