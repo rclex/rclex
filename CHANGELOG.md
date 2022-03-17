@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## v0.6.0 on 17 Mar 2022
+
+- New features:
+  - support custom msgtype!! #87 #98
+- Code Improvements/Fixes:
+  - Enhance README #102
+- Bumps:
+  - `ex_doc` to 0.28.2 #99
+  - `credo` to 1.6.4 #100
+- Known issues:
+  - `rclex_connection_tests` becomes failed on Dashing from v0.6.0_rc #89
+- Full Changelog: https://github.com/rclex/rclex/compare/v0.5.3...v0.6.0
+
 ## v0.5.3 on 22 Feb 2022
 
 - New features:

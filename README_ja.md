@@ -47,7 +47,7 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 ```elixir
 def deps do
   [
-    {:rclex, "~> 0.5.3"}
+    {:rclex, "~> 0.6.0"}
   ]
 end
 ```
