@@ -46,9 +46,9 @@ Currently, we use the following environment as the development target:
 
 - Ubuntu 20.04.2 LTS (Focal Fossa)
 - ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
-  - also work well on Ubuntu 18.04.5 LTS and [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
-- Elixir 1.11.2-otp-23
-- Erlang/OTP 23.3.1
+  - We try to continue to support [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/) on Ubuntu 18.04.5 LTS, but it cannot works well since v0.6.0 (see #89)
+- Elixir 1.12.3-otp-24
+- Erlang/OTP 24.1.5
 
 As an operation test, we check the communication with nodes implemented by [rclcpp](https://github.com/ros2/rclcpp) using [rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests).
 
