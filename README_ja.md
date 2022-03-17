@@ -21,24 +21,15 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 詳しくはROS 2の[公式ドキュメント](https://index.ros.org/doc/ros2/)を参照ください．
 
-
-## 使い方
-
-現時点では以下のことができるよう，Rclex APIを提供しています．
-1. 同一トピックに対して，複数のパブリッシャおよびサブスクライバを大量に作成できる．
-2. パブリッシャ，トピック，サブスクライバが1つずつのペアを大量に作成できる．
-
-[こちら](https://github.com/rclex/rclex_samples)を参照してください．サンプルコードとともに使い方を記しています．
-
 ## 動作環境（開発環境）
 
 現在，下記の環境を対象として開発を進めています．
 
 - Ubuntu 20.04.2 LTS (Focal Fossa)
 - ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
-  - also work well on Ubuntu 18.04.5 LTS and [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
-- Elixir 1.11.2-otp-23
-- Erlang/OTP 23.3.1
+  - We try to continue to support [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/) on Ubuntu 18.04.5 LTS, but it cannot works well since v0.6.0 (see #89)
+- Elixir 1.12.3-otp-24
+- Erlang/OTP 24.1.5
 
 動作確認として，[rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests)を用いてRclcppで実装されたノードとの通信に関するテストを実施しています．
 
@@ -64,3 +55,17 @@ end
 ドキュメントは[ExDoc](https://github.com/elixir-lang/ex_doc)で生成されて[HexDocs](https://hexdocs.pm)に公開されています．  
 [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex)をご参照ください．
 
+## 使い方
+
+現時点では以下のことができるよう，Rclex APIを提供しています．
+1. 同一トピックに対して，複数のパブリッシャおよびサブスクライバを大量に作成できる．
+2. パブリッシャ，トピック，サブスクライバが1つずつのペアを大量に作成できる．
+
+[こちら](https://github.com/rclex/rclex_examples)を参照してください．サンプルコードとともに使い方を記しています．
+
+## 主な管理者と開発者（過去分も含む）
+
+- [@takasehideki](https://github.com/takasehideki)
+- [@HiroiImanishi](https://github.com/HiroiImanishi)
+- [@kebus426](https://github.com/kebus426)
+- [@shiroro466](https://github.com/shiroro466)

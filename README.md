@@ -30,25 +30,15 @@ libraries in various languages. This has allowed for the creation of a robot app
 
 For details on ROS 2, see the official [ROS 2 documentation](https://index.ros.org/doc/ros2/).
 
-## Usage
-
-Currently, the Rclex API allows for the following:
-
-1. The ability to create a large number of publishers sending to the same topic.
-2. The ability to create large numbers of each combination of publishers, topics, and subscribers.
-
-Please reference examples [here](https://github.com/rclex/rclex_samples). Also note the usage alongside the sample code.
-
-
 ## Recommended Environment
 
 Currently, we use the following environment as the development target:
 
 - Ubuntu 20.04.2 LTS (Focal Fossa)
 - ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
-  - also work well on Ubuntu 18.04.5 LTS and [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/)
-- Elixir 1.11.2-otp-23
-- Erlang/OTP 23.3.1
+  - We try to continue to support [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/) on Ubuntu 18.04.5 LTS, but it cannot works well since v0.6.0 (see #89)
+- Elixir 1.12.3-otp-24
+- Erlang/OTP 24.1.5
 
 As an operation test, we check the communication with nodes implemented by [rclcpp](https://github.com/ros2/rclcpp) using [rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests).
 
@@ -77,3 +67,18 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm).  
 You can find the docs at [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex).
 
+## Usage
+
+Currently, the Rclex API allows for the following:
+
+1. The ability to create a large number of publishers sending to the same topic.
+2. The ability to create large numbers of each combination of publishers, topics, and subscribers.
+
+Please reference examples [here](https://github.com/rclex/rclex_examples). Also note the usage alongside the sample code.
+
+## Maintainers and developers (including past)
+
+- [@takasehideki](https://github.com/takasehideki)
+- [@HiroiImanishi](https://github.com/HiroiImanishi)
+- [@kebus426](https://github.com/kebus426)
+- [@shiroro466](https://github.com/shiroro466)
