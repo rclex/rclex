@@ -11,17 +11,17 @@ defmodule Rclex.Subscriber do
   @doc """
     subscriberプロセスの生成
   """
-  def start_link({sub, process_name}) do
+  def start_link({sub, msg_type, process_name}) do
     Logger.debug("#{process_name} subscriber process start")
-    GenServer.start_link(__MODULE__, sub, name: {:global, process_name})
+    GenServer.start_link(__MODULE__, {sub, msg_type}, name: {:global, process_name})
   end
 
   @doc """
     subscriberプロセスの初期化
     subscriberを状態として持つ。start_subscribingをした際にcontextとcall_backを追加で状態として持つ。
   """
-  def init(sub) do
-    {:ok, %{subscriber: sub}}
+  def init({sub, msg_type}) do
+    {:ok, %{subscriber: sub, msgtype: msg_type}}
   end
 
   def start_subscribing({node_identifier, topic_name, :sub}, context, call_back) do
@@ -58,16 +58,23 @@ defmodule Rclex.Subscriber do
 
   def handle_cast({:start_subscribing, {context, call_back, node_identifier, topic_name}}, state) do
     {:ok, sub} = Map.fetch(state, :subscriber)
+    {:ok, msg_type} = Map.fetch(state, :msgtype)
 
     children = [
-      {Rclex.SubLoop, {node_identifier, topic_name, sub, context, call_back}}
+      {Rclex.SubLoop, {node_identifier, msg_type, topic_name, sub, context, call_back}}
     ]
 
     opts = [strategy: :one_for_one]
     {:ok, supervisor_id} = Supervisor.start_link(children, opts)
 
     {:noreply,
-     %{subscriber: sub, context: context, call_back: call_back, supervisor_id: supervisor_id}}
+     %{
+       subscriber: sub,
+       msgtype: msg_type,
+       context: context,
+       call_back: call_back,
+       supervisor_id: supervisor_id
+     }}
   end
 
   @doc """

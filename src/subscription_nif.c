@@ -70,34 +70,31 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv* env,int argc,const ERL_NIF_TER
   ERL_NIF_TERM ret;
   rcl_subscription_t*  res_sub;
   rcl_node_t* res_node;
-  //rosidl_message_type_support_t* res_msgtype;
+  void* res_ts_tmp;
+  rosidl_message_type_support_t** res_ts;
   rcl_subscription_options_t* res_sub_options;
 
   if(!enif_get_resource(env, argv[0], rt_sub, (void**) &res_sub)) {
     return enif_make_badarg(env);
   }
-
   if(!enif_get_resource(env, argv[1], rt_node, (void**) &res_node)) {
     return enif_make_badarg(env);
   }
-  /*
-  if(!enif_get_resource(env, argv[2], rt_msg_type_support, (void**) &res_msgtype)){
-    return enif_make_badarg(env);
-  }
-  */
+
   char topic_buf[128]; //トピック名を格納するためのバッファ
   (void)memset(&topic_buf,'\0',sizeof(topic_buf));
   if(!enif_get_string(env,argv[2],topic_buf,sizeof(topic_buf),ERL_NIF_LATIN1)) {
     return enif_make_badarg(env);
   }
-
-  if(!enif_get_resource(env, argv[3], rt_sub_options, (void**) &res_sub_options)) {
+  if(!enif_get_resource(env, argv[3], rt_void, (void**) &res_ts_tmp)) {
+    return enif_make_badarg(env);
+  }
+  if(!enif_get_resource(env, argv[4], rt_sub_options, (void**) &res_sub_options)) {
     return enif_make_badarg(env);
   }
 
-  //const rosidl_message_type_support_t* res_msgtype = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,Int16);
-  const rosidl_message_type_support_t* msgtype_sub = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs,msg,String);
-  return_value = rcl_subscription_init(res_sub,res_node,msgtype_sub,topic_buf,res_sub_options);
+  res_ts = (rosidl_message_type_support_t**) res_ts_tmp;
+  return_value = rcl_subscription_init(res_sub,res_node,*res_ts,topic_buf,res_sub_options);
 
   ret = enif_make_resource(env,res_sub);
   return ret;
@@ -190,9 +187,7 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
   rmw_subscription_allocation_t* res_sub_alloc;
   ERL_NIF_TERM ret,ret_sub,ret_msginfo,ret_sub_alloc;
 
-  //std_msgs__msg__Int16* ros_message;  //きめうち
-  std_msgs__msg__String* ros_message;  //きめうち
-  //void * ros_message; //void*にはどんな型でも入って，使う場合に任意の型にキャストする．
+  void * ros_message;
 
   if(argc != 4) {
     return enif_make_badarg(env);
@@ -200,7 +195,7 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
   if(!enif_get_resource(env, argv[0], rt_sub, (void**) &res_sub)) {
     return enif_make_badarg(env);
   }
-  if(!enif_get_resource(env,argv[1], rt_String, (void**) &ros_message)) {
+  if(!enif_get_resource(env,argv[1], rt_void, (void**) &ros_message)) {
     return enif_make_badarg(env);
   }
   if(!enif_get_resource(env, argv[2], rt_msginfo, (void**) &res_msginfo)) {
