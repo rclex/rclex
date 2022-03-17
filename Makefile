@@ -9,9 +9,9 @@ else ifeq ($(ROS_DISTRO), foxy)
 	TYPE_STRUCTURE_DIR = rosidl_runtime_c
 endif
 
-MSGTYPES = $(strip $(shell cat packages.txt))
+MSGTYPES = $(shell cat packages.txt)
 MSGTYPE_FILES = $(shell echo $(MSGTYPES) | sed -e "s/\([A-Z]\)/_\L\1/g" -e "s/\/_/\//g")
-MSGTYPE_FUNCS = $(subst /,__,$(MSGTYPES))
+MSGTYPE_FUNCS = $(subst /,_,$(MSGTYPE_FILES))
 MSGPKGS = $(sort $(foreach msgtype,$(MSGTYPES),$(firstword $(subst /,$() ,$(msgtype)))))
 MSGPKG_DIRS = $(shell for msgpkg in $(MSGPKGS); do ros2 pkg prefix $$msgpkg; done)
 MT_SEQ = $(shell seq 1 $(words $(MSGTYPES)))
@@ -23,6 +23,7 @@ RM = rm
 
 PREFIX = $(MIX_APP_PATH)/priv
 BUILD  = $(MIX_APP_PATH)/obj
+OLD_SUB = $(dir $(wildcard src/*/msg)) $(dir $(wildcard lib/rclex/*/msg))
 BUILD_SUB = $(MSGPKGS:%=$(BUILD)/%/msg)
 SRC_SUB = $(MSGPKGS:%=src/%/msg)
 EXLIB_SUB = $(MSGPKGS:%=lib/rclex/%/msg)
@@ -66,7 +67,7 @@ calling_from_make:
 
 all: install
 	
-install: $(BUILD) $(PREFIX) $(BUILD_SUB) $(SRC_SUB) $(EXLIB_SUB) $(NIF) $(MSGMOD)
+install: $(OLD_SUB) $(BUILD) $(PREFIX) $(BUILD_SUB) $(SRC_SUB) $(EXLIB_SUB) $(NIF) $(MSGMOD)
 
 $(OBJ): $(HEADERS) Makefile
 
@@ -75,6 +76,9 @@ $(BUILD)/%.o: src/%.c
 
 $(NIF): $(OBJ)
 	$(CC) -o $@ $(ERL_LDFLAGS) $(LDFLAGS) $^ $(ROS_LDFLAGS) $(MSGPKG_LDFLAGS)
+
+$(OLD_SUB): packages.txt
+	$(RM) -r $@
 
 $(BUILD):
 	@mkdir -p $(BUILD)
@@ -98,7 +102,7 @@ clean:
 
 MTNIFS_SRC_START = $(shell grep -n \<custom_msgtype\>_nif.c-----start src/total_nif.c | sed -e "s/:.*//g")
 MTNIFS_SRC_END = $(shell grep -n \<custom_msgtype\>_nif.c-----end src/total_nif.c | sed -e "s/:.*//g")
-src/total_nif.c: packages.txt 
+src/total_nif.c: packages.txt
 	@if [ $$(($(MTNIFS_SRC_START) + 1)) -ne $(MTNIFS_SRC_END) ]; then\
 	  sed -i -e "$$(($(MTNIFS_SRC_START)+1)),$$(($(MTNIFS_SRC_END)-1))d" src/total_nif.c;\
 	fi
@@ -112,7 +116,7 @@ src/total_nif.c: packages.txt
 
 MTNIFS_H_START = $(shell grep -n \<custom_msgtype\>_nif.h-----start src/total_nif.h | sed -e "s/:.*//g")
 MTNIFS_H_END = $(shell grep -n \<custom_msgtype\>_nif.h-----end src/total_nif.h | sed -e "s/:.*//g")
-src/total_nif.h: packages.txt 
+src/total_nif.h: packages.txt
 	@if [ $$(($(MTNIFS_H_START) + 1)) -ne $(MTNIFS_H_END) ]; then\
 	  sed -i -e "$$(($(MTNIFS_H_START)+1)),$$(($(MTNIFS_H_END)-1))d" src/total_nif.h;\
 	fi
