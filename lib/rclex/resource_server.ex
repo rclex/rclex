@@ -38,6 +38,50 @@ defmodule Rclex.ResourceServer do
   end
 
   @doc """
+      エグゼキュータの設定をしたノードをひとつだけ作成
+      名前空間の有無を設定可能
+      返り値:
+          node_identifier :: string()
+          作成したノードプロセスのnameを返す
+  """
+
+  def create_singlenode_with_executor_setting(context, node_name, {queue_length}) do
+    GenServer.call(
+      ResourceServer,
+      {:create_singlenode_with_executor_setting, {context, node_name, {queue_length}}}
+    )
+  end
+
+  def create_singlenode_with_executor_setting(context, node_name, {queue_length, change_order}) do
+    GenServer.call(
+      ResourceServer,
+      {:create_singlenode_with_executor_setting,
+       {context, node_name, {queue_length, change_order}}}
+    )
+  end
+
+  def create_singlenode_with_executor_setting(context, node_name, node_name_space, {queue_length}) do
+    GenServer.call(
+      ResourceServer,
+      {:create_singlenode_with_executor_setting,
+       {context, node_name, node_name_space, {queue_length}}}
+    )
+  end
+
+  def create_singlenode_with_executor_setting(
+        context,
+        node_name,
+        node_name_space,
+        {queue_length, change_order}
+      ) do
+    GenServer.call(
+      ResourceServer,
+      {:create_singlenode_with_executor_setting,
+       {context, node_name, node_name_space, {queue_length, change_order}}}
+    )
+  end
+
+  @doc """
       複数ノード生成
       create_nodes/4ではcreate_nodes/3に加えて名前空間の指定が可能
       返り値:
@@ -45,11 +89,59 @@ defmodule Rclex.ResourceServer do
           作成したノードプロセスのnameのリストを返す
   """
   def create_nodes(context, node_name, namespace, num_node) do
-    GenServer.call(ResourceServer, {:create_nodes, context, node_name, namespace, num_node})
+    GenServer.call(ResourceServer, {:create_nodes, {context, node_name, namespace, num_node}})
   end
 
   def create_nodes(context, node_name, num_node) do
-    GenServer.call(ResourceServer, {:create_nodes, context, node_name, num_node})
+    GenServer.call(ResourceServer, {:create_nodes, {context, node_name, num_node}})
+  end
+
+  def create_nodes_with_executor_setting(context, node_name, num_node, {queue_length}) do
+    GenServer.call(
+      ResourceServer,
+      {:create_nodes_with_executor_setting, {context, node_name, num_node, {queue_length}}}
+    )
+  end
+
+  def create_nodes_with_executor_setting(
+        context,
+        node_name,
+        num_node,
+        {queue_length, change_order}
+      ) do
+    GenServer.call(
+      ResourceServer,
+      {:create_nodes_with_executor_setting,
+       {context, node_name, num_node, {queue_length, change_order}}}
+    )
+  end
+
+  def create_nodes_with_executor_setting(
+        context,
+        node_name,
+        node_name_space,
+        num_node,
+        {queue_length}
+      ) do
+    GenServer.call(
+      ResourceServer,
+      {:create_nodes_with_executor_setting,
+       {context, node_name, node_name_space, num_node, {queue_length}}}
+    )
+  end
+
+  def create_nodes_with_executor_setting(
+        context,
+        node_name,
+        node_name_space,
+        num_node,
+        {queue_length, change_order}
+      ) do
+    GenServer.call(
+      ResourceServer,
+      {:create_nodes_with_executor_setting,
+       {context, node_name, node_name_space, num_node, {queue_length, change_order}}}
+    )
   end
 
   def create_timer(call_back, args, time, timer_name) do
@@ -58,6 +150,50 @@ defmodule Rclex.ResourceServer do
 
   def create_timer(call_back, args, time, timer_name, limit) do
     GenServer.call(ResourceServer, {:create_timer, {call_back, args, time, timer_name, limit}})
+  end
+
+  def create_timer_with_executor_setting(call_back, args, time, timer_name, {queue_length}) do
+    GenServer.call(
+      ResourceServer,
+      {:create_timer_with_executor_setting, {call_back, args, time, timer_name, {queue_length}}}
+    )
+  end
+
+  def create_timer_with_executor_setting(
+        call_back,
+        args,
+        time,
+        timer_name,
+        {queue_length, change_order}
+      ) do
+    GenServer.call(
+      ResourceServer,
+      {:create_timer_with_executor_setting,
+       {call_back, args, time, timer_name, {queue_length, change_order}}}
+    )
+  end
+
+  def create_timer_with_executor_setting(call_back, args, time, timer_name, limit, {queue_length}) do
+    GenServer.call(
+      ResourceServer,
+      {:create_timer_with_executor_setting,
+       {call_back, args, time, timer_name, limit, {queue_length}}}
+    )
+  end
+
+  def create_timer_with_executor_setting(
+        call_back,
+        args,
+        time,
+        timer_name,
+        limit,
+        {queue_length, change_order}
+      ) do
+    GenServer.call(
+      ResourceServer,
+      {:create_timer_with_executor_setting,
+       {call_back, args, time, timer_name, limit, {queue_length, change_order}}}
+    )
   end
 
   @doc """
@@ -129,7 +265,57 @@ defmodule Rclex.ResourceServer do
     end
   end
 
-  def handle_call({:create_nodes, context, node_name, namespace, num_node}, _from, {resources}) do
+  def handle_call(
+        {:create_singlenode_with_executor_setting,
+         {context, node_name, node_namespace, executor_settings}},
+        _from,
+        {resources}
+      ) do
+    if Map.has_key?(resources, {node_namespace, node_name}) do
+      # 同名のノードがすでに存在しているときはエラーを返す
+      {:reply, {:error, node_name}}
+    else
+      node = Nifs.rcl_get_zero_initialized_node()
+      node_op = Nifs.rcl_node_get_default_options()
+      Nifs.rcl_node_init(node, node_name, node_namespace, context, node_op)
+
+      children = [
+        {Rclex.Node, {node, node_name, node_namespace, :executor_setting, executor_settings}}
+      ]
+
+      opts = [strategy: :one_for_one]
+      {:ok, pid} = Supervisor.start_link(children, opts)
+      node_identifier = "#{node_namespace}/#{node_name}"
+      new_resources = Map.put_new(resources, node_identifier, %{supervisor_id: pid})
+      {:reply, {:ok, node_identifier}, {new_resources}}
+    end
+  end
+
+  def handle_call(
+        {:create_singlenode_with_executor_setting, {context, node_name, executor_settings}},
+        _from,
+        {resources}
+      ) do
+    if Map.has_key?(resources, {"", node_name}) do
+      # 同名のノードがすでに存在しているときはエラーを返す
+      {:reply, {:error, node_name}}
+    else
+      node = Nifs.rcl_get_zero_initialized_node()
+      node_op = Nifs.rcl_node_get_default_options()
+      Nifs.rcl_node_init_without_namespace(node, node_name, context, node_op)
+
+      children = [
+        {Rclex.Node, {node, node_name, :executor_setting, executor_settings}}
+      ]
+
+      opts = [strategy: :one_for_one]
+      {:ok, pid} = Supervisor.start_link(children, opts)
+      new_resources = Map.put_new(resources, node_name, %{supervisor_id: pid})
+      {:reply, {:ok, node_name}, {new_resources}}
+    end
+  end
+
+  def handle_call({:create_nodes, {context, node_name, namespace, num_node}}, _from, {resources}) do
     name_list =
       Enum.map(0..(num_node - 1), fn n ->
         node_name ++ Integer.to_charlist(n)
@@ -178,7 +364,7 @@ defmodule Rclex.ResourceServer do
     {:reply, {:ok, node_identifier_list}, {new_resources}}
   end
 
-  def handle_call({:create_nodes, context, node_name, num_node}, _from, {resources}) do
+  def handle_call({:create_nodes, {context, node_name, num_node}}, _from, {resources}) do
     name_list =
       Enum.map(0..(num_node - 1), fn n ->
         node_name ++ Integer.to_charlist(n)
@@ -203,6 +389,113 @@ defmodule Rclex.ResourceServer do
               {
                 Enum.at(node_list, n),
                 Enum.at(name_list, n)
+              }
+            }
+          ],
+          strategy: :one_for_one
+        )
+      end)
+      |> Enum.map(fn {:ok, pid} -> pid end)
+
+    nodes_list =
+      Enum.map(0..(num_node - 1), fn n ->
+        node_name = Enum.at(name_list, n)
+        pid = Enum.at(id_list, n)
+        {node_name, %{supervisor_id: pid}}
+      end)
+
+    new_resources = for {k, v} <- nodes_list, into: resources, do: {k, v}
+
+    {:reply, {:ok, name_list}, {new_resources}}
+  end
+
+  def handle_call(
+        {:create_nodes_with_executor_setting,
+         {context, node_name, namespace, num_node, executor_settings}},
+        _from,
+        {resources}
+      ) do
+    name_list =
+      Enum.map(0..(num_node - 1), fn n ->
+        node_name ++ Integer.to_charlist(n)
+      end)
+
+    node_list =
+      Enum.map(0..(num_node - 1), fn n ->
+        Nifs.rcl_node_init(
+          Nifs.rcl_get_zero_initialized_node(),
+          Enum.at(name_list, n),
+          namespace,
+          context,
+          Nifs.rcl_node_get_default_options()
+        )
+      end)
+
+    id_list =
+      Enum.map(0..(num_node - 1), fn n ->
+        Supervisor.start_link(
+          [
+            {
+              Rclex.Node,
+              {
+                Enum.at(node_list, n),
+                Enum.at(name_list, n),
+                namespace,
+                :executor_setting,
+                executor_settings
+              }
+            }
+          ],
+          strategy: :one_for_one
+        )
+      end)
+      |> Enum.map(fn {:ok, pid} -> pid end)
+
+    node_identifier_list = Enum.map(name_list, fn name -> "#{namespace}/#{name}" end)
+
+    nodes_list =
+      Enum.map(0..(num_node - 1), fn n ->
+        node_identifier = Enum.at(node_identifier_list, n)
+        pid = Enum.at(id_list, n)
+        {node_identifier, %{supervisor_id: pid}}
+      end)
+
+    new_resources = for {k, v} <- nodes_list, into: resources, do: {k, v}
+
+    {:reply, {:ok, node_identifier_list}, {new_resources}}
+  end
+
+  def handle_call(
+        {:create_nodes_with_executor_setting, {context, node_name, num_node, executor_settings}},
+        _from,
+        {resources}
+      ) do
+    name_list =
+      Enum.map(0..(num_node - 1), fn n ->
+        node_name ++ Integer.to_charlist(n)
+      end)
+
+    node_list =
+      Enum.map(0..(num_node - 1), fn n ->
+        Nifs.rcl_node_init_without_namespace(
+          Nifs.rcl_get_zero_initialized_node(),
+          Enum.at(name_list, n),
+          context,
+          Nifs.rcl_node_get_default_options()
+        )
+      end)
+
+    id_list =
+      Enum.map(0..(num_node - 1), fn n ->
+        Supervisor.start_link(
+          [
+            {
+              Rclex.Node,
+              {
+                Enum.at(node_list, n),
+                Enum.at(name_list, n),
+                :executor_setting,
+                executor_settings
               }
             }
           ],
@@ -250,6 +543,53 @@ defmodule Rclex.ResourceServer do
     else
       children = [
         {Rclex.Timer, {call_back, args, time, timer_name, limit}}
+      ]
+
+      opts = [strategy: :one_for_one]
+      {:ok, pid} = Supervisor.start_link(children, opts)
+      new_resources = Map.put_new(resources, timer_identifier, %{supervisor_id: pid})
+      {:reply, {:ok, timer_identifier}, {new_resources}}
+    end
+  end
+
+  def handle_call(
+        {:create_timer_with_executor_setting,
+         {call_back, args, time, timer_name, executor_settings}},
+        _from,
+        {resources}
+      ) do
+    timer_identifier = "#{timer_name}/Timer"
+
+    if Map.has_key?(resources, {"", timer_identifier}) do
+      # 同名のノードがすでに存在しているときはエラーを返す
+      {:reply, {:error, timer_name}}
+    else
+      children = [
+        {Rclex.Timer, {call_back, args, time, timer_name, :executor_setting, executor_settings}}
+      ]
+
+      opts = [strategy: :one_for_one]
+      {:ok, pid} = Supervisor.start_link(children, opts)
+      new_resources = Map.put_new(resources, timer_identifier, %{supervisor_id: pid})
+      {:reply, {:ok, timer_identifier}, {new_resources}}
+    end
+  end
+
+  def handle_call(
+        {:create_timer_with_executor_setting,
+         {call_back, args, time, timer_name, limit, executor_settings}},
+        _from,
+        {resources}
+      ) do
+    timer_identifier = "#{timer_name}/Timer"
+
+    if Map.has_key?(resources, {"", timer_identifier}) do
+      # 同名のノードがすでに存在しているときはエラーを返す
+      {:reply, {:error, timer_name}}
+    else
+      children = [
+        {Rclex.Timer,
+         {call_back, args, time, timer_name, limit, :executor_setting, executor_settings}}
       ]
 
       opts = [strategy: :one_for_one]
