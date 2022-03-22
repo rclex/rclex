@@ -39,13 +39,14 @@ defmodule Rclex.MixProject do
       name: "rclex",
       files: [
         "lib",
-        "src/*.[ch]",
+        "src",
         "mix.exs",
         "README.md",
         "README_ja.md",
         "LICENSE",
         "CHANGELOG.md",
-        "Makefile"
+        "Makefile",
+        "packages.txt"
       ],
       licenses: ["Apache-2.0"],
       links: %{"Github" => @source_url}
