@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v0.6.1 on 22 Mar 2022
+
+- New features: none
+- Code Improvements/Fixes:
+  - include packages.txt and template file to hex package #107
+- Bumps: none
+- Known issues:
+  - `rclex_connection_tests` becomes failed on Dashing from v0.6.0_rc #89
+  - `Rclex.initialize_msg/0` is undefined or private in `KeepSub.sub_task_start/2` #104
+- Full Changelog: https://github.com/rclex/rclex/compare/v0.6.0...v0.6.1
+
 ## v0.6.0 on 17 Mar 2022
 
 - New features:
