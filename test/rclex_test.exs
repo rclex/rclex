@@ -22,7 +22,10 @@ defmodule RclexTest do
     str_data = "data"
 
     {:ok, sub_node} = Rclex.ResourceServer.create_singlenode(context, 'listener')
-    {:ok, subscriber} = Rclex.Node.create_single_subscriber(sub_node, 'StdMsgs.Msg.String', 'chatter')
+
+    {:ok, subscriber} =
+      Rclex.Node.create_single_subscriber(sub_node, 'StdMsgs.Msg.String', 'chatter')
+
     Rclex.Subscriber.start_subscribing([subscriber], context, fn msg ->
       recv_msg = Rclex.Msg.read(msg, 'StdMsgs.Msg.String')
       assert List.to_string(recv_msg.data) == str_data, "received data is correct."
@@ -31,12 +34,29 @@ defmodule RclexTest do
     end)
 
     {:ok, pub_node} = Rclex.ResourceServer.create_singlenode(context, 'talker')
-    {:ok, publisher} = Rclex.Node.create_single_publisher(pub_node, 'StdMsgs.Msg.String', 'chatter')
-    {:ok, timer} = Rclex.ResourceServer.create_timer(fn publisher ->
-      msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
-      Rclex.Msg.set(msg, %Rclex.StdMsgs.Msg.String{data: String.to_charlist(str_data)}, 'StdMsgs.Msg.String')
-      Rclex.Publisher.publish([publisher], [msg])
-    end, publisher, 100, 'continus_timer', 2) # TODO This limit = 2 is a bug avoidance (# 112). After fixing the bug, change the limit to 1.
+
+    {:ok, publisher} =
+      Rclex.Node.create_single_publisher(pub_node, 'StdMsgs.Msg.String', 'chatter')
+
+    {:ok, timer} =
+      Rclex.ResourceServer.create_timer(
+        fn publisher ->
+          msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
+
+          Rclex.Msg.set(
+            msg,
+            %Rclex.StdMsgs.Msg.String{data: String.to_charlist(str_data)},
+            'StdMsgs.Msg.String'
+          )
+
+          Rclex.Publisher.publish([publisher], [msg])
+        end,
+        # TODO This limit = 2 is a bug avoidance (# 112). After fixing the bug, change the limit to 1.
+        publisher,
+        100,
+        'continus_timer',
+        2
+      )
 
     Process.sleep(500)
 
