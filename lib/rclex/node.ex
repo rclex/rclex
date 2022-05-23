@@ -88,7 +88,7 @@ defmodule Rclex.Node do
     {:ok, {node, node_name, supervisor_ids}}
   end
 
-  def create_single_subscriber(node_identifier, msg_type, topic_name) do
+  def create_subscriber(node_identifier, msg_type, topic_name) do
     GenServer.call(
       {:global, node_identifier},
       {:create_subscriber, node_identifier, msg_type, topic_name}
@@ -129,7 +129,7 @@ defmodule Rclex.Node do
     {:ok, sub_identifier_list}
   end
 
-  def create_single_publisher(node_identifier, msg_type, topic_name) do
+  def create_publisher(node_identifier, msg_type, topic_name) do
     GenServer.call(
       {:global, node_identifier},
       {:create_publisher, node_identifier, msg_type, topic_name}

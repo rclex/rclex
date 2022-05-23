@@ -29,12 +29,12 @@ defmodule Rclex.ResourceServer do
           node_identifier :: string()
           作成したノードプロセスのnameを返す
   """
-  def create_singlenode(context, node_name, node_namespace) do
-    GenServer.call(ResourceServer, {:create_singlenode, {context, node_name, node_namespace}})
+  def create_node(context, node_name, node_namespace) do
+    GenServer.call(ResourceServer, {:create_node, {context, node_name, node_namespace}})
   end
 
-  def create_singlenode(context, node_name) do
-    GenServer.call(ResourceServer, {:create_singlenode, {context, node_name}})
+  def create_node(context, node_name) do
+    GenServer.call(ResourceServer, {:create_node, {context, node_name}})
   end
 
   @doc """
@@ -45,30 +45,30 @@ defmodule Rclex.ResourceServer do
           作成したノードプロセスのnameを返す
   """
 
-  def create_singlenode_with_executor_setting(context, node_name, {queue_length}) do
+  def create_node_with_executor_setting(context, node_name, {queue_length}) do
     GenServer.call(
       ResourceServer,
-      {:create_singlenode_with_executor_setting, {context, node_name, {queue_length}}}
+      {:create_node_with_executor_setting, {context, node_name, {queue_length}}}
     )
   end
 
-  def create_singlenode_with_executor_setting(context, node_name, {queue_length, change_order}) do
+  def create_node_with_executor_setting(context, node_name, {queue_length, change_order}) do
     GenServer.call(
       ResourceServer,
-      {:create_singlenode_with_executor_setting,
+      {:create_node_with_executor_setting,
        {context, node_name, {queue_length, change_order}}}
     )
   end
 
-  def create_singlenode_with_executor_setting(context, node_name, node_name_space, {queue_length}) do
+  def create_node_with_executor_setting(context, node_name, node_name_space, {queue_length}) do
     GenServer.call(
       ResourceServer,
-      {:create_singlenode_with_executor_setting,
+      {:create_node_with_executor_setting,
        {context, node_name, node_name_space, {queue_length}}}
     )
   end
 
-  def create_singlenode_with_executor_setting(
+  def create_node_with_executor_setting(
         context,
         node_name,
         node_name_space,
@@ -76,7 +76,7 @@ defmodule Rclex.ResourceServer do
       ) do
     GenServer.call(
       ResourceServer,
-      {:create_singlenode_with_executor_setting,
+      {:create_node_with_executor_setting,
        {context, node_name, node_name_space, {queue_length, change_order}}}
     )
   end
@@ -224,7 +224,7 @@ defmodule Rclex.ResourceServer do
     )
   end
 
-  def handle_call({:create_singlenode, {context, node_name, node_namespace}}, _from, {resources}) do
+  def handle_call({:create_node, {context, node_name, node_namespace}}, _from, {resources}) do
     if Map.has_key?(resources, {node_namespace, node_name}) do
       # 同名のノードがすでに存在しているときはエラーを返す
       {:reply, {:error, node_name}}
@@ -245,7 +245,7 @@ defmodule Rclex.ResourceServer do
     end
   end
 
-  def handle_call({:create_singlenode, {context, node_name}}, _from, {resources}) do
+  def handle_call({:create_node, {context, node_name}}, _from, {resources}) do
     if Map.has_key?(resources, {"", node_name}) do
       # 同名のノードがすでに存在しているときはエラーを返す
       {:reply, {:error, node_name}}
@@ -266,7 +266,7 @@ defmodule Rclex.ResourceServer do
   end
 
   def handle_call(
-        {:create_singlenode_with_executor_setting,
+        {:create_node_with_executor_setting,
          {context, node_name, node_namespace, executor_settings}},
         _from,
         {resources}
@@ -292,7 +292,7 @@ defmodule Rclex.ResourceServer do
   end
 
   def handle_call(
-        {:create_singlenode_with_executor_setting, {context, node_name, executor_settings}},
+        {:create_node_with_executor_setting, {context, node_name, executor_settings}},
         _from,
         {resources}
       ) do
