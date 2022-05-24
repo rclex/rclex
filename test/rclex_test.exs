@@ -21,10 +21,9 @@ defmodule RclexTest do
     context = Rclex.rclexinit()
     str_data = "data"
 
-    {:ok, sub_node} = Rclex.ResourceServer.create_singlenode(context, 'listener')
+    {:ok, sub_node} = Rclex.ResourceServer.create_node(context, 'listener')
 
-    {:ok, subscriber} =
-      Rclex.Node.create_single_subscriber(sub_node, 'StdMsgs.Msg.String', 'chatter')
+    {:ok, subscriber} = Rclex.Node.create_subscriber(sub_node, 'StdMsgs.Msg.String', 'chatter')
 
     Rclex.Subscriber.start_subscribing([subscriber], context, fn msg ->
       recv_msg = Rclex.Msg.read(msg, 'StdMsgs.Msg.String')
@@ -33,10 +32,9 @@ defmodule RclexTest do
       IO.puts("Rclex: received msg: #{msg_data}")
     end)
 
-    {:ok, pub_node} = Rclex.ResourceServer.create_singlenode(context, 'talker')
+    {:ok, pub_node} = Rclex.ResourceServer.create_node(context, 'talker')
 
-    {:ok, publisher} =
-      Rclex.Node.create_single_publisher(pub_node, 'StdMsgs.Msg.String', 'chatter')
+    {:ok, publisher} = Rclex.Node.create_publisher(pub_node, 'StdMsgs.Msg.String', 'chatter')
 
     {:ok, timer} =
       Rclex.ResourceServer.create_timer(
