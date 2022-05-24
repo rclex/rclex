@@ -29,51 +29,11 @@ defmodule Rclex.ResourceServer do
           node_identifier :: string()
           作成したノードプロセスのnameを返す
   """
-  def create_node(context, node_name, node_namespace) do
-    GenServer.call(ResourceServer, {:create_node, {context, node_name, node_namespace}})
+  def create_node(context, node_name, queue_length \\ 1, change_order \\ & &1) do
+    create_node_with_ns(cotext, node_name, "", queue_length, change_order)
   end
 
-  def create_node(context, node_name) do
-    GenServer.call(ResourceServer, {:create_node, {context, node_name}})
-  end
-
-  @doc """
-      エグゼキュータの設定をしたノードをひとつだけ作成
-      名前空間の有無を設定可能
-      返り値:
-          node_identifier :: string()
-          作成したノードプロセスのnameを返す
-  """
-
-  def create_node_with_executor_setting(context, node_name, {queue_length}) do
-    GenServer.call(
-      ResourceServer,
-      {:create_node_with_executor_setting, {context, node_name, {queue_length}}}
-    )
-  end
-
-  def create_node_with_executor_setting(context, node_name, {queue_length, change_order}) do
-    GenServer.call(
-      ResourceServer,
-      {:create_node_with_executor_setting,
-       {context, node_name, {queue_length, change_order}}}
-    )
-  end
-
-  def create_node_with_executor_setting(context, node_name, node_name_space, {queue_length}) do
-    GenServer.call(
-      ResourceServer,
-      {:create_node_with_executor_setting,
-       {context, node_name, node_name_space, {queue_length}}}
-    )
-  end
-
-  def create_node_with_executor_setting(
-        context,
-        node_name,
-        node_name_space,
-        {queue_length, change_order}
-      ) do
+  def create_node_with_ns(context, node_name, name_space, queue_length \\ 1, change_order \\ & &1) do
     GenServer.call(
       ResourceServer,
       {:create_node_with_executor_setting,
@@ -224,94 +184,40 @@ defmodule Rclex.ResourceServer do
     )
   end
 
-  def handle_call({:create_node, {context, node_name, node_namespace}}, _from, {resources}) do
-    if Map.has_key?(resources, {node_namespace, node_name}) do
-      # 同名のノードがすでに存在しているときはエラーを返す
-      {:reply, {:error, node_name}}
-    else
-      node = Nifs.rcl_get_zero_initialized_node()
-      node_op = Nifs.rcl_node_get_default_options()
-      Nifs.rcl_node_init(node, node_name, node_namespace, context, node_op)
-
-      children = [
-        {Rclex.Node, {node, node_name, node_namespace}}
-      ]
-
-      opts = [strategy: :one_for_one]
-      {:ok, pid} = Supervisor.start_link(children, opts)
-      node_identifier = "#{node_namespace}/#{node_name}"
-      new_resources = Map.put_new(resources, node_identifier, %{supervisor_id: pid})
-      {:reply, {:ok, node_identifier}, {new_resources}}
-    end
-  end
-
-  def handle_call({:create_node, {context, node_name}}, _from, {resources}) do
-    if Map.has_key?(resources, {"", node_name}) do
-      # 同名のノードがすでに存在しているときはエラーを返す
-      {:reply, {:error, node_name}}
-    else
-      node = Nifs.rcl_get_zero_initialized_node()
-      node_op = Nifs.rcl_node_get_default_options()
-      Nifs.rcl_node_init_without_namespace(node, node_name, context, node_op)
-
-      children = [
-        {Rclex.Node, {node, node_name}}
-      ]
-
-      opts = [strategy: :one_for_one]
-      {:ok, pid} = Supervisor.start_link(children, opts)
-      new_resources = Map.put_new(resources, node_name, %{supervisor_id: pid})
-      {:reply, {:ok, node_name}, {new_resources}}
-    end
-  end
-
   def handle_call(
-        {:create_node_with_executor_setting,
-         {context, node_name, node_namespace, executor_settings}},
+        {:create_node, {context, node_name, node_namespace, executor_settings}},
         _from,
         {resources}
       ) do
-    if Map.has_key?(resources, {node_namespace, node_name}) do
+    node_identifier =
+      if node_namespace! = "" do
+        "#{node_namespace}/#{node_name}"
+      else
+        node_name
+      end
+
+    if Map.has_key?(resources, node_identifier) do
       # 同名のノードがすでに存在しているときはエラーを返す
-      {:reply, {:error, node_name}}
+      {:reply, {:error, node_identifier}}
     else
       node = Nifs.rcl_get_zero_initialized_node()
       node_op = Nifs.rcl_node_get_default_options()
-      Nifs.rcl_node_init(node, node_name, node_namespace, context, node_op)
+
+      node_identifier =
+        if node_namespace! = "" do
+          Nifs.rcl_node_init(node, node_name, node_namespace, context, node_op)
+        else
+          Nifs.rcl_node_init_without_namespace(node, node_name, context, node_op)
+        end
 
       children = [
-        {Rclex.Node, {node, node_name, node_namespace, :executor_setting, executor_settings}}
+        {Rclex.Node, {node, node_identifier, executor_settings}}
       ]
 
       opts = [strategy: :one_for_one]
       {:ok, pid} = Supervisor.start_link(children, opts)
-      node_identifier = "#{node_namespace}/#{node_name}"
       new_resources = Map.put_new(resources, node_identifier, %{supervisor_id: pid})
       {:reply, {:ok, node_identifier}, {new_resources}}
-    end
-  end
-
-  def handle_call(
-        {:create_node_with_executor_setting, {context, node_name, executor_settings}},
-        _from,
-        {resources}
-      ) do
-    if Map.has_key?(resources, {"", node_name}) do
-      # 同名のノードがすでに存在しているときはエラーを返す
-      {:reply, {:error, node_name}}
-    else
-      node = Nifs.rcl_get_zero_initialized_node()
-      node_op = Nifs.rcl_node_get_default_options()
-      Nifs.rcl_node_init_without_namespace(node, node_name, context, node_op)
-
-      children = [
-        {Rclex.Node, {node, node_name, :executor_setting, executor_settings}}
-      ]
-
-      opts = [strategy: :one_for_one]
-      {:ok, pid} = Supervisor.start_link(children, opts)
-      new_resources = Map.put_new(resources, node_name, %{supervisor_id: pid})
-      {:reply, {:ok, node_name}, {new_resources}}
     end
   end
 

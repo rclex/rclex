@@ -8,48 +8,16 @@ defmodule Rclex.Node do
     T.B.A
   """
 
-  def start_link({node, node_name}) do
-    GenServer.start_link(__MODULE__, {node, node_name}, name: {:global, node_name})
-  end
-
-  def start_link({node, node_name, :executor_setting, {queue_length}}) do
-    GenServer.start_link(__MODULE__, {node, node_name, queue_length}, name: {:global, node_name})
-  end
-
-  def start_link({node, node_name, :executor_setting, {queue_length, change_order}}) do
-    GenServer.start_link(__MODULE__, {node, node_name, queue_length, change_order},
-      name: {:global, node_name}
-    )
-  end
-
-  def start_link({node, node_name, node_namespace}) do
-    node_identifier = "#{node_namespace}/#{node_name}"
-
-    GenServer.start_link(__MODULE__, {node, node_identifier}, name: {:global, node_identifier})
-  end
-
-  def start_link({node, node_name, node_namespace, :executor_setting, {queue_length}}) do
-    node_identifier = "#{node_namespace}/#{node_name}"
-
-    GenServer.start_link(__MODULE__, {node, node_identifier, queue_length},
-      name: {:global, node_identifier}
-    )
-  end
-
-  def start_link(
-        {node, node_name, node_namespace, :executor_setting, {queue_length, change_order}}
-      ) do
-    node_identifier = "#{node_namespace}/#{node_name}"
-
+  def start_link({node, node_identifier, {queue_length, change_order}}) do
     GenServer.start_link(__MODULE__, {node, node_identifier, queue_length, change_order},
       name: {:global, node_identifier}
     )
   end
 
-  def init({node, node_name}) do
+  def init({node, node_identifier, queue_length, change_order}) do
     children = [
-      {Rclex.JobQueue, {node_name}},
-      {Rclex.JobExecutor, {node_name}}
+      {Rclex.JobQueue, {node_identifier, queue_length}},
+      {Rclex.JobExecutor, {node_identifier, change_order}}
     ]
 
     opts = [strategy: :one_for_one]
@@ -57,35 +25,7 @@ defmodule Rclex.Node do
     # supervisor_idsにはJob、Publisher、Subscriberのsupervisor_idを入れる
     # Publisher、Subscriberは第2クエリとしてトピック名を指定する
     supervisor_ids = Map.put_new(%{}, {:job, "supervisor"}, id)
-    {:ok, {node, node_name, supervisor_ids}}
-  end
-
-  def init({node, node_name, queue_length}) do
-    children = [
-      {Rclex.JobQueue, {node_name, queue_length}},
-      {Rclex.JobExecutor, {node_name}}
-    ]
-
-    opts = [strategy: :one_for_one]
-    {:ok, id} = Supervisor.start_link(children, opts)
-    # supervisor_idsにはJob、Publisher、Subscriberのsupervisor_idを入れる
-    # Publisher、Subscriberは第2クエリとしてトピック名を指定する
-    supervisor_ids = Map.put_new(%{}, {:job, "supervisor"}, id)
-    {:ok, {node, node_name, supervisor_ids}}
-  end
-
-  def init({node, node_name, queue_length, change_order}) do
-    children = [
-      {Rclex.JobQueue, {node_name, queue_length}},
-      {Rclex.JobExecutor, {node_name, change_order}}
-    ]
-
-    opts = [strategy: :one_for_one]
-    {:ok, id} = Supervisor.start_link(children, opts)
-    # supervisor_idsにはJob、Publisher、Subscriberのsupervisor_idを入れる
-    # Publisher、Subscriberは第2クエリとしてトピック名を指定する
-    supervisor_ids = Map.put_new(%{}, {:job, "supervisor"}, id)
-    {:ok, {node, node_name, supervisor_ids}}
+    {:ok, {node, node_identifier, supervisor_ids}}
   end
 
   def create_subscriber(node_identifier, msg_type, topic_name) do
