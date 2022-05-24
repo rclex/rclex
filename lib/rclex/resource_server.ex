@@ -40,10 +40,13 @@ defmodule Rclex.ResourceServer do
         queue_length \\ 1,
         change_order \\ & &1
       ) do
-    GenServer.call(
-      ResourceServer,
-      {:create_node, {context, node_name, node_namespace, {queue_length, change_order}}}
-    )
+    {:ok, [node]} =
+      GenServer.call(
+        ResourceServer,
+        {:create_nodes, {context, node_name, node_namespace, 1, {queue_length, change_order}}}
+      )
+
+    {:ok, node}
   end
 
   @doc """
@@ -153,33 +156,6 @@ defmodule Rclex.ResourceServer do
   end
 
   def handle_call(
-        {:create_node, {context, node_name, node_namespace, executor_settings}},
-        _from,
-        {resources}
-      ) do
-    node_identifier = get_identifier(node_namespace, node_name)
-
-    if Map.has_key?(resources, node_identifier) do
-      # 同名のノードがすでに存在しているときはエラーを返す
-      {:reply, {:error, node_identifier}}
-    else
-      node = Nifs.rcl_get_zero_initialized_node()
-      node_op = Nifs.rcl_node_get_default_options()
-
-      call_nifs_rcl_node_init(node, node_name, node_namespace, context, node_op)
-
-      children = [
-        {Rclex.Node, {node, node_identifier, executor_settings}}
-      ]
-
-      opts = [strategy: :one_for_one]
-      {:ok, pid} = Supervisor.start_link(children, opts)
-      new_resources = Map.put_new(resources, node_identifier, %{supervisor_id: pid})
-      {:reply, {:ok, node_identifier}, {new_resources}}
-    end
-  end
-
-  def handle_call(
         {:create_nodes, {context, node_name, namespace, num_node, executor_settings}},
         _from,
         {resources}
@@ -189,6 +165,12 @@ defmodule Rclex.ResourceServer do
       |> Enum.map(fn node_no ->
         get_identifier(namespace, node_name) ++ Integer.to_charlist(node_no)
       end)
+
+    unless node_identifier_list
+           |> Enum.any?(&Map.has_key?(resources, &1)) do
+      # 同名のノードがすでに存在しているときはエラーを返す
+      {:reply, {:error, node_identifier_list}}
+    end
 
     nodes_list =
       node_identifier_list
