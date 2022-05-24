@@ -4,10 +4,12 @@ defmodule Rclex.ResourceServer do
   require Logger
   use GenServer, restart: :transient
 
+  @type context :: any()
+
   @moduledoc """
       T.B.A
   """
-
+  @spec start_link(any()) :: GenServer.on_start()
   def start_link(_) do
     GenServer.start_link(__MODULE__, {}, name: ResourceServer)
   end
@@ -18,6 +20,7 @@ defmodule Rclex.ResourceServer do
           supervisor_ids :: map()
           keyがnode_identifer、valueがnode情報。現在はnodeプロセスのsupervisorのidを格納している
   """
+  @impl GenServer
   def init(_) do
     {:ok, {%{}}}
   end
@@ -29,11 +32,19 @@ defmodule Rclex.ResourceServer do
           node_identifier :: string()
           作成したノードプロセスのnameを返す
   """
+  @spec create_node(context(), charlist(), integer(), (list() -> list())) :: term()
   def create_node(context, node_name, queue_length \\ 1, change_order \\ & &1) do
-    create_node_with_ns(context, node_name, "", queue_length, change_order)
+    create_node_with_namespace(context, node_name, '', queue_length, change_order)
   end
 
-  def create_node_with_ns(
+  @spec create_node_with_namespace(
+          context(),
+          charlist(),
+          charlist(),
+          integer(),
+          (list() -> list())
+        ) :: term()
+  def create_node_with_namespace(
         context,
         node_name,
         node_namespace,
@@ -56,10 +67,19 @@ defmodule Rclex.ResourceServer do
           node_identifier_list :: Enumerable.t()
           作成したノードプロセスのnameのリストを返す
   """
+  @spec create_nodes(context(), charlist(), integer(), integer(), (list() -> list())) :: term()
   def create_nodes(context, node_name, num_node, queue_length \\ 1, change_order \\ & &1) do
-    create_nodes_with_ns(context, node_name, "", num_node, queue_length, change_order)
+    create_nodes_with_ns(context, node_name, '', num_node, queue_length, change_order)
   end
 
+  @spec create_nodes_with_ns(
+          context(),
+          charlist(),
+          charlist(),
+          integer(),
+          integer(),
+          (list() -> list())
+        ) :: term()
   def create_nodes_with_ns(
         context,
         node_name,
@@ -75,6 +95,7 @@ defmodule Rclex.ResourceServer do
     )
   end
 
+  @spec create_timer(function(), any, integer(), charlist(), integer(), (list() -> list())) :: any
   def create_timer(
         call_back,
         args,
@@ -83,9 +104,18 @@ defmodule Rclex.ResourceServer do
         queue_length \\ 1,
         change_order \\ & &1
       ) do
-    create_timer_with_limit(call_back, args, time, timer_name, 0, {queue_length, change_order})
+    create_timer_with_limit(call_back, args, time, timer_name, 0, queue_length, change_order)
   end
 
+  @spec create_timer_with_limit(
+          function(),
+          any,
+          integer(),
+          charlist(),
+          integer(),
+          integer(),
+          (list() -> list())
+        ) :: any
   def create_timer_with_limit(
         call_back,
         args,
@@ -101,6 +131,7 @@ defmodule Rclex.ResourceServer do
     )
   end
 
+  @spec stop_timer(charlist()) :: any
   @doc """
       タイマープロセスを削除する
       入力
@@ -112,6 +143,7 @@ defmodule Rclex.ResourceServer do
     GenServer.call(ResourceServer, {:stop_timer, timer_identifier})
   end
 
+  @spec finish_node(charlist()) :: any
   @doc """
       ノードプロセスを削除する
       入力
@@ -122,6 +154,7 @@ defmodule Rclex.ResourceServer do
     GenServer.call(ResourceServer, {:finish_node, node_identifier})
   end
 
+  @spec finish_nodes([charlist()]) :: list
   def finish_nodes(node_identifier_list) do
     Enum.map(
       node_identifier_list,
@@ -129,6 +162,7 @@ defmodule Rclex.ResourceServer do
     )
   end
 
+  @impl GenServer
   def handle_call(
         {:create_nodes, {context, node_name, namespace, num_node, executor_settings}},
         _from,
@@ -176,22 +210,7 @@ defmodule Rclex.ResourceServer do
     {:reply, {:ok, node_identifier_list}, {new_resources}}
   end
 
-  defp get_identifier(node_namespace, node_name) do
-    if node_namespace != "" do
-      "#{node_namespace}/#{node_name}"
-    else
-      node_name
-    end
-  end
-
-  defp call_nifs_rcl_node_init(node, node_name, node_namespace, context, node_op) do
-    if node_namespace != "" do
-      Nifs.rcl_node_init(node, node_name, node_namespace, context, node_op)
-    else
-      Nifs.rcl_node_init_without_namespace(node, node_name, context, node_op)
-    end
-  end
-
+  @impl GenServer
   def handle_call(
         {:create_timer, {call_back, args, time, timer_name, limit, executor_settings}},
         _from,
@@ -214,6 +233,7 @@ defmodule Rclex.ResourceServer do
     end
   end
 
+  @impl GenServer
   def handle_call({:finish_node, node_identifier}, _from, {resources}) do
     GenServer.call({:global, node_identifier}, :finish_node)
     {:ok, node} = Map.fetch(resources, node_identifier)
@@ -229,6 +249,7 @@ defmodule Rclex.ResourceServer do
     {:reply, :ok, {new_resources}}
   end
 
+  @impl GenServer
   def handle_call({:stop_timer, timer_identifier}, _from, {resources}) do
     # :ok = GenServer.call({:global, timer_identifier}, :stop)
     {:ok, timer} = Map.fetch(resources, timer_identifier)
@@ -243,8 +264,27 @@ defmodule Rclex.ResourceServer do
     {:reply, :ok, {new_resources}}
   end
 
+  @impl GenServer
   def handle_info({_, _, reason}, state) do
     Logger.debug(reason)
     {:noreply, state}
+  end
+
+  @spec get_identifier(charlist(), charlist()) :: charlist()
+  defp get_identifier(node_namespace, node_name) do
+    if node_namespace != '' do
+      "#{node_namespace}/#{node_name}"
+    else
+      node_name
+    end
+  end
+
+  @spec call_nifs_rcl_node_init(any(), charlist(), charlist(), context(), any()) :: any()
+  defp call_nifs_rcl_node_init(node, node_name, node_namespace, context, node_op) do
+    if node_namespace != '' do
+      Nifs.rcl_node_init(node, node_name, node_namespace, context, node_op)
+    else
+      Nifs.rcl_node_init_without_namespace(node, node_name, context, node_op)
+    end
   end
 end
