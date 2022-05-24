@@ -197,20 +197,6 @@ defmodule Rclex.Node do
     {:reply, :ok, {node, name, new_supervisor_ids}}
   end
 
-  # def handle_call({:finish_subscriber, topic_name}, _from, {node, node_name, supervisor_ids}) do
-  #   {:ok, supervisor_id} = Map.fetch(supervisor_ids, {:sub, topic_name})
-
-  #   sub_key = "#{node_name}/sub/#{topic_name}"
-
-  #   :ok = GenServer.call({:global, sub_key}, {:finish_subscriber, node})
-
-  #   Supervisor.stop(supervisor_id)
-
-  #   new_supervisor_ids = Map.delete(supervisor_ids, topic_name)
-
-  #   {:reply, :ok, {node, node_name, new_supervisor_ids}}
-  # end
-
   def handle_call(:finish_node, _from, {node, name, supervisor_ids}) do
     Nifs.rcl_node_fini(node)
 

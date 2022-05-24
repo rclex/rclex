@@ -38,13 +38,4 @@ defmodule Rclex.JobQueue do
       {:noreply, {target_identifier, queue_length, new_job_queue}}
     end
   end
-
-  # def handle_call(:pop, _from, {target_identifier, job_queue}) do
-  #   if :queue.len(job_queue) > 0 do
-  #     {{:value, job}, new_job_queue} = :queue.out(job_queue)
-  #     {:reply, {:exist_job, job}, new_job_queue}
-  #   else
-  #     {:reply, {:no_job, {}}, {target_identifier, job_queue}}
-  #   end
-  # end
 end
