@@ -37,7 +37,7 @@ defmodule RclexTest do
     {:ok, publisher} = Rclex.Node.create_publisher(pub_node, 'StdMsgs.Msg.String', 'chatter')
 
     {:ok, timer} =
-      Rclex.ResourceServer.create_timer(
+      Rclex.ResourceServer.create_timer_with_limit(
         fn publisher ->
           msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
 

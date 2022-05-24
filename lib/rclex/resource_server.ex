@@ -75,55 +75,29 @@ defmodule Rclex.ResourceServer do
     )
   end
 
-  def create_timer(call_back, args, time, timer_name) do
-    GenServer.call(ResourceServer, {:create_timer, {call_back, args, time, timer_name}})
-  end
-
-  def create_timer(call_back, args, time, timer_name, limit) do
-    GenServer.call(ResourceServer, {:create_timer, {call_back, args, time, timer_name, limit}})
-  end
-
-  def create_timer_with_executor_setting(call_back, args, time, timer_name, {queue_length}) do
-    GenServer.call(
-      ResourceServer,
-      {:create_timer_with_executor_setting, {call_back, args, time, timer_name, {queue_length}}}
-    )
-  end
-
-  def create_timer_with_executor_setting(
+  def create_timer(
         call_back,
         args,
         time,
         timer_name,
-        {queue_length, change_order}
+        queue_length \\ 1,
+        change_order \\ & &1
       ) do
-    GenServer.call(
-      ResourceServer,
-      {:create_timer_with_executor_setting,
-       {call_back, args, time, timer_name, {queue_length, change_order}}}
-    )
+    create_timer_with_limit(call_back, args, time, timer_name, 0, {queue_length, change_order})
   end
 
-  def create_timer_with_executor_setting(call_back, args, time, timer_name, limit, {queue_length}) do
-    GenServer.call(
-      ResourceServer,
-      {:create_timer_with_executor_setting,
-       {call_back, args, time, timer_name, limit, {queue_length}}}
-    )
-  end
-
-  def create_timer_with_executor_setting(
+  def create_timer_with_limit(
         call_back,
         args,
         time,
         timer_name,
         limit,
-        {queue_length, change_order}
+        queue_length \\ 1,
+        change_order \\ & &1
       ) do
     GenServer.call(
       ResourceServer,
-      {:create_timer_with_executor_setting,
-       {call_back, args, time, timer_name, limit, {queue_length, change_order}}}
+      {:create_timer, {call_back, args, time, timer_name, limit, {queue_length, change_order}}}
     )
   end
 
@@ -218,45 +192,8 @@ defmodule Rclex.ResourceServer do
     end
   end
 
-  def handle_call({:create_timer, {call_back, args, time, timer_name}}, _from, {resources}) do
-    timer_identifier = "#{timer_name}/Timer"
-
-    if Map.has_key?(resources, {"", timer_identifier}) do
-      # 同名のノードがすでに存在しているときはエラーを返す
-      {:reply, {:error, timer_name}}
-    else
-      children = [
-        {Rclex.Timer, {call_back, args, time, timer_name}}
-      ]
-
-      opts = [strategy: :one_for_one]
-      {:ok, pid} = Supervisor.start_link(children, opts)
-      new_resources = Map.put_new(resources, timer_identifier, %{supervisor_id: pid})
-      {:reply, {:ok, timer_identifier}, {new_resources}}
-    end
-  end
-
-  def handle_call({:create_timer, {call_back, args, time, timer_name, limit}}, _from, {resources}) do
-    timer_identifier = "#{timer_name}/Timer"
-
-    if Map.has_key?(resources, {"", timer_identifier}) do
-      # 同名のノードがすでに存在しているときはエラーを返す
-      {:reply, {:error, timer_name}}
-    else
-      children = [
-        {Rclex.Timer, {call_back, args, time, timer_name, limit}}
-      ]
-
-      opts = [strategy: :one_for_one]
-      {:ok, pid} = Supervisor.start_link(children, opts)
-      new_resources = Map.put_new(resources, timer_identifier, %{supervisor_id: pid})
-      {:reply, {:ok, timer_identifier}, {new_resources}}
-    end
-  end
-
   def handle_call(
-        {:create_timer_with_executor_setting,
-         {call_back, args, time, timer_name, executor_settings}},
+        {:create_timer, {call_back, args, time, timer_name, limit, executor_settings}},
         _from,
         {resources}
       ) do
@@ -267,31 +204,7 @@ defmodule Rclex.ResourceServer do
       {:reply, {:error, timer_name}}
     else
       children = [
-        {Rclex.Timer, {call_back, args, time, timer_name, :executor_setting, executor_settings}}
-      ]
-
-      opts = [strategy: :one_for_one]
-      {:ok, pid} = Supervisor.start_link(children, opts)
-      new_resources = Map.put_new(resources, timer_identifier, %{supervisor_id: pid})
-      {:reply, {:ok, timer_identifier}, {new_resources}}
-    end
-  end
-
-  def handle_call(
-        {:create_timer_with_executor_setting,
-         {call_back, args, time, timer_name, limit, executor_settings}},
-        _from,
-        {resources}
-      ) do
-    timer_identifier = "#{timer_name}/Timer"
-
-    if Map.has_key?(resources, {"", timer_identifier}) do
-      # 同名のノードがすでに存在しているときはエラーを返す
-      {:reply, {:error, timer_name}}
-    else
-      children = [
-        {Rclex.Timer,
-         {call_back, args, time, timer_name, limit, :executor_setting, executor_settings}}
+        {Rclex.Timer, {call_back, args, time, timer_name, limit, executor_settings}}
       ]
 
       opts = [strategy: :one_for_one]
