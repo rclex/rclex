@@ -184,46 +184,34 @@ defmodule Rclex.ResourceServer do
         _from,
         {resources}
       ) do
-    name_list =
-      Enum.map(0..(num_node - 1), fn n ->
-        get_identifier(namespace, node_name) ++ Integer.to_charlist(n)
+    node_identifier_list =
+      0..(num_node - 1)
+      |> Enum.map(fn node_no ->
+        get_identifier(namespace, node_name) ++ Integer.to_charlist(node_no)
       end)
-
-    node_list =
-      Enum.map(0..(num_node - 1), fn n ->
-        call_nifs_rcl_node_init(
-          Nifs.rcl_get_zero_initialized_node(),
-          Enum.at(name_list, n),
-          namespace,
-          context,
-          Nifs.rcl_node_get_default_options()
-        )
-      end)
-
-    id_list =
-      Enum.map(0..(num_node - 1), fn n ->
-        Supervisor.start_link(
-          [
-            {
-              Rclex.Node,
-              {
-                Enum.at(node_list, n),
-                Enum.at(name_list, n),
-                executor_settings
-              }
-            }
-          ],
-          strategy: :one_for_one
-        )
-      end)
-      |> Enum.map(fn {:ok, pid} -> pid end)
-
-    node_identifier_list = Enum.map(name_list, fn name -> get_identifier(namespace, name) end)
 
     nodes_list =
-      Enum.map(0..(num_node - 1), fn n ->
-        node_identifier = Enum.at(node_identifier_list, n)
-        pid = Enum.at(id_list, n)
+      node_identifier_list
+      # id -> {node, id}
+      |> Enum.map(fn node_identifier ->
+        {call_nifs_rcl_node_init(
+           Nifs.rcl_get_zero_initialized_node(),
+           node_identifier,
+           namespace,
+           context,
+           Nifs.rcl_node_get_default_options()
+         ), node_identifier}
+      end)
+      # {node, id} -> {id, {:ok, pid}}
+      |> Enum.map(fn {node, node_identifier} ->
+        {node_identifier,
+         Supervisor.start_link(
+           [{Rclex.Node, {node, node_identifier, executor_settings}}],
+           strategy: :one_for_one
+         )}
+      end)
+      # {id, {:ok, pid}} -> {id, pid}
+      |> Enum.map(fn {node_identifier, {:ok, pid}} ->
         {node_identifier, %{supervisor_id: pid}}
       end)
 
