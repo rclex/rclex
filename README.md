@@ -58,7 +58,7 @@ by adding `rclex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:rclex, "~> 0.6.1"}
+    {:rclex, "~> 0.6.2"}
   ]
 end
 ```
@@ -82,3 +82,4 @@ Please reference examples [here](https://github.com/rclex/rclex_examples). Also 
 - [@HiroiImanishi](https://github.com/HiroiImanishi)
 - [@kebus426](https://github.com/kebus426)
 - [@shiroro466](https://github.com/shiroro466)
+- [@s-hosoai](https://github.com/s-hosoai)
