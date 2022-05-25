@@ -2,6 +2,7 @@
 
 ## v0.6.2 on 25 May 2022
 
+* Please welcome @s-hosoai as a new maintainer!
 * New features: none
 * Code Improvements/Fixes:
   * Add simple pub sub test by @s-hosoai in https://github.com/rclex/rclex/pull/113
