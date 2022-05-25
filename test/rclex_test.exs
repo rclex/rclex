@@ -55,7 +55,7 @@ defmodule RclexTest do
         publisher,
         100,
         'continus_timer',
-        2
+        1
       )
 
     Process.sleep(500)
