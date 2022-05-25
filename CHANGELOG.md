@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v0.6.2 on 25 May 2022
+
+* New features: none
+* Code Improvements/Fixes:
+  * Add simple pub sub test by @s-hosoai in https://github.com/rclex/rclex/pull/113
+  * fix job_queue length condition (fix #112) by @s-hosoai in https://github.com/rclex/rclex/pull/115
+  * remove Dashing from CI targets by @takasehideki in https://github.com/rclex/rclex/pull/116
+* Bumps:
+  * `ex_doc` to 0.28.4 #110
+* Known issues:
+  * `rclex_connection_tests` becomes failed on Dashing from v0.6.0_rc #89
+  * `Rclex.initialize_msg/0` is undefined or private in `KeepSub.sub_task_start/2` #104
+* Full Changelog: https://github.com/rclex/rclex/compare/v0.6.1...v0.6.2
+
 ## v0.6.1 on 22 Mar 2022
 
 - New features: none
