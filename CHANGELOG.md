@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v0.7.0 on 27 May 2022
+
+* New features: none
+* Code Improvements/Fixes:
+  * Refactoring to simplify implementation by @s-hosoai in https://github.com/rclex/rclex/pull/118
+    * rename and simplify functions
+    * delete comment out functions
+    * change NIF exception handling
+    * add @spac and @impl
+    * refine tests
+* Bumps: none
+* Known issues:
+  * `rclex_connection_tests` becomes failed on Dashing from v0.6.0_rc #89
+  * `Rclex.initialize_msg/0` is undefined or private in `KeepSub.sub_task_start/2` #104
+* Full Changelog: https://github.com/rclex/rclex/compare/v0.6.2...v0.7.0
+
 ## v0.6.2 on 25 May 2022
 
 * Please welcome @s-hosoai as a new maintainer!
