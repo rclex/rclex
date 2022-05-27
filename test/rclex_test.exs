@@ -20,6 +20,7 @@ defmodule RclexTest do
   test "single_pub_sub" do
     context = Rclex.rclexinit()
     str_data = "data"
+    pid = self()
 
     {:ok, sub_node} = Rclex.ResourceServer.create_node(context, 'listener')
 
@@ -29,7 +30,7 @@ defmodule RclexTest do
       recv_msg = Rclex.Msg.read(msg, 'StdMsgs.Msg.String')
       assert List.to_string(recv_msg.data) == str_data, "received data is correct."
       msg_data = List.to_string(recv_msg.data)
-      IO.puts("Rclex: received msg: #{msg_data}")
+      send(pid, :message_received)
     end)
 
     {:ok, pub_node} = Rclex.ResourceServer.create_node(context, 'talker')
@@ -55,7 +56,7 @@ defmodule RclexTest do
         1
       )
 
-    Process.sleep(500)
+    assert_receive :message_received, 500
 
     Rclex.ResourceServer.stop_timer(timer)
     Rclex.Subscriber.stop_subscribing([subscriber])
