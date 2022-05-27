@@ -1,5 +1,4 @@
 defmodule Rclex.JobQueue do
-  require Rclex.Macros
   require Logger
   use GenServer, restart: :transient
 
@@ -24,10 +23,12 @@ defmodule Rclex.JobQueue do
     )
   end
 
+  @impl GenServer
   def init({target_identifier, queue_length}) do
     {:ok, {target_identifier, queue_length, :queue.new()}}
   end
 
+  @impl GenServer
   def handle_cast({:push, job}, {target_identifier, queue_length, job_queue}) do
     new_job_queue = :queue.in(job, job_queue)
 
@@ -38,13 +39,4 @@ defmodule Rclex.JobQueue do
       {:noreply, {target_identifier, queue_length, new_job_queue}}
     end
   end
-
-  # def handle_call(:pop, _from, {target_identifier, job_queue}) do
-  #   if :queue.len(job_queue) > 0 do
-  #     {{:value, job}, new_job_queue} = :queue.out(job_queue)
-  #     {:reply, {:exist_job, job}, new_job_queue}
-  #   else
-  #     {:reply, {:no_job, {}}, {target_identifier, job_queue}}
-  #   end
-  # end
 end

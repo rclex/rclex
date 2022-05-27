@@ -1,5 +1,4 @@
 defmodule Rclex.JobExecutor do
-  require Rclex.Macros
   require Logger
   use GenServer, restart: :transient
 
@@ -19,16 +18,19 @@ defmodule Rclex.JobExecutor do
     )
   end
 
+  @impl GenServer
   def init({}) do
     Logger.debug("JobExecutor start")
     {:ok, {}}
   end
 
+  @impl GenServer
   def init({change_order}) do
     Logger.debug("JobExecutor start")
     {:ok, {change_order}}
   end
 
+  @impl GenServer
   def handle_cast({:execute, job_queue}, {}) do
     :queue.to_list(job_queue)
     |> Enum.map(fn {key, action, args} -> GenServer.cast(key, {action, args}) end)
@@ -36,6 +38,7 @@ defmodule Rclex.JobExecutor do
     {:noreply, {}}
   end
 
+  @impl GenServer
   def handle_cast({:execute, job_queue}, {change_order}) do
     job_list = :queue.to_list(job_queue)
 

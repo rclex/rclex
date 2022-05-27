@@ -20,26 +20,25 @@ defmodule RclexTest do
   test "single_pub_sub" do
     context = Rclex.rclexinit()
     str_data = "data"
+    pid = self()
 
-    {:ok, sub_node} = Rclex.ResourceServer.create_singlenode(context, 'listener')
+    {:ok, sub_node} = Rclex.ResourceServer.create_node(context, 'listener')
 
-    {:ok, subscriber} =
-      Rclex.Node.create_single_subscriber(sub_node, 'StdMsgs.Msg.String', 'chatter')
+    {:ok, subscriber} = Rclex.Node.create_subscriber(sub_node, 'StdMsgs.Msg.String', 'chatter')
 
     Rclex.Subscriber.start_subscribing([subscriber], context, fn msg ->
       recv_msg = Rclex.Msg.read(msg, 'StdMsgs.Msg.String')
       assert List.to_string(recv_msg.data) == str_data, "received data is correct."
       msg_data = List.to_string(recv_msg.data)
-      IO.puts("Rclex: received msg: #{msg_data}")
+      send(pid, :message_received)
     end)
 
-    {:ok, pub_node} = Rclex.ResourceServer.create_singlenode(context, 'talker')
+    {:ok, pub_node} = Rclex.ResourceServer.create_node(context, 'talker')
 
-    {:ok, publisher} =
-      Rclex.Node.create_single_publisher(pub_node, 'StdMsgs.Msg.String', 'chatter')
+    {:ok, publisher} = Rclex.Node.create_publisher(pub_node, 'StdMsgs.Msg.String', 'chatter')
 
     {:ok, timer} =
-      Rclex.ResourceServer.create_timer(
+      Rclex.ResourceServer.create_timer_with_limit(
         fn publisher ->
           msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
 
@@ -57,7 +56,7 @@ defmodule RclexTest do
         1
       )
 
-    Process.sleep(500)
+    assert_receive :message_received, 500
 
     Rclex.ResourceServer.stop_timer(timer)
     Rclex.Subscriber.stop_subscribing([subscriber])

@@ -1,6 +1,5 @@
 defmodule Rclex.Node do
   alias Rclex.Nifs
-  require Rclex.Macros
   require Logger
   use GenServer, restart: :transient
 
@@ -8,48 +7,17 @@ defmodule Rclex.Node do
     T.B.A
   """
 
-  def start_link({node, node_name}) do
-    GenServer.start_link(__MODULE__, {node, node_name}, name: {:global, node_name})
-  end
-
-  def start_link({node, node_name, :executor_setting, {queue_length}}) do
-    GenServer.start_link(__MODULE__, {node, node_name, queue_length}, name: {:global, node_name})
-  end
-
-  def start_link({node, node_name, :executor_setting, {queue_length, change_order}}) do
-    GenServer.start_link(__MODULE__, {node, node_name, queue_length, change_order},
-      name: {:global, node_name}
-    )
-  end
-
-  def start_link({node, node_name, node_namespace}) do
-    node_identifier = "#{node_namespace}/#{node_name}"
-
-    GenServer.start_link(__MODULE__, {node, node_identifier}, name: {:global, node_identifier})
-  end
-
-  def start_link({node, node_name, node_namespace, :executor_setting, {queue_length}}) do
-    node_identifier = "#{node_namespace}/#{node_name}"
-
-    GenServer.start_link(__MODULE__, {node, node_identifier, queue_length},
-      name: {:global, node_identifier}
-    )
-  end
-
-  def start_link(
-        {node, node_name, node_namespace, :executor_setting, {queue_length, change_order}}
-      ) do
-    node_identifier = "#{node_namespace}/#{node_name}"
-
+  def start_link({node, node_identifier, {queue_length, change_order}}) do
     GenServer.start_link(__MODULE__, {node, node_identifier, queue_length, change_order},
       name: {:global, node_identifier}
     )
   end
 
-  def init({node, node_name}) do
+  @impl GenServer
+  def init({node, node_identifier, queue_length, change_order}) do
     children = [
-      {Rclex.JobQueue, {node_name}},
-      {Rclex.JobExecutor, {node_name}}
+      {Rclex.JobQueue, {node_identifier, queue_length}},
+      {Rclex.JobExecutor, {node_identifier, change_order}}
     ]
 
     opts = [strategy: :one_for_one]
@@ -57,38 +25,10 @@ defmodule Rclex.Node do
     # supervisor_idsにはJob、Publisher、Subscriberのsupervisor_idを入れる
     # Publisher、Subscriberは第2クエリとしてトピック名を指定する
     supervisor_ids = Map.put_new(%{}, {:job, "supervisor"}, id)
-    {:ok, {node, node_name, supervisor_ids}}
+    {:ok, {node, node_identifier, supervisor_ids}}
   end
 
-  def init({node, node_name, queue_length}) do
-    children = [
-      {Rclex.JobQueue, {node_name, queue_length}},
-      {Rclex.JobExecutor, {node_name}}
-    ]
-
-    opts = [strategy: :one_for_one]
-    {:ok, id} = Supervisor.start_link(children, opts)
-    # supervisor_idsにはJob、Publisher、Subscriberのsupervisor_idを入れる
-    # Publisher、Subscriberは第2クエリとしてトピック名を指定する
-    supervisor_ids = Map.put_new(%{}, {:job, "supervisor"}, id)
-    {:ok, {node, node_name, supervisor_ids}}
-  end
-
-  def init({node, node_name, queue_length, change_order}) do
-    children = [
-      {Rclex.JobQueue, {node_name, queue_length}},
-      {Rclex.JobExecutor, {node_name, change_order}}
-    ]
-
-    opts = [strategy: :one_for_one]
-    {:ok, id} = Supervisor.start_link(children, opts)
-    # supervisor_idsにはJob、Publisher、Subscriberのsupervisor_idを入れる
-    # Publisher、Subscriberは第2クエリとしてトピック名を指定する
-    supervisor_ids = Map.put_new(%{}, {:job, "supervisor"}, id)
-    {:ok, {node, node_name, supervisor_ids}}
-  end
-
-  def create_single_subscriber(node_identifier, msg_type, topic_name) do
+  def create_subscriber(node_identifier, msg_type, topic_name) do
     GenServer.call(
       {:global, node_identifier},
       {:create_subscriber, node_identifier, msg_type, topic_name}
@@ -129,7 +69,7 @@ defmodule Rclex.Node do
     {:ok, sub_identifier_list}
   end
 
-  def create_single_publisher(node_identifier, msg_type, topic_name) do
+  def create_publisher(node_identifier, msg_type, topic_name) do
     GenServer.call(
       {:global, node_identifier},
       {:create_publisher, node_identifier, msg_type, topic_name}
@@ -197,6 +137,7 @@ defmodule Rclex.Node do
     )
   end
 
+  @impl GenServer
   def handle_call(
         {:create_subscriber, node_identifier, msg_type, topic_name},
         _,
@@ -218,6 +159,7 @@ defmodule Rclex.Node do
     {:reply, {:ok, {node_identifier, topic_name, :sub}}, {node, name, new_supervisor_ids}}
   end
 
+  @impl GenServer
   def handle_call(
         {:create_publisher, node_identifier, msg_type, topic_name},
         _,
@@ -241,6 +183,7 @@ defmodule Rclex.Node do
 
   # Publisher、Subscriberを終了する
   # roleには"pub"、"sub"のどちらかを指定する
+  @impl GenServer
   def handle_call({:finish_job, topic_name, role}, _from, {node, name, supervisor_ids}) do
     {:ok, supervisor_id} = Map.fetch(supervisor_ids, {role, topic_name})
 
@@ -257,20 +200,7 @@ defmodule Rclex.Node do
     {:reply, :ok, {node, name, new_supervisor_ids}}
   end
 
-  # def handle_call({:finish_subscriber, topic_name}, _from, {node, node_name, supervisor_ids}) do
-  #   {:ok, supervisor_id} = Map.fetch(supervisor_ids, {:sub, topic_name})
-
-  #   sub_key = "#{node_name}/sub/#{topic_name}"
-
-  #   :ok = GenServer.call({:global, sub_key}, {:finish_subscriber, node})
-
-  #   Supervisor.stop(supervisor_id)
-
-  #   new_supervisor_ids = Map.delete(supervisor_ids, topic_name)
-
-  #   {:reply, :ok, {node, node_name, new_supervisor_ids}}
-  # end
-
+  @impl GenServer
   def handle_call(:finish_node, _from, {node, name, supervisor_ids}) do
     Nifs.rcl_node_fini(node)
 
@@ -283,12 +213,14 @@ defmodule Rclex.Node do
     {:reply, :ok, {node, name, new_supervisor_ids}}
   end
 
+  @impl GenServer
   def handle_call(:node_get_name, _from, state) do
     {node, _, _} = state
     node_name = Nifs.rcl_node_get_name(node)
     {:reply, node_name, state}
   end
 
+  @impl GenServer
   def handle_call({:get_topic_names_and_types, allocator, no_demangle}, _from, state) do
     {node, _, _} = state
     names_and_types_list = Nifs.rcl_get_topic_names_and_types(node, allocator, no_demangle)

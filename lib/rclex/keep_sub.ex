@@ -1,6 +1,6 @@
 defmodule Rclex.KeepSub do
   alias Rclex.Nifs
-  require Rclex.Macros
+  require Rclex.ReturnCode
   require Logger
 
   @moduledoc """
@@ -10,13 +10,13 @@ defmodule Rclex.KeepSub do
 
   def take_once(takemsg, sub, msginfo, sub_alloc, callback) do
     case Nifs.rcl_take(sub, takemsg, msginfo, sub_alloc) do
-      {Rclex.Macros.rcl_ret_ok(), _, _, _} ->
+      {Rclex.ReturnCode.rcl_ret_ok(), _, _, _} ->
         callback.(takemsg)
 
-      {Rclex.Macros.rcl_ret_subscription_invalid(), _, _, _} ->
+      {Rclex.ReturnCode.rcl_ret_subscription_invalid(), _, _, _} ->
         Logger.error("subscription invalid")
 
-      {Rclex.Macros.rcl_ret_subscription_take_failed(), _, _, _} ->
+      {Rclex.ReturnCode.rcl_ret_subscription_take_failed(), _, _, _} ->
         do_nothing()
     end
   end

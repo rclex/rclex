@@ -1,6 +1,6 @@
 defmodule Rclex.Publisher do
   alias Rclex.Nifs
-  require Rclex.Macros
+  require Rclex.ReturnCode
   require Logger
   use GenServer
 
@@ -15,6 +15,7 @@ defmodule Rclex.Publisher do
     GenServer.start_link(__MODULE__, pub, name: {:global, process_name})
   end
 
+  @impl GenServer
   @doc """
     publisherプロセスの初期化
   """
@@ -24,16 +25,16 @@ defmodule Rclex.Publisher do
 
   def publish_once(pub, pubmsg, pub_alloc) do
     case Nifs.rcl_publish(pub, pubmsg, pub_alloc) do
-      {Rclex.Macros.rcl_ret_ok(), _, _} ->
+      {Rclex.ReturnCode.rcl_ret_ok(), _, _} ->
         Logger.debug("publish ok")
 
-      {Rclex.Macros.rcl_ret_publisher_invalid(), _, _} ->
+      {Rclex.ReturnCode.rcl_ret_publisher_invalid(), _, _} ->
         Logger.error("Publisher is invalid")
 
-      {Rclex.Macros.rmw_ret_invalid_argument(), _, _} ->
+      {Rclex.ReturnCode.rmw_ret_invalid_argument(), _, _} ->
         Logger.error("invalid argument is contained")
 
-      {Rclex.Macros.rcl_ret_error(), _, _} ->
+      {Rclex.ReturnCode.rcl_ret_error(), _, _} ->
         Logger.error("unspecified error")
 
       {_, _, _} ->
@@ -56,16 +57,19 @@ defmodule Rclex.Publisher do
     :ok
   end
 
+  @impl GenServer
   def handle_cast({:publish, msg}, pub) do
     Rclex.Publisher.publish_once(pub, msg, Nifs.create_pub_alloc())
     {:noreply, pub}
   end
 
+  @impl GenServer
   def handle_call({:finish, node}, _from, pub) do
     Nifs.rcl_publisher_fini(pub, node)
     {:reply, {:ok, 'publisher finished: '}, pub}
   end
 
+  @impl GenServer
   def terminate(:normal, _) do
     Logger.debug("terminate publisher")
   end
