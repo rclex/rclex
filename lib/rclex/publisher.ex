@@ -15,6 +15,7 @@ defmodule Rclex.Publisher do
     GenServer.start_link(__MODULE__, pub, name: {:global, process_name})
   end
 
+  @impl GenServer
   @doc """
     publisherプロセスの初期化
   """
@@ -56,16 +57,19 @@ defmodule Rclex.Publisher do
     :ok
   end
 
+  @impl GenServer
   def handle_cast({:publish, msg}, pub) do
     Rclex.Publisher.publish_once(pub, msg, Nifs.create_pub_alloc())
     {:noreply, pub}
   end
 
+  @impl GenServer
   def handle_call({:finish, node}, _from, pub) do
     Nifs.rcl_publisher_fini(pub, node)
     {:reply, {:ok, 'publisher finished: '}, pub}
   end
 
+  @impl GenServer
   def terminate(:normal, _) do
     Logger.debug("terminate publisher")
   end

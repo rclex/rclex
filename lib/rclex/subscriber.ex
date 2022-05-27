@@ -15,6 +15,7 @@ defmodule Rclex.Subscriber do
     GenServer.start_link(__MODULE__, {sub, msg_type}, name: {:global, process_name})
   end
 
+  @impl GenServer
   @doc """
     subscriberプロセスの初期化
     subscriberを状態として持つ。start_subscribingをした際にcontextとcall_backを追加で状態として持つ。
@@ -55,6 +56,7 @@ defmodule Rclex.Subscriber do
     end)
   end
 
+  @impl GenServer
   def handle_cast({:start_subscribing, {context, call_back, node_identifier, topic_name}}, state) do
     {:ok, sub} = Map.fetch(state, :subscriber)
     {:ok, msg_type} = Map.fetch(state, :msgtype)
@@ -76,6 +78,7 @@ defmodule Rclex.Subscriber do
      }}
   end
 
+  @impl GenServer
   @doc """
     コールバックの実行
   """
@@ -85,10 +88,12 @@ defmodule Rclex.Subscriber do
     {:noreply, state}
   end
 
+  @impl GenServer
   def handle_cast(:stop, state) do
     {:stop, :normal, state}
   end
 
+  @impl GenServer
   def handle_call(:stop_subscribing, _from, state) do
     {:ok, supervisor_id} = Map.fetch(state, :supervisor_id)
     Supervisor.stop(supervisor_id)
@@ -96,18 +101,21 @@ defmodule Rclex.Subscriber do
     {:reply, :ok, new_state}
   end
 
+  @impl GenServer
   def handle_call({:finish, node}, _from, state) do
     {:ok, sub} = Map.fetch(state, :subscriber)
     Nifs.rcl_subscription_fini(sub, node)
     {:reply, {:ok, 'subscriber finished: '}, state}
   end
 
+  @impl GenServer
   def handle_call({:finish_subscriber, node}, _from, state) do
     {:ok, sub} = Map.fetch(state, :subscriber)
     Nifs.rcl_subscription_fini(sub, node)
     {:reply, :ok, state}
   end
 
+  @impl GenServer
   def terminate(:normal, _) do
     Logger.debug("terminate subscriber")
   end

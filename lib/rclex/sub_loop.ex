@@ -15,6 +15,7 @@ defmodule Rclex.SubLoop do
     )
   end
 
+  @impl GenServer
   def init({node_identifier, msg_type, topic_name, sub, context, call_back}) do
     wait_set =
       Nifs.rcl_get_zero_initialized_wait_set()
@@ -42,7 +43,6 @@ defmodule Rclex.SubLoop do
       購読処理関数
       購読が正常に行われれば，引数に受け取っていたコールバック関数を実行
   """
-  # def each_subscribe(sub, call_back, sub_id) do
   def each_subscribe(sub, node_identifier, msg_type, topic_name) do
     # Logger.debug("each subscribe")
     if Nifs.check_subscription(sub) do
@@ -67,11 +67,13 @@ defmodule Rclex.SubLoop do
     end
   end
 
+  @impl GenServer
   def handle_cast({:loop}, {node_identifier, msg_type, topic_name, wait_set, sub, call_back}) do
     {:noreply, {node_identifier, msg_type, topic_name, wait_set, sub, call_back},
      {:continue, :loop}}
   end
 
+  @impl GenServer
   def handle_continue(:loop, {node_identifier, msg_type, topic_name, wait_set, sub, call_back}) do
     Nifs.rcl_wait_set_clear(wait_set)
     # waitsetにサブスクライバを追加する
@@ -98,12 +100,12 @@ defmodule Rclex.SubLoop do
     end
   end
 
-  # def terminate(:normal, state) do
+  @impl GenServer
   def terminate(:normal, _) do
     Logger.debug("sub_loop process killed : normal")
   end
 
-  # def terminate(:shutdown, state) do
+  @impl GenServer
   def terminate(:shutdown, _) do
     Logger.debug("sub_loop process killed : shutdown")
   end

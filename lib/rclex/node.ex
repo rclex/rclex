@@ -13,6 +13,7 @@ defmodule Rclex.Node do
     )
   end
 
+  @impl GenServer
   def init({node, node_identifier, queue_length, change_order}) do
     children = [
       {Rclex.JobQueue, {node_identifier, queue_length}},
@@ -136,6 +137,7 @@ defmodule Rclex.Node do
     )
   end
 
+  @impl GenServer
   def handle_call(
         {:create_subscriber, node_identifier, msg_type, topic_name},
         _,
@@ -157,6 +159,7 @@ defmodule Rclex.Node do
     {:reply, {:ok, {node_identifier, topic_name, :sub}}, {node, name, new_supervisor_ids}}
   end
 
+  @impl GenServer
   def handle_call(
         {:create_publisher, node_identifier, msg_type, topic_name},
         _,
@@ -180,6 +183,7 @@ defmodule Rclex.Node do
 
   # Publisher、Subscriberを終了する
   # roleには"pub"、"sub"のどちらかを指定する
+  @impl GenServer
   def handle_call({:finish_job, topic_name, role}, _from, {node, name, supervisor_ids}) do
     {:ok, supervisor_id} = Map.fetch(supervisor_ids, {role, topic_name})
 
@@ -196,6 +200,7 @@ defmodule Rclex.Node do
     {:reply, :ok, {node, name, new_supervisor_ids}}
   end
 
+  @impl GenServer
   def handle_call(:finish_node, _from, {node, name, supervisor_ids}) do
     Nifs.rcl_node_fini(node)
 
@@ -208,12 +213,14 @@ defmodule Rclex.Node do
     {:reply, :ok, {node, name, new_supervisor_ids}}
   end
 
+  @impl GenServer
   def handle_call(:node_get_name, _from, state) do
     {node, _, _} = state
     node_name = Nifs.rcl_node_get_name(node)
     {:reply, node_name, state}
   end
 
+  @impl GenServer
   def handle_call({:get_topic_names_and_types, allocator, no_demangle}, _from, state) do
     {node, _, _} = state
     names_and_types_list = Nifs.rcl_get_topic_names_and_types(node, allocator, no_demangle)

@@ -23,10 +23,12 @@ defmodule Rclex.JobQueue do
     )
   end
 
+  @impl GenServer
   def init({target_identifier, queue_length}) do
     {:ok, {target_identifier, queue_length, :queue.new()}}
   end
 
+  @impl GenServer
   def handle_cast({:push, job}, {target_identifier, queue_length, job_queue}) do
     new_job_queue = :queue.in(job, job_queue)
 

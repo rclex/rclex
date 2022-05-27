@@ -10,15 +10,18 @@ defmodule Rclex.TimerLoop do
     GenServer.start_link(__MODULE__, {timer_name, time, limit})
   end
 
+  @impl GenServer
   def init({timer_name, time, limit}) do
     GenServer.cast(self(), :loop)
     {:ok, {timer_name, time, 0, limit}}
   end
 
+  @impl GenServer
   def handle_cast(:loop, state) do
     {:noreply, state, {:continue, :loop}}
   end
 
+  @impl GenServer
   def handle_continue(:loop, {timer_name, time, count, limit}) do
     timer_id = {:global, "#{timer_name}/Timer"}
     count = count + 1
@@ -40,10 +43,12 @@ defmodule Rclex.TimerLoop do
     end
   end
 
+  @impl GenServer
   def terminate(:normal, _) do
     Logger.debug("timer_loop process killed : normal")
   end
 
+  @impl GenServer
   def terminate(:shutdown, _) do
     Logger.debug("timer_loop process killed : shutdown")
   end
