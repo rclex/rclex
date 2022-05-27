@@ -1,5 +1,4 @@
 defmodule Rclex.JobQueue do
-  require Rclex.Macros
   require Logger
   use GenServer, restart: :transient
 

@@ -1,5 +1,4 @@
 defmodule Rclex.Timer do
-  require Rclex.Macros
   require Logger
   use GenServer, restart: :transient
 

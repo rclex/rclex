@@ -1,6 +1,6 @@
 defmodule Rclex.SubLoop do
   alias Rclex.Nifs
-  require Rclex.Macros
+  require Rclex.ReturnCode
   require Logger
   use GenServer, restart: :transient
 
@@ -52,16 +52,16 @@ defmodule Rclex.SubLoop do
       sub_key = {:global, "#{node_identifier}/#{topic_name}/sub"}
 
       case Nifs.rcl_take(sub, msg, msginfo, sub_alloc) do
-        {Rclex.Macros.rcl_ret_ok(), _, _, _} ->
+        {Rclex.ReturnCode.rcl_ret_ok(), _, _, _} ->
           GenServer.cast(
             {:global, "#{node_identifier}/JobQueue"},
             {:push, {sub_key, :subscribe, msg}}
           )
 
-        {Rclex.Macros.rcl_ret_subscription_invalid(), _, _, _} ->
+        {Rclex.ReturnCode.rcl_ret_subscription_invalid(), _, _, _} ->
           Logger.error("subscription invalid")
 
-        {Rclex.Macros.rcl_ret_subscription_take_failed(), _, _, _} ->
+        {Rclex.ReturnCode.rcl_ret_subscription_take_failed(), _, _, _} ->
           do_nothing()
       end
     end

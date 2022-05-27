@@ -1,6 +1,5 @@
 defmodule Rclex.Node do
   alias Rclex.Nifs
-  require Rclex.Macros
   require Logger
   use GenServer, restart: :transient
 

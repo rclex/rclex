@@ -1,6 +1,5 @@
 defmodule Rclex.Subscriber do
   alias Rclex.Nifs
-  require Rclex.Macros
   require Logger
   use GenServer
 
