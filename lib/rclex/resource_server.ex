@@ -68,10 +68,10 @@ defmodule Rclex.ResourceServer do
   """
   @spec create_nodes(context(), charlist(), integer(), integer(), (list() -> list())) :: term()
   def create_nodes(context, node_name, num_node, queue_length \\ 1, change_order \\ & &1) do
-    create_nodes_with_ns(context, node_name, '', num_node, queue_length, change_order)
+    create_nodes_with_namespace(context, node_name, '', num_node, queue_length, change_order)
   end
 
-  @spec create_nodes_with_ns(
+  @spec create_nodes_with_namespace(
           context(),
           charlist(),
           charlist(),
@@ -79,7 +79,7 @@ defmodule Rclex.ResourceServer do
           integer(),
           (list() -> list())
         ) :: term()
-  def create_nodes_with_ns(
+  def create_nodes_with_namespace(
         context,
         node_name,
         node_namespace,
