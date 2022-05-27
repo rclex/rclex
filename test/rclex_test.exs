@@ -49,11 +49,10 @@ defmodule RclexTest do
 
           Rclex.Publisher.publish([publisher], [msg])
         end,
-        # TODO This limit = 2 is a bug avoidance (# 112). After fixing the bug, change the limit to 1.
         publisher,
         100,
         'continus_timer',
-        2
+        1
       )
 
     Process.sleep(500)

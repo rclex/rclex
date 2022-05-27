@@ -32,7 +32,7 @@ defmodule Rclex.JobQueue do
   def handle_cast({:push, job}, {target_identifier, queue_length, job_queue}) do
     new_job_queue = :queue.in(job, job_queue)
 
-    if :queue.len(job_queue) >= queue_length do
+    if :queue.len(new_job_queue) >= queue_length do
       GenServer.cast({:global, "#{target_identifier}/JobExecutor"}, {:execute, new_job_queue})
       {:noreply, {target_identifier, queue_length, :queue.new()}}
     else

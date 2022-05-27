@@ -27,7 +27,7 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 - Ubuntu 20.04.2 LTS (Focal Fossa)
 - ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
-  - We try to continue to support [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/) on Ubuntu 18.04.5 LTS, but it cannot works well since v0.6.0 (see #89)
+  - NOTE: [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/) on Ubuntu 18.04.5 LTS does not work well since v0.6.0 (we try to continue to support it, see #89)
 - Elixir 1.12.3-otp-24
 - Erlang/OTP 24.1.5
 
@@ -47,7 +47,7 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 ```elixir
 def deps do
   [
-    {:rclex, "~> 0.6.1"}
+    {:rclex, "~> 0.6.2"}
   ]
 end
 ```
@@ -69,3 +69,4 @@ end
 - [@HiroiImanishi](https://github.com/HiroiImanishi)
 - [@kebus426](https://github.com/kebus426)
 - [@shiroro466](https://github.com/shiroro466)
+- [@s-hosoai](https://github.com/s-hosoai)
