@@ -141,7 +141,7 @@
         {Credo.Check.Warning.OperationOnSameValues, []},
         {Credo.Check.Warning.OperationWithConstantResult, []},
         {Credo.Check.Warning.RaiseInsideRescue, []},
-        {Credo.Check.Warning.UnusedEnumOperation, [exit_status: 0]},
+        {Credo.Check.Warning.UnusedEnumOperation, []},
         {Credo.Check.Warning.UnusedFileOperation, []},
         {Credo.Check.Warning.UnusedKeywordOperation, []},
         {Credo.Check.Warning.UnusedListOperation, []},

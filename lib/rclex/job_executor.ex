@@ -32,8 +32,9 @@ defmodule Rclex.JobExecutor do
 
   @impl GenServer
   def handle_cast({:execute, job_queue}, {}) do
-    :queue.to_list(job_queue)
-    |> Enum.map(fn {key, action, args} -> GenServer.cast(key, {action, args}) end)
+    for {key, action, args} <- :queue.to_list(job_queue) do
+      GenServer.cast(key, {action, args})
+    end
 
     {:noreply, {}}
   end
@@ -42,8 +43,9 @@ defmodule Rclex.JobExecutor do
   def handle_cast({:execute, job_queue}, {change_order}) do
     job_list = :queue.to_list(job_queue)
 
-    change_order.(job_list)
-    |> Enum.map(fn {key, action, args} -> GenServer.cast(key, {action, args}) end)
+    for {key, action, args} <- change_order.(job_list) do
+      GenServer.cast(key, {action, args})
+    end
 
     {:noreply, {change_order}}
   end
