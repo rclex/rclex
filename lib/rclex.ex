@@ -52,7 +52,7 @@ defmodule Rclex do
   but does have to be called making a repeat call to rclexinit.
   """
   @spec shutdown(context :: reference()) :: {:ok, rcl_ret()}
-  def shutdown(context) do
+  def shutdown(context) when is_reference(context) do
     Supervisor.stop(:resource_server)
     Nifs.rcl_shutdown(context)
   end
