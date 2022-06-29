@@ -3,14 +3,17 @@ defmodule Rclex do
   require Logger
 
   @moduledoc """
-  T.B.A
+  Defines functions to manage ROS client resources.
   """
 
-  # ------------------------ユーザAPI群-------------------
+  @type rcl_context :: reference()
+  @type rcl_allocator :: reference()
+  @type rcl_ret :: reference()
+
   @doc """
-    Rclex初期化
-    RCLのコンテキストを有効化
+  Initialize Rclex, return initialized context.
   """
+  @spec rclexinit :: rcl_context()
   def rclexinit do
     init_op = Nifs.rcl_get_zero_initialized_init_options()
     context = Nifs.rcl_get_zero_initialized_context()
@@ -44,13 +47,20 @@ defmodule Rclex do
   end
 
   @doc """
-    Rclexの終了
+  Shutdown Rclex,
+  this function does not have to be called on exit,
+  but does have to be called making a repeat call to rclexinit.
   """
-  def shutdown(context) do
+  @spec shutdown(context :: reference()) :: {:ok, rcl_ret()}
+  def shutdown(context) when is_reference(context) do
     Supervisor.stop(:resource_server)
     Nifs.rcl_shutdown(context)
   end
 
+  @doc """
+  Return a properly initialized allocator with default values.
+  """
+  @spec get_default_allocator :: rcl_allocator()
   def get_default_allocator do
     Nifs.rcl_get_default_allocator()
   end
