@@ -10,6 +10,7 @@ defmodule Rclex.TimerLoop do
     GenServer.start_link(__MODULE__, {timer_name, time, limit})
   end
 
+  # TODO: define State struct for GerServer state which shows state explicitly.
   @impl GenServer
   def init({timer_name, time, limit}) do
     GenServer.cast(self(), :loop)
