@@ -1,16 +1,28 @@
 defmodule Rclex.Msg do
   @moduledoc """
-      T.B.A
+  Defines functions which call `Rclex.MsgProt` implementation.
   """
 
+  @doc """
+  Return typesupport reference.
+  """
+  @spec typesupport(msg_type :: charlist()) :: reference()
   def typesupport(msg_type) do
     get_struct(msg_type) |> Rclex.MsgProt.typesupport()
   end
 
+  @doc """
+  Return reference which refers to initialized msg_type C struct instance.
+  """
+  @spec initialize(msg_type :: charlist()) :: reference()
   def initialize(msg_type) do
     get_struct(msg_type) |> Rclex.MsgProt.initialize()
   end
 
+  @doc """
+  Return list of reference which refers to initialized msg_type C struct instance.
+  """
+  @spec initialize_msgs(msg_count :: integer(), msg_type :: charlist()) :: [reference()]
   def initialize_msgs(msg_count, msg_type) do
     str = get_struct(msg_type)
 
@@ -19,14 +31,23 @@ defmodule Rclex.Msg do
     end)
   end
 
+  @doc """
+  Set Elixir struct to C struct instance.
+  """
+  @spec set(msg :: reference(), data :: struct(), _msg_type :: charlist()) :: :ok
   def set(msg, data, _msg_type) do
     Rclex.MsgProt.set(data, msg)
   end
 
+  @doc """
+  Return msg_type struct loaded with data from C struct instance.
+  """
+  @spec read(msg :: reference(), msg_type :: charlist()) :: struct()
   def read(msg, msg_type) do
     get_struct(msg_type) |> Rclex.MsgProt.read(msg)
   end
 
+  @spec get_struct(struct_name :: charlist()) :: struct()
   defp get_struct(struct_name) do
     ["Rclex", List.to_string(struct_name)]
     |> Module.concat()
