@@ -3,7 +3,7 @@ defmodule Rclex.TimerLoop do
   use GenServer, restart: :transient
 
   @moduledoc """
-      T.B.A
+  Pushes timer jobs to `Rclex.JobQueue`.
   """
 
   def start_link({timer_name, time, limit}) do
