@@ -9,6 +9,7 @@ defmodule Rclex.JobQueue do
     * if not specified the length to be 1
   """
 
+  # FIXME: below comment feature is not implemented
   # queue_lengthが-1なら外部から呼ばれるまでqueueをため続ける
 
   def start_link({target_identifier}) do
