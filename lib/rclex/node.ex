@@ -17,6 +17,7 @@ defmodule Rclex.Node do
     )
   end
 
+  # TODO: define State struct for GerServer state which shows state explicitly.
   @impl GenServer
   def init({node, node_identifier, queue_length, change_order}) do
     children = [
@@ -187,6 +188,7 @@ defmodule Rclex.Node do
     end)
   end
 
+  # TODO: 必要性の検討、引数がまま返ってくるだけ以上の用途があるか？
   @doc """
   Get Node name.
   """
