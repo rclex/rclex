@@ -3,6 +3,7 @@ defmodule Rclex.ResourceServer do
   require Logger
   use GenServer, restart: :transient
 
+  # TODO: replece any() with Rclex.rcl_contest()
   @type context :: any()
 
   @moduledoc """
@@ -14,6 +15,7 @@ defmodule Rclex.ResourceServer do
     GenServer.start_link(__MODULE__, {}, name: ResourceServer)
   end
 
+  # TODO: define Resources struct for GerServer state which shows resources explicitly.
   @doc """
       ResourceServerプロセスの初期化
       状態:
@@ -199,6 +201,7 @@ defmodule Rclex.ResourceServer do
         get_identifier(namespace, node_name) ++ Integer.to_charlist(node_no)
       end)
 
+    # FIXME: early return できてない
     unless node_identifier_list
            |> Enum.any?(&Map.has_key?(resources, &1)) do
       # 同名のノードがすでに存在しているときはエラーを返す
@@ -298,6 +301,7 @@ defmodule Rclex.ResourceServer do
   @spec get_identifier(charlist(), charlist()) :: charlist()
   defp get_identifier(node_namespace, node_name) do
     if node_namespace != '' do
+      # FIXME: to charlist(), below is String.t().
       "#{node_namespace}/#{node_name}"
     else
       node_name
