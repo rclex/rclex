@@ -13,7 +13,7 @@ defmodule Rclex.TimerLoop do
   @impl GenServer
   def init({timer_name, time, limit}) do
     GenServer.cast(self(), :loop)
-    {:ok, {timer_name, time, 0, limit}}
+    {:ok, {timer_name, time, _count = 0, limit}}
   end
 
   @impl GenServer
