@@ -63,8 +63,46 @@ defmodule Rclex.Node do
   * msg_types: ex) 'StdMsgs.Msg.String'
   * topic_name: topic name, ex) 'test'
   * type: :single or :multi
-    * :single: 一つのトピックに複数の出版者または購読者
-    * :multi: 1つのトピックに出版者または購読者1つのペアを複数
+
+  ### type: :single
+
+  Create multiple subscribers to a single topic.
+
+                              +------------+
+                    +---------+ subscriber |
+                    |         +------------+
+                    |
+                    |         +------------+
+                    +---------+ subscriber |
+      +-------+     |         +------------+
+      | topic +-----+
+      +-------+     |         +------------+
+                    +---------+ subscriber |
+                    |         +------------+
+                    |
+                    |         +------------+
+                    +---------+ subscriber |
+                              +------------+
+
+  ### type: :multi
+
+  Create one-to-one subscribers for multiple topics.
+
+      +-------+               +------------+
+      | topic +---------------+ subscriber |
+      +-------+               +------------+
+                                            
+      +-------+               +------------+
+      | topic +---------------+ subscriber |
+      +-------+               +------------+
+                                            
+      +-------+               +------------+
+      | topic +---------------+ subscriber |
+      +-------+               +------------+
+                                            
+      +-------+               +------------+
+      | topic +---------------+ subscriber |
+      +-------+               +------------+
   """
   @spec create_subscribers(
           [node_identifier :: charlist()],
@@ -131,8 +169,46 @@ defmodule Rclex.Node do
   * msg_types: ex) 'StdMsgs.Msg.String'
   * topic_name: topic name, ex) 'test'
   * type: :single or :multi
-    * :single: 一つのトピックに複数の出版者または購読者
-    * :multi: 1つのトピックに出版者または購読者1つのペアを複数
+
+  ### type: :single
+
+  Create multiple publishers to a single topic.
+
+                              +------------+
+                    +---------+ publisher  |
+                    |         +------------+
+                    |
+                    |         +------------+
+                    +---------+ publisher  |
+      +-------+     |         +------------+
+      | topic +-----+
+      +-------+     |         +------------+
+                    +---------+ publisher  |
+                    |         +------------+
+                    |
+                    |         +------------+
+                    +---------+ publisher  |
+                              +------------+
+
+  ### type: :multi
+
+  Create one-to-one publishers for multiple topics.
+
+      +-------+               +------------+
+      | topic +---------------+ publisher  |
+      +-------+               +------------+
+                                            
+      +-------+               +------------+
+      | topic +---------------+ publisher  |
+      +-------+               +------------+
+                                            
+      +-------+               +------------+
+      | topic +---------------+ publisher  |
+      +-------+               +------------+
+                                            
+      +-------+               +------------+
+      | topic +---------------+ publisher  |
+      +-------+               +------------+
   """
 
   @spec create_publishers(
