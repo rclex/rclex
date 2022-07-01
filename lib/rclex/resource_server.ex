@@ -3,16 +3,19 @@ defmodule Rclex.ResourceServer do
   require Logger
   use GenServer, restart: :transient
 
+  # TODO: replece any() with Rclex.rcl_contest()
   @type context :: any()
 
   @moduledoc """
-      T.B.A
+  Defines functions to manage ROS resources, Node and Timer.
   """
+
   @spec start_link(any()) :: GenServer.on_start()
   def start_link(_) do
     GenServer.start_link(__MODULE__, {}, name: ResourceServer)
   end
 
+  # TODO: define Resources struct for GerServer state which shows resources explicitly.
   @doc """
       ResourceServerプロセスの初期化
       状態:
@@ -25,24 +28,33 @@ defmodule Rclex.ResourceServer do
   end
 
   @doc """
-      ノードをひとつだけ作成
-      名前空間の有無を設定可能
-      返り値:
-          node_identifier :: string()
-          作成したノードプロセスのnameを返す
+  Create specified name single Node without namespace.
+  This function calls `create_node_with_namespace/5` with namespace = ''.
   """
-  @spec create_node(context(), charlist(), integer(), (list() -> list())) :: term()
+  @spec create_node(context(), charlist(), integer(), (list() -> list())) ::
+          {:ok, node_identifier :: charlist()}
   def create_node(context, node_name, queue_length \\ 1, change_order \\ & &1) do
     create_node_with_namespace(context, node_name, '', queue_length, change_order)
   end
 
+  @doc """
+  Create specified name single Node with specified namespace.
+
+  ## Arguments
+
+  * context: rcl context
+  * node_name: node name
+  * node_namespace: node namespace
+  * queue_length: executor's queue length
+  * change_order: function which change the order of job
+  """
   @spec create_node_with_namespace(
           context(),
           charlist(),
           charlist(),
           integer(),
           (list() -> list())
-        ) :: term()
+        ) :: {:ok, node_identifier :: charlist()}
   def create_node_with_namespace(
         context,
         node_name,
@@ -60,17 +72,18 @@ defmodule Rclex.ResourceServer do
   end
 
   @doc """
-      複数ノード生成
-      create_nodes/4ではcreate_nodes/3に加えて名前空間の指定が可能
-      返り値:
-          node_identifier_list :: Enumerable.t()
-          作成したノードプロセスのnameのリストを返す
+  Create specified name multiple Nodes without namespace.
+  This function calls `create_nodes_with_namespace/6` with node_namespace = ''.
   """
-  @spec create_nodes(context(), charlist(), integer(), integer(), (list() -> list())) :: term()
+  @spec create_nodes(context(), charlist(), integer(), integer(), (list() -> list())) ::
+          {:ok, [node_identifier :: charlist()]}
   def create_nodes(context, node_name, num_node, queue_length \\ 1, change_order \\ & &1) do
     create_nodes_with_namespace(context, node_name, '', num_node, queue_length, change_order)
   end
 
+  @doc """
+  Create specified name multiple Nodes with specified node namespace.
+  """
   @spec create_nodes_with_namespace(
           context(),
           charlist(),
@@ -78,7 +91,7 @@ defmodule Rclex.ResourceServer do
           integer(),
           integer(),
           (list() -> list())
-        ) :: term()
+        ) :: {:ok, [node_identifier :: charlist()]}
   def create_nodes_with_namespace(
         context,
         node_name,
@@ -94,7 +107,12 @@ defmodule Rclex.ResourceServer do
     )
   end
 
-  @spec create_timer(function(), any, integer(), charlist(), integer(), (list() -> list())) :: any
+  @doc """
+  Create a specified name `Rclex.Timer` and a Supervisor which supervise the timer.
+  This function calls `create_timer_with_limit/7` with limit = 0(no limit).
+  """
+  @spec create_timer(function(), any(), integer(), charlist(), integer(), (list() -> list())) ::
+          {:ok, timer_identifier :: charlist()}
   def create_timer(
         call_back,
         args,
@@ -106,15 +124,29 @@ defmodule Rclex.ResourceServer do
     create_timer_with_limit(call_back, args, time, timer_name, 0, queue_length, change_order)
   end
 
+  @doc """
+  Create a specified name `Rclex.Timer` and a Supervisor which supervise the timer.
+  Arguments are used to configure `Rclex.Timer`.
+
+  ## Arguments
+
+  * callback: callback function
+  * args: callback arguments
+  * time: periodic time, milliseconds
+  * timer_name: timer name
+  * limit: limit of execution times, 0 means no limit
+  * queue_length: executor's queue length
+  * change_order: function which change the order of job
+  """
   @spec create_timer_with_limit(
           function(),
-          any,
+          any(),
           integer(),
           charlist(),
           integer(),
           integer(),
           (list() -> list())
-        ) :: any
+        ) :: {:ok, timer_identifier :: charlist()}
   def create_timer_with_limit(
         call_back,
         args,
@@ -130,30 +162,26 @@ defmodule Rclex.ResourceServer do
     )
   end
 
-  @spec stop_timer(charlist()) :: any
   @doc """
-      タイマープロセスを削除する
-      入力
-          timer_identifier :: ()
-          削除するタイマープロセスの識別子
-          {:global, timer_identifier}がタイマープロセス名になる
+  Stop `Rclex.Timer` named with timer_identifier by stopping its Supervisor.
   """
+  @spec stop_timer(timer_identifier :: String.t()) :: :ok
   def stop_timer(timer_identifier) do
     GenServer.call(ResourceServer, {:stop_timer, timer_identifier})
   end
 
-  @spec finish_node(charlist()) :: any
   @doc """
-      ノードプロセスを削除する
-      入力
-          node_identifier :: string()
-          削除するnodeのプロセス名
+  Finish `Rclex.Node` named with node_identifier by stopping its Supervisor.
   """
+  @spec finish_node(node_identifier :: charlist()) :: :ok
   def finish_node(node_identifier) do
     GenServer.call(ResourceServer, {:finish_node, node_identifier})
   end
 
-  @spec finish_nodes([charlist()]) :: list
+  @doc """
+  Call `finish_node/1` for each node_identifier_list element.
+  """
+  @spec finish_nodes([node_identifier :: charlist()]) :: list()
   def finish_nodes(node_identifier_list) do
     Enum.map(
       node_identifier_list,
@@ -173,6 +201,7 @@ defmodule Rclex.ResourceServer do
         get_identifier(namespace, node_name) ++ Integer.to_charlist(node_no)
       end)
 
+    # FIXME: early return できてない
     unless node_identifier_list
            |> Enum.any?(&Map.has_key?(resources, &1)) do
       # 同名のノードがすでに存在しているときはエラーを返す
@@ -272,6 +301,7 @@ defmodule Rclex.ResourceServer do
   @spec get_identifier(charlist(), charlist()) :: charlist()
   defp get_identifier(node_namespace, node_name) do
     if node_namespace != '' do
+      # FIXME: to charlist(), below is String.t().
       "#{node_namespace}/#{node_name}"
     else
       node_name
