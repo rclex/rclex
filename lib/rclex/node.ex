@@ -4,9 +4,13 @@ defmodule Rclex.Node do
   use GenServer, restart: :transient
 
   @moduledoc """
-    T.B.A
+  Defines functions to assign job, subscribe or publish, to Node.
   """
 
+  @type sub_identifier :: {node_identifier :: charlist(), topic_name :: charlist(), :sub}
+  @type pub_identifier :: {node_identifier :: charlist(), topic_name :: charlist(), :pub}
+
+  @doc false
   def start_link({node, node_identifier, {queue_length, change_order}}) do
     GenServer.start_link(__MODULE__, {node, node_identifier, queue_length, change_order},
       name: {:global, node_identifier}
@@ -28,6 +32,20 @@ defmodule Rclex.Node do
     {:ok, {node, node_identifier, supervisor_ids}}
   end
 
+  @doc """
+  Create subscriber.
+
+  ## Arguments
+
+  * node_identifier: node identifier
+  * msg_types: ex) 'StdMsgs.Msg.String'
+  * topic_name: topic name, ex) 'test'
+  """
+  @spec create_subscriber(
+          node_identifier :: charlist(),
+          msg_type :: charlist(),
+          topic_name :: charlist()
+        ) :: {:ok, sub_identifier()}
   def create_subscriber(node_identifier, msg_type, topic_name) do
     GenServer.call(
       {:global, node_identifier},
@@ -36,11 +54,24 @@ defmodule Rclex.Node do
   end
 
   @doc """
-      サブスクライバを複数生成
-      :singleもしくは:multiを指定する．
-      :single...一つのトピックに複数の出版者または購読者
-      :multi...1つのトピックに出版者または購読者1つのペアを複数
+  Create multiple subscribers.
+
+  ## Arguments
+
+  * node_identifier_list: node identifier list
+  * msg_types: ex) 'StdMsgs.Msg.String'
+  * topic_name: topic name, ex) 'test'
+  * type: :single or :multi
+    * :single: 一つのトピックに複数の出版者または購読者
+    * :multi: 1つのトピックに出版者または購読者1つのペアを複数
   """
+  @spec create_subscribers(
+          [node_identifier :: charlist()],
+          msg_type :: charlist(),
+          topic_name :: charlist(),
+          type :: atom()
+        ) :: {:ok, [sub_identifier()]}
+  def create_subscribers(node_identifier_list, msg_type, topic_name, type)
 
   def create_subscribers(node_identifier_list, msg_type, topic_name, :single) do
     sub_identifier_list =
@@ -69,6 +100,20 @@ defmodule Rclex.Node do
     {:ok, sub_identifier_list}
   end
 
+  @doc """
+  Create publisher.
+
+  ## Arguments
+
+  * node_identifier: node identifier
+  * msg_types: ex) 'StdMsgs.Msg.String'
+  * topic_name: topic name, ex) 'test'
+  """
+  @spec create_publisher(
+          node_identifier :: charlist(),
+          msg_type :: charlist(),
+          topic_name :: charlist()
+        ) :: {:ok, pub_identifier()}
   def create_publisher(node_identifier, msg_type, topic_name) do
     GenServer.call(
       {:global, node_identifier},
@@ -77,11 +122,25 @@ defmodule Rclex.Node do
   end
 
   @doc """
-      パブリッシャを複数生成
-      :singleもしくは:multiを指定する．
-      :single...一つのトピックに複数の出版者または購読者
-      :multi...1つのトピックに出版者または購読者1つのペアを複数
+  Create multiple publishers
+
+  ## Arguments
+
+  * node_identifier_list: node identifier list
+  * msg_types: ex) 'StdMsgs.Msg.String'
+  * topic_name: topic name, ex) 'test'
+  * type: :single or :multi
+    * :single: 一つのトピックに複数の出版者または購読者
+    * :multi: 1つのトピックに出版者または購読者1つのペアを複数
   """
+
+  @spec create_publishers(
+          node_identifier_list :: [node_identifier :: charlist()],
+          msg_type :: charlist(),
+          topic_name :: charlist(),
+          type :: atom()
+        ) :: {:ok, [pub_identifier()]}
+  def create_publishers(node_identifier_list, msg_type, topic_name, type)
 
   def create_publishers(node_identifier_list, msg_type, topic_name, :single) do
     pub_identifier_list =
@@ -110,10 +169,18 @@ defmodule Rclex.Node do
     {:ok, pub_identifier_list}
   end
 
+  @doc """
+  Finish subscribe/publish job.
+  """
+  @spec finish_job(sub_identifier() | pub_identifier()) :: :ok
   def finish_job({node_identifier, topic_name, role}) do
     :ok = GenServer.call({:global, node_identifier}, {:finish_job, topic_name, role})
   end
 
+  @doc """
+  Finish subscribe/publish jobs.
+  """
+  @spec finish_jobs([sub_identifier() | pub_identifier()]) :: list()
   def finish_jobs(job_list) do
     Enum.map(job_list, fn {node_identifier, topic_name, role} ->
       GenServer.call({:global, node_identifier}, {:finish_job, topic_name, role})
@@ -121,15 +188,22 @@ defmodule Rclex.Node do
   end
 
   @doc """
-    ノード名の取得
+  Get Node name.
   """
+  @spec node_get_name(node_identifier :: charlist()) :: node_identifier :: charlist()
   def node_get_name(node_identifier) do
     GenServer.call({:global, node_identifier}, :node_get_name)
   end
 
   @doc """
-    トピックの名前と型の取得
+  Get topic names and types, return example is below
+  > [{'/topic', ['std_msgs/msg/String']}]
   """
+  @spec get_topic_names_and_types(
+          node_identifier :: charlist(),
+          allocator :: Rclex.rcl_allocator(),
+          no_demangle :: boolean
+        ) :: [{charlist(), [charlist()]}]
   def get_topic_names_and_types(node_identifier, allocator, no_demangle) do
     GenServer.call(
       {:global, node_identifier},
@@ -181,8 +255,6 @@ defmodule Rclex.Node do
     {:reply, {:ok, {node_identifier, topic_name, :pub}}, {node, name, new_supervisor_ids}}
   end
 
-  # Publisher、Subscriberを終了する
-  # roleには"pub"、"sub"のどちらかを指定する
   @impl GenServer
   def handle_call({:finish_job, topic_name, role}, _from, {node, name, supervisor_ids}) do
     {:ok, supervisor_id} = Map.fetch(supervisor_ids, {role, topic_name})
