@@ -3,11 +3,15 @@ defmodule Rclex.JobExecutor do
   use GenServer, restart: :transient
 
   @moduledoc """
-    T.B.A
+  Receives job queue and executes queue element in order.
+
+  * The execution order can be changed by using the change order function.
+    * change order function receives list(), return list()
   """
 
-  # ジョブの実行順序をユーザーが設定できる
-  # change_order関数を渡すことで順序を変えられる。change_order関数はjobのlistを引数にとってjobのlistを返す関数
+  @doc false
+  def start_link(state)
+
   def start_link({target_identifier}) do
     GenServer.start_link(__MODULE__, {}, name: {:global, "#{target_identifier}/JobExecutor"})
   end
