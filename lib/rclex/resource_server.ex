@@ -109,7 +109,7 @@ defmodule Rclex.ResourceServer do
 
   @doc """
   Create a specified name `Rclex.Timer` and a Supervisor which supervise the timer.
-  This function calls `create_timer_with_limit/7` with limit = 1.
+  This function calls `create_timer_with_limit/7` with limit = 0(no limit).
   """
   @spec create_timer(function(), any(), integer(), charlist(), integer(), (list() -> list())) ::
           {:ok, timer_identifier :: charlist()}
@@ -134,7 +134,7 @@ defmodule Rclex.ResourceServer do
   * args: callback arguments
   * time: periodic time, milliseconds
   * timer_name: timer name
-  * limit: limit of execution times
+  * limit: limit of execution times, 0 means no limit
   * queue_length: executor's queue length
   * change_order: function which change the order of job
   """
