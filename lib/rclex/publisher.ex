@@ -24,6 +24,7 @@ defmodule Rclex.Publisher do
     {:ok, pub}
   end
 
+  # FIXME?: 公開されていない内部状態変数 pub を使用するので defp とするべき？
   def publish_once(pub, pubmsg, pub_alloc) do
     case Nifs.rcl_publish(pub, pubmsg, pub_alloc) do
       {Rclex.ReturnCode.rcl_ret_ok(), _, _} ->
@@ -43,6 +44,7 @@ defmodule Rclex.Publisher do
     end
   end
 
+  # TODO: define message type for reference()
   @spec publish(publisher_list :: [t()], data :: [reference()]) :: :ok
   def publish(publisher_list, data) do
     n = length(publisher_list)
