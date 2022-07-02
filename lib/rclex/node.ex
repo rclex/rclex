@@ -34,112 +34,6 @@ defmodule Rclex.Node do
   end
 
   @doc """
-  Create subscriber.
-
-  ## Arguments
-
-  * node_identifier: node identifier
-  * msg_types: ex) 'StdMsgs.Msg.String'
-  * topic_name: topic name, ex) 'test'
-  """
-  @spec create_subscriber(
-          node_identifier :: charlist(),
-          msg_type :: charlist(),
-          topic_name :: charlist()
-        ) :: {:ok, sub_identifier()}
-  def create_subscriber(node_identifier, msg_type, topic_name) do
-    GenServer.call(
-      {:global, node_identifier},
-      {:create_subscriber, node_identifier, msg_type, topic_name}
-    )
-  end
-
-  @doc """
-  Create multiple subscribers.
-
-  ## Arguments
-
-  * node_identifier_list: node identifier list
-  * msg_types: ex) 'StdMsgs.Msg.String'
-  * topic_name: topic name, ex) 'test'
-  * type: :single or :multi
-
-  ### type: :single
-
-  Create multiple subscribers to a single topic.
-
-                              +------------+
-                    +---------+ subscriber |
-                    |         +------------+
-                    |
-                    |         +------------+
-                    +---------+ subscriber |
-      +-------+     |         +------------+
-      | topic +-----+
-      +-------+     |         +------------+
-                    +---------+ subscriber |
-                    |         +------------+
-                    |
-                    |         +------------+
-                    +---------+ subscriber |
-                              +------------+
-
-  ### type: :multi
-
-  Create one-to-one subscribers for multiple topics.
-
-      +-------+               +------------+
-      | topic +---------------+ subscriber |
-      +-------+               +------------+
-                                            
-      +-------+               +------------+
-      | topic +---------------+ subscriber |
-      +-------+               +------------+
-                                            
-      +-------+               +------------+
-      | topic +---------------+ subscriber |
-      +-------+               +------------+
-                                            
-      +-------+               +------------+
-      | topic +---------------+ subscriber |
-      +-------+               +------------+
-  """
-  @spec create_subscribers(
-          [node_identifier :: charlist()],
-          msg_type :: charlist(),
-          topic_name :: charlist(),
-          type :: atom()
-        ) :: {:ok, [sub_identifier()]}
-  def create_subscribers(node_identifier_list, msg_type, topic_name, type)
-
-  def create_subscribers(node_identifier_list, msg_type, topic_name, :single) do
-    sub_identifier_list =
-      Enum.map(node_identifier_list, fn node_identifier ->
-        GenServer.call(
-          {:global, node_identifier},
-          {:create_subscriber, node_identifier, msg_type, topic_name}
-        )
-      end)
-      |> Enum.map(fn {:ok, sub_identifier} -> sub_identifier end)
-
-    {:ok, sub_identifier_list}
-  end
-
-  def create_subscribers(node_identifier_list, msg_type, topic_name, :multi) do
-    sub_identifier_list =
-      Enum.map(0..(node_identifier_list - 1), fn index ->
-        GenServer.call(
-          {:global, Enum.at(node_identifier_list, index)},
-          {:create_subscriber, Enum.at(node_identifier_list, index), msg_type,
-           topic_name ++ Integer.to_charlist(index)}
-        )
-      end)
-      |> Enum.map(fn {:ok, sub_identifier} -> sub_identifier end)
-
-    {:ok, sub_identifier_list}
-  end
-
-  @doc """
   Create publisher.
 
   ## Arguments
@@ -247,6 +141,112 @@ defmodule Rclex.Node do
   end
 
   @doc """
+  Create subscriber.
+
+  ## Arguments
+
+  * node_identifier: node identifier
+  * msg_types: ex) 'StdMsgs.Msg.String'
+  * topic_name: topic name, ex) 'test'
+  """
+  @spec create_subscriber(
+          node_identifier :: charlist(),
+          msg_type :: charlist(),
+          topic_name :: charlist()
+        ) :: {:ok, sub_identifier()}
+  def create_subscriber(node_identifier, msg_type, topic_name) do
+    GenServer.call(
+      {:global, node_identifier},
+      {:create_subscriber, node_identifier, msg_type, topic_name}
+    )
+  end
+
+  @doc """
+  Create multiple subscribers.
+
+  ## Arguments
+
+  * node_identifier_list: node identifier list
+  * msg_types: ex) 'StdMsgs.Msg.String'
+  * topic_name: topic name, ex) 'test'
+  * type: :single or :multi
+
+  ### type: :single
+
+  Create multiple subscribers to a single topic.
+
+                              +------------+
+                    +---------+ subscriber |
+                    |         +------------+
+                    |
+                    |         +------------+
+                    +---------+ subscriber |
+      +-------+     |         +------------+
+      | topic +-----+
+      +-------+     |         +------------+
+                    +---------+ subscriber |
+                    |         +------------+
+                    |
+                    |         +------------+
+                    +---------+ subscriber |
+                              +------------+
+
+  ### type: :multi
+
+  Create one-to-one subscribers for multiple topics.
+
+      +-------+               +------------+
+      | topic +---------------+ subscriber |
+      +-------+               +------------+
+                                            
+      +-------+               +------------+
+      | topic +---------------+ subscriber |
+      +-------+               +------------+
+                                            
+      +-------+               +------------+
+      | topic +---------------+ subscriber |
+      +-------+               +------------+
+                                            
+      +-------+               +------------+
+      | topic +---------------+ subscriber |
+      +-------+               +------------+
+  """
+  @spec create_subscribers(
+          [node_identifier :: charlist()],
+          msg_type :: charlist(),
+          topic_name :: charlist(),
+          type :: atom()
+        ) :: {:ok, [sub_identifier()]}
+  def create_subscribers(node_identifier_list, msg_type, topic_name, type)
+
+  def create_subscribers(node_identifier_list, msg_type, topic_name, :single) do
+    sub_identifier_list =
+      Enum.map(node_identifier_list, fn node_identifier ->
+        GenServer.call(
+          {:global, node_identifier},
+          {:create_subscriber, node_identifier, msg_type, topic_name}
+        )
+      end)
+      |> Enum.map(fn {:ok, sub_identifier} -> sub_identifier end)
+
+    {:ok, sub_identifier_list}
+  end
+
+  def create_subscribers(node_identifier_list, msg_type, topic_name, :multi) do
+    sub_identifier_list =
+      Enum.map(0..(node_identifier_list - 1), fn index ->
+        GenServer.call(
+          {:global, Enum.at(node_identifier_list, index)},
+          {:create_subscriber, Enum.at(node_identifier_list, index), msg_type,
+           topic_name ++ Integer.to_charlist(index)}
+        )
+      end)
+      |> Enum.map(fn {:ok, sub_identifier} -> sub_identifier end)
+
+    {:ok, sub_identifier_list}
+  end
+
+  @doc """
   Finish subscribe/publish job.
   """
   @spec finish_job(sub_identifier() | pub_identifier()) :: :ok
@@ -291,28 +291,6 @@ defmodule Rclex.Node do
 
   @impl GenServer
   def handle_call(
-        {:create_subscriber, node_identifier, msg_type, topic_name},
-        _,
-        {node, name, supervisor_ids}
-      ) do
-    subscriber = Nifs.rcl_get_zero_initialized_subscription()
-    sub_op = Nifs.rcl_subscription_get_default_options()
-    sub_ts = Rclex.Msg.typesupport(msg_type)
-    sub = Nifs.rcl_subscription_init(subscriber, node, topic_name, sub_ts, sub_op)
-
-    children = [
-      {Rclex.Subscriber, {sub, msg_type, "#{node_identifier}/#{topic_name}/sub"}}
-    ]
-
-    opts = [strategy: :one_for_one]
-    {:ok, id} = Supervisor.start_link(children, opts)
-    # TODO: has_keyで見る
-    new_supervisor_ids = Map.put_new(supervisor_ids, {:sub, topic_name}, id)
-    {:reply, {:ok, {node_identifier, topic_name, :sub}}, {node, name, new_supervisor_ids}}
-  end
-
-  @impl GenServer
-  def handle_call(
         {:create_publisher, node_identifier, msg_type, topic_name},
         _,
         {node, name, supervisor_ids}
@@ -331,6 +309,28 @@ defmodule Rclex.Node do
     new_supervisor_ids = Map.put_new(supervisor_ids, {:pub, topic_name}, id)
     Logger.debug("#{node_identifier}/#{topic_name}/pub")
     {:reply, {:ok, {node_identifier, topic_name, :pub}}, {node, name, new_supervisor_ids}}
+  end
+
+  @impl GenServer
+  def handle_call(
+        {:create_subscriber, node_identifier, msg_type, topic_name},
+        _,
+        {node, name, supervisor_ids}
+      ) do
+    subscriber = Nifs.rcl_get_zero_initialized_subscription()
+    sub_op = Nifs.rcl_subscription_get_default_options()
+    sub_ts = Rclex.Msg.typesupport(msg_type)
+    sub = Nifs.rcl_subscription_init(subscriber, node, topic_name, sub_ts, sub_op)
+
+    children = [
+      {Rclex.Subscriber, {sub, msg_type, "#{node_identifier}/#{topic_name}/sub"}}
+    ]
+
+    opts = [strategy: :one_for_one]
+    {:ok, id} = Supervisor.start_link(children, opts)
+    # TODO: has_keyで見る
+    new_supervisor_ids = Map.put_new(supervisor_ids, {:sub, topic_name}, id)
+    {:reply, {:ok, {node_identifier, topic_name, :sub}}, {node, name, new_supervisor_ids}}
   end
 
   @impl GenServer
