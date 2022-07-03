@@ -4,12 +4,46 @@ defmodule Rclex.Subscriber do
   use GenServer
 
   @moduledoc """
-  T.B.A
+  Defines control, start/stop, `Rclex.SubLoop` functions.
+
+  Subscriber itself can be created on Node by calling below,
+  * `Rclex.Node.create_subscriber/3`
+  * `Rclex.Node.create_subscribers/4`
+
+  There are 4 GenServers including this module itself under the Node.
+  They work together as shown below.
+      
+      +-------------+
+      | Rclex.Node  |
+      +-----+-------+
+            |
+            |
+            |
+            |                            +-------------------+                            +-------------------+
+            +------Supervisor------------+ Rclex.Subscriber  |------Supervisor------------+ Rclex.SubLoop     |
+            |                            +--------^----------+                            +--------+----------+
+            |                                     |                                                |
+            |                                     |                                                |
+            |                                     | GenServer.cast to Rclex.Subscriber             |
+            |                                     |                                                |
+            |                            +--------+----------+                                     |
+            |                    +-------+ Rclex.JobExecutor |          GenServer.cast to JobQueue |
+            |                    |       +--------^----------+                                     |
+            |                    |                |                                                |
+            +------Supervisor----+                | GenServer.cast to JobExecutor                  |
+                                 |                |                                                |
+                                 |       +--------+----------+                                     |
+                                 +-------+ Rclex.JobQueue    <-------------------------------------+
+                                         +-------------------+                                      
+  * This module stored `call_back` to be executed.
+  * `Rclex.SubLoop` triggers the `call_back` execution according to pushing message to `Rclex.JobQueue`.
   """
 
-  @doc """
-    subscriberプロセスの生成
-  """
+  @type t() :: {node_identifier :: charlist(), topic_name :: charlist(), :sub}
+
+  @doc false
+  @spec start_link({sub :: reference(), msg_type :: charlist(), process_name :: String.t()}) ::
+          GenServer.on_start()
   def start_link({sub, msg_type, process_name}) do
     Logger.debug("#{process_name} subscriber process start")
     GenServer.start_link(__MODULE__, {sub, msg_type}, name: {:global, process_name})
@@ -17,13 +51,14 @@ defmodule Rclex.Subscriber do
 
   @impl GenServer
   @doc """
-    subscriberプロセスの初期化
     subscriberを状態として持つ。start_subscribingをした際にcontextとcall_backを追加で状態として持つ。
   """
+  @spec init({sub :: reference(), msg_type :: charlist()}) :: {:ok, state :: map()}
   def init({sub, msg_type}) do
     {:ok, %{subscriber: sub, msgtype: msg_type}}
   end
 
+  @spec start_subscribing(t(), Rclex.rcl_context(), call_back :: function()) :: :ok
   def start_subscribing({node_identifier, topic_name, :sub}, context, call_back) do
     sub_identifier = "#{node_identifier}/#{topic_name}/sub"
 
@@ -33,6 +68,7 @@ defmodule Rclex.Subscriber do
     )
   end
 
+  @spec start_subscribing([t()], Rclex.rcl_context(), call_back :: function()) :: list()
   def start_subscribing(sub_list, context, call_back) do
     Enum.map(sub_list, fn {node_identifier, topic_name, :sub} ->
       sub_identifier = "#{node_identifier}/#{topic_name}/sub"
@@ -44,11 +80,13 @@ defmodule Rclex.Subscriber do
     end)
   end
 
+  @spec stop_subscribing(t()) :: :ok
   def stop_subscribing({node_identifier, topic_name, :sub}) do
     sub_identifier = "#{node_identifier}/#{topic_name}/sub"
     :ok = GenServer.call({:global, sub_identifier}, :stop_subscribing)
   end
 
+  @spec stop_subscribing([t()]) :: list()
   def stop_subscribing(sub_list) do
     Enum.map(sub_list, fn {node_identifier, topic_name, :sub} ->
       sub_identifier = "#{node_identifier}/#{topic_name}/sub"
@@ -79,9 +117,6 @@ defmodule Rclex.Subscriber do
   end
 
   @impl GenServer
-  @doc """
-    コールバックの実行
-  """
   def handle_cast({:subscribe, msg}, state) do
     {:ok, call_back} = Map.fetch(state, :call_back)
     call_back.(msg)
