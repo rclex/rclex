@@ -1,6 +1,8 @@
 defmodule Rclex.ReturnCode do
   @moduledoc """
-  T.B.A
+  Defines rcl return code macros.
+
+  To use, `require Rclex.ReturnCode` first.
   """
   defmacro rcl_ret_ok, do: 0
   defmacro rcl_ret_error, do: 1
