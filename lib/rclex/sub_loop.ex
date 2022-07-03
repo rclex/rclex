@@ -15,6 +15,7 @@ defmodule Rclex.SubLoop do
     )
   end
 
+  # TODO: define State struct for GerServer state which shows state explicitly.
   @impl GenServer
   def init({node_identifier, msg_type, topic_name, sub, context, call_back}) do
     wait_set =
@@ -34,6 +35,7 @@ defmodule Rclex.SubLoop do
     {:ok, {node_identifier, msg_type, topic_name, wait_set, sub, call_back}}
   end
 
+  # TODO: 用途の記載が必要、どのようなケースで使用するのか
   def start_sub(id_list) do
     id_list
     |> Enum.map(fn pid -> GenServer.cast(pid, {:loop}) end)
