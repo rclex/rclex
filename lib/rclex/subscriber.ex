@@ -49,6 +49,7 @@ defmodule Rclex.Subscriber do
     GenServer.start_link(__MODULE__, {sub, msg_type}, name: {:global, process_name})
   end
 
+  # TODO: define State struct for GerServer state which shows state explicitly.
   @impl GenServer
   @doc """
     subscriberを状態として持つ。start_subscribingをした際にcontextとcall_backを追加で状態として持つ。
@@ -64,6 +65,7 @@ defmodule Rclex.Subscriber do
 
     GenServer.cast(
       {:global, sub_identifier},
+      # FIXME: add topic_name to tuple
       {:start_subscribing, {context, call_back, node_identifier}}
     )
   end
