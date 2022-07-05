@@ -5,7 +5,7 @@ defmodule Rclex.SubLoop do
   use GenServer, restart: :transient
 
   @moduledoc """
-    T.B.A
+  Implements subscribing logic.
   """
 
   def start_link({node_identifier, msg_type, topic_name, sub, context, call_back}) do
@@ -15,6 +15,7 @@ defmodule Rclex.SubLoop do
     )
   end
 
+  # TODO: define State struct for GerServer state which shows state explicitly.
   @impl GenServer
   def init({node_identifier, msg_type, topic_name, sub, context, call_back}) do
     wait_set =
@@ -34,6 +35,7 @@ defmodule Rclex.SubLoop do
     {:ok, {node_identifier, msg_type, topic_name, wait_set, sub, call_back}}
   end
 
+  # TODO: 用途の記載が必要、どのようなケースで使用するのか
   def start_sub(id_list) do
     id_list
     |> Enum.map(fn pid -> GenServer.cast(pid, {:loop}) end)
@@ -43,6 +45,12 @@ defmodule Rclex.SubLoop do
       購読処理関数
       購読が正常に行われれば，引数に受け取っていたコールバック関数を実行
   """
+  @spec each_subscribe(
+          sub :: reference(),
+          node_identifier :: charlist(),
+          msg_type :: charlist(),
+          topic_name :: charlist()
+        ) :: :ok | nil
   def each_subscribe(sub, node_identifier, msg_type, topic_name) do
     # Logger.debug("each subscribe")
     if Nifs.check_subscription(sub) do
