@@ -3,13 +3,14 @@ defmodule Rclex.JobQueue do
   use GenServer, restart: :transient
 
   @moduledoc """
-    T.B.A
+  Queue jobs, jobs in the queue are executed when jobs count reached the queue length or over.
+
+  * queue length is changeable
+    * if not specified the length to be 1
   """
 
-  # queueには長さを設定できる
+  # FIXME: below comment feature is not implemented
   # queue_lengthが-1なら外部から呼ばれるまでqueueをため続ける
-  # queue_lengthが正ならqueue_lengthと同じ値までqueueをためて、たまったらジョブを実行する
-  # 設定しない場合は1になる
 
   def start_link({target_identifier}) do
     GenServer.start_link(__MODULE__, {target_identifier, 1},
