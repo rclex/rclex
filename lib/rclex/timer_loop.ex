@@ -3,17 +3,18 @@ defmodule Rclex.TimerLoop do
   use GenServer, restart: :transient
 
   @moduledoc """
-      T.B.A
+  Pushes timer jobs to `Rclex.JobQueue`.
   """
 
   def start_link({timer_name, time, limit}) do
     GenServer.start_link(__MODULE__, {timer_name, time, limit})
   end
 
+  # TODO: define State struct for GerServer state which shows state explicitly.
   @impl GenServer
   def init({timer_name, time, limit}) do
     GenServer.cast(self(), :loop)
-    {:ok, {timer_name, time, 0, limit}}
+    {:ok, {timer_name, time, _count = 0, limit}}
   end
 
   @impl GenServer
