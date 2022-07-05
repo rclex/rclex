@@ -5,24 +5,26 @@ defmodule Rclex.Publisher do
   use GenServer
 
   @moduledoc """
-  T.B.A
+  Defines publish message functions.
+
+  Publisher itself can be created on Node by calling below,
+  * `Rclex.Node.create_publisher/3`
+  * `Rclex.Node.create_publishers/4`
   """
 
-  @doc """
-    publisherプロセスの生成
-  """
+  @type t() :: {node_identifier :: charlist(), topic_name :: charlist(), :pub}
+
+  @doc false
   def start_link({pub, process_name}) do
     GenServer.start_link(__MODULE__, pub, name: {:global, process_name})
   end
 
   @impl GenServer
-  @doc """
-    publisherプロセスの初期化
-  """
   def init(pub) do
     {:ok, pub}
   end
 
+  # FIXME?: 公開されていない内部状態変数 pub を使用するので defp とするべき？
   def publish_once(pub, pubmsg, pub_alloc) do
     case Nifs.rcl_publish(pub, pubmsg, pub_alloc) do
       {Rclex.ReturnCode.rcl_ret_ok(), _, _} ->
@@ -42,6 +44,8 @@ defmodule Rclex.Publisher do
     end
   end
 
+  # TODO: define message type for reference()
+  @spec publish(publisher_list :: [t()], data :: [reference()]) :: :ok
   def publish(publisher_list, data) do
     n = length(publisher_list)
 
