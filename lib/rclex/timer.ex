@@ -3,9 +3,39 @@ defmodule Rclex.Timer do
   use GenServer, restart: :transient
 
   @moduledoc """
-    T.B.A
+  For periodically execution of jobs.
+  This module supervises two supervisor tree, one is for job control, one is for timer loop.
+
+  There are 4 GenServers including this module itself.
+  They work together as shown below.
+     
+      +-------------+
+      | Rclex.Timer <-----------------------------+
+      +-----+-------+                             |
+            |                                     | GenServer.cast to Rclex.Timer
+            |                                     |
+            |                            +--------+----------+
+            |                    +-------+ Rclex.JobExecutor |
+            |                    |       +--------^----------+
+            |                    |                |
+            +------Supervisor----+                | GenServer.cast to JobExecutor
+            |                    |                |
+            |                    |       +--------+----------+
+            |                    +-------+ Rclex.JobQueue    |
+            |                            +--------^----------+
+            |                                     |
+            |                                     | GenServer.cast to JobQueue
+            |                                     |
+            |                            +--------+----------+
+            +------Supervisor------------+ Rclex.TimerLoop   |
+                                         +-------------------+
+
+  * This module stored `callback` and `args` to be executed.
+  * `Rclex.TimerLoop` triggers the execution according to the `time` [msec].
+    * The number of executions is limited by `limit`.
   """
 
+  @doc false
   def start_link({callback, args, time, timer_name, limit, executor_settings}) do
     GenServer.start_link(
       __MODULE__,
@@ -14,14 +44,28 @@ defmodule Rclex.Timer do
     )
   end
 
-  # callback: コールバック関数
-  # args: コールバック関数に渡す引数
-  # time: 周期。ミリ秒で指定。
-  # count: 現在何回目の実行か。初期値は0。
-  # limit: 最大実行回数
-  # queue_length: エグゼキュータのキューの長さ
-  # change_order: ジョブの実行順序を変更する関数
+  @doc """
+  Initialize GenServer
+
+
+  ## Arguments in tuple
+
+  * callback: callback function
+  * args: callback arguments
+  * time: execution interval time, milli seconds
+  * limit: execution times limit
+  * queue_length: queue length for `Rclex.JobQueue`
+  * change_order: change order function for `Rclex.JobExecutor`
+  """
   @impl GenServer
+  @spec init({
+          callback :: function(),
+          args :: any(),
+          time :: integer(),
+          timer_name :: charlist(),
+          limit :: integer,
+          {queue_length :: integer(), change_order :: (list() -> list())}
+        }) :: {:ok, state :: tuple()}
   def init({callback, args, time, timer_name, limit, {queue_length, change_order}}) do
     job_children = [
       {Rclex.JobQueue, {timer_name, queue_length}},
