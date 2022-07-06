@@ -8,7 +8,8 @@ config :git_hooks,
   hooks: [
     pre_commit: [
       tasks: [
-        {:cmd, "mix test"}
+        {:cmd, "mix test"},
+        {:cmd, "mix format --check-formatted"}
       ]
     ]
   ]
