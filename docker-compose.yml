@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  rclex_docker:
+    image: "rclex/rclex_docker:${RCLEX_DOCKER_TAG:-latest}"
+    volumes:
+      - .:/root/rclex/
+    tty: true
