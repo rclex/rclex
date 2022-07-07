@@ -17,3 +17,5 @@ config :git_hooks,
       ]
     ]
   ]
+
+config :mix_test_watch, extra_extensions: [".c", ".h"]
