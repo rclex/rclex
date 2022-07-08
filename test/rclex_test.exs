@@ -2,6 +2,17 @@ defmodule RclexTest do
   use ExUnit.Case
   doctest Rclex
 
+  describe "rclexinit/0" do
+    test "return reference" do
+      assert is_reference(Rclex.rclexinit())
+    end
+
+    test "start_link Rclex.ResourceServer" do
+      Rclex.rclexinit()
+      assert is_pid(GenServer.whereis(:resource_server))
+    end
+  end
+
   # -----------------------node_nif.c--------------------------
   test "rcl_node_get_name" do
     context = Rclex.rclexinit()
