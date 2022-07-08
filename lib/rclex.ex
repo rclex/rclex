@@ -13,20 +13,24 @@ defmodule Rclex do
   @doc """
   Initialize Rclex, return initialized context.
   """
-  @spec rclexinit :: rcl_context()
-  def rclexinit do
+  @spec rclexinit() :: rcl_context()
+  def rclexinit() do
+    children = [Rclex.ResourceServer]
+    opts = [strategy: :one_for_one, name: :resource_server]
+
+    Supervisor.start_link(children, opts)
+
+    get_initialized_context()
+  end
+
+  @spec get_initialized_context() :: rcl_context()
+  def get_initialized_context() do
     init_op = Nifs.rcl_get_zero_initialized_init_options()
     context = Nifs.rcl_get_zero_initialized_context()
     Nifs.rcl_init_options_init(init_op)
     Nifs.rcl_init_with_null(init_op, context)
     Nifs.rcl_init_options_fini(init_op)
 
-    children = [
-      Rclex.ResourceServer
-    ]
-
-    opts = [strategy: :one_for_one, name: :resource_server]
-    Supervisor.start_link(children, opts)
     context
   end
 

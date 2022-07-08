@@ -13,6 +13,13 @@ defmodule RclexTest do
     end
   end
 
+  describe "get_initialized_context/0" do
+    test "return reference" do
+      context = Rclex.get_initialized_context()
+      assert is_reference(context)
+    end
+  end
+
   # -----------------------node_nif.c--------------------------
   test "rcl_node_get_name" do
     context = Rclex.rclexinit()
