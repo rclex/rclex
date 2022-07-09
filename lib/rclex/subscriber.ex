@@ -65,8 +65,7 @@ defmodule Rclex.Subscriber do
 
     GenServer.cast(
       {:global, sub_identifier},
-      # FIXME: add topic_name to tuple
-      {:start_subscribing, {context, call_back, node_identifier}}
+      {:start_subscribing, {context, call_back, node_identifier, topic_name}}
     )
   end
 
