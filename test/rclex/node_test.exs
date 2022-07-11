@@ -101,4 +101,46 @@ defmodule Rclex.NodeTest do
       assert :ok = Node.finish_job(subscriber_id)
     end
   end
+
+  describe "finish_jobs/1" do
+    test "call for :single publishers return :ok list", %{
+      node_id_list: node_id_list,
+      msg_type: msg_type,
+      topic: topic
+    } do
+      {:ok, publisher_id_list} = Node.create_publishers(node_id_list, msg_type, topic, :single)
+
+      assert [:ok, :ok] = Node.finish_jobs(publisher_id_list)
+    end
+
+    test "call for :multi publishers return :ok list", %{
+      node_id_list: node_id_list,
+      msg_type: msg_type,
+      topic: topic
+    } do
+      {:ok, publisher_id_list} = Node.create_publishers(node_id_list, msg_type, topic, :multi)
+
+      assert [:ok, :ok] = Node.finish_jobs(publisher_id_list)
+    end
+
+    test "call for :single subscribers return :ok list", %{
+      node_id_list: node_id_list,
+      msg_type: msg_type,
+      topic: topic
+    } do
+      {:ok, subscriber_id_list} = Node.create_subscribers(node_id_list, msg_type, topic, :single)
+
+      assert [:ok, :ok] = Node.finish_jobs(subscriber_id_list)
+    end
+
+    test "call for :multi subscribers return :ok list", %{
+      node_id_list: node_id_list,
+      msg_type: msg_type,
+      topic: topic
+    } do
+      {:ok, subscriber_id_list} = Node.create_subscribers(node_id_list, msg_type, topic, :multi)
+
+      assert [:ok, :ok] = Node.finish_jobs(subscriber_id_list)
+    end
+  end
 end
