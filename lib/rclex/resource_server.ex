@@ -112,7 +112,7 @@ defmodule Rclex.ResourceServer do
   This function calls `create_timer_with_limit/7` with limit = 0(no limit).
   """
   @spec create_timer(function(), any(), integer(), charlist(), integer(), (list() -> list())) ::
-          {:ok, timer_identifier :: charlist()}
+          {:ok, timer_identifier :: String.t()}
   def create_timer(
         call_back,
         args,
