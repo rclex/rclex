@@ -58,4 +58,31 @@ defmodule Rclex.NodeTest do
       assert {:ok, {^node_id, ^topic, :sub}} = Node.create_subscriber(node_id, msg_type, topic)
     end
   end
+
+  describe "create_subscribers/4 " do
+    test "call with :sigle, return {:ok, subscriber_id_list}", %{
+      node_id_list: node_id_list,
+      msg_type: msg_type,
+      topic: topic
+    } do
+      subscriber_id_list = for node_id <- node_id_list, do: {node_id, topic, :sub}
+
+      assert {:ok, ^subscriber_id_list} =
+               Node.create_subscribers(node_id_list, msg_type, topic, :single)
+    end
+
+    test "call with :multi, return {:ok, subscriber_id_list}", %{
+      node_id_list: node_id_list,
+      msg_type: msg_type,
+      topic: topic
+    } do
+      subscriber_id_list =
+        for {node_id, index} <- Enum.with_index(node_id_list) do
+          {node_id, "#{topic}#{index}" |> String.to_charlist(), :sub}
+        end
+
+      assert {:ok, ^subscriber_id_list} =
+               Node.create_subscribers(node_id_list, msg_type, topic, :multi)
+    end
+  end
 end

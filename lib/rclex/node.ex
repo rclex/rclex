@@ -234,7 +234,7 @@ defmodule Rclex.Node do
 
   def create_subscribers(node_identifier_list, msg_type, topic_name, :multi) do
     sub_identifier_list =
-      Enum.map(0..(node_identifier_list - 1), fn index ->
+      Enum.map(0..(length(node_identifier_list) - 1), fn index ->
         GenServer.call(
           {:global, Enum.at(node_identifier_list, index)},
           {:create_subscriber, Enum.at(node_identifier_list, index), msg_type,
