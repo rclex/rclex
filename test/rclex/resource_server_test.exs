@@ -125,4 +125,25 @@ defmodule Rclex.ResourceServerTest do
       assert :ok = ResourceServer.finish_node(node_id)
     end
   end
+
+  describe "finish_nodes/1" do
+    setup do
+      context = Rclex.get_initialized_context()
+      node_name = 'node'
+      node_count = 2
+
+      {:ok, node_list} =
+        ResourceServer.create_nodes(
+          context,
+          node_name,
+          node_count
+        )
+
+      %{node_list: node_list}
+    end
+
+    test "return :ok list", %{node_list: node_list} do
+      assert [:ok, :ok] = ResourceServer.finish_nodes(node_list)
+    end
+  end
 end
