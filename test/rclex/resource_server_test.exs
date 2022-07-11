@@ -42,4 +42,20 @@ defmodule Rclex.ResourceServerTest do
                )
     end
   end
+
+  describe "create_nodes_with_namespace/3" do
+    test "return {:ok, [node_id]}", %{context: context} do
+      node_name = 'node'
+      namespace = 'namespace'
+      node_count = 2
+
+      assert {:ok, ['namespace/node0', 'namespace/node1']} =
+               ResourceServer.create_nodes_with_namespace(
+                 context,
+                 node_name,
+                 namespace,
+                 node_count
+               )
+    end
+  end
 end
