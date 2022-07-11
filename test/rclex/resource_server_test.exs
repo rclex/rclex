@@ -14,4 +14,19 @@ defmodule Rclex.ResourceServerTest do
       assert {:ok, 'node0'} = ResourceServer.create_node(context, _node_name = 'node')
     end
   end
+
+  describe "create_node_with_namespace/3" do
+    @tag capture_log: true
+    test "return {:ok, node_id}", %{context: context} do
+      node_name = 'node'
+      namespace = 'namespace'
+
+      assert {:ok, 'namespace/node0'} =
+               ResourceServer.create_node_with_namespace(
+                 context,
+                 node_name,
+                 namespace
+               )
+    end
+  end
 end

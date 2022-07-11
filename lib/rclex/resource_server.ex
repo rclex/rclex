@@ -301,8 +301,7 @@ defmodule Rclex.ResourceServer do
   @spec get_identifier(charlist(), charlist()) :: charlist()
   defp get_identifier(node_namespace, node_name) do
     if node_namespace != '' do
-      # FIXME: to charlist(), below is String.t().
-      "#{node_namespace}/#{node_name}"
+      "#{node_namespace}/#{node_name}" |> String.to_charlist()
     else
       node_name
     end
