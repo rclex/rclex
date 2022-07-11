@@ -100,5 +100,10 @@ defmodule Rclex.ResourceServerTest do
     test "return :ok", %{timer_id: timer_id} do
       assert :ok = ResourceServer.stop_timer(timer_id)
     end
+
+    test "return :error when call again for same timer id", %{timer_id: timer_id} do
+      assert :ok = ResourceServer.stop_timer(timer_id)
+      assert :error = ResourceServer.stop_timer(timer_id)
+    end
   end
 end

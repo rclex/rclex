@@ -165,7 +165,7 @@ defmodule Rclex.ResourceServer do
   @doc """
   Stop `Rclex.Timer` named with timer_identifier by stopping its Supervisor.
   """
-  @spec stop_timer(timer_identifier :: String.t()) :: :ok
+  @spec stop_timer(timer_identifier :: String.t()) :: :ok | :error
   def stop_timer(timer_identifier) do
     GenServer.call(ResourceServer, {:stop_timer, timer_identifier})
   end
@@ -279,17 +279,20 @@ defmodule Rclex.ResourceServer do
 
   @impl GenServer
   def handle_call({:stop_timer, timer_identifier}, _from, {resources}) do
-    # :ok = GenServer.call({:global, timer_identifier}, :stop)
-    {:ok, timer} = Map.fetch(resources, timer_identifier)
+    case Map.fetch(resources, timer_identifier) do
+      {:ok, timer} ->
+        {:ok, supervisor_id} = Map.fetch(timer, :supervisor_id)
 
-    {:ok, supervisor_id} = Map.fetch(timer, :supervisor_id)
+        Supervisor.stop(supervisor_id)
 
-    Supervisor.stop(supervisor_id)
+        # timer情報削除
+        new_resources = Map.delete(resources, timer_identifier)
+        Logger.debug("finish timer: #{timer_identifier}")
+        {:reply, :ok, {new_resources}}
 
-    # timer情報削除
-    new_resources = Map.delete(resources, timer_identifier)
-    Logger.debug("finish timer: #{timer_identifier}")
-    {:reply, :ok, {new_resources}}
+      :error ->
+        {:reply, :error, {resources}}
+    end
   end
 
   @impl GenServer
