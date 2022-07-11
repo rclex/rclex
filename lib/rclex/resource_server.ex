@@ -76,7 +76,7 @@ defmodule Rclex.ResourceServer do
   This function calls `create_nodes_with_namespace/6` with node_namespace = ''.
   """
   @spec create_nodes(context(), charlist(), integer(), integer(), (list() -> list())) ::
-          {:ok, [node_identifier :: charlist()]}
+          {:ok, [node_identifier :: charlist()]} | :error
   def create_nodes(context, node_name, num_node, queue_length \\ 1, change_order \\ & &1) do
     create_nodes_with_namespace(context, node_name, '', num_node, queue_length, change_order)
   end
@@ -201,41 +201,39 @@ defmodule Rclex.ResourceServer do
         get_identifier(namespace, node_name) ++ Integer.to_charlist(node_no)
       end)
 
-    # FIXME: early return できてない
-    unless node_identifier_list
-           |> Enum.any?(&Map.has_key?(resources, &1)) do
+    if Enum.any?(node_identifier_list, &Map.has_key?(resources, &1)) do
       # 同名のノードがすでに存在しているときはエラーを返す
-      {:reply, {:error, node_identifier_list}}
+      {:reply, :error, {resources}}
+    else
+      nodes_list =
+        node_identifier_list
+        # id -> {node, id}
+        |> Enum.map(fn node_identifier ->
+          {call_nifs_rcl_node_init(
+             Nifs.rcl_get_zero_initialized_node(),
+             node_identifier,
+             namespace,
+             context,
+             Nifs.rcl_node_get_default_options()
+           ), node_identifier}
+        end)
+        # {node, id} -> {id, {:ok, pid}}
+        |> Enum.map(fn {node, node_identifier} ->
+          {node_identifier,
+           Supervisor.start_link(
+             [{Rclex.Node, {node, node_identifier, executor_settings}}],
+             strategy: :one_for_one
+           )}
+        end)
+        # {id, {:ok, pid}} -> {id, pid}
+        |> Enum.map(fn {node_identifier, {:ok, pid}} ->
+          {node_identifier, %{supervisor_id: pid}}
+        end)
+
+      new_resources = for {k, v} <- nodes_list, into: resources, do: {k, v}
+
+      {:reply, {:ok, node_identifier_list}, {new_resources}}
     end
-
-    nodes_list =
-      node_identifier_list
-      # id -> {node, id}
-      |> Enum.map(fn node_identifier ->
-        {call_nifs_rcl_node_init(
-           Nifs.rcl_get_zero_initialized_node(),
-           node_identifier,
-           namespace,
-           context,
-           Nifs.rcl_node_get_default_options()
-         ), node_identifier}
-      end)
-      # {node, id} -> {id, {:ok, pid}}
-      |> Enum.map(fn {node, node_identifier} ->
-        {node_identifier,
-         Supervisor.start_link(
-           [{Rclex.Node, {node, node_identifier, executor_settings}}],
-           strategy: :one_for_one
-         )}
-      end)
-      # {id, {:ok, pid}} -> {id, pid}
-      |> Enum.map(fn {node_identifier, {:ok, pid}} ->
-        {node_identifier, %{supervisor_id: pid}}
-      end)
-
-    new_resources = for {k, v} <- nodes_list, into: resources, do: {k, v}
-
-    {:reply, {:ok, node_identifier_list}, {new_resources}}
   end
 
   @impl GenServer

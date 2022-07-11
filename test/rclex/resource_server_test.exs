@@ -41,6 +41,17 @@ defmodule Rclex.ResourceServerTest do
                  node_count
                )
     end
+
+    test "return :error, when node already exists", %{context: context} do
+      node_name = 'node'
+      node_count = 2
+
+      {:ok, 'node0'} = ResourceServer.create_node(context, node_name)
+
+      # try to create 'node0' and 'node1'
+      # but 'node0' already exists so cannot create_nodes
+      assert :error = ResourceServer.create_nodes(context, node_name, node_count)
+    end
   end
 
   describe "create_nodes_with_namespace/3" do
