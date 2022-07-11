@@ -70,4 +70,17 @@ defmodule Rclex.ResourceServerTest do
                ResourceServer.create_timer(callback, args, time_ms, timer_name)
     end
   end
+
+  describe "craete_timer_with_limit/5" do
+    test "return {:ok, timer_id}" do
+      callback = fn _ -> nil end
+      args = nil
+      time_ms = 1000
+      timer_name = 'timer'
+      limit = 5
+
+      assert {:ok, "timer/Timer"} =
+               ResourceServer.create_timer_with_limit(callback, args, time_ms, timer_name, limit)
+    end
+  end
 end

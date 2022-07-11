@@ -146,7 +146,7 @@ defmodule Rclex.ResourceServer do
           integer(),
           integer(),
           (list() -> list())
-        ) :: {:ok, timer_identifier :: charlist()}
+        ) :: {:ok, timer_identifier :: String.t()}
   def create_timer_with_limit(
         call_back,
         args,
