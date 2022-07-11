@@ -52,4 +52,10 @@ defmodule Rclex.NodeTest do
                Node.create_publishers(node_id_list, msg_type, topic, :multi)
     end
   end
+
+  describe "create_subscriber/3" do
+    test "return {:ok, subscriber_id}", %{node_id: node_id, msg_type: msg_type, topic: topic} do
+      assert {:ok, {^node_id, ^topic, :sub}} = Node.create_subscriber(node_id, msg_type, topic)
+    end
+  end
 end
