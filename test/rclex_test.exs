@@ -1,5 +1,7 @@
 defmodule RclexTest do
   use ExUnit.Case
+  @moduletag capture_log: true
+
   doctest Rclex
 
   describe "rclexinit/0" do
