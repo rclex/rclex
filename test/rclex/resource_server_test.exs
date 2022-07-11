@@ -28,4 +28,18 @@ defmodule Rclex.ResourceServerTest do
                )
     end
   end
+
+  describe "create_nodes/3" do
+    test "return {:ok, [node_id]}", %{context: context} do
+      node_name = 'node'
+      node_count = 2
+
+      assert {:ok, ['node0', 'node1']} =
+               ResourceServer.create_nodes(
+                 context,
+                 node_name,
+                 node_count
+               )
+    end
+  end
 end
