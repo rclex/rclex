@@ -76,7 +76,7 @@ defmodule Rclex.ResourceServer do
   This function calls `create_nodes_with_namespace/6` with node_namespace = ''.
   """
   @spec create_nodes(context(), charlist(), integer(), integer(), (list() -> list())) ::
-          {:ok, [node_identifier :: charlist()]}
+          {:ok, [node_identifier :: charlist()]} | :error
   def create_nodes(context, node_name, num_node, queue_length \\ 1, change_order \\ & &1) do
     create_nodes_with_namespace(context, node_name, '', num_node, queue_length, change_order)
   end
@@ -112,7 +112,7 @@ defmodule Rclex.ResourceServer do
   This function calls `create_timer_with_limit/7` with limit = 0(no limit).
   """
   @spec create_timer(function(), any(), integer(), charlist(), integer(), (list() -> list())) ::
-          {:ok, timer_identifier :: charlist()}
+          {:ok, timer_identifier :: String.t()}
   def create_timer(
         call_back,
         args,
@@ -146,7 +146,7 @@ defmodule Rclex.ResourceServer do
           integer(),
           integer(),
           (list() -> list())
-        ) :: {:ok, timer_identifier :: charlist()}
+        ) :: {:ok, timer_identifier :: String.t()}
   def create_timer_with_limit(
         call_back,
         args,
@@ -165,7 +165,7 @@ defmodule Rclex.ResourceServer do
   @doc """
   Stop `Rclex.Timer` named with timer_identifier by stopping its Supervisor.
   """
-  @spec stop_timer(timer_identifier :: String.t()) :: :ok
+  @spec stop_timer(timer_identifier :: String.t()) :: :ok | :error
   def stop_timer(timer_identifier) do
     GenServer.call(ResourceServer, {:stop_timer, timer_identifier})
   end
@@ -173,7 +173,7 @@ defmodule Rclex.ResourceServer do
   @doc """
   Finish `Rclex.Node` named with node_identifier by stopping its Supervisor.
   """
-  @spec finish_node(node_identifier :: charlist()) :: :ok
+  @spec finish_node(node_identifier :: charlist()) :: :ok | :error
   def finish_node(node_identifier) do
     GenServer.call(ResourceServer, {:finish_node, node_identifier})
   end
@@ -201,41 +201,39 @@ defmodule Rclex.ResourceServer do
         get_identifier(namespace, node_name) ++ Integer.to_charlist(node_no)
       end)
 
-    # FIXME: early return できてない
-    unless node_identifier_list
-           |> Enum.any?(&Map.has_key?(resources, &1)) do
+    if Enum.any?(node_identifier_list, &Map.has_key?(resources, &1)) do
       # 同名のノードがすでに存在しているときはエラーを返す
-      {:reply, {:error, node_identifier_list}}
+      {:reply, :error, {resources}}
+    else
+      nodes_list =
+        node_identifier_list
+        # id -> {node, id}
+        |> Enum.map(fn node_identifier ->
+          {call_nifs_rcl_node_init(
+             Nifs.rcl_get_zero_initialized_node(),
+             node_identifier,
+             namespace,
+             context,
+             Nifs.rcl_node_get_default_options()
+           ), node_identifier}
+        end)
+        # {node, id} -> {id, {:ok, pid}}
+        |> Enum.map(fn {node, node_identifier} ->
+          {node_identifier,
+           Supervisor.start_link(
+             [{Rclex.Node, {node, node_identifier, executor_settings}}],
+             strategy: :one_for_one
+           )}
+        end)
+        # {id, {:ok, pid}} -> {id, pid}
+        |> Enum.map(fn {node_identifier, {:ok, pid}} ->
+          {node_identifier, %{supervisor_id: pid}}
+        end)
+
+      new_resources = for {k, v} <- nodes_list, into: resources, do: {k, v}
+
+      {:reply, {:ok, node_identifier_list}, {new_resources}}
     end
-
-    nodes_list =
-      node_identifier_list
-      # id -> {node, id}
-      |> Enum.map(fn node_identifier ->
-        {call_nifs_rcl_node_init(
-           Nifs.rcl_get_zero_initialized_node(),
-           node_identifier,
-           namespace,
-           context,
-           Nifs.rcl_node_get_default_options()
-         ), node_identifier}
-      end)
-      # {node, id} -> {id, {:ok, pid}}
-      |> Enum.map(fn {node, node_identifier} ->
-        {node_identifier,
-         Supervisor.start_link(
-           [{Rclex.Node, {node, node_identifier, executor_settings}}],
-           strategy: :one_for_one
-         )}
-      end)
-      # {id, {:ok, pid}} -> {id, pid}
-      |> Enum.map(fn {node_identifier, {:ok, pid}} ->
-        {node_identifier, %{supervisor_id: pid}}
-      end)
-
-    new_resources = for {k, v} <- nodes_list, into: resources, do: {k, v}
-
-    {:reply, {:ok, node_identifier_list}, {new_resources}}
   end
 
   @impl GenServer
@@ -263,33 +261,41 @@ defmodule Rclex.ResourceServer do
 
   @impl GenServer
   def handle_call({:finish_node, node_identifier}, _from, {resources}) do
-    GenServer.call({:global, node_identifier}, :finish_node)
-    {:ok, node} = Map.fetch(resources, node_identifier)
+    case Map.fetch(resources, node_identifier) do
+      {:ok, node} ->
+        GenServer.call({:global, node_identifier}, :finish_node)
 
-    {:ok, supervisor_id} = Map.fetch(node, :supervisor_id)
+        {:ok, supervisor_id} = Map.fetch(node, :supervisor_id)
 
-    Supervisor.stop(supervisor_id)
+        Supervisor.stop(supervisor_id)
 
-    # node情報削除
-    new_resources = Map.delete(resources, node_identifier)
-    Logger.debug("finish node: #{node_identifier}")
+        # node情報削除
+        new_resources = Map.delete(resources, node_identifier)
+        Logger.debug("finish node: #{node_identifier}")
 
-    {:reply, :ok, {new_resources}}
+        {:reply, :ok, {new_resources}}
+
+      :error ->
+        {:reply, :error, {resources}}
+    end
   end
 
   @impl GenServer
   def handle_call({:stop_timer, timer_identifier}, _from, {resources}) do
-    # :ok = GenServer.call({:global, timer_identifier}, :stop)
-    {:ok, timer} = Map.fetch(resources, timer_identifier)
+    case Map.fetch(resources, timer_identifier) do
+      {:ok, timer} ->
+        {:ok, supervisor_id} = Map.fetch(timer, :supervisor_id)
 
-    {:ok, supervisor_id} = Map.fetch(timer, :supervisor_id)
+        Supervisor.stop(supervisor_id)
 
-    Supervisor.stop(supervisor_id)
+        # timer情報削除
+        new_resources = Map.delete(resources, timer_identifier)
+        Logger.debug("finish timer: #{timer_identifier}")
+        {:reply, :ok, {new_resources}}
 
-    # timer情報削除
-    new_resources = Map.delete(resources, timer_identifier)
-    Logger.debug("finish timer: #{timer_identifier}")
-    {:reply, :ok, {new_resources}}
+      :error ->
+        {:reply, :error, {resources}}
+    end
   end
 
   @impl GenServer
@@ -301,8 +307,8 @@ defmodule Rclex.ResourceServer do
   @spec get_identifier(charlist(), charlist()) :: charlist()
   defp get_identifier(node_namespace, node_name) do
     if node_namespace != '' do
-      # FIXME: to charlist(), below is String.t().
-      "#{node_namespace}/#{node_name}"
+      # FIXME: 'node name must not contain characters other than alphanumerics or '_'
+      "#{node_namespace}/#{node_name}" |> String.to_charlist()
     else
       node_name
     end
