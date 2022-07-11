@@ -25,4 +25,31 @@ defmodule Rclex.NodeTest do
       assert {:ok, {^node_id, ^topic, :pub}} = Node.create_publisher(node_id, msg_type, topic)
     end
   end
+
+  describe "create_publishers/4 " do
+    test "call with :sigle, return {:ok, publisher_id_list}", %{
+      node_id_list: node_id_list,
+      msg_type: msg_type,
+      topic: topic
+    } do
+      publisher_id_list = for node_id <- node_id_list, do: {node_id, topic, :pub}
+
+      assert {:ok, ^publisher_id_list} =
+               Node.create_publishers(node_id_list, msg_type, topic, :single)
+    end
+
+    test "call with :multi, return {:ok, publisher_id_list}", %{
+      node_id_list: node_id_list,
+      msg_type: msg_type,
+      topic: topic
+    } do
+      publisher_id_list =
+        for {node_id, index} <- Enum.with_index(node_id_list) do
+          {node_id, "#{topic}#{index}" |> String.to_charlist(), :pub}
+        end
+
+      assert {:ok, ^publisher_id_list} =
+               Node.create_publishers(node_id_list, msg_type, topic, :multi)
+    end
+  end
 end
