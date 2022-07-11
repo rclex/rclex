@@ -135,6 +135,11 @@ defmodule Rclex.ResourceServerTest do
     test "return :ok", %{node_id: node_id} do
       assert :ok = ResourceServer.finish_node(node_id)
     end
+
+    test "return :error when call again for same node id", %{node_id: node_id} do
+      assert :ok = ResourceServer.finish_node(node_id)
+      assert :error = ResourceServer.finish_node(node_id)
+    end
   end
 
   describe "finish_nodes/1" do

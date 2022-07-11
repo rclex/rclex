@@ -173,7 +173,7 @@ defmodule Rclex.ResourceServer do
   @doc """
   Finish `Rclex.Node` named with node_identifier by stopping its Supervisor.
   """
-  @spec finish_node(node_identifier :: charlist()) :: :ok
+  @spec finish_node(node_identifier :: charlist()) :: :ok | :error
   def finish_node(node_identifier) do
     GenServer.call(ResourceServer, {:finish_node, node_identifier})
   end
@@ -261,18 +261,23 @@ defmodule Rclex.ResourceServer do
 
   @impl GenServer
   def handle_call({:finish_node, node_identifier}, _from, {resources}) do
-    GenServer.call({:global, node_identifier}, :finish_node)
-    {:ok, node} = Map.fetch(resources, node_identifier)
+    case Map.fetch(resources, node_identifier) do
+      {:ok, node} ->
+        GenServer.call({:global, node_identifier}, :finish_node)
 
-    {:ok, supervisor_id} = Map.fetch(node, :supervisor_id)
+        {:ok, supervisor_id} = Map.fetch(node, :supervisor_id)
 
-    Supervisor.stop(supervisor_id)
+        Supervisor.stop(supervisor_id)
 
-    # node情報削除
-    new_resources = Map.delete(resources, node_identifier)
-    Logger.debug("finish node: #{node_identifier}")
+        # node情報削除
+        new_resources = Map.delete(resources, node_identifier)
+        Logger.debug("finish node: #{node_identifier}")
 
-    {:reply, :ok, {new_resources}}
+        {:reply, :ok, {new_resources}}
+
+      :error ->
+        {:reply, :error, {resources}}
+    end
   end
 
   @impl GenServer
