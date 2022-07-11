@@ -106,4 +106,23 @@ defmodule Rclex.ResourceServerTest do
       assert :error = ResourceServer.stop_timer(timer_id)
     end
   end
+
+  describe "finish_node/1" do
+    setup do
+      context = Rclex.get_initialized_context()
+      node_name = 'node'
+
+      {:ok, node_id} =
+        ResourceServer.create_node(
+          context,
+          node_name
+        )
+
+      %{node_id: node_id}
+    end
+
+    test "return :ok", %{node_id: node_id} do
+      assert :ok = ResourceServer.finish_node(node_id)
+    end
+  end
 end
