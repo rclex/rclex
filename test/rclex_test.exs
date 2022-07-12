@@ -49,7 +49,7 @@ defmodule RclexTest do
     Rclex.Subscriber.start_subscribing([subscriber], context, fn msg ->
       recv_msg = Rclex.Msg.read(msg, 'StdMsgs.Msg.String')
       assert List.to_string(recv_msg.data) == str_data, "received data is correct."
-      msg_data = List.to_string(recv_msg.data)
+      _msg_data = List.to_string(recv_msg.data)
       send(pid, :message_received)
     end)
 
