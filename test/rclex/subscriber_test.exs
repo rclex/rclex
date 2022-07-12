@@ -14,7 +14,11 @@ defmodule Rclex.SubscriberTest do
 
       start_supervised!({Rclex.Subscriber, {dummy_subscriber_reference, msg_type, subscriber_id}})
 
-      %{subscriber: {node_id, topic, :sub}, context: Rclex.rclexinit(), callback: fn _ -> nil end}
+      %{
+        subscriber: {node_id, topic, :sub},
+        context: Rclex.get_initialized_context(),
+        callback: fn _ -> nil end
+      }
     end
 
     @tag capture_log: true
