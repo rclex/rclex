@@ -30,8 +30,8 @@ defmodule RclexTest do
     {:ok, node_list} = Rclex.ResourceServer.create_nodes(context, node_name, 2)
     [node_0, node_1] = node_list
 
-    assert Rclex.Node.node_get_name(node_0) == 'test_node0', 'first node name is test_node0'
-    assert Rclex.Node.node_get_name(node_1) == 'test_node1', 'second node name is test_node1'
+    assert Rclex.Node.node_get_name(node_0) == 'test_node0'
+    assert Rclex.Node.node_get_name(node_1) == 'test_node1'
 
     Rclex.ResourceServer.finish_nodes(node_list)
     Rclex.shutdown(context)
@@ -113,9 +113,9 @@ defmodule RclexTest do
     name = elem(name_and_types_tuple, 0)
     types_list = elem(name_and_types_tuple, 1)
 
-    assert name == '/testtopic', 'topic name is testtopic'
+    assert name == '/testtopic'
     type = hd(types_list)
-    assert type == 'std_msgs/msg/String', 'topic type is std_msgs/msg/String'
+    assert type == 'std_msgs/msg/String'
 
     Rclex.Node.finish_jobs(publisher_list)
     Rclex.Node.finish_jobs(subscriber_list)
