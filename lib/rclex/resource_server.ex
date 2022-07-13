@@ -195,18 +195,22 @@ defmodule Rclex.ResourceServer do
         _from,
         {resources}
       ) do
+    node_name_list = for index <- 0..(num_node - 1), do: node_name ++ Integer.to_charlist(index)
+
     node_identifier_list =
-      for index <- 0..(num_node - 1), do: node_name ++ Integer.to_charlist(index)
+      node_name_list
+      |> Enum.map(&get_identifier_name(&1, namespace))
 
     if Enum.any?(node_identifier_list, &Map.has_key?(resources, &1)) do
       # 同名のノードがすでに存在しているときはエラーを返す
       {:reply, :error, {resources}}
     else
       nodes_list =
-        node_identifier_list
-        # id -> {node, id}
-        |> Enum.map(fn node_identifier ->
-          {get_initialized_node(context, node_identifier, namespace), node_identifier}
+        node_name_list
+        # id -> {node, id(ns+name)}
+        |> Enum.map(fn node_name ->
+          {get_initialized_node(context, node_name, namespace),
+           get_identifier_name(node_name, namespace)}
         end)
         # {node, id} -> {id, {:ok, pid}}
         |> Enum.map(fn {node, node_identifier} ->
@@ -293,6 +297,14 @@ defmodule Rclex.ResourceServer do
   def handle_info({_, _, reason}, state) do
     Logger.debug(reason)
     {:noreply, state}
+  end
+
+  defp get_identifier_name(node_name, _node_namespace = '') do
+    node_name
+  end
+
+  defp get_identifier_name(node_name, node_namespace) do
+    node_namespace ++ '/' ++ node_name
   end
 
   @spec get_initialized_node(context(), charlist(), charlist(), reference(), reference()) ::
