@@ -39,7 +39,7 @@ defmodule Rclex.Subscriber do
   * `Rclex.SubLoop` triggers the `call_back` execution according to pushing message to `Rclex.JobQueue`.
   """
 
-  @type t() :: {node_identifier :: charlist(), topic_name :: charlist(), :sub}
+  @type id_tuple() :: {node_identifier :: charlist(), topic_name :: charlist(), :sub}
 
   @doc false
   @spec start_link({sub :: reference(), msg_type :: charlist(), process_name :: String.t()}) ::
@@ -59,7 +59,7 @@ defmodule Rclex.Subscriber do
     {:ok, %{subscriber: sub, msgtype: msg_type}}
   end
 
-  @spec start_subscribing(t(), Rclex.rcl_context(), call_back :: function()) :: :ok
+  @spec start_subscribing(id_tuple(), Rclex.rcl_context(), call_back :: function()) :: :ok
   def start_subscribing({node_identifier, topic_name, :sub}, context, call_back) do
     sub_identifier = "#{node_identifier}/#{topic_name}/sub"
 
@@ -69,7 +69,7 @@ defmodule Rclex.Subscriber do
     )
   end
 
-  @spec start_subscribing([t()], Rclex.rcl_context(), call_back :: function()) :: list()
+  @spec start_subscribing([id_tuple()], Rclex.rcl_context(), call_back :: function()) :: list()
   def start_subscribing(sub_list, context, call_back) do
     Enum.map(sub_list, fn {node_identifier, topic_name, :sub} ->
       sub_identifier = "#{node_identifier}/#{topic_name}/sub"
@@ -81,13 +81,13 @@ defmodule Rclex.Subscriber do
     end)
   end
 
-  @spec stop_subscribing(t()) :: :ok
+  @spec stop_subscribing(id_tuple()) :: :ok | :error
   def stop_subscribing({node_identifier, topic_name, :sub}) do
     sub_identifier = "#{node_identifier}/#{topic_name}/sub"
-    :ok = GenServer.call({:global, sub_identifier}, :stop_subscribing)
+    GenServer.call({:global, sub_identifier}, :stop_subscribing)
   end
 
-  @spec stop_subscribing([t()]) :: list()
+  @spec stop_subscribing([id_tuple()]) :: list()
   def stop_subscribing(sub_list) do
     Enum.map(sub_list, fn {node_identifier, topic_name, :sub} ->
       sub_identifier = "#{node_identifier}/#{topic_name}/sub"
@@ -131,10 +131,15 @@ defmodule Rclex.Subscriber do
 
   @impl GenServer
   def handle_call(:stop_subscribing, _from, state) do
-    {:ok, supervisor_id} = Map.fetch(state, :supervisor_id)
-    Supervisor.stop(supervisor_id)
-    new_state = Map.delete(state, :supervisor_id)
-    {:reply, :ok, new_state}
+    case Map.fetch(state, :supervisor_id) do
+      {:ok, supervisor_id} ->
+        Supervisor.stop(supervisor_id)
+        new_state = Map.delete(state, :supervisor_id)
+        {:reply, :ok, new_state}
+
+      :error ->
+        {:reply, :error, state}
+    end
   end
 
   @impl GenServer
