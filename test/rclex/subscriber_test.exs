@@ -1,6 +1,8 @@
 defmodule Rclex.SubscriberTest do
   use ExUnit.Case
 
+  @moduletag capture_log: true
+
   alias Rclex.Subscriber
   alias Rclex.Nifs
 
@@ -28,7 +30,6 @@ defmodule Rclex.SubscriberTest do
   end
 
   describe "start_subscribing/3" do
-    @tag capture_log: true
     test "call to element, return :ok", %{
       id_tuple: id_tuple,
       context: context,
@@ -37,7 +38,6 @@ defmodule Rclex.SubscriberTest do
       assert :ok = Subscriber.start_subscribing(id_tuple, context, callback)
     end
 
-    @tag capture_log: true
     test "call to list, return :ok", %{id_tuple: id_tuple, context: context, callback: callback} do
       assert [:ok] = Subscriber.start_subscribing([id_tuple], context, callback)
     end
