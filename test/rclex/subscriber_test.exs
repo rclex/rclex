@@ -12,20 +12,20 @@ defmodule Rclex.SubscriberTest do
     topic = 'topic'
 
     context = get_initialized_context()
+    node = get_initialized_no_namespace_node(context, node_id)
 
-    subscription =
-      context
-      |> get_initialized_no_namespace_node(node_id)
-      |> get_initialized_subscription(topic, msg_type)
+    subscription = get_initialized_subscription(node, topic, msg_type)
 
     subscriber_id = "#{node_id}/#{topic}/sub"
 
-    start_supervised!({Rclex.Subscriber, {subscription, msg_type, subscriber_id}})
+    pid = start_supervised!({Rclex.Subscriber, {subscription, msg_type, subscriber_id}})
 
     %{
       id_tuple: {node_id, topic, :sub},
       context: Rclex.get_initialized_context(),
-      callback: fn _ -> nil end
+      callback: fn _ -> nil end,
+      node: node,
+      pid: pid
     }
   end
 
@@ -69,6 +69,18 @@ defmodule Rclex.SubscriberTest do
 
     test "stop not started subscribing, return [:error]", %{id_tuple: id_tuple} do
       assert [:error] = Subscriber.stop_subscribing([id_tuple])
+    end
+  end
+
+  describe "handle_call({:finish, node}, ...)" do
+    test "return ok tuple", %{node: node, pid: pid} do
+      assert {:ok, 'subscriber finished: '} = GenServer.call(pid, {:finish, node})
+    end
+  end
+
+  describe "handle_call({:finish_subscriber, node}, ...)" do
+    test "return ok tuple", %{node: node, pid: pid} do
+      assert :ok = GenServer.call(pid, {:finish_subscriber, node})
     end
   end
 
