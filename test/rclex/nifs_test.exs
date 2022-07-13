@@ -182,6 +182,84 @@ defmodule Rclex.NifsTest do
     end
   end
 
+  describe "rcl_subscription_get_default_options/0" do
+    test "return reference" do
+      assert is_reference(Nifs.rcl_subscription_get_default_options())
+    end
+  end
+
+  describe "rcl_get_zero_initialized_subscription/0" do
+    test "return reference" do
+      assert is_reference(Nifs.rcl_get_zero_initialized_subscription())
+    end
+  end
+
+  describe "create_sub_alloc/0" do
+    test "return reference" do
+      assert is_reference(Nifs.create_sub_alloc())
+    end
+  end
+
+  describe "rcl_subscription_init/5" do
+    test "return reference" do
+      subscription = Nifs.rcl_get_zero_initialized_subscription()
+      node = get_initialized_no_namespace_node()
+      topic = 'topic'
+      typesupport = Rclex.Msg.typesupport('StdMsgs.Msg.String')
+      subscription_options = Nifs.rcl_subscription_get_default_options()
+
+      assert is_reference(
+               Nifs.rcl_subscription_init(
+                 subscription,
+                 node,
+                 topic,
+                 typesupport,
+                 subscription_options
+               )
+             )
+    end
+  end
+
+  describe "rcl_subscription_fini/2" do
+    test "return reference" do
+      node = get_initialized_no_namespace_node()
+      subscription = get_initialized_subscription(node)
+      assert is_reference(Nifs.rcl_subscription_fini(subscription, node))
+    end
+  end
+
+  describe "rcl_subscription_get_topic_name/1" do
+    test "return charlist" do
+      node = get_initialized_no_namespace_node()
+      topic_name = 'test'
+      subscription = get_initialized_subscription(node, topic_name)
+
+      # TODO: get_topic_name が '/' 含んで返すことが正か仕様の確認
+      [_slash | topic] = Nifs.rcl_subscription_get_topic_name(subscription)
+      assert ^topic_name = topic
+    end
+  end
+
+  describe "rcl_take/4" do
+    test "return tuple" do
+      node = get_initialized_no_namespace_node()
+      subscription = get_initialized_subscription(node)
+
+      msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
+      msginfo = Nifs.create_msginfo()
+      subscription_allocation = Nifs.create_sub_alloc()
+
+      rcl_ret_subscription_take_failed = Rclex.ReturnCode.rcl_ret_subscription_take_failed()
+
+      assert {^rcl_ret_subscription_take_failed, subscription, msginfo, subscription_allocation} =
+               Nifs.rcl_take(subscription, msg, msginfo, subscription_allocation)
+
+      assert is_reference(subscription)
+      assert is_reference(msginfo)
+      assert is_reference(subscription_allocation)
+    end
+  end
+
   defp get_initialized_context() do
     options = Nifs.rcl_get_zero_initialized_init_options()
     :ok = Nifs.rcl_init_options_init(options)
@@ -210,5 +288,17 @@ defmodule Rclex.NifsTest do
     typesupport = Rclex.Msg.typesupport(message_type)
 
     Nifs.rcl_publisher_init(publisher, node, topic, typesupport, publisher_options)
+  end
+
+  defp get_initialized_subscription(
+         node,
+         topic \\ 'topic',
+         message_type \\ 'StdMsgs.Msg.String',
+         subscription_options \\ Nifs.rcl_subscription_get_default_options()
+       ) do
+    subscription = Nifs.rcl_get_zero_initialized_subscription()
+    typesupport = Rclex.Msg.typesupport(message_type)
+
+    Nifs.rcl_subscription_init(subscription, node, topic, typesupport, subscription_options)
   end
 end

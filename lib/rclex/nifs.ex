@@ -14,6 +14,10 @@ defmodule Rclex.Nifs do
   @type rosidl_message_type_support() :: reference()
   @type rmw_publisher_allocation() :: reference()
   @type ros_message() :: reference()
+  @type rcl_subscription_options() :: reference()
+  @type rcl_subscription() :: reference()
+  @type rmw_subscription_allocation() :: reference()
+  @type rmw_message_info() :: reference()
 
   def load_nifs do
     nif = Application.app_dir(:rclex, "priv/rclex_nifs")
@@ -151,40 +155,38 @@ defmodule Rclex.Nifs do
   end
 
   # ---------------------------subscription_nif.c--------------------------
-  def rcl_subscription_get_default_options do
+  @spec rcl_subscription_get_default_options() :: rcl_subscription_options()
+  def rcl_subscription_get_default_options() do
     :erlang.nif_error("NIF rcl_subscription_get_default_options is not implemented")
   end
 
-  def rcl_get_zero_initialized_subscription do
+  @type rcl_get_zero_initialized_subscription() :: rcl_subscription()
+  def rcl_get_zero_initialized_subscription() do
     :erlang.nif_error("NIF rcl_subscription_get_default_options is not implemented")
   end
 
-  def create_sub_alloc do
+  @spec create_sub_alloc() :: rmw_subscription_allocation()
+  def create_sub_alloc() do
     :erlang.nif_error("NIF create_suballoc/0 is not implemented")
   end
 
-  @doc """
-    rcl_ret_t
-    rcl_subscription_init(
-      rcl_subscription_t * subscription,
-      const rcl_node_t * node,
-      const rosidl_message_type_support_t * type_support,
-      const char * topic_name,
-      const rcl_subscription_options_t * options
-  );
-  """
+  @spec rcl_subscription_init(
+          rcl_subscription(),
+          rcl_node(),
+          topic_name :: charlist(),
+          rosidl_message_type_support(),
+          rcl_subscription_options()
+        ) :: rcl_subscription()
   def rcl_subscription_init(_a, _b, _c, _d, _e) do
     :erlang.nif_error("NIF rcl_subscription_init is not implemented")
   end
 
-  @doc """
-      return rcl_ret_t
-      argument...rcl_subscription_t*,rcl_node_t*
-  """
+  @spec rcl_subscription_fini(rcl_subscription(), rcl_node()) :: rcl_ret()
   def rcl_subscription_fini(_a, _b) do
     :erlang.nif_error("NIF rcl_subscription_fini is not implemented")
   end
 
+  @spec rcl_subscription_get_topic_name(rcl_subscription()) :: topic_name :: charlist()
   def rcl_subscription_get_topic_name(_a) do
     :erlang.nif_error("NIF rcl_subscription_get_topic_name/1 is not implemented")
   end
@@ -198,6 +200,14 @@ defmodule Rclex.Nifs do
       rmw_subscription_allocation_t * allocation
     );
   """
+  @spec rcl_take(
+          rcl_subscription(),
+          ros_message(),
+          rmw_message_info(),
+          rmw_subscription_allocation()
+        ) ::
+          {return_value :: integer(), rcl_subscription(), rmw_message_info(),
+           rmw_subscription_allocation()}
   def rcl_take(_a, _b, _c, _d) do
     :erlang.nif_error("NIF rcl_take is not implemented")
   end
