@@ -206,13 +206,7 @@ defmodule Rclex.ResourceServer do
         node_identifier_list
         # id -> {node, id}
         |> Enum.map(fn node_identifier ->
-          {call_nifs_rcl_node_init(
-             Nifs.rcl_get_zero_initialized_node(),
-             node_identifier,
-             namespace,
-             context,
-             Nifs.rcl_node_get_default_options()
-           ), node_identifier}
+          {get_initialized_node(context, node_identifier, namespace), node_identifier}
         end)
         # {node, id} -> {id, {:ok, pid}}
         |> Enum.map(fn {node, node_identifier} ->
@@ -301,12 +295,21 @@ defmodule Rclex.ResourceServer do
     {:noreply, state}
   end
 
-  @spec call_nifs_rcl_node_init(any(), charlist(), charlist(), context(), any()) :: any()
-  defp call_nifs_rcl_node_init(node, node_name, node_namespace, context, node_op) do
-    if node_namespace != '' do
-      Nifs.rcl_node_init(node, node_name, node_namespace, context, node_op)
-    else
-      Nifs.rcl_node_init_without_namespace(node, node_name, context, node_op)
-    end
+  @spec get_initialized_node(context(), charlist(), charlist(), reference(), reference()) ::
+          node :: reference()
+  defp get_initialized_node(
+         context,
+         node_name,
+         node_namespace,
+         node \\ Nifs.rcl_get_zero_initialized_node(),
+         node_op \\ Nifs.rcl_node_get_default_options()
+       )
+
+  defp get_initialized_node(context, node_name, _node_namespace = '', node, node_op) do
+    Nifs.rcl_node_init_without_namespace(node, node_name, context, node_op)
+  end
+
+  defp get_initialized_node(context, node_name, node_namespace, node, node_op) do
+    Nifs.rcl_node_init(node, node_name, node_namespace, context, node_op)
   end
 end
