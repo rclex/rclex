@@ -178,7 +178,7 @@ defmodule Rclex.NifsTest do
   end
 
   describe "rcl_publish/3" do
-    test "" do
+    test "return rcl_ret_ok tuple" do
       publisher =
         get_initialized_context()
         |> get_initialized_no_namespace_node()
