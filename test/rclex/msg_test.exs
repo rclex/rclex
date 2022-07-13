@@ -31,7 +31,7 @@ defmodule Rclex.MsgTest do
     end
   end
 
-  describe "set/3 and read2" do
+  describe "set/3 and read/2" do
     alias Rclex.GeometryMsgs.Msg.Twist
     alias Rclex.GeometryMsgs.Msg.Vector3
 
