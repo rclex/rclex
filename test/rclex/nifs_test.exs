@@ -3,6 +3,16 @@ defmodule Rclex.NifsTest do
 
   require Rclex.ReturnCode
 
+  import Rclex.TestUtils,
+    only: [
+      get_initialized_context: 0,
+      get_initialized_no_namespace_node: 1,
+      get_initialized_no_namespace_node: 2,
+      get_initialized_publisher: 1,
+      get_initialized_subscription: 1,
+      get_initialized_subscription: 2
+    ]
+
   alias Rclex.Nifs
 
   describe "rcl_get_zero_initialized_init_options/0" do
@@ -94,7 +104,10 @@ defmodule Rclex.NifsTest do
 
   describe "rcl_node_fini/1" do
     test "return reference" do
-      node = get_initialized_no_namespace_node()
+      node =
+        get_initialized_context()
+        |> get_initialized_no_namespace_node()
+
       assert is_reference(Nifs.rcl_node_fini(node))
     end
   end
@@ -102,7 +115,11 @@ defmodule Rclex.NifsTest do
   describe "rcl_node_get_name/1" do
     test "return charlist" do
       node_name = 'test'
-      node = get_initialized_no_namespace_node(node_name)
+
+      node =
+        get_initialized_context()
+        |> get_initialized_no_namespace_node(node_name)
+
       assert ^node_name = Nifs.rcl_node_get_name(node)
     end
   end
@@ -121,7 +138,10 @@ defmodule Rclex.NifsTest do
 
   describe "rcl_publisher_fini/2" do
     test "return reference" do
-      node = get_initialized_no_namespace_node()
+      node =
+        get_initialized_context()
+        |> get_initialized_no_namespace_node()
+
       publihser = get_initialized_publisher(node)
 
       assert is_reference(Nifs.rcl_publisher_fini(publihser, node))
@@ -131,7 +151,11 @@ defmodule Rclex.NifsTest do
   describe "rcl_publisher_init/5" do
     test "reutrn reference" do
       publisher = Nifs.rcl_get_zero_initialized_publisher()
-      node = get_initialized_no_namespace_node()
+
+      node =
+        get_initialized_context()
+        |> get_initialized_no_namespace_node()
+
       topic = 'topic'
       typesupport = Rclex.Msg.typesupport('StdMsgs.Msg.String')
       publisher_options = Nifs.rcl_publisher_get_default_options()
@@ -144,8 +168,10 @@ defmodule Rclex.NifsTest do
 
   describe "rcl_publisher_is_valid/1" do
     test "return true" do
-      node = get_initialized_no_namespace_node()
-      publisher = get_initialized_publisher(node)
+      publisher =
+        get_initialized_context()
+        |> get_initialized_no_namespace_node()
+        |> get_initialized_publisher()
 
       assert true = Nifs.rcl_publisher_is_valid(publisher)
     end
@@ -153,8 +179,11 @@ defmodule Rclex.NifsTest do
 
   describe "rcl_publish/3" do
     test "" do
-      node = get_initialized_no_namespace_node()
-      publisher = get_initialized_publisher(node)
+      publisher =
+        get_initialized_context()
+        |> get_initialized_no_namespace_node()
+        |> get_initialized_publisher()
+
       publisher_allocation = Nifs.create_pub_alloc()
 
       message = Rclex.Msg.initialize('StdMsgs.Msg.String')
@@ -203,7 +232,11 @@ defmodule Rclex.NifsTest do
   describe "rcl_subscription_init/5" do
     test "return reference" do
       subscription = Nifs.rcl_get_zero_initialized_subscription()
-      node = get_initialized_no_namespace_node()
+
+      node =
+        get_initialized_context()
+        |> get_initialized_no_namespace_node()
+
       topic = 'topic'
       typesupport = Rclex.Msg.typesupport('StdMsgs.Msg.String')
       subscription_options = Nifs.rcl_subscription_get_default_options()
@@ -222,15 +255,22 @@ defmodule Rclex.NifsTest do
 
   describe "rcl_subscription_fini/2" do
     test "return reference" do
-      node = get_initialized_no_namespace_node()
+      node =
+        get_initialized_context()
+        |> get_initialized_no_namespace_node()
+
       subscription = get_initialized_subscription(node)
+
       assert is_reference(Nifs.rcl_subscription_fini(subscription, node))
     end
   end
 
   describe "rcl_subscription_get_topic_name/1" do
     test "return charlist" do
-      node = get_initialized_no_namespace_node()
+      node =
+        get_initialized_context()
+        |> get_initialized_no_namespace_node()
+
       topic_name = 'test'
       subscription = get_initialized_subscription(node, topic_name)
 
@@ -242,7 +282,10 @@ defmodule Rclex.NifsTest do
 
   describe "rcl_take/4" do
     test "return tuple" do
-      node = get_initialized_no_namespace_node()
+      node =
+        get_initialized_context()
+        |> get_initialized_no_namespace_node()
+
       subscription = get_initialized_subscription(node)
 
       msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
@@ -258,47 +301,5 @@ defmodule Rclex.NifsTest do
       assert is_reference(msginfo)
       assert is_reference(subscription_allocation)
     end
-  end
-
-  defp get_initialized_context() do
-    options = Nifs.rcl_get_zero_initialized_init_options()
-    :ok = Nifs.rcl_init_options_init(options)
-    context = Nifs.rcl_get_zero_initialized_context()
-    Nifs.rcl_init_with_null(options, context)
-    Nifs.rcl_init_options_fini(options)
-
-    context
-  end
-
-  defp get_initialized_no_namespace_node(node_name \\ 'node') do
-    node = Nifs.rcl_get_zero_initialized_node()
-    context = get_initialized_context()
-    options = Nifs.rcl_node_get_default_options()
-
-    Nifs.rcl_node_init_without_namespace(node, node_name, context, options)
-  end
-
-  defp get_initialized_publisher(
-         node,
-         topic \\ 'topic',
-         message_type \\ 'StdMsgs.Msg.String',
-         publisher_options \\ Nifs.rcl_publisher_get_default_options()
-       ) do
-    publisher = Nifs.rcl_get_zero_initialized_publisher()
-    typesupport = Rclex.Msg.typesupport(message_type)
-
-    Nifs.rcl_publisher_init(publisher, node, topic, typesupport, publisher_options)
-  end
-
-  defp get_initialized_subscription(
-         node,
-         topic \\ 'topic',
-         message_type \\ 'StdMsgs.Msg.String',
-         subscription_options \\ Nifs.rcl_subscription_get_default_options()
-       ) do
-    subscription = Nifs.rcl_get_zero_initialized_subscription()
-    typesupport = Rclex.Msg.typesupport(message_type)
-
-    Nifs.rcl_subscription_init(subscription, node, topic, typesupport, subscription_options)
   end
 end
