@@ -31,7 +31,7 @@ defmodule Rclex.TimerTest do
       assert capture_log(fn ->
                :ok = GenServer.cast(name, {:execute, nil})
                # wait execution of callback
-               Process.sleep(1)
+               Process.sleep(10)
              end) =~ callback_args
     end
   end
@@ -43,7 +43,7 @@ defmodule Rclex.TimerTest do
           :ok = GenServer.cast(name, {:stop, nil})
 
           # wait terminate(:normal, _)
-          Process.sleep(1)
+          Process.sleep(10)
         end)
 
       assert log =~ "the number of timer loop reaches limit"
