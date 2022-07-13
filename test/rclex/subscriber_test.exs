@@ -62,6 +62,14 @@ defmodule Rclex.SubscriberTest do
       [:ok] = Subscriber.start_subscribing(id_tuple_list, context, callback)
       assert [:ok] = Subscriber.stop_subscribing(id_tuple_list)
     end
+
+    test "stop not started subscribing, return :error", %{id_tuple: id_tuple} do
+      assert :error = Subscriber.stop_subscribing(id_tuple)
+    end
+
+    test "stop not started subscribing, return [:error]", %{id_tuple: id_tuple} do
+      assert [:error] = Subscriber.stop_subscribing([id_tuple])
+    end
   end
 
   # TODO: 以下の関数をテストのユーティリティーとしてくくりだす。

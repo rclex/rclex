@@ -81,10 +81,10 @@ defmodule Rclex.Subscriber do
     end)
   end
 
-  @spec stop_subscribing(id_tuple()) :: :ok
+  @spec stop_subscribing(id_tuple()) :: :ok | :error
   def stop_subscribing({node_identifier, topic_name, :sub}) do
     sub_identifier = "#{node_identifier}/#{topic_name}/sub"
-    :ok = GenServer.call({:global, sub_identifier}, :stop_subscribing)
+    GenServer.call({:global, sub_identifier}, :stop_subscribing)
   end
 
   @spec stop_subscribing([id_tuple()]) :: list()
@@ -131,10 +131,15 @@ defmodule Rclex.Subscriber do
 
   @impl GenServer
   def handle_call(:stop_subscribing, _from, state) do
-    {:ok, supervisor_id} = Map.fetch(state, :supervisor_id)
-    Supervisor.stop(supervisor_id)
-    new_state = Map.delete(state, :supervisor_id)
-    {:reply, :ok, new_state}
+    case Map.fetch(state, :supervisor_id) do
+      {:ok, supervisor_id} ->
+        Supervisor.stop(supervisor_id)
+        new_state = Map.delete(state, :supervisor_id)
+        {:reply, :ok, new_state}
+
+      :error ->
+        {:reply, :error, state}
+    end
   end
 
   @impl GenServer
