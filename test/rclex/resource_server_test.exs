@@ -20,7 +20,7 @@ defmodule Rclex.ResourceServerTest do
       node_name = 'node'
       namespace = 'namespace'
 
-      assert {:ok, 'namespace/node0'} =
+      assert {:ok, 'node0'} =
                ResourceServer.create_node_with_namespace(
                  context,
                  node_name,
@@ -60,7 +60,7 @@ defmodule Rclex.ResourceServerTest do
       namespace = 'namespace'
       node_count = 2
 
-      assert {:ok, ['namespace/node0', 'namespace/node1']} =
+      assert {:ok, ['node0', 'node1']} =
                ResourceServer.create_nodes_with_namespace(
                  context,
                  node_name,
