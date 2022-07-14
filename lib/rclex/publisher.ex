@@ -12,9 +12,10 @@ defmodule Rclex.Publisher do
   * `Rclex.Node.create_publishers/4`
   """
 
-  @type t() :: {node_identifier :: charlist(), topic_name :: charlist(), :pub}
+  @type id_tuple() :: {node_identifier :: charlist(), topic_name :: charlist(), :pub}
 
   @doc false
+  @spec start_link({Nifs.rcl_publisher(), String.t()}) :: GenServer.on_start()
   def start_link({pub, process_name}) do
     GenServer.start_link(__MODULE__, pub, name: {:global, process_name})
   end
@@ -45,7 +46,7 @@ defmodule Rclex.Publisher do
   end
 
   # TODO: define message type for reference()
-  @spec publish(publisher_list :: [t()], data :: [reference()]) :: :ok
+  @spec publish(publisher_list :: [id_tuple()], data :: [reference()]) :: :ok
   def publish(publisher_list, data) do
     n = length(publisher_list)
 
