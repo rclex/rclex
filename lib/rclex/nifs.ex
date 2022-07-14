@@ -37,7 +37,7 @@ defmodule Rclex.Nifs do
     :erlang.nif_error("NIF rcl_init_options_init/1 is not implemented")
   end
 
-  @spec rcl_init_options_fini(rcl_init_options()) :: rcl_init_options()
+  @spec rcl_init_options_fini(rcl_init_options()) :: rcl_ret()
   def rcl_init_options_fini(_a) do
     :erlang.nif_error("NIF rcl_init_options_fini/1 is not implemented")
   end
@@ -52,7 +52,7 @@ defmodule Rclex.Nifs do
     :erlang.nif_error("NIF rcl_init_with_null/2 not implemented")
   end
 
-  @spec rcl_shutdown(rcl_context()) :: {:ok, rcl_context()}
+  @spec rcl_shutdown(rcl_context()) :: {:ok, rcl_ret()}
   def rcl_shutdown(_a) do
     :erlang.nif_error("NIF rcl_shutdown/1 not implemented")
   end
