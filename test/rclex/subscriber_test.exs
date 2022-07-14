@@ -11,6 +11,7 @@ defmodule Rclex.SubscriberTest do
     ]
 
   alias Rclex.Subscriber
+  alias Rclex.Nifs
 
   setup do
     msg_type = 'StdMsgs.Msg.String'
@@ -19,11 +20,15 @@ defmodule Rclex.SubscriberTest do
 
     context = get_initialized_context()
     node = get_initialized_no_namespace_node(context, node_id)
-
     subscription = get_initialized_subscription(node, topic, msg_type)
 
-    subscriber_id = "#{node_id}/#{topic}/sub"
+    on_exit(fn ->
+      Nifs.rcl_subscription_fini(subscription, node)
+      Nifs.rcl_node_fini(node)
+      Nifs.rcl_shutdown(context)
+    end)
 
+    subscriber_id = "#{node_id}/#{topic}/sub"
     pid = start_supervised!({Rclex.Subscriber, {subscription, msg_type, subscriber_id}})
 
     %{
