@@ -12,6 +12,8 @@ defmodule Rclex.NodeTest do
     {:ok, node_id_list} =
       Rclex.ResourceServer.create_nodes(context, _node_name = 'plural', _node_count = 2)
 
+    on_exit(fn -> Rclex.Nifs.rcl_shutdown(context) end)
+
     %{
       node_id: node_id,
       node_id_list: node_id_list,
