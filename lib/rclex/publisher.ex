@@ -15,6 +15,7 @@ defmodule Rclex.Publisher do
   @type id_tuple() :: {node_identifier :: charlist(), topic_name :: charlist(), :pub}
 
   @doc false
+  @spec start_link({Nifs.rcl_publisher(), String.t()}) :: GenServer.on_start()
   def start_link({pub, process_name}) do
     GenServer.start_link(__MODULE__, pub, name: {:global, process_name})
   end
