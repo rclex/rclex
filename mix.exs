@@ -13,6 +13,7 @@ defmodule Rclex.MixProject do
       app: :rclex,
       version: @version,
       elixir: "~> 1.9",
+      elixirc_paths: elixirc_paths(Mix.env()),
       description: @description,
       package: package(),
       name: "Rclex",
@@ -33,6 +34,10 @@ defmodule Rclex.MixProject do
       dialyzer: [plt_add_apps: [:mix]]
     ]
   end
+
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   defp package do
     %{

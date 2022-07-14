@@ -3,8 +3,14 @@ defmodule Rclex.SubscriberTest do
 
   @moduletag capture_log: true
 
+  import Rclex.TestUtils,
+    only: [
+      get_initialized_context: 0,
+      get_initialized_no_namespace_node: 2,
+      get_initialized_subscription: 3
+    ]
+
   alias Rclex.Subscriber
-  alias Rclex.Nifs
 
   setup do
     msg_type = 'StdMsgs.Msg.String'
@@ -82,35 +88,5 @@ defmodule Rclex.SubscriberTest do
     test "return ok tuple", %{node: node, pid: pid} do
       assert :ok = GenServer.call(pid, {:finish_subscriber, node})
     end
-  end
-
-  # TODO: 以下の関数をテストのユーティリティーとしてくくりだす。
-  defp get_initialized_context() do
-    options = Nifs.rcl_get_zero_initialized_init_options()
-    :ok = Nifs.rcl_init_options_init(options)
-    context = Nifs.rcl_get_zero_initialized_context()
-    Nifs.rcl_init_with_null(options, context)
-    Nifs.rcl_init_options_fini(options)
-
-    context
-  end
-
-  defp get_initialized_no_namespace_node(context, node_name \\ 'node') do
-    node = Nifs.rcl_get_zero_initialized_node()
-    options = Nifs.rcl_node_get_default_options()
-
-    Nifs.rcl_node_init_without_namespace(node, node_name, context, options)
-  end
-
-  defp get_initialized_subscription(
-         node,
-         topic \\ 'topic',
-         message_type \\ 'StdMsgs.Msg.String',
-         subscription_options \\ Nifs.rcl_subscription_get_default_options()
-       ) do
-    subscription = Nifs.rcl_get_zero_initialized_subscription()
-    typesupport = Rclex.Msg.typesupport(message_type)
-
-    Nifs.rcl_subscription_init(subscription, node, topic, typesupport, subscription_options)
   end
 end
