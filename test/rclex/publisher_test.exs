@@ -13,11 +13,15 @@ defmodule Rclex.PublisherTest do
 
     context = get_initialized_context()
     node = get_initialized_no_namespace_node(context, node_id)
-
     publisher = get_initialized_publisher(node, topic, msg_type)
 
-    publisher_id = "#{node_id}/#{topic}/pub"
+    on_exit(fn ->
+      Nifs.rcl_publisher_fini(publisher, node)
+      Nifs.rcl_node_fini(node)
+      Nifs.rcl_shutdown(context)
+    end)
 
+    publisher_id = "#{node_id}/#{topic}/pub"
     pid = start_supervised!({Rclex.Publisher, {publisher, publisher_id}})
 
     %{publisher: publisher, id_tuple: {node_id, topic, :pub}, pid: pid, node: node}
