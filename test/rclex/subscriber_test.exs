@@ -23,7 +23,6 @@ defmodule Rclex.SubscriberTest do
     subscription = get_initialized_subscription(node, topic, msg_type)
 
     on_exit(fn ->
-      Nifs.rcl_subscription_fini(subscription, node)
       Nifs.rcl_node_fini(node)
       Nifs.rcl_shutdown(context)
     end)
@@ -33,44 +32,38 @@ defmodule Rclex.SubscriberTest do
 
     %{
       id_tuple: {node_id, topic, :sub},
-      context: Rclex.get_initialized_context(),
+      context: context,
       callback: fn _ -> nil end,
       node: node,
+      subscription: subscription,
       pid: pid
     }
   end
 
-  describe "start_subscribing/3" do
+  describe "start_subscribing/3 and stop_subscribing/1" do
+    setup %{node: node, subscription: subscription} = test_context do
+      # clean up resource
+      on_exit(fn -> Nifs.rcl_subscription_fini(subscription, node) end)
+
+      test_context
+    end
+
     test "call to element, return :ok", %{
       id_tuple: id_tuple,
       context: context,
       callback: callback
     } do
       assert :ok = Subscriber.start_subscribing(id_tuple, context, callback)
-    end
-
-    test "call to list, return :ok", %{id_tuple: id_tuple, context: context, callback: callback} do
-      assert [:ok] = Subscriber.start_subscribing([id_tuple], context, callback)
-    end
-  end
-
-  describe "stop_subscribing/1" do
-    test "call to element, return :ok", %{
-      id_tuple: id_tuple,
-      context: context,
-      callback: callback
-    } do
-      :ok = Subscriber.start_subscribing(id_tuple, context, callback)
       assert :ok = Subscriber.stop_subscribing(id_tuple)
     end
 
-    test "call to list, return :ok", %{
+    test "call to list, return :ok list", %{
       id_tuple: id_tuple,
       context: context,
       callback: callback
     } do
       id_tuple_list = [id_tuple]
-      [:ok] = Subscriber.start_subscribing(id_tuple_list, context, callback)
+      assert [:ok] = Subscriber.start_subscribing(id_tuple_list, context, callback)
       assert [:ok] = Subscriber.stop_subscribing(id_tuple_list)
     end
 
