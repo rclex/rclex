@@ -1,22 +1,40 @@
 defmodule Rclex.NodeTest do
   use ExUnit.Case
   @moduletag capture_log: true
+  import Rclex.TestUtils,
+    only: [
+      get_initialized_context: 0,
+      get_initialized_no_namespace_node: 2
+    ]
 
   alias Rclex.Node
+  alias Rclex.Nifs
 
   setup do
-    start_supervised!(Rclex.ResourceServer)
-    context = Rclex.get_initialized_context()
-    {:ok, node_id} = Rclex.ResourceServer.create_node(context, _node_name = 'singular')
+    context = get_initialized_context()
 
-    {:ok, node_id_list} =
-      Rclex.ResourceServer.create_nodes(context, _node_name = 'plural', _node_count = 2)
+    node_a_id = 'node_a0'
+    node_a = get_initialized_no_namespace_node(context, node_a_id)
+    start_supervised!({Rclex.Node, {node_a, node_a_id, {1, & &1}}})
 
-    on_exit(fn -> Rclex.Nifs.rcl_shutdown(context) end)
+    node_b_id_list = ['node_b0', 'node_b1']
+
+    node_b_list =
+      for node_b_id <- node_b_id_list do
+        node_b = get_initialized_no_namespace_node(context, node_b_id)
+        start_supervised!({Rclex.Node, {node_b, node_b_id, {1, & &1}}}, id: node_b_id)
+        node_b
+      end
+
+    on_exit(fn ->
+      Nifs.rcl_node_fini(node_a)
+      for node_b <- node_b_list, do: Nifs.rcl_node_fini(node_b)
+      Nifs.rcl_shutdown(context)
+    end)
 
     %{
-      node_id: node_id,
-      node_id_list: node_id_list,
+      node_id: node_a_id,
+      node_id_list: node_b_id_list,
       msg_type: 'StdMsgs.Msg.String',
       topic: 'topic'
     }
@@ -24,7 +42,13 @@ defmodule Rclex.NodeTest do
 
   describe "create_publisher/3" do
     test "return {:ok, publisher_id}", %{node_id: node_id, msg_type: msg_type, topic: topic} do
-      assert {:ok, {^node_id, ^topic, :pub}} = Node.create_publisher(node_id, msg_type, topic)
+      publisher_id = {node_id, topic, :pub}
+
+      try do
+        assert {:ok, ^publisher_id} = Node.create_publisher(node_id, msg_type, topic)
+      after
+        Node.finish_job(publisher_id)
+      end
     end
   end
 
@@ -36,8 +60,12 @@ defmodule Rclex.NodeTest do
     } do
       publisher_id_list = for node_id <- node_id_list, do: {node_id, topic, :pub}
 
-      assert {:ok, ^publisher_id_list} =
-               Node.create_publishers(node_id_list, msg_type, topic, :single)
+      try do
+        assert {:ok, ^publisher_id_list} =
+                 Node.create_publishers(node_id_list, msg_type, topic, :single)
+      after
+        for publisher_id <- publisher_id_list, do: Node.finish_job(publisher_id)
+      end
     end
 
     test "call with :multi, return {:ok, publisher_id_list}", %{
@@ -50,14 +78,24 @@ defmodule Rclex.NodeTest do
           {node_id, "#{topic}#{index}" |> String.to_charlist(), :pub}
         end
 
-      assert {:ok, ^publisher_id_list} =
-               Node.create_publishers(node_id_list, msg_type, topic, :multi)
+      try do
+        assert {:ok, ^publisher_id_list} =
+                 Node.create_publishers(node_id_list, msg_type, topic, :multi)
+      after
+        for publisher_id <- publisher_id_list, do: Node.finish_job(publisher_id)
+      end
     end
   end
 
   describe "create_subscriber/3" do
     test "return {:ok, subscriber_id}", %{node_id: node_id, msg_type: msg_type, topic: topic} do
-      assert {:ok, {^node_id, ^topic, :sub}} = Node.create_subscriber(node_id, msg_type, topic)
+      subscriber_id = {node_id, topic, :sub}
+
+      try do
+        assert {:ok, ^subscriber_id} = Node.create_subscriber(node_id, msg_type, topic)
+      after
+        Node.finish_job(subscriber_id)
+      end
     end
   end
 
@@ -69,8 +107,12 @@ defmodule Rclex.NodeTest do
     } do
       subscriber_id_list = for node_id <- node_id_list, do: {node_id, topic, :sub}
 
-      assert {:ok, ^subscriber_id_list} =
-               Node.create_subscribers(node_id_list, msg_type, topic, :single)
+      try do
+        assert {:ok, ^subscriber_id_list} =
+                 Node.create_subscribers(node_id_list, msg_type, topic, :single)
+      after
+        for subscriber_id <- subscriber_id_list, do: Node.finish_job(subscriber_id)
+      end
     end
 
     test "call with :multi, return {:ok, subscriber_id_list}", %{
@@ -83,8 +125,12 @@ defmodule Rclex.NodeTest do
           {node_id, "#{topic}#{index}" |> String.to_charlist(), :sub}
         end
 
-      assert {:ok, ^subscriber_id_list} =
-               Node.create_subscribers(node_id_list, msg_type, topic, :multi)
+      try do
+        assert {:ok, ^subscriber_id_list} =
+                 Node.create_subscribers(node_id_list, msg_type, topic, :multi)
+      after
+        for subscriber_id <- subscriber_id_list, do: Node.finish_job(subscriber_id)
+      end
     end
   end
 
