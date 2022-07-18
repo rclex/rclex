@@ -7,10 +7,9 @@ defmodule Rclex.JobExecutor do
 
   * The execution order can be changed by using the change order function.
     * change order function receives list(), return list()
-  """
 
-  @doc false
-  def start_link(state)
+  Used by `Rclex.Timer` and `Rclex.Subscriber`.
+  """
 
   @spec start_link({target_identifier :: charlist()}) :: GenServer.on_start()
   def start_link({target_identifier}) do

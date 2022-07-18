@@ -7,6 +7,8 @@ defmodule Rclex.JobQueue do
 
   * queue length is changeable
     * if not specified the length to be 1
+
+  Used by `Rclex.Timer` and `Rclex.Subscriber`.
   """
 
   # FIXME: below comment feature is not implemented
