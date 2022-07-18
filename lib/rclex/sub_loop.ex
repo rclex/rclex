@@ -109,6 +109,7 @@ defmodule Rclex.SubLoop do
 
     receive do
       :stop ->
+        # FIXME: 1st arg type breaks the contract
         Process.send("#{node_identifier}/#{topic_name}/sub", :terminate, [:noconnect])
         {:stop, :normal, {node_identifier, msg_type, topic_name, wait_set, sub, call_back}}
     after
