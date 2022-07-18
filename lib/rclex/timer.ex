@@ -36,6 +36,9 @@ defmodule Rclex.Timer do
   """
 
   @doc false
+  @spec start_link(
+          {function(), any(), integer(), charlist(), integer(), {integer(), (list() -> list())}}
+        ) :: GenServer.on_start()
   def start_link({callback, args, time, timer_name, limit, executor_settings}) do
     GenServer.start_link(
       __MODULE__,
@@ -65,7 +68,7 @@ defmodule Rclex.Timer do
           timer_name :: charlist(),
           limit :: integer,
           {queue_length :: integer(), change_order :: (list() -> list())}
-        }) :: {:ok, state :: tuple()}
+        }) :: {:ok, tuple()}
   def init({callback, args, time, timer_name, limit, {queue_length, change_order}}) do
     job_children = [
       {Rclex.JobQueue, {timer_name, queue_length}},

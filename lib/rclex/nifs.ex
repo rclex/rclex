@@ -18,6 +18,7 @@ defmodule Rclex.Nifs do
   @type rcl_subscription() :: reference()
   @type rmw_subscription_allocation() :: reference()
   @type rmw_message_info() :: reference()
+  @type rcl_allocator() :: reference()
 
   def load_nifs do
     nif = Application.app_dir(:rclex, "priv/rclex_nifs")
@@ -226,7 +227,8 @@ defmodule Rclex.Nifs do
   end
 
   # -----------------------------wait_nif.c------------------------------
-  def rcl_get_default_allocator do
+  @spec rcl_get_default_allocator() :: rcl_allocator()
+  def rcl_get_default_allocator() do
     :erlang.nif_error("NIF rcl_get_default_allocator/0 is not implemented")
   end
 

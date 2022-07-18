@@ -7,10 +7,11 @@ defmodule Rclex.Node do
   Defines functions to assign job, subscribe or publish, to Node.
   """
 
-  @type sub_identifier :: {node_identifier :: charlist(), topic_name :: charlist(), :sub}
-  @type pub_identifier :: {node_identifier :: charlist(), topic_name :: charlist(), :pub}
+  alias Rclex.Publisher
+  alias Rclex.Subscriber
 
   @doc false
+  @spec start_link({Nifs.rcl_node(), charlist(), {integer(), function()}}) :: GenServer.on_start()
   def start_link({node, node_identifier, {queue_length, change_order}}) do
     GenServer.start_link(__MODULE__, {node, node_identifier, queue_length, change_order},
       name: {:global, node_identifier}
@@ -19,6 +20,8 @@ defmodule Rclex.Node do
 
   # TODO: define State struct for GerServer state which shows state explicitly.
   @impl GenServer
+  @spec init({Nifs.rcl_node(), charlist(), integer(), function()}) ::
+          {:ok, {Nifs.rcl_node(), charlist(), map()}}
   def init({node, node_identifier, queue_length, change_order}) do
     children = [
       {Rclex.JobQueue, {node_identifier, queue_length}},
@@ -46,7 +49,7 @@ defmodule Rclex.Node do
           node_identifier :: charlist(),
           msg_type :: charlist(),
           topic_name :: charlist()
-        ) :: {:ok, pub_identifier()}
+        ) :: {:ok, Publisher.id_tuple()}
   def create_publisher(node_identifier, msg_type, topic_name) do
     GenServer.call(
       {:global, node_identifier},
@@ -109,8 +112,8 @@ defmodule Rclex.Node do
           node_identifier_list :: [node_identifier :: charlist()],
           msg_type :: charlist(),
           topic_name :: charlist(),
-          type :: atom()
-        ) :: {:ok, [pub_identifier()]}
+          type :: :single | :multi
+        ) :: {:ok, [Publisher.id_tuple()]}
   def create_publishers(node_identifier_list, msg_type, topic_name, type)
 
   def create_publishers(node_identifier_list, msg_type, topic_name, :single) do
@@ -153,7 +156,7 @@ defmodule Rclex.Node do
           node_identifier :: charlist(),
           msg_type :: charlist(),
           topic_name :: charlist()
-        ) :: {:ok, sub_identifier()}
+        ) :: {:ok, Subscriber.id_tuple()}
   def create_subscriber(node_identifier, msg_type, topic_name) do
     GenServer.call(
       {:global, node_identifier},
@@ -215,8 +218,8 @@ defmodule Rclex.Node do
           [node_identifier :: charlist()],
           msg_type :: charlist(),
           topic_name :: charlist(),
-          type :: atom()
-        ) :: {:ok, [sub_identifier()]}
+          type :: :single | :multi
+        ) :: {:ok, [Subscriber.id_tuple()]}
   def create_subscribers(node_identifier_list, msg_type, topic_name, type)
 
   def create_subscribers(node_identifier_list, msg_type, topic_name, :single) do
@@ -249,7 +252,7 @@ defmodule Rclex.Node do
   @doc """
   Finish subscribe/publish job.
   """
-  @spec finish_job(sub_identifier() | pub_identifier()) :: :ok
+  @spec finish_job(Publisher.id_tuple() | Subscriber.id_tuple()) :: :ok
   def finish_job({node_identifier, topic_name, role}) do
     :ok = GenServer.call({:global, node_identifier}, {:finish_job, topic_name, role})
   end
@@ -257,7 +260,7 @@ defmodule Rclex.Node do
   @doc """
   Finish subscribe/publish jobs.
   """
-  @spec finish_jobs([sub_identifier() | pub_identifier()]) :: list()
+  @spec finish_jobs([Publisher.id_tuple() | Subscriber.id_tuple()]) :: list()
   def finish_jobs(job_list) do
     Enum.map(job_list, fn {node_identifier, topic_name, role} ->
       GenServer.call({:global, node_identifier}, {:finish_job, topic_name, role})
@@ -279,7 +282,7 @@ defmodule Rclex.Node do
   """
   @spec get_topic_names_and_types(
           node_identifier :: charlist(),
-          allocator :: Rclex.rcl_allocator(),
+          allocator :: Nifs.rcl_allocator(),
           no_demangle :: boolean
         ) :: [{charlist(), [charlist()]}]
   def get_topic_names_and_types(node_identifier, allocator, no_demangle) do

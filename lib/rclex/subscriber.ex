@@ -42,7 +42,9 @@ defmodule Rclex.Subscriber do
   @type id_tuple() :: {node_identifier :: charlist(), topic_name :: charlist(), :sub}
 
   @doc false
-  @spec start_link({sub :: reference(), msg_type :: charlist(), process_name :: String.t()}) ::
+  @spec start_link(
+          {sub :: Nifs.rcl_subscription(), msg_type :: charlist(), process_name :: String.t()}
+        ) ::
           GenServer.on_start()
   def start_link({sub, msg_type, process_name}) do
     Logger.debug("#{process_name} subscriber process start")
@@ -54,12 +56,12 @@ defmodule Rclex.Subscriber do
   @doc """
     subscriberを状態として持つ。start_subscribingをした際にcontextとcall_backを追加で状態として持つ。
   """
-  @spec init({sub :: reference(), msg_type :: charlist()}) :: {:ok, state :: map()}
+  @spec init({sub :: Nifs.rcl_subscription(), msg_type :: charlist()}) :: {:ok, state :: map()}
   def init({sub, msg_type}) do
     {:ok, %{subscriber: sub, msgtype: msg_type}}
   end
 
-  @spec start_subscribing(id_tuple(), Rclex.rcl_context(), call_back :: function()) :: :ok
+  @spec start_subscribing(id_tuple(), Nifs.rcl_context(), call_back :: function()) :: :ok
   def start_subscribing({node_identifier, topic_name, :sub}, context, call_back) do
     sub_identifier = "#{node_identifier}/#{topic_name}/sub"
 
@@ -69,7 +71,7 @@ defmodule Rclex.Subscriber do
     )
   end
 
-  @spec start_subscribing([id_tuple()], Rclex.rcl_context(), call_back :: function()) :: list()
+  @spec start_subscribing([id_tuple()], Nifs.rcl_context(), call_back :: function()) :: list()
   def start_subscribing(sub_list, context, call_back) do
     Enum.map(sub_list, fn {node_identifier, topic_name, :sub} ->
       sub_identifier = "#{node_identifier}/#{topic_name}/sub"

@@ -6,14 +6,10 @@ defmodule Rclex do
   Defines functions to manage ROS client resources.
   """
 
-  @type rcl_context :: reference()
-  @type rcl_allocator :: reference()
-  @type rcl_ret :: reference()
-
   @doc """
   Initialize Rclex, return initialized context.
   """
-  @spec rclexinit() :: rcl_context()
+  @spec rclexinit() :: Nifs.rcl_context()
   def rclexinit() do
     children = [Rclex.ResourceServer]
     opts = [strategy: :one_for_one, name: :resource_server]
@@ -23,7 +19,7 @@ defmodule Rclex do
     get_initialized_context()
   end
 
-  @spec get_initialized_context() :: rcl_context()
+  @spec get_initialized_context() :: Nifs.rcl_context()
   def get_initialized_context() do
     init_op = Nifs.rcl_get_zero_initialized_init_options()
     context = Nifs.rcl_get_zero_initialized_context()
@@ -55,7 +51,7 @@ defmodule Rclex do
   this function does not have to be called on exit,
   but does have to be called making a repeat call to rclexinit.
   """
-  @spec shutdown(context :: reference()) :: {:ok, rcl_ret()}
+  @spec shutdown(context :: reference()) :: {:ok, Nifs.rcl_ret()}
   def shutdown(context) when is_reference(context) do
     Supervisor.stop(:resource_server)
     Nifs.rcl_shutdown(context)
@@ -64,7 +60,7 @@ defmodule Rclex do
   @doc """
   Return a properly initialized allocator with default values.
   """
-  @spec get_default_allocator :: rcl_allocator()
+  @spec get_default_allocator :: Nifs.rcl_allocator()
   def get_default_allocator do
     Nifs.rcl_get_default_allocator()
   end

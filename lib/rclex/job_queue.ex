@@ -12,12 +12,15 @@ defmodule Rclex.JobQueue do
   # FIXME: below comment feature is not implemented
   # queue_lengthが-1なら外部から呼ばれるまでqueueをため続ける
 
+  @spec start_link({target_identifier :: charlist()}) :: GenServer.on_start()
   def start_link({target_identifier}) do
     GenServer.start_link(__MODULE__, {target_identifier, 1},
       name: {:global, "#{target_identifier}/JobQueue"}
     )
   end
 
+  @spec start_link({target_identifier :: charlist(), queue_length :: integer()}) ::
+          GenServer.on_start()
   def start_link({target_identifier, queue_length}) do
     GenServer.start_link(__MODULE__, {target_identifier, queue_length},
       name: {:global, "#{target_identifier}/JobQueue"}

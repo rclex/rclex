@@ -12,10 +12,13 @@ defmodule Rclex.JobExecutor do
   @doc false
   def start_link(state)
 
+  @spec start_link({target_identifier :: charlist()}) :: GenServer.on_start()
   def start_link({target_identifier}) do
     GenServer.start_link(__MODULE__, {}, name: {:global, "#{target_identifier}/JobExecutor"})
   end
 
+  @spec start_link({target_identifier :: charlist(), change_order :: (list() -> list())}) ::
+          GenServer.on_start()
   def start_link({target_identifier, change_order}) do
     GenServer.start_link(__MODULE__, {change_order},
       name: {:global, "#{target_identifier}/JobExecutor"}
