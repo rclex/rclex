@@ -20,7 +20,7 @@ defmodule Rclex do
   end
 
   @spec get_initialized_context() :: Nifs.rcl_context()
-  def get_initialized_context() do
+  defp get_initialized_context() do
     init_op = Nifs.rcl_get_zero_initialized_init_options()
     context = Nifs.rcl_get_zero_initialized_context()
     Nifs.rcl_init_options_init(init_op)
