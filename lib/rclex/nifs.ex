@@ -18,6 +18,7 @@ defmodule Rclex.Nifs do
   @type rcl_subscription() :: reference()
   @type rmw_subscription_allocation() :: reference()
   @type rmw_message_info() :: reference()
+  @type rcl_allocator() :: reference()
 
   def load_nifs do
     nif = Application.app_dir(:rclex, "priv/rclex_nifs")
@@ -221,6 +222,7 @@ defmodule Rclex.Nifs do
       bool no_demangle,
       rcl_names_and_types_t * topic_names_and_types);
   """
+  @spec rcl_get_topic_names_and_types(rcl_node(), rcl_allocator(), boolean()) :: list()
   def rcl_get_topic_names_and_types(_a, _b, _c) do
     :erlang.nif_error("NIF rcl_get_topic_names_and_types is not implemented")
   end

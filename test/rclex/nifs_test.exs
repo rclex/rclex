@@ -9,6 +9,7 @@ defmodule Rclex.NifsTest do
       get_initialized_no_namespace_node: 1,
       get_initialized_no_namespace_node: 2,
       get_initialized_publisher: 1,
+      get_initialized_publisher: 2,
       get_initialized_subscription: 1,
       get_initialized_subscription: 2
     ]
@@ -325,6 +326,58 @@ defmodule Rclex.NifsTest do
         assert is_reference(subscription_allocation)
       after
         # clean up resource
+        Nifs.rcl_subscription_fini(subscription, node)
+      end
+    end
+  end
+
+  describe "rcl_get_topic_names_and_types/3" do
+    setup do
+      context = get_initialized_context()
+      node = get_initialized_no_namespace_node(context)
+
+      on_exit(fn ->
+        Nifs.rcl_node_fini(node)
+        Nifs.rcl_shutdown(context)
+      end)
+
+      %{node: node}
+    end
+
+    test "node isn't assigned, return empty list", %{node: node} do
+      allocator = Nifs.rcl_get_default_allocator()
+      assert [] = Nifs.rcl_get_topic_names_and_types(node, allocator, true)
+      assert [] = Nifs.rcl_get_topic_names_and_types(node, allocator, false)
+    end
+
+    test "node is assigned publisher, return list", %{node: node} do
+      topic_name = 'test'
+      publisher = get_initialized_publisher(node, topic_name)
+      allocator = Nifs.rcl_get_default_allocator()
+
+      try do
+        assert [{'/' ++ topic_name, ['std_msgs/msg/String']}] ==
+                 Nifs.rcl_get_topic_names_and_types(node, allocator, true)
+
+        assert [{'/' ++ topic_name, ['std_msgs/msg/String']}] ==
+                 Nifs.rcl_get_topic_names_and_types(node, allocator, false)
+      after
+        Nifs.rcl_publisher_fini(publisher, node)
+      end
+    end
+
+    test "node is assigned subscription, return list", %{node: node} do
+      topic_name = 'test'
+      subscription = get_initialized_subscription(node, topic_name)
+      allocator = Nifs.rcl_get_default_allocator()
+
+      try do
+        assert [{'/' ++ topic_name, ['std_msgs/msg/String']}] ==
+                 Nifs.rcl_get_topic_names_and_types(node, allocator, true)
+
+        assert [{'/' ++ topic_name, ['std_msgs/msg/String']}] ==
+                 Nifs.rcl_get_topic_names_and_types(node, allocator, false)
+      after
         Nifs.rcl_subscription_fini(subscription, node)
       end
     end
