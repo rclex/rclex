@@ -109,7 +109,6 @@ defmodule Rclex.SubLoop do
 
     receive do
       :stop ->
-        # FIXME: 1st arg type breaks the contract
         pid = :global.whereis_name("#{node_identifier}/#{topic_name}/sub")
         Process.send(pid, :terminate, [:noconnect])
         {:stop, :normal, {node_identifier, msg_type, topic_name, wait_set, sub, call_back}}
