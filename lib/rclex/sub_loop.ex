@@ -8,6 +8,10 @@ defmodule Rclex.SubLoop do
   Implements subscribing logic.
   """
 
+  @spec start_link(
+          {charlist(), charlist(), charlist(), Nifs.rcl_subscription(), Nifs.rcl_context(),
+           function()}
+        ) :: GenServer.on_start()
   def start_link({node_identifier, msg_type, topic_name, sub, context, call_back}) do
     GenServer.start_link(
       __MODULE__,
@@ -17,6 +21,12 @@ defmodule Rclex.SubLoop do
 
   # TODO: define State struct for GerServer state which shows state explicitly.
   @impl GenServer
+  @spec init(
+          {charlist(), charlist(), charlist(), Nifs.rcl_subscription(), Nifs.rcl_context(),
+           function()}
+        ) ::
+          {:ok,
+           {charlist(), charlist(), charlist(), reference(), Nifs.rcl_subscription(), function()}}
   def init({node_identifier, msg_type, topic_name, sub, context, call_back}) do
     wait_set =
       Nifs.rcl_get_zero_initialized_wait_set()
@@ -36,6 +46,7 @@ defmodule Rclex.SubLoop do
   end
 
   # TODO: 用途の記載が必要、どのようなケースで使用するのか
+  @spec start_sub([pid()]) :: list()
   def start_sub(id_list) do
     id_list
     |> Enum.map(fn pid -> GenServer.cast(pid, {:loop}) end)
@@ -46,7 +57,7 @@ defmodule Rclex.SubLoop do
       購読が正常に行われれば，引数に受け取っていたコールバック関数を実行
   """
   @spec each_subscribe(
-          sub :: reference(),
+          sub :: Nifs.rcl_subscription(),
           node_identifier :: charlist(),
           msg_type :: charlist(),
           topic_name :: charlist()
@@ -98,6 +109,7 @@ defmodule Rclex.SubLoop do
 
     receive do
       :stop ->
+        # FIXME: 1st arg type breaks the contract
         Process.send("#{node_identifier}/#{topic_name}/sub", :terminate, [:noconnect])
         {:stop, :normal, {node_identifier, msg_type, topic_name, wait_set, sub, call_back}}
     after

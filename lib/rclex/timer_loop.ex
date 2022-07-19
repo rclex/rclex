@@ -5,13 +5,15 @@ defmodule Rclex.TimerLoop do
   @moduledoc """
   Pushes timer jobs to `Rclex.JobQueue`.
   """
-
+  @spec start_link({String.t(), integer(), integer()}) :: GenServer.on_start()
   def start_link({timer_name, time, limit}) do
     GenServer.start_link(__MODULE__, {timer_name, time, limit})
   end
 
   # TODO: define State struct for GerServer state which shows state explicitly.
   @impl GenServer
+  @spec init({String.t(), integer(), integer()}) ::
+          {:ok, {String.t(), integer(), integer(), integer()}}
   def init({timer_name, time, limit}) do
     GenServer.cast(self(), :loop)
     {:ok, {timer_name, time, _count = 0, limit}}

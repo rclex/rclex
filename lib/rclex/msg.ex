@@ -3,10 +3,12 @@ defmodule Rclex.Msg do
   Defines functions which call `Rclex.MsgProt` implementation.
   """
 
+  alias Rclex.Nifs
+
   @doc """
   Return typesupport reference.
   """
-  @spec typesupport(msg_type :: charlist()) :: reference()
+  @spec typesupport(msg_type :: charlist()) :: Nifs.rosidl_message_type_support()
   def typesupport(msg_type) do
     get_struct(msg_type) |> Rclex.MsgProt.typesupport()
   end
@@ -14,7 +16,7 @@ defmodule Rclex.Msg do
   @doc """
   Return reference which refers to initialized msg_type C struct instance.
   """
-  @spec initialize(msg_type :: charlist()) :: reference()
+  @spec initialize(msg_type :: charlist()) :: Nifs.ros_message()
   def initialize(msg_type) do
     get_struct(msg_type) |> Rclex.MsgProt.initialize()
   end
@@ -22,7 +24,7 @@ defmodule Rclex.Msg do
   @doc """
   Return list of reference which refers to initialized msg_type C struct instance.
   """
-  @spec initialize_msgs(msg_count :: integer(), msg_type :: charlist()) :: [reference()]
+  @spec initialize_msgs(msg_count :: integer(), msg_type :: charlist()) :: [Nifs.ros_message()]
   def initialize_msgs(msg_count, msg_type) do
     str = get_struct(msg_type)
 
@@ -34,7 +36,7 @@ defmodule Rclex.Msg do
   @doc """
   Set Elixir struct to C struct instance.
   """
-  @spec set(msg :: reference(), data :: struct(), _msg_type :: charlist()) :: :ok
+  @spec set(msg :: Nifs.ros_message(), data :: struct(), _msg_type :: charlist()) :: :ok
   def set(msg, data, _msg_type) do
     Rclex.MsgProt.set(data, msg)
   end
@@ -42,7 +44,7 @@ defmodule Rclex.Msg do
   @doc """
   Return msg_type struct loaded with data from C struct instance.
   """
-  @spec read(msg :: reference(), msg_type :: charlist()) :: struct()
+  @spec read(msg :: Nifs.ros_message(), msg_type :: charlist()) :: struct()
   def read(msg, msg_type) do
     get_struct(msg_type) |> Rclex.MsgProt.read(msg)
   end

@@ -7,17 +7,22 @@ defmodule Rclex.JobQueue do
 
   * queue length is changeable
     * if not specified the length to be 1
+
+  Used by `Rclex.Timer` and `Rclex.Subscriber`.
   """
 
   # FIXME: below comment feature is not implemented
   # queue_lengthが-1なら外部から呼ばれるまでqueueをため続ける
 
+  @spec start_link({target_identifier :: charlist()}) :: GenServer.on_start()
   def start_link({target_identifier}) do
     GenServer.start_link(__MODULE__, {target_identifier, 1},
       name: {:global, "#{target_identifier}/JobQueue"}
     )
   end
 
+  @spec start_link({target_identifier :: charlist(), queue_length :: integer()}) ::
+          GenServer.on_start()
   def start_link({target_identifier, queue_length}) do
     GenServer.start_link(__MODULE__, {target_identifier, queue_length},
       name: {:global, "#{target_identifier}/JobQueue"}

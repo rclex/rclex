@@ -21,11 +21,14 @@ defmodule Rclex.Publisher do
   end
 
   @impl GenServer
+  @spec init(Nifs.rcl_publisher()) :: {:ok, Nifs.rcl_publisher()}
   def init(pub) do
     {:ok, pub}
   end
 
   # FIXME?: 公開されていない内部状態変数 pub を使用するので defp とするべき？
+  @spec publish_once(Nifs.rcl_publisher(), Nifs.ros_message(), Nifs.rmw_publisher_allocation()) ::
+          :ok
   def publish_once(pub, pubmsg, pub_alloc) do
     case Nifs.rcl_publish(pub, pubmsg, pub_alloc) do
       {Rclex.ReturnCode.rcl_ret_ok(), _, _} ->
@@ -46,7 +49,7 @@ defmodule Rclex.Publisher do
   end
 
   # TODO: define message type for reference()
-  @spec publish(publisher_list :: [id_tuple()], data :: [reference()]) :: :ok
+  @spec publish(publisher_list :: [id_tuple()], data :: [Nifs.ros_message()]) :: :ok
   def publish(publisher_list, data) do
     n = length(publisher_list)
 

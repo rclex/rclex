@@ -3,9 +3,6 @@ defmodule Rclex.ResourceServer do
   require Logger
   use GenServer, restart: :transient
 
-  # TODO: replece any() with Rclex.rcl_contest()
-  @type context :: any()
-
   @moduledoc """
   Defines functions to manage ROS resources, Node and Timer.
   """
@@ -23,6 +20,7 @@ defmodule Rclex.ResourceServer do
           keyがnode_identifer、valueがnode情報。現在はnodeプロセスのsupervisorのidを格納している
   """
   @impl GenServer
+  @spec init(any()) :: {:ok, {map()}}
   def init(_) do
     {:ok, {%{}}}
   end
@@ -31,7 +29,7 @@ defmodule Rclex.ResourceServer do
   Create specified name single Node without namespace.
   This function calls `create_node_with_namespace/5` with namespace = ''.
   """
-  @spec create_node(context(), charlist(), integer(), (list() -> list())) ::
+  @spec create_node(Nifs.rcl_context(), charlist(), integer(), (list() -> list())) ::
           {:ok, node_identifier :: charlist()}
   def create_node(context, node_name, queue_length \\ 1, change_order \\ & &1) do
     create_node_with_namespace(context, node_name, '', queue_length, change_order)
@@ -49,7 +47,7 @@ defmodule Rclex.ResourceServer do
   * change_order: function which change the order of job
   """
   @spec create_node_with_namespace(
-          context(),
+          Nifs.rcl_context(),
           charlist(),
           charlist(),
           integer(),
@@ -75,7 +73,7 @@ defmodule Rclex.ResourceServer do
   Create specified name multiple Nodes without namespace.
   This function calls `create_nodes_with_namespace/6` with node_namespace = ''.
   """
-  @spec create_nodes(context(), charlist(), integer(), integer(), (list() -> list())) ::
+  @spec create_nodes(Nifs.rcl_context(), charlist(), integer(), integer(), (list() -> list())) ::
           {:ok, [node_identifier :: charlist()]} | :error
   def create_nodes(context, node_name, num_node, queue_length \\ 1, change_order \\ & &1) do
     create_nodes_with_namespace(context, node_name, '', num_node, queue_length, change_order)
@@ -85,7 +83,7 @@ defmodule Rclex.ResourceServer do
   Create specified name multiple Nodes with specified node namespace.
   """
   @spec create_nodes_with_namespace(
-          context(),
+          Nifs.rcl_context(),
           charlist(),
           charlist(),
           integer(),
@@ -299,6 +297,7 @@ defmodule Rclex.ResourceServer do
     {:noreply, state}
   end
 
+  @spec get_identifier_name(charlist(), charlist()) :: charlist()
   defp get_identifier_name(node_name, _node_namespace = '') do
     node_name
   end
@@ -307,8 +306,14 @@ defmodule Rclex.ResourceServer do
     node_namespace ++ '/' ++ node_name
   end
 
-  @spec get_initialized_node(context(), charlist(), charlist(), reference(), reference()) ::
-          node :: reference()
+  @spec get_initialized_node(
+          Nifs.rcl_context(),
+          charlist(),
+          charlist(),
+          Nifs.rcl_node(),
+          Nifs.rcl_node_options()
+        ) ::
+          node :: Nifs.rcl_node()
   defp get_initialized_node(
          context,
          node_name,

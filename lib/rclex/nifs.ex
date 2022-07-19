@@ -228,7 +228,8 @@ defmodule Rclex.Nifs do
   end
 
   # -----------------------------wait_nif.c------------------------------
-  def rcl_get_default_allocator do
+  @spec rcl_get_default_allocator() :: rcl_allocator()
+  def rcl_get_default_allocator() do
     :erlang.nif_error("NIF rcl_get_default_allocator/0 is not implemented")
   end
 

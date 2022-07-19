@@ -2,12 +2,14 @@ defmodule Rclex.ResourceServerTest do
   use ExUnit.Case
   @moduletag capture_log: true
 
+  import Rclex.TestUtils, only: [get_initialized_context: 0]
+
   alias Rclex.ResourceServer
 
   setup do
     pid = start_supervised!(Rclex.ResourceServer)
 
-    context = Rclex.get_initialized_context()
+    context = get_initialized_context()
     on_exit(fn -> Rclex.Nifs.rcl_shutdown(context) end)
 
     %{context: context, pid: pid}
