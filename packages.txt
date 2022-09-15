@@ -1,1 +1,1 @@
-std_msgs/msg/String geometry_msgs/msg/Twist
+std_msgs/msg/String
