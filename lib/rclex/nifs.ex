@@ -275,35 +275,20 @@ defmodule Rclex.Nifs do
   end
 
   # -----<custom_msgtype>_nif.c-----start-----
-  def get_typesupport_geometry_msgs_msg_twist,
-    do: :erlang.nif_error("NIF get_typesupport_geometry_msgs_msg_twist/0 is not implemented")
-
-  def create_empty_msg_geometry_msgs_msg_twist,
-    do: :erlang.nif_error("NIF create_empty_msg_geometry_msgs_msg_twist/0 is not implemented")
-
-  def init_msg_geometry_msgs_msg_twist(_),
-    do: :erlang.nif_error("NIF init_msg_geometry_msgs_msg_twist/1 is not implemented")
-
-  def setdata_geometry_msgs_msg_twist(_, _),
-    do: :erlang.nif_error("NIF setdata_geometry_msgs_msg_twist/2 is not implemented")
-
-  def readdata_geometry_msgs_msg_twist(_),
-    do: :erlang.nif_error("NIF readdata_geometry_msgs_msg_twist/1 is not implemented")
-
   def get_typesupport_std_msgs_msg_string,
-    do: :erlang.nif_error("NIF get_typesupport_std_msgs_msg_string/0 is not implemented")
+    do: raise("NIF get_typesupport_std_msgs_msg_string/0 is not implemented")
 
   def create_empty_msg_std_msgs_msg_string,
-    do: :erlang.nif_error("NIF create_empty_msg_std_msgs_msg_string/0 is not implemented")
+    do: raise("NIF create_empty_msg_std_msgs_msg_string/0 is not implemented")
 
   def init_msg_std_msgs_msg_string(_),
-    do: :erlang.nif_error("NIF init_msg_std_msgs_msg_string/1 is not implemented")
+    do: raise("NIF init_msg_std_msgs_msg_string/1 is not implemented")
 
   def setdata_std_msgs_msg_string(_, _),
-    do: :erlang.nif_error("NIF setdata_std_msgs_msg_string/2 is not implemented")
+    do: raise("NIF setdata_std_msgs_msg_string/2 is not implemented")
 
   def readdata_std_msgs_msg_string(_),
-    do: :erlang.nif_error("NIF readdata_std_msgs_msg_string/1 is not implemented")
+    do: raise("NIF readdata_std_msgs_msg_string/1 is not implemented")
 
   # -----<custom_msgtype>_nif.c-----end-----
 end
