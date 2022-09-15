@@ -13,7 +13,6 @@ extern "C"
 #include "graph_nif.h"
 #include "msg_nif.h"
 //-----<custom_msgtype>_nif.h-----start-----
-#include "geometry_msgs/msg/twist_nif.h"
 #include "std_msgs/msg/string_nif.h"
 //-----<custom_msgtype>_nif.h-----end-----
 
