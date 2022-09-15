@@ -75,8 +75,7 @@ defmodule Rclex.MixProject do
       {:rclex_gen_msgs, "~> 0.1.0", runtime: false},
       # lock git_hooks version to avoid https://github.com/qgadrian/elixir_git_hooks/issues/123
       {:git_hooks, "== 0.6.5", only: [:dev], runtime: false},
-      {:mix_test_watch, "~> 1.0", only: [:dev, :test]},
-      {:rclex_msg_core, path: "../rclex_msg_core"}
+      {:mix_test_watch, "~> 1.0", only: [:dev, :test]}
     ]
   end
 
