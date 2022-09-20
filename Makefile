@@ -9,7 +9,7 @@ else ifeq ($(ROS_DISTRO), foxy)
 	TYPE_STRUCTURE_DIR = rosidl_runtime_c
 endif
 
-MSGTYPES = $(shell cat packages.txt)
+MSGTYPES = std_msgs/msg/String
 MSGTYPE_FILES = $(shell echo $(MSGTYPES) | sed -e "s/\([A-Z]\)/_\L\1/g" -e "s/\/_/\//g")
 MSGTYPE_FUNCS = $(subst /,_,$(MSGTYPE_FILES))
 MSGPKGS = $(sort $(foreach msgtype,$(MSGTYPES),$(firstword $(subst /,$() ,$(msgtype)))))
