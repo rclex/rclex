@@ -31,7 +31,7 @@ defmodule Rclex.MixProject do
       `. /opt/ros/${ROS_DISTRO}/setup.bash`
       """,
       aliases: [format: [&format_c/1, "format"]],
-      dialyzer: [plt_add_apps: [:mix]]
+      dialyzer: dialyzer()
     ]
   end
 
@@ -101,4 +101,11 @@ defmodule Rclex.MixProject do
   end
 
   defp format_c(_args), do: true
+
+  defp dialyzer do
+    [
+      plt_core_path: "priv/plts",
+      plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
+    ]
+  end
 end

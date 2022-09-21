@@ -29,6 +29,7 @@ jobs:
           path: |
             rclex/deps
             rclex/_build
+            rclex/priv/plts
           key: ${{ runner.os }}-${{ matrix.dockertags }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.dockertags }}-mix-
@@ -41,6 +42,7 @@ jobs:
           mix local.hex --force
           mix deps.get
           mix deps.compile
+          mkdir -p priv/plts
           mix dialyzer --plt
 
   code-analysis:
@@ -88,7 +90,7 @@ jobs:
           source /opt/ros/${ROS_DISTRO}/setup.bash
           cd rclex
           mix local.hex --force
-          mix dialyzer --format github
+          mix dialyzer
 
   test:
     needs: build_deps
