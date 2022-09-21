@@ -131,16 +131,23 @@ cat << __DOC__ > lib/rclex/${filename}_impl.ex
 defimpl Rclex.MsgProt, for: Rclex.${modulename} do
   alias Rclex.Nifs, as: Nifs
 
+  @spec typesupport(any) :: reference()
   def typesupport(_) do
     Nifs.get_typesupport_${funcname}()
   end
+
+  @spec initialize(any) :: reference()
   def initialize(_) do
     Nifs.create_empty_msg_${funcname}()
     |> Nifs.init_msg_${funcname}()
   end
+
+  @spec set(Rclex.${modulename}.t(), any) :: :ok
   def set(data, msg) do
     Nifs.setdata_${funcname}(msg, ${member_set[$structname]})
   end
+
+  @spec read(any, any) :: Rclex.${modulename}.t()
   def read(_, msg) do
     ${member_read[$structname]} = Nifs.readdata_${funcname}(msg)
     ${struct_return[$structname]}
