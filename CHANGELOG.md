@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## v0.7.1 on 21 Sep 2022
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.7.0...v0.7.1
+
+* New Contributors: @pojiro :tada:
+* New features:
+  * Improve unit test environment on local dev machine by @pojiro in https://github.com/rclex/rclex/pull/131
+* Code Improvements/Fixes:
+  * Enrich doc and specs with the awesome contributions by @pojiro (e.g., in https://github.com/rclex/rclex/pull/121)
+  * Enrich unit tests with the awesome contributions by @pojiro (e.g., in https://github.com/rclex/rclex/pull/136)
+  * Improve credo config, .credo.exs by @pojiro in https://github.com/rclex/rclex/pull/120
+  * exclude auto-generated files format by @pojiro in https://github.com/rclex/rclex/pull/135
+  * refactor Rclex.ResourceServer.call_nifs_rcl_node_init/5 by @pojiro in https://github.com/rclex/rclex/pull/147
+  * fix node name bug, when it attributes a namespace (and also fix #142) by @pojiro in https://github.com/rclex/rclex/pull/149
+  * Remove KeepSub module which is unused (also fix dialyzer error) by @s-hosoai in https://github.com/rclex/rclex/pull/164
+  * Improve README by @takasehideki in https://github.com/rclex/rclex/pull/171
+* Bumps:
+  * `credo` from 1.6.4 to 1.6.5 in https://github.com/rclex/rclex/pull/162
+* Known issues to be addressed in the near future:
+  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
+  * Bump to Humble Hawksbill in https://github.com/rclex/rclex/issues/114
+  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
+* Note in this release:
+  * After long consideration, we have decided to end the support for Dashing as the target environment 6ae367d
+
 ## v0.7.0 on 27 May 2022
 
 * New features: none
