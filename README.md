@@ -17,9 +17,9 @@ Additionally, publisher-subscriber (PubSub) communication between nodes and asso
 which are part of a lightweight process model. This enables generation of and communication between a large number of fault-tolerant
 nodes while suppressing memory load.
 
-## About ROS 2
+## What is ROS 2
 
-ROS (Robot Operating System) is a next-generation Robot development framework. In both ROS and ROS 2, each functional
+ROS (Robot Operating System) is a next-generation Robot development platform. In both ROS and ROS 2, each functional
 unit is exposed as a node, and by combining these nodes you can create different robot applications. Additionally,
 communication between nodes uses a PubSub model where publisher and subscriber exchange information by specifying a
 common topic name.
@@ -30,23 +30,20 @@ libraries in various languages. This has allowed for the creation of a robot app
 
 For details on ROS 2, see the official [ROS 2 documentation](https://index.ros.org/doc/ros2/).
 
-## Recommended Environment
+## Recommended environment
 
-Currently, we use the following environment as the development target:
+Currently, we use the following environment as the main development target:
 
 - Ubuntu 20.04.2 LTS (Focal Fossa)
 - ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
-  - NOTE: [Dashing Diademata](https://index.ros.org/doc/ros2/Releases/Release-Dashing-Diademata/) on Ubuntu 18.04.5 LTS does not work well since v0.6.0 (we try to continue to support it, see #89)
 - Elixir 1.12.3-otp-24
 - Erlang/OTP 24.1.5
 
-As an operation test, we check the communication with nodes implemented by [rclcpp](https://github.com/ros2/rclcpp) using [rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests).
+For other environments used to check the operation of this library,
+please refer to [here](https://github.com/rclex/rclex_docker#available-versions-docker-tags).
 
-We also run CI in multiple different environments on [GitHub Actions](https://github.com/rclex/rclex/actions). 
-However, please note that we cannot guarantee the operation of all of these versions due to our limited development resources.
-
-The pre-built Docker images used in CI have published on [Docker Hub](https://hub.docker.com/r/rclex/rclex_docker).
-You can also try the power of Rclex with it easily.
+The pre-built Docker images are available at [Docker Hub](https://hub.docker.com/r/rclex/rclex_docker).
+You can also try the power of Rclex with it easily. Please check ["Docker Environment"](#Docker-environment) section for details.
 
 ## Installation
 
@@ -58,7 +55,7 @@ by adding `rclex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:rclex, "~> 0.7.0"}
+    {:rclex, "~> 0.7.1"}
   ]
 end
 ```
@@ -75,6 +72,50 @@ Currently, the Rclex API allows for the following:
 2. The ability to create large numbers of each combination of publishers, topics, and subscribers.
 
 Please reference examples [here](https://github.com/rclex/rclex_examples). Also note the usage alongside the sample code.
+
+## Enhance devepoment experience
+
+This section describes the information mainly for developers.
+
+### Docker environment
+
+This repository provides a `docker compose` environment for library development with Docker.
+
+As mentioned above, pre-built Docker images are available at [Docker Hub](https://hub.docker.com/r/rclex/rclex_docker), which can be used to easily try out Rclex.
+You can set the environment variable `$RCLEX_DOCKER_TAG` to the version of the target environment. Please refer to [here](https://github.com/rclex/rclex_docker#available-versions-docker-tags) for the available environments.
+
+```
+# optional: set to the target environment (default `latest`)
+export RCLEX_DOCKER_TAG=latest
+# create and start the container
+docker compose up -d
+# execute the container (with the workdir where this repository is mounted)
+docker compose exec -w /root/rclex rclex_docker /bin/bash
+# stop the container
+docker compose down
+```
+
+### Automatic execution of mix test, etc.
+
+`mix test.watch` is introduced to automatically run unit test `mix test` and code formatting `mix format` every time the source code was editted.
+
+```
+mix test.watch
+```
+
+### Confirmation of operation
+
+To check the operation of this library, we prepare [rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests) to test the communication with the nodes implemented with Rclcpp.
+
+```
+cd /path/to/yours
+git clone https://github.com/rclex/rclex
+git clone https://github.com/rclex/rclex_connection_tests
+cd /path/to/yours/rclex_connection_tests
+./run-all.sh
+```
+
+In [GitHub Actions](https://github.com/rclex/rclex/actions), we perform CI on multiple environments at Pull Requests. HOwever, we cannot guarantee operation in all of these environments.
 
 ## Maintainers and developers (including past)
 
