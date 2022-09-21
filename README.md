@@ -36,8 +36,8 @@ Currently, we use the following environment as the main development target:
 
 - Ubuntu 20.04.2 LTS (Focal Fossa)
 - ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
-- Elixir 1.12.3-otp-24
-- Erlang/OTP 24.1.5
+- Elixir 1.13.4-otp-25
+- Erlang/OTP 25.0.3
 
 For other environments used to check the operation of this library,
 please refer to [here](https://github.com/rclex/rclex_docker#available-versions-docker-tags).
