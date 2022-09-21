@@ -23,19 +23,17 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 ## 動作環境（開発環境）
 
-現在，下記の環境を対象として開発を進めています．
+現在，下記の環境を主な対象として開発を進めています．
 
 - Ubuntu 20.04.2 LTS (Focal Fossa)
 - ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
 - Elixir 1.12.3-otp-24
 - Erlang/OTP 24.1.5
 
-動作確認として，[rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests)を用いてRclcppで実装されたノードとの通信に関するテストを実施しています．
+動作検証の対象としている環境は[こちら](https://github.com/rclex/rclex_docker#available-versions-docker-tags)を参照してください．
 
-[GitHub Actions](https://github.com/rclex/rclex/actions)では，複数の環境でのCIを実行しています．ただし，これら全ての環境での動作保証には対応できません．
-
-[Docker Hub](https://hub.docker.com/r/rclex/rclex_docker)にCIで利用しているビルド済みのDockerイメージを公開しています．
-これを用いてRclexを簡単に試行することもできます．
+[Docker Hub](https://hub.docker.com/r/rclex/rclex_docker)にてビルド済みのDockerイメージを公開しており，これを用いてRclexを簡単に試行することもできます．
+詳細は[「Docker環境の利用」](#Docker環境の利用)のセクションを参照してください．
 
 ## インストール方法
 
@@ -61,6 +59,50 @@ end
 2. パブリッシャ，トピック，サブスクライバが1つずつのペアを大量に作成できる．
 
 [こちら](https://github.com/rclex/rclex_examples)を参照してください．サンプルコードとともに使い方を記しています．
+
+## 開発の円滑化
+
+本セクションでは主に開発者向けの情報を示します．
+
+### Docker環境の利用
+
+本リポジトリでは，Dockerでライブラリ開発を進めるための`docker compose`による環境を提供しています．
+
+前述の通り[Docker Hub](https://hub.docker.com/r/rclex/rclex_docker)にてビルド済みのDockerイメージを公開しており，これを用いることでRclexを簡単に試行できます．
+環境変数 `$RCLEX_DOCKER_TAG` にて対象とする実行環境のバージョンを設定できます．設定可能な実行環境は[こちら](https://github.com/rclex/rclex_docker#available-versions-docker-tags)を参照してください．
+
+```
+# optional: 実行環境の設定（デフォルトは`latest`）
+export RCLEX_DOCKER_TAG=latest
+# コンテナを作成して起動
+docker compose up -d
+# コンテナの実行（本リポジトリのマウントポイントを作業ディレクトリに）
+docker compose exec -w /root/rclex rclex_docker /bin/bash
+# コンテナの終了
+docker compose down
+```
+
+### mix test等の自動実行
+
+`mix test.watch` を導入しており，ソースコードの編集時毎に，単体テスト `mix test` やコード整形 `mix format` を自動実行できます．
+
+```
+mix test.watch
+```
+
+### 動作確認
+
+動作確認として，[rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests)を用いてRclcppで実装されたノードとの通信に関するテストを実施しています．
+
+```
+cd /path/to/yours
+git clone https://github.com/rclex/rclex
+git clone https://github.com/rclex/rclex_connection_tests
+cd /path/to/yours/rclex_connection_tests
+./run-all.sh
+```
+
+[GitHub Actions](https://github.com/rclex/rclex/actions)では，複数の環境でのCIを実行しています．ただし，これら全ての環境での動作保証には対応できません．
 
 ## 主な管理者と開発者（過去分も含む）
 
