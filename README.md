@@ -17,9 +17,9 @@ Additionally, publisher-subscriber (PubSub) communication between nodes and asso
 which are part of a lightweight process model. This enables generation of and communication between a large number of fault-tolerant
 nodes while suppressing memory load.
 
-## About ROS 2
+## What is ROS 2
 
-ROS (Robot Operating System) is a next-generation Robot development framework. In both ROS and ROS 2, each functional
+ROS (Robot Operating System) is a next-generation Robot development platform. In both ROS and ROS 2, each functional
 unit is exposed as a node, and by combining these nodes you can create different robot applications. Additionally,
 communication between nodes uses a PubSub model where publisher and subscriber exchange information by specifying a
 common topic name.

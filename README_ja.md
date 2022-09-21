@@ -13,7 +13,7 @@ ROS 2共通階層であるRCL（ROS Client Library）APIをElixirコードから
 
 ## ROS 2とは
 
-ROS（Robot Operating System）というロボット開発支援フレームワークの次世代版です．
+ROS（Robot Operating System）というロボット開発を支援するプラットフォームの次世代版です．
 ROS，ROS 2ともに，機能単位をノードと表現し，ノードを複数組み合わせて所望のさまざまなロボットアプリケーションが作成できます．
 またノード間通信には出版購読通信が主に用いられ，パブリッシャとサブスクライバがトピックという名前でデータを識別してやりとりしています．
 
@@ -40,9 +40,9 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 ## インストール方法
 
-`rclex`は[Hexパッケージとして公開](https://hex.pm/docs/publish)しています．
+`rclex` は[Hexパッケージとして公開](https://hex.pm/docs/publish)しています．
 
-`mix.exs`の依存関係に`rclex`を追加することで，ご自身のプロジェクトにて使用することができます．
+`mix.exs` の依存関係に `rclex` を追加することで，ご自身のプロジェクトにて使用することができます．
 
 ```elixir
 def deps do
