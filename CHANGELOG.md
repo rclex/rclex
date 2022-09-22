@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## v0.7.2 on 22 Sep 2022
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.7.1...v0.7.2
+
+* New features: none
+* Code Improvements/Fixes:
+  * change the recommended env and target versions for GitHub Actions CI by @takasehideki in https://github.com/rclex/rclex/pull/173
+  * Enable Dialyzer on GitHub Actions (remove uncheck and ignore exit options) by @s-hosoai in https://github.com/rclex/rclex/pull/165
+  * elinimate errors in `mix dialyzer` on GHA (fix #174) by @takasehideki in https://github.com/rclex/rclex/pull/175
+* Bumps:
+  * `dialyxir` from 1.1.0 to 1.2.0 in https://github.com/rclex/rclex/pull/166
+  *  `ex_doc` from 0.28.4 to 0.28.5 in https://github.com/rclex/rclex/pull/168
+  * `credo` from 1.6.5 to 1.6.7 by https://github.com/rclex/rclex/pull/169
+* Known issues to be addressed in the near future:
+  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
+  * Bump to Humble Hawksbill in https://github.com/rclex/rclex/issues/114
+  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
+* Note in this release:
+  * The recommended environment is changed to the following versions
+    * Ubuntu 20.04.2 LTS (Focal Fossa)
+    * ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
+    * Elixir 1.13.4-otp-25
+    * Erlang/OTP 25.0.3
+
 ## v0.7.1 on 21 Sep 2022
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.7.0...v0.7.1
