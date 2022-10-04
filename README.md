@@ -101,7 +101,7 @@ docker compose down
 
 ```
 $ mix test.watch
-# run on docker by following
+# or, run on docker by following
 $ docker compose run --rm -w /root/rclex rclex_docker mix test.watch
 ```
 

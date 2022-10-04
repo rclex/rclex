@@ -88,7 +88,7 @@ docker compose down
 
 ```
 $ mix test.watch
-# docker で動作させるには
+# または docker で動作させるには
 $ docker compose run --rm -w /root/rclex rclex_docker mix test.watch
 ```
 
