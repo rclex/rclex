@@ -87,7 +87,9 @@ docker compose down
 `mix test.watch` を導入しており，ソースコードの編集時毎に，単体テスト `mix test` やコード整形 `mix format` を自動実行できます．
 
 ```
-mix test.watch
+$ mix test.watch
+# docker で動作させるには
+$ docker compose run --rm -w /root/rclex rclex_docker mix test.watch
 ```
 
 ### 動作確認

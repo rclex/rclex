@@ -100,7 +100,9 @@ docker compose down
 `mix test.watch` is introduced to automatically run unit test `mix test` and code formatting `mix format` every time the source code was editted.
 
 ```
-mix test.watch
+$ mix test.watch
+# run on docker by following
+$ docker compose run --rm -w /root/rclex rclex_docker mix test.watch
 ```
 
 ### Confirmation of operation
