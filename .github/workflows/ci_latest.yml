@@ -92,6 +92,9 @@ jobs:
       - name: Create PLTs
         if: steps.plt-cache.outputs.cache-hit != 'true'
         run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix local.hex --force
           mkdir -p priv/plts
           mix dialyzer --plt
 
