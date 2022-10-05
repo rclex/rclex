@@ -82,6 +82,14 @@ jobs:
           mix local.hex --force
           mix credo --all
 
+      - name: Create PLTs
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix local.hex --force
+          mkdir -p priv/plts
+          mix dialyzer --plt
+
       - name: mix dialyzer
         run: |
           source /opt/ros/${ROS_DISTRO}/setup.bash
