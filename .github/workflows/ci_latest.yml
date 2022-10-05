@@ -29,7 +29,6 @@ jobs:
           path: |
             rclex/deps
             rclex/_build
-            rclex/priv/plts
           key: ${{ runner.os }}-${{ matrix.dockertags }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.dockertags }}-mix-
@@ -42,8 +41,6 @@ jobs:
           mix local.hex --force
           mix deps.get
           mix deps.compile
-          mkdir -p priv/plts
-          mix dialyzer --plt
 
   code-analysis:
     needs: build_deps
@@ -84,6 +81,22 @@ jobs:
           cd rclex
           mix local.hex --force
           mix credo --all
+
+      - name: Retrieve PLT Cache
+        uses: actions/cache@v2
+        id: plt-cache
+        with:
+          path: priv/plts
+          key: ${{ runner.os }}-${{ matrix.dockertags }}-plts-${{ hashFiles('**/mix.lock') }}
+
+      - name: Create PLTs
+        if: steps.plt-cache.outputs.cache-hit != 'true'
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix local.hex --force
+          mkdir -p priv/plts
+          mix dialyzer --plt
 
       - name: mix dialyzer
         run: |
