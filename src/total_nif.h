@@ -19,35 +19,35 @@ extern "C"
 
 //各種リソースタイプの宣言やリソースタイプの作成を行う
 //------------------------nif_init.c-------------------
-ErlNifResourceType* rt_ret;
-ErlNifResourceType* rt_context;
-ErlNifResourceType* rt_init_options;
+extern ErlNifResourceType *rt_ret;
+extern ErlNifResourceType *rt_context;
+extern ErlNifResourceType *rt_init_options;
 
 //------------------------node_nif.cで追加--------------------
-ErlNifResourceType* rt_node;
-ErlNifResourceType* rt_node_options;
+extern ErlNifResourceType *rt_node;
+extern ErlNifResourceType *rt_node_options;
 
 //-----------------------publisher_nif.cで追加-------------------
-ErlNifResourceType* rt_pub;
-ErlNifResourceType* rt_pub_options;
-ErlNifResourceType* rt_msg_type_support;
-ErlNifResourceType* rt_pub_alloc;
+extern ErlNifResourceType *rt_pub;
+extern ErlNifResourceType *rt_pub_options;
+extern ErlNifResourceType *rt_msg_type_support;
+extern ErlNifResourceType *rt_pub_alloc;
 //----------------------subscription_nif.cで追加-------------------
-ErlNifResourceType* rt_sub;
-ErlNifResourceType* rt_sub_options;
-ErlNifResourceType* rt_msginfo;
-ErlNifResourceType* rt_sub_alloc;
+extern ErlNifResourceType *rt_sub;
+extern ErlNifResourceType *rt_sub_options;
+extern ErlNifResourceType *rt_msginfo;
+extern ErlNifResourceType *rt_sub_alloc;
 //----------------------graph_nif.c------------
-ErlNifResourceType* rt_names_and_types;
+extern ErlNifResourceType *rt_names_and_types;
 //-------------------wait_nif.cで追加------------------------
-ErlNifResourceType* rt_default_alloc;
-ErlNifResourceType* rt_waitset;
+extern ErlNifResourceType *rt_default_alloc;
+extern ErlNifResourceType *rt_waitset;
 //--------------------<custom_msgtype>_nif.c--------------------
-ErlNifResourceType* rt_void;
+extern ErlNifResourceType *rt_void;
 
-ERL_NIF_TERM atom_ok;
-ERL_NIF_TERM atom_true;
-ERL_NIF_TERM atom_false;
+extern ERL_NIF_TERM atom_ok;
+extern ERL_NIF_TERM atom_true;
+extern ERL_NIF_TERM atom_false;
 
 //リソースタイプを作る．load()から呼び出される
 int open_resource(ErlNifEnv* env);
