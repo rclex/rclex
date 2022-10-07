@@ -21,7 +21,7 @@ defmodule Rclex.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       build_embedded: true,
-      compilers: [:put_packages, :elixir_make] ++ Mix.compilers(),
+      compilers: [:elixir_make] ++ Mix.compilers(),
       make_targets: ["all"],
       make_clean: ["clean"],
       make_error_message: """
@@ -72,7 +72,6 @@ defmodule Rclex.MixProject do
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.22", only: :dev, runtime: false},
-      {:rclex_gen_msgs, "~> 0.1.0", runtime: false},
       # lock git_hooks version to avoid https://github.com/qgadrian/elixir_git_hooks/issues/123
       {:git_hooks, "== 0.6.5", only: [:dev], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test]}
