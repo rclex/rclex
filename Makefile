@@ -17,10 +17,6 @@ MSGPKG_DIRS = $(shell for msgpkg in $(MSGPKGS); do ros2 pkg prefix $$msgpkg; don
 MT_SEQ = $(shell seq 1 $(words $(MSGTYPES)))
 comma = ,
 
-CC = gcc
-LD = ld
-RM = rm
-
 PREFIX = $(MIX_APP_PATH)/priv
 BUILD  = $(MIX_APP_PATH)/obj
 OLD_SUB = $(dir $(wildcard src/*/msg)) $(dir $(wildcard lib/rclex/*/msg))
