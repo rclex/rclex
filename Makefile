@@ -3,12 +3,12 @@ ROS_DIR = /opt/ros/foxy
 
 ROS_DISTRO_UPPER = $(shell echo $(ROS_DISTRO) | tr a-z A-Z)
 
-MSGTYPES = $(shell cat packages.txt)
-MSGTYPE_FILES = $(shell echo $(MSGTYPES) | sed -e "s/\([A-Z]\)/_\L\1/g" -e "s/\/_/\//g")
-MSGTYPE_FUNCS = $(subst /,_,$(MSGTYPE_FILES))
-MSGPKGS = $(sort $(foreach msgtype,$(MSGTYPES),$(firstword $(subst /,$() ,$(msgtype)))))
-MSGPKG_DIRS = $(shell for msgpkg in $(MSGPKGS); do ros2 pkg prefix $$msgpkg; done)
-MT_SEQ = $(shell seq 1 $(words $(MSGTYPES)))
+MSGTYPES = std_msgs/msg/String geometry_msgs/msg/Twist
+MSGTYPE_FILES = std_msgs/msg/string geometry_msgs/msg/twist
+MSGTYPE_FUNCS = std_msgs_msg_string geometry_msgs_msg_twist
+MSGPKGS = geometry_msgs std_msgs
+MSGPKG_DIRS = /opt/ros/foxy
+MT_SEQ = 1 2
 
 PREFIX = $(MIX_APP_PATH)/priv
 BUILD  = $(MIX_APP_PATH)/obj
