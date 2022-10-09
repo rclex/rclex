@@ -12,10 +12,10 @@ MT_SEQ = 1 2
 
 PREFIX = $(MIX_APP_PATH)/priv
 BUILD  = $(MIX_APP_PATH)/obj
-OLD_SUB = $(dir $(wildcard src/*/msg)) $(dir $(wildcard lib/rclex/*/msg))
-BUILD_SUB = $(MSGPKGS:%=$(BUILD)/%/msg)
-SRC_SUB = $(MSGPKGS:%=src/%/msg)
-EXLIB_SUB = $(MSGPKGS:%=lib/rclex/%/msg)
+OLD_SUB = src/std_msgs/ src/geometry_msgs/ lib/rclex/geometry_msgs/ lib/rclex/std_msgs/
+BUILD_SUB = $(BUILD)/obj/geometry_msgs/msg $(BUILD)/obj/std_msgs/msg
+SRC_SUB = src/geometry_msgs/msg src/std_msgs/msg
+EXLIB_SUB = lib/rclex/geometry_msgs/msg lib/rclex/std_msgs/msg
 
 NIF = $(PREFIX)/rclex_nifs.so
 
