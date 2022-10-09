@@ -95,7 +95,8 @@ $(foreach subdir,$(SRC_SUB),$(eval $(call make_dir,$(subdir))))
 $(foreach subdir,$(EXLIB_SUB),$(eval $(call make_dir,$(subdir))))
 
 clean:
-	$(RM) $(NIF) $(BUILD)/*.o
+	$(RM) -rf $(NIF) $(BUILD)/*.o
+	$(RM) -rf lib/rclex/std_msgs lib/rclex/geometry_msgs src/std_msgs src/geometry_msgs
 
 .PHONY: all clean calling_from_make install
 
