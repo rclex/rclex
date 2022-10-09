@@ -40,11 +40,11 @@ ROS_LDFLAGS += -lrcl -lrmw -lrcutils \
 #ROS_LDFLAGS	+= -lrmw_opensplice_cpp -lrosidl_typesupport_opensplice_cpp
 
 # for msgpkg libs
-MSGPKG_CFLAGS  ?= $(MSGPKG_DIRS:%=-I%/include)
-MSGPKG_LDFLAGS ?= $(MSGPKG_DIRS:%=-L%/lib)
-MSGPKG_LDFLAGS += $(MSGPKG_DIRS:%=-Wl,-rpath,%/lib)
-MSGPKG_LDFLAGS += $(MSGPKGS:%=-l%__rosidl_generator_c)
-MSGPKG_LDFLAGS += $(MSGPKGS:%=-l%__rosidl_typesupport_c)
+MSGPKG_CFLAGS  ?= -I/opt/ros/foxy/include
+MSGPKG_LDFLAGS ?= -L/opt/ros/foxy/lib
+MSGPKG_LDFLAGS += -Wl,-rpath,/opt/ros/foxy/lib
+MSGPKG_LDFLAGS += -lgeometry_msgs__rosidl_generator_c -lstd_msgs__rosidl_generator_c
+MSGPKG_LDFLAGS += -lgeometry_msgs__rosidl_typesupport_c -lstd_msgs__rosidl_typesupport_c
 
 SRC ?= $(wildcard src/*.c) $(MSGTYPE_FILES:%=src/%_nif.c)
 HEADERS ?= $(SRC:src/%.c=src/%.h)
