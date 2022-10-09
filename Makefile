@@ -1,11 +1,7 @@
 # set directory for ROSDISTRO
 ROS_DIR = /opt/ros/foxy
 
-ifeq ($(ROS_DISTRO), dashing)
-	ROS_VERSION = DASHING
-else ifeq ($(ROS_DISTRO), foxy)
-	ROS_VERSION = FOXY
-endif
+ROS_DISTRO_UPPER = $(shell echo $(ROS_DISTRO) | tr a-z A-Z)
 
 MSGTYPES = $(shell cat packages.txt)
 MSGTYPE_FILES = $(shell echo $(MSGTYPES) | sed -e "s/\([A-Z]\)/_\L\1/g" -e "s/\/_/\//g")
@@ -66,7 +62,7 @@ install: $(OLD_SUB) $(BUILD) $(PREFIX) $(BUILD_SUB) $(SRC_SUB) $(EXLIB_SUB) $(NI
 $(OBJ): $(HEADERS) Makefile
 
 $(BUILD)/%.o: src/%.c
-	$(CC) -c $(ERL_CFLAGS) $(ROS_CFLAGS) $(MSGPKG_CFLAGS) $(CFLAGS) -D$(ROS_VERSION) -o $@ $<
+	$(CC) -c $(ERL_CFLAGS) $(ROS_CFLAGS) $(MSGPKG_CFLAGS) $(CFLAGS) -D$(ROS_DISTRO_UPPER) -o $@ $<
 
 $(NIF): $(OBJ)
 	$(CC) -o $@ $(ERL_LDFLAGS) $(LDFLAGS) $^ $(ROS_LDFLAGS) $(MSGPKG_LDFLAGS)
