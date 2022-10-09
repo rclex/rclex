@@ -9,7 +9,6 @@ MSGTYPE_FUNCS = $(subst /,_,$(MSGTYPE_FILES))
 MSGPKGS = $(sort $(foreach msgtype,$(MSGTYPES),$(firstword $(subst /,$() ,$(msgtype)))))
 MSGPKG_DIRS = $(shell for msgpkg in $(MSGPKGS); do ros2 pkg prefix $$msgpkg; done)
 MT_SEQ = $(shell seq 1 $(words $(MSGTYPES)))
-comma = ,
 
 PREFIX = $(MIX_APP_PATH)/priv
 BUILD  = $(MIX_APP_PATH)/obj
