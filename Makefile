@@ -3,10 +3,8 @@ ROS_DIR = /opt/ros/foxy
 
 ifeq ($(ROS_DISTRO), dashing)
 	ROS_VERSION = DASHING
-	TYPE_STRUCTURE_DIR = rosidl_generator_c
 else ifeq ($(ROS_DISTRO), foxy)
 	ROS_VERSION = FOXY
-	TYPE_STRUCTURE_DIR = rosidl_runtime_c
 endif
 
 MSGTYPES = $(shell cat packages.txt)
@@ -40,7 +38,7 @@ ERL_LDFLAGS ?= -L$(ERL_EI_LIBDIR)
 ROS_CFLAGS  ?= -I$(ROS_DIR)/include
 ROS_LDFLAGS ?= -L$(ROS_DIR)/lib
 ROS_LDFLAGS += -lrcl -lrmw -lrcutils \
-	-l$(TYPE_STRUCTURE_DIR) -lrosidl_typesupport_c \
+	-lrosidl_runtime_c -lrosidl_typesupport_c \
 	-lrosidl_typesupport_introspection_c \
 	-lfastcdr -lfastrtps -lrmw_fastrtps_cpp \
 # if you want to use OpenSplice DDS
