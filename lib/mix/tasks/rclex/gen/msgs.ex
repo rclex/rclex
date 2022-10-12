@@ -36,6 +36,14 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     )
   end
 
+  def generate_msg_nif_h() do
+    type = "std_msgs/String"
+
+    EEx.eval_file("lib/mix/tasks/rclex/gen/msg_nif_h.eex",
+      function_name: get_function_name_from_type(type)
+    )
+  end
+
   def get_type_variable_tuples(ros2_message_type, from) when is_binary(ros2_message_type) do
     [package_name, type_name] = String.split(ros2_message_type, "/")
     relative_msg_file_path = relative_msg_file_path(package_name, type_name)
@@ -108,6 +116,17 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   """
   def get_rclex_module_name_from_type(type) do
     "Rclex.#{get_module_name_from_type(type)}"
+  end
+
+  @doc """
+  iex> #{__MODULE__}.get_function_name_from_type("std_msgs/String")
+  "std_msgs_msg_string"
+  """
+  def get_function_name_from_type(type) do
+    [package_name, type_name] = String.split(type, "/")
+
+    [package_name, "msg", type_name]
+    |> Enum.map_join("_", &String.downcase(&1))
   end
 
   def create_fields(ros2_msg_type, from) do

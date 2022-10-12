@@ -6,9 +6,14 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
   alias Mix.Tasks.Rclex.Gen.Msgs, as: GenMsgs
 
   @msg_mod File.read!("test/expected_files/std_msgs/string.ex")
+  @msg_nif_h File.read!("test/expected_files/std_msgs/string_nif.h")
 
   test "generate_msg_mod/0" do
     assert @msg_mod = GenMsgs.generate_msg_mod()
+  end
+
+  test "generate_msg_nif_h/0" do
+    assert @msg_nif_h = GenMsgs.generate_msg_nif_h()
   end
 
   test "get_type_variable_tuples/2" do
