@@ -5,12 +5,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
 
   alias Mix.Tasks.Rclex.Gen.Msgs, as: GenMsgs
 
-  @msg_mod """
-  defmodule Rclex.StdMsgs.Msg.String do
-    defstruct data: nil
-    @type t :: %Rclex.StdMsgs.Msg.String{data: [integer]}
-  end
-  """
+  @msg_mod File.read!("test/expected_files/std_msgs/string.ex")
 
   test "generate_msg_mod/0" do
     assert @msg_mod = GenMsgs.generate_msg_mod()
