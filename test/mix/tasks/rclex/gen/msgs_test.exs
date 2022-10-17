@@ -5,6 +5,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
 
   alias Mix.Tasks.Rclex.Gen.Msgs, as: GenMsgs
 
+  @ros2_message_dir_path "/opt/ros/foxy/share"
   @ros2_message_type_map %{
     "geometry_msgs/msg/Twist" => [
       {"geometry_msgs/msg/Vector3", "linear"},
@@ -17,6 +18,12 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
     ],
     "std_msgs/msg/String" => [{"string", "data"}]
   }
+
+  @tag :skip
+  @tag :tmp_dir
+  test "generate/2", %{tmp_dir: tmp_dir_path} do
+    GenMsgs.generate(@ros2_message_dir_path, tmp_dir_path)
+  end
 
   for type <- ["std_msgs/msg/String", "geometry_msgs/msg/Twist"] do
     @tag :skip

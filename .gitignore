@@ -42,3 +42,6 @@ rclex-*.tar
 #/packages.txt
 /src/*/msg/
 /lib/rclex/*/msg/
+
+# for test
+/tmp

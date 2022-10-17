@@ -1,5 +1,22 @@
 defmodule Mix.Tasks.Rclex.Gen.Msgs do
-  @moduledoc false
+  @shortdoc "Generate codes of ROS2 message type"
+  @moduledoc """
+  #{@shortdoc}
+
+  Before generating, we have to specify message types in config.exs.
+
+  ex. config :rclex, ros2_message_types ["std_msgs/msg/String"]
+
+  Be careful, ros2 message type is case sensitive.
+
+  ## How to generate
+
+    $ mix rclex.gen.msgs --from /opt/ros/foxy/share
+
+  ## How to clean
+
+    $ mix rclex.gen.msgs --clean
+  """
 
   use Mix.Task
 
@@ -23,7 +40,66 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   @ros2_built_in_types Map.keys(@ros2_elixir_type_map)
 
-  def run(_) do
+  def run(args) do
+    {valid_options, _, _} =
+      OptionParser.parse(args, strict: [from: :string, clean: :boolean, show_types: :boolean])
+
+    case valid_options do
+      [from: from] -> generate(from, File.cwd!())
+      [clean: true] -> clean()
+      [show_types: true] -> show_types()
+      _ -> Mix.shell().info(@moduledoc)
+    end
+  end
+
+  def generate(from, to) do
+    types = Application.get_env(:rclex, :ros2_message_types, [])
+
+    if Enum.empty?(types) do
+      raise RuntimeError, "ros2_message_types is not specified in config"
+    end
+
+    ros2_message_type_map =
+      Enum.reduce(types, %{}, fn type, acc ->
+        get_ros2_message_type_map(type, from, acc)
+      end)
+
+    types = Map.keys(ros2_message_type_map)
+
+    Enum.map(types, fn type ->
+      [package_name, "msg", type_name] = String.split(type, "/")
+      type_name = String.downcase(type_name)
+
+      dir_path_ex = Path.join(to, "lib/rclex/#{package_name}/msg")
+      dir_path_c = Path.join(to, "src/#{package_name}/msg")
+
+      File.mkdir_p!(dir_path_ex)
+      File.mkdir_p!(dir_path_c)
+
+      [
+        {dir_path_ex, "#{type_name}_impl.ex", generate_msg_prot(type, ros2_message_type_map)},
+        {dir_path_ex, "#{type_name}.ex", generate_msg_mod(type, ros2_message_type_map)},
+        {dir_path_c, "#{type_name}_nif.c", generate_msg_nif_c(type, ros2_message_type_map)},
+        {dir_path_c, "#{type_name}_nif.h", generate_msg_nif_h(type, ros2_message_type_map)}
+      ]
+      |> Enum.map(fn {dir_path, file_name, binary} ->
+        File.write!(Path.join(dir_path, file_name), binary)
+      end)
+    end)
+  end
+
+  def clean() do
+    raise RuntimeError, "not implemented"
+  end
+
+  def show_types() do
+    types = Application.get_env(:rclex, :ros2_message_types, [])
+
+    if Enum.empty?(types) do
+      raise RuntimeError, "ros2_message_types is not specified in config"
+    end
+
+    Mix.shell().info(Enum.join(types, " "))
   end
 
   def generate_msg_prot(type, ros2_message_type_map) do
