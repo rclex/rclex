@@ -1,0 +1,23 @@
+int data_arity;
+const ERL_NIF_TERM* data;
+if(!enif_get_tuple(env,argv[1],&data_arity,&data)) {
+  return enif_make_badarg(env);
+}
+if(data_arity != 3) {
+  return enif_make_badarg(env);
+}
+double data_0;
+if(!enif_get_double(env,data[0],&data_0)) {
+  return enif_make_badarg(env);
+}
+res->x = data_0;
+double data_1;
+if(!enif_get_double(env,data[1],&data_1)) {
+  return enif_make_badarg(env);
+}
+res->y = data_1;
+double data_2;
+if(!enif_get_double(env,data[2],&data_2)) {
+  return enif_make_badarg(env);
+}
+res->z = data_2;

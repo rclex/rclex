@@ -5,52 +5,162 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
 
   alias Mix.Tasks.Rclex.Gen.Msgs, as: GenMsgs
 
-  @msg_mod File.read!("test/expected_files/std_msgs/string.ex")
-  @msg_nif_h File.read!("test/expected_files/std_msgs/string_nif.h")
+  @ros2_message_type_map %{
+    "geometry_msgs/msg/Twist" => [
+      {"geometry_msgs/msg/Vector3", "linear"},
+      {"geometry_msgs/msg/Vector3", "angular"}
+    ],
+    "geometry_msgs/msg/Vector3" => [
+      {"float64", "x"},
+      {"float64", "y"},
+      {"float64", "z"}
+    ],
+    "std_msgs/msg/String" => [{"string", "data"}]
+  }
 
-  test "generate_msg_mod/0" do
-    assert @msg_mod = GenMsgs.generate_msg_mod()
+  for type <- ["std_msgs/msg/String", "geometry_msgs/msg/Twist"] do
+    @tag :skip
+    test "generate_msg_prot/2, type:#{type}" do
+      type = unquote(type)
+      binary = File.read!("test/expected_files/#{String.downcase(type)}_impl.ex")
+      assert binary == GenMsgs.generate_msg_prot(type, @ros2_message_type_map)
+    end
   end
 
-  test "generate_msg_nif_h/0" do
-    assert @msg_nif_h = GenMsgs.generate_msg_nif_h()
+  for type <- ["std_msgs/msg/String", "geometry_msgs/msg/Vector3", "geometry_msgs/msg/Twist"] do
+    @tag :skip
+    test "generate_msg_mod/2, type:#{type}" do
+      type = unquote(type)
+      binary = File.read!("test/expected_files/#{String.downcase(type)}.ex")
+      assert binary == GenMsgs.generate_msg_mod(type, @ros2_message_type_map)
+    end
   end
 
-  test "get_type_variable_tuples/2" do
-    assert [{"string", "data"}] ==
-             GenMsgs.get_type_variable_tuples("std_msgs/String", "/opt/ros/foxy/share")
-
-    assert [{"geometry_msgs/Vector3", "linear"}, {"geometry_msgs/Vector3", "angular"}] ==
-             GenMsgs.get_type_variable_tuples("geometry_msgs/Twist", "/opt/ros/foxy/share")
-
-    assert [{"float64", "x"}, {"float64", "y"}, {"float64", "z"}] ==
-             GenMsgs.get_type_variable_tuples("geometry_msgs/Vector3", "/opt/ros/foxy/share")
+  for type <- ["std_msgs/msg/String", "geometry_msgs/msg/Vector3", "geometry_msgs/msg/Twist"] do
+    @tag :skip
+    test "generate_msg_nif_c/2, type:#{type}" do
+      type = unquote(type)
+      binary = File.read!("test/expected_files/#{String.downcase(type)}_nif.c")
+      assert binary == GenMsgs.generate_msg_nif_c(type, @ros2_message_type_map)
+    end
   end
 
-  test "create_fields/2" do
-    from = "/opt/ros/foxy/share"
-
-    assert "data: nil" == GenMsgs.create_fields("std_msgs/String", from)
-
-    assert "x: nil, y: nil, z: nil" == GenMsgs.create_fields("geometry_msgs/Vector3", from)
-
-    assert "x: nil, y: nil, z: nil, w: nil" ==
-             GenMsgs.create_fields("geometry_msgs/Quaternion", from)
-
-    assert "linear: %Rclex.GeometryMsgs.Msg.Vector3{x: nil, y: nil, z: nil}, " <>
-             "angular: %Rclex.GeometryMsgs.Msg.Vector3{x: nil, y: nil, z: nil}" ==
-             GenMsgs.create_fields("geometry_msgs/Twist", from)
+  for type <- ["std_msgs/msg/String", "geometry_msgs/msg/Vector3", "geometry_msgs/msg/Twist"] do
+    @tag :skip
+    test "generate_msg_nif_h/2, type:#{type}" do
+      type = unquote(type)
+      binary = File.read!("test/expected_files/#{String.downcase(type)}_nif.h")
+      assert binary == GenMsgs.generate_msg_nif_h(type, @ros2_message_type_map)
+    end
   end
 
-  test "create_struct_type/2" do
-    from = "/opt/ros/foxy/share"
+  @tag :skip
+  test "get_ros2_message_type_map/3" do
+    assert Map.equal?(
+             %{"std_msgs/msg/String" => [{"string", "data"}]},
+             GenMsgs.get_ros2_message_type_map("std_msgs/msg/String", "/opt/ros/foxy/share")
+           )
 
-    assert "%Rclex.StdMsgs.Msg.String{data: [integer]}" =
-             GenMsgs.create_struct_type("std_msgs/String", from)
+    assert Map.equal?(
+             %{
+               "geometry_msgs/msg/Vector3" => [
+                 {"float64", "x"},
+                 {"float64", "y"},
+                 {"float64", "z"}
+               ]
+             },
+             GenMsgs.get_ros2_message_type_map("geometry_msgs/msg/Vector3", "/opt/ros/foxy/share")
+           )
 
-    assert "%Rclex.GeometryMsgs.Msg.Twist{" <>
-             "linear: %Rclex.GeometryMsgs.Msg.Vector3{x: float, y: float, z: float}, " <>
-             "angular: %Rclex.GeometryMsgs.Msg.Vector3{x: float, y: float, z: float}}" ==
-             GenMsgs.create_struct_type("geometry_msgs/Twist", from)
+    assert Map.equal?(
+             %{
+               "geometry_msgs/msg/Twist" => [
+                 {"geometry_msgs/msg/Vector3", "linear"},
+                 {"geometry_msgs/msg/Vector3", "angular"}
+               ],
+               "geometry_msgs/msg/Vector3" => [
+                 {"float64", "x"},
+                 {"float64", "y"},
+                 {"float64", "z"}
+               ]
+             },
+             GenMsgs.get_ros2_message_type_map("geometry_msgs/msg/Twist", "/opt/ros/foxy/share")
+           )
+  end
+
+  test "create_fields_for_set/2" do
+    [
+      {"std_msgs/msg/String", "data.data"},
+      {"geometry_msgs/msg/Twist",
+       "{data.linear.x, data.linear.y, data.linear.z}, " <>
+         "{data.angular.x, data.angular.y, data.angular.z}"}
+    ]
+    |> Enum.map(fn {type, expected_fields} ->
+      ros2_message_type_map = @ros2_message_type_map
+
+      assert expected_fields ==
+               GenMsgs.create_fields_for_nifs_setdata_arg(type, ros2_message_type_map)
+    end)
+  end
+
+  test "create_fields_for_nifs_readdata_return/2" do
+    [
+      {"std_msgs/msg/String", "data_0"},
+      {"geometry_msgs/msg/Twist",
+       "{data_0_0, data_0_1, data_0_2}, {data_1_0, data_1_1, data_1_2}"}
+    ]
+    |> Enum.map(fn {type, expected_fields} ->
+      ros2_message_type_map = @ros2_message_type_map
+
+      assert expected_fields ==
+               GenMsgs.create_fields_for_nifs_readdata_return(type, ros2_message_type_map)
+    end)
+  end
+
+  test "create_fields_for_read/2" do
+    [
+      {"std_msgs/msg/String", "data: data_0"},
+      {"geometry_msgs/msg/Twist",
+       "linear: %Rclex.GeometryMsgs.Msg.Vector3{x: data_0_0, y: data_0_1, z: data_0_2}, " <>
+         "angular: %Rclex.GeometryMsgs.Msg.Vector3{x: data_1_0, y: data_1_1, z: data_1_2}"}
+    ]
+    |> Enum.map(fn {type, expected_fields} ->
+      ros2_message_type_map = @ros2_message_type_map
+      assert expected_fields == GenMsgs.create_fields_for_read(type, ros2_message_type_map)
+    end)
+  end
+
+  test "create_fields_for_defstruct/2" do
+    [
+      {"std_msgs/msg/String", "data: nil"},
+      {"geometry_msgs/msg/Vector3", "x: nil, y: nil, z: nil"},
+      {"geometry_msgs/msg/Twist",
+       "linear: %Rclex.GeometryMsgs.Msg.Vector3{x: nil, y: nil, z: nil}, " <>
+         "angular: %Rclex.GeometryMsgs.Msg.Vector3{x: nil, y: nil, z: nil}"}
+    ]
+    |> Enum.map(fn {type, expected_fields} ->
+      ros2_message_type_map = @ros2_message_type_map
+      assert expected_fields == GenMsgs.create_fields_for_defstruct(type, ros2_message_type_map)
+    end)
+  end
+
+  test "create_readdata_statements/1" do
+    ["std_msgs/msg/String", "geometry_msgs/msg/Vector3", "geometry_msgs/msg/Twist"]
+    |> Enum.map(fn type ->
+      expected = File.read!("test/expected_files/#{String.downcase(type)}_readdata_function.txt")
+      ros2_message_type_map = @ros2_message_type_map
+
+      assert expected == GenMsgs.create_readdata_statements(type, ros2_message_type_map)
+    end)
+  end
+
+  test "create_setdata_statements/1" do
+    ["std_msgs/msg/String", "geometry_msgs/msg/Vector3", "geometry_msgs/msg/Twist"]
+    |> Enum.map(fn type ->
+      expected = File.read!("test/expected_files/#{String.downcase(type)}_setdata_function.txt")
+      ros2_message_type_map = @ros2_message_type_map
+
+      assert expected == GenMsgs.create_setdata_statements(type, ros2_message_type_map)
+    end)
   end
 end

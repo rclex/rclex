@@ -1,0 +1,18 @@
+int data_arity;
+const ERL_NIF_TERM* data;
+if(!enif_get_tuple(env,argv[1],&data_arity,&data)) {
+  return enif_make_badarg(env);
+}
+if(data_arity != 1) {
+  return enif_make_badarg(env);
+}
+unsigned data_0_length;
+if(!enif_get_list_length(env,data[0],&data_0_length)) {
+  return enif_make_badarg(env);
+}
+char* data_0 = (char*) malloc(data_0_length + 1);
+if(!enif_get_string(env,data[0],data_0,data_0_length + 1,ERL_NIF_LATIN1)) {
+  return enif_make_badarg(env);
+}
+__STRING__ASSIGN(&(res->data),data_0);
+free(data_0);

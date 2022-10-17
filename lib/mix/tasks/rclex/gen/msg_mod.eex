@@ -1,4 +1,4 @@
 defmodule <%= module_name %> do
-  defstruct <%= fields %>
-  @type t :: <%= struct_type %>
+  defstruct <%= defstruct_fields %>
+  @type t :: %<%= module_name %>{<%= type_fields %>}
 end
