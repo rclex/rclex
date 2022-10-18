@@ -1,26 +1,17 @@
-# set directory for ROSDISTRO
-ROS_DIR = /opt/ros/foxy
+# ROS_DISTRO is set by ROS2 setup.bash.
+# If not set, ROS2 default distro value is following.
+ROS_DISTRO ?= foxy
+ROS_DIR ?= /opt/ros/$(ROS_DISTRO)
 
-ROS_DISTRO_UPPER = $(shell echo $(ROS_DISTRO) | tr a-z A-Z)
-
-MSGTYPES = std_msgs/msg/String geometry_msgs/msg/Twist
-MSGTYPE_FILES = std_msgs/msg/string geometry_msgs/msg/twist geometry_msgs/msg/vector3
-MSGTYPE_FUNCS = std_msgs_msg_string geometry_msgs_msg_twist
-MSGPKGS = geometry_msgs std_msgs
-MSGPKG_DIRS = /opt/ros/foxy
-MT_SEQ = 1 2
+ROS_DISTRO_UPPER = $(shell echo $(ROS_DISTRO) | tr '[:lower:]' '[:upper:]')
 
 PREFIX = $(MIX_APP_PATH)/priv
 BUILD  = $(MIX_APP_PATH)/obj
-OLD_SUB = src/std_msgs/ src/geometry_msgs/ lib/rclex/geometry_msgs/ lib/rclex/std_msgs/
-BUILD_SUB = $(BUILD)/geometry_msgs/msg $(BUILD)/std_msgs/msg
-SRC_SUB = src/geometry_msgs/msg src/std_msgs/msg
-EXLIB_SUB = lib/rclex/geometry_msgs/msg lib/rclex/std_msgs/msg
 
 NIF = $(PREFIX)/rclex_nifs.so
 
-CFLAGS  ?= -g -O2 -Wall -Wextra -Wno-unused-parameter -pedantic -fPIC -I./src
-LDFLAGS ?= -g -shared
+CFLAGS  += -g -O2 -Wall -Wextra -Wno-unused-parameter -pedantic -fPIC -I./src
+LDFLAGS += -g -shared
 
 # Enabling this line prints debug messages on NIFs code.
 #CFLAGS  += -DDEBUG_BUILD
@@ -33,58 +24,48 @@ ERL_LDFLAGS ?= -L$(ERL_EI_LIBDIR)
 ROS_CFLAGS  ?= -I$(ROS_DIR)/include
 ROS_LDFLAGS ?= -L$(ROS_DIR)/lib
 ROS_LDFLAGS += -lrcl -lrmw -lrcutils \
-	-lrosidl_runtime_c -lrosidl_typesupport_c \
-	-lrosidl_typesupport_introspection_c \
-	-lfastcdr -lfastrtps -lrmw_fastrtps_cpp \
+-lrosidl_runtime_c -lrosidl_typesupport_c \
+-lrosidl_typesupport_introspection_c \
+-lfastcdr -lfastrtps -lrmw_fastrtps_cpp \
 # if you want to use OpenSplice DDS
-#ROS_LDFLAGS	+= -lrmw_opensplice_cpp -lrosidl_typesupport_opensplice_cpp
+#ROS_LDFLAGS += -lrmw_opensplice_cpp -lrosidl_typesupport_opensplice_cpp
 
-# for msgpkg libs
-MSGPKG_CFLAGS  ?= -I/opt/ros/foxy/include
-MSGPKG_LDFLAGS ?= -L/opt/ros/foxy/lib
-MSGPKG_LDFLAGS += -Wl,-rpath,/opt/ros/foxy/lib
-MSGPKG_LDFLAGS += -lgeometry_msgs__rosidl_generator_c -lstd_msgs__rosidl_generator_c
-MSGPKG_LDFLAGS += -lgeometry_msgs__rosidl_typesupport_c -lstd_msgs__rosidl_typesupport_c
+SRC = $(wildcard src/*.c)
+HEADERS = $(SRC:src/%.c=src/%.h)
+OBJ = $(SRC:src/%.c=$(BUILD)/%.o)
 
-SRC ?= $(wildcard src/*.c) $(MSGTYPE_FILES:%=src/%_nif.c)
-HEADERS ?= $(SRC:src/%.c=src/%.h)
-OBJ ?= $(SRC:src/%.c=$(BUILD)/%.o)
-MSGMOD ?= $(MSGTYPE_FILES:%=lib/rclex/%.ex) lib/rclex/nifs.ex
+# WRITE ROS2 package-related settings HERE
+MSG_PKGS = $(patsubst src/%/msg,%,$(wildcard src/*/msg))
+ifneq "$(MSG_PKGS)" ""
+BUILD_MSG    = $(MSG_PKGS:%=$(BUILD)/%/msg)
+SRC         += $(wildcard $(MSG_PKGS:%=src/%/msg/*.c))
+HEADERS      = $(SRC:src/%.c=src/%.h)
+OBJ          = $(SRC:src/%.c=$(BUILD)/%.o)
+ROS_LDFLAGS += $(MSG_PKGS:%=-l%__rosidl_generator_c)
+ROS_LDFLAGS += $(MSG_PKGS:%=-l%__rosidl_typesupport_c)
+endif
 
 calling_from_make:
 	mix compile
 
 all: install
-	
-install: $(OLD_SUB) $(BUILD) $(PREFIX) $(BUILD_SUB) $(SRC_SUB) $(EXLIB_SUB) $(NIF) $(MSGMOD)
+
+install: $(BUILD) $(BUILD_MSG) $(PREFIX) $(NIF)
 
 $(OBJ): $(HEADERS) Makefile
 
 $(BUILD)/%.o: src/%.c
-	$(CC) -c $(ERL_CFLAGS) $(ROS_CFLAGS) $(MSGPKG_CFLAGS) $(CFLAGS) -D$(ROS_DISTRO_UPPER) -o $@ $<
+	$(CC) -o $@ -c $(CFLAGS) $(ERL_CFLAGS) $(ROS_CFLAGS) -D$(ROS_DISTRO_UPPER) $<
 
+# gcc 
 $(NIF): $(OBJ)
-	$(CC) -o $@ $(ERL_LDFLAGS) $(LDFLAGS) $^ $(ROS_LDFLAGS) $(MSGPKG_LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS) $(ERL_LDFLAGS) $(ROS_LDFLAGS)
 
-$(OLD_SUB): packages.txt
-	$(RM) -r $@
-
-$(BUILD):
-	@mkdir -p $(BUILD)
-
-$(PREFIX):
-	@mkdir -p $(PREFIX)
-
-define make_dir
-$(1):
-	@mkdir -p $(1)
-endef
-$(foreach subdir,$(BUILD_SUB),$(eval $(call make_dir,$(subdir))))
-$(foreach subdir,$(SRC_SUB),$(eval $(call make_dir,$(subdir))))
-$(foreach subdir,$(EXLIB_SUB),$(eval $(call make_dir,$(subdir))))
+$(BUILD) $(BUILD_MSG) $(PREFIX):
+	@mkdir -p $@
 
 clean:
-	$(RM) -rf $(NIF) $(BUILD)/*.o
-	$(RM) -rf lib/rclex/std_msgs lib/rclex/geometry_msgs src/std_msgs src/geometry_msgs
+	$(RM) -r $(NIF) $(BUILD)/*.o
+	mix rclex.gen.msgs --clean
 
 .PHONY: all clean calling_from_make install
