@@ -66,7 +66,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
     types = Map.keys(ros2_message_type_map)
 
-    Enum.map(types, fn type ->
+    for type <- types do
       [package_name, "msg", type_name] = String.split(type, "/")
       type_name = String.downcase(type_name)
 
@@ -76,16 +76,19 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       File.mkdir_p!(dir_path_ex)
       File.mkdir_p!(dir_path_c)
 
-      [
-        {dir_path_ex, "#{type_name}_impl.ex", generate_msg_prot(type, ros2_message_type_map)},
-        {dir_path_ex, "#{type_name}.ex", generate_msg_mod(type, ros2_message_type_map)},
-        {dir_path_c, "#{type_name}_nif.c", generate_msg_nif_c(type, ros2_message_type_map)},
-        {dir_path_c, "#{type_name}_nif.h", generate_msg_nif_h(type, ros2_message_type_map)}
-      ]
-      |> Enum.map(fn {dir_path, file_name, binary} ->
+      for {dir_path, file_name, binary} <- [
+            {dir_path_ex, "#{type_name}_impl.ex", generate_msg_prot(type, ros2_message_type_map)},
+            {dir_path_ex, "#{type_name}.ex", generate_msg_mod(type, ros2_message_type_map)},
+            {dir_path_c, "#{type_name}_nif.c", generate_msg_nif_c(type, ros2_message_type_map)},
+            {dir_path_c, "#{type_name}_nif.h", generate_msg_nif_h(type, ros2_message_type_map)}
+          ] do
         File.write!(Path.join(dir_path, file_name), binary)
-      end)
-    end)
+      end
+    end
+
+    File.write!(Path.join(to, "lib/rclex/msg_types_nif.ex"), generate_msg_types_ex(types))
+    File.write!(Path.join(to, "src/msg_types_nif.h"), generate_msg_types_h(types))
+    File.write!(Path.join(to, "src/msg_types_nif.ec"), generate_msg_types_c(types))
   end
 
   def clean() do
@@ -100,6 +103,45 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
 
     Mix.shell().info(Enum.join(types, " "))
+  end
+
+  def generate_msg_types_ex(types) do
+    statements =
+      Enum.map_join(types, fn type ->
+        function_name = get_function_name_from_type(type)
+
+        """
+        def readdata_#{function_name}(_), do: raise \"NIF readdata_#{function_name}/1 is not implemented\"
+        def setdata_#{function_name}(_,_), do: raise \"NIF setdata_#{function_name}/2 is not implemented\"
+        def init_msg_#{function_name}(_), do: raise \"NIF init_msg_#{function_name}/1 is not implemented\"
+        def create_empty_msg_#{function_name}, do: raise \"NIF create_empty_msg_#{function_name}/0 is not implemented\"
+        def get_typesupport_#{function_name}, do: raise \"NIF get_typesupport_#{function_name}/0 is not implemented\"
+        """
+      end)
+
+    EEx.eval_file("lib/mix/tasks/rclex/gen/msg_types_nif.eex", statements: statements)
+  end
+
+  def generate_msg_types_h(types) do
+    Enum.map_join(types, fn type ->
+      """
+      #include "#{String.downcase(type)}_nif.h"
+      """
+    end)
+  end
+
+  def generate_msg_types_c(types) do
+    Enum.map_join(types, fn type ->
+      function_name = get_function_name_from_type(type)
+
+      """
+      {"get_typesupport_#{function_name}",0,nif_get_typesupport_#{function_name},0},
+      {"create_empty_msg_#{function_name}",0,nif_create_empty_msg_#{function_name},0},
+      {"init_msg_#{function_name}",1,nif_init_msg_#{function_name},0},
+      {"setdata_#{function_name}",2,nif_setdata_#{function_name},0},
+      {"readdata_#{function_name}",1,nif_readdata_#{function_name},0},
+      """
+    end)
   end
 
   def generate_msg_prot(type, ros2_message_type_map) do

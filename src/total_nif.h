@@ -13,8 +13,7 @@ extern "C"
 #include "graph_nif.h"
 #include "msg_nif.h"
 //-----<custom_msgtype>_nif.h-----start-----
-#include "geometry_msgs/msg/twist_nif.h"
-#include "std_msgs/msg/string_nif.h"
+#include "msg_types_nif.h"
 //-----<custom_msgtype>_nif.h-----end-----
 
 //各種リソースタイプの宣言やリソースタイプの作成を行う
