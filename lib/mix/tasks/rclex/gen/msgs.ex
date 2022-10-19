@@ -348,7 +348,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
-  @spec create_readdata_statements(Stiring.t(), map()) :: String.t()
+  @spec create_readdata_statements(String.t(), map()) :: String.t()
   def create_readdata_statements(type, ros2_message_type_map) do
     create_readdata_statements_impl(type, ros2_message_type_map, [])
   end
