@@ -5,7 +5,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   Before generating, we have to specify message types in config.exs.
 
-  ex. config :rclex, ros2_message_types ["std_msgs/msg/String"]
+  ex. config :rclex, ros2_message_types: ["std_msgs/msg/String"]
 
   Be careful, ros2 message type is case sensitive.
 
