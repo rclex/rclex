@@ -35,10 +35,10 @@ HEADERS = $(SRC:src/%.c=src/%.h)
 OBJ = $(SRC:src/%.c=$(BUILD)/%.o)
 
 # WRITE ROS2 package-related settings HERE
-MSG_PKGS = $(patsubst src/%/msg,%,$(wildcard src/*/msg))
+MSG_PKGS = $(patsubst src/pkgs/%/msg,%,$(wildcard src/pkgs/*/msg))
 ifneq "$(MSG_PKGS)" ""
-BUILD_MSG    = $(MSG_PKGS:%=$(BUILD)/%/msg)
-SRC         += $(wildcard $(MSG_PKGS:%=src/%/msg/*.c))
+BUILD_MSG    = $(MSG_PKGS:%=$(BUILD)/pkgs/%/msg)
+SRC         += $(wildcard $(MSG_PKGS:%=src/pkgs/%/msg/*.c))
 HEADERS      = $(SRC:src/%.c=src/%.h)
 OBJ          = $(SRC:src/%.c=$(BUILD)/%.o)
 ROS_LDFLAGS += $(MSG_PKGS:%=-l%__rosidl_generator_c)

@@ -38,9 +38,9 @@ rclex-*.tar
 #core
 #/.textdata/
 
-# for msgtype
-/src/*/msg/
-/lib/rclex/*/msg/
+# for ros2 pkgs
+/src/pkgs/*
+/lib/rclex/pkgs/*
 
 # for test
 /tmp

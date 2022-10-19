@@ -11,7 +11,7 @@
 #endif
 
 #include <<%= file_name %>.h>
-#include "<%= file_name %>_nif.h"
+#include "pkgs/<%= file_name %>_nif.h"
 #include "total_nif.h"
 
 ERL_NIF_TERM nif_get_typesupport_<%= function_name %>(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])

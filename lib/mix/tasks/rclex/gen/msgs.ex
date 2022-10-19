@@ -71,8 +71,8 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       [package_name, "msg", type_name] = String.split(type, "/")
       type_name = String.downcase(type_name)
 
-      dir_path_ex = Path.join(to, "lib/rclex/#{package_name}/msg")
-      dir_path_c = Path.join(to, "src/#{package_name}/msg")
+      dir_path_ex = Path.join(to, "lib/rclex/pkgs/#{package_name}/msg")
+      dir_path_c = Path.join(to, "src/pkgs/#{package_name}/msg")
 
       File.mkdir_p!(dir_path_ex)
       File.mkdir_p!(dir_path_c)
@@ -126,7 +126,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   def generate_msg_types_h(types) do
     Enum.map_join(types, fn type ->
       """
-      #include "#{String.downcase(type)}_nif.h"
+      #include "pkgs/#{String.downcase(type)}_nif.h"
       """
     end)
   end
