@@ -39,7 +39,6 @@ rclex-*.tar
 #/.textdata/
 
 # for msgtype
-#/packages.txt
 /src/*/msg/
 /lib/rclex/*/msg/
 
