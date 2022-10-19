@@ -93,7 +93,15 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   def clean() do
-    raise RuntimeError, "not implemented"
+    dir_path = File.cwd!()
+
+    for file_path <- ["lib/rclex/pkgs", "src/pkgs"] do
+      File.rm_rf!(Path.join(dir_path, file_path))
+    end
+
+    for file_path <- ["lib/rclex/msg_types_nif.ex", "src/msg_types_nif.h", "src/msg_types_nif.ec"] do
+      {_, 0} = System.cmd("git", ["restore", Path.join(dir_path, file_path)])
+    end
   end
 
   def show_types() do
