@@ -65,7 +65,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
   test "get_ros2_message_type_map/3" do
     assert Map.equal?(
              %{"std_msgs/msg/String" => [{"string", "data"}]},
-             GenMsgs.get_ros2_message_type_map("std_msgs/msg/String", "/opt/ros/foxy/share")
+             GenMsgs.get_ros2_message_type_map("std_msgs/msg/String", @ros2_message_dir_path)
            )
 
     assert Map.equal?(
@@ -76,7 +76,10 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
                  {"float64", "z"}
                ]
              },
-             GenMsgs.get_ros2_message_type_map("geometry_msgs/msg/Vector3", "/opt/ros/foxy/share")
+             GenMsgs.get_ros2_message_type_map(
+               "geometry_msgs/msg/Vector3",
+               @ros2_message_dir_path
+             )
            )
 
     assert Map.equal?(
@@ -91,7 +94,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
                  {"float64", "z"}
                ]
              },
-             GenMsgs.get_ros2_message_type_map("geometry_msgs/msg/Twist", "/opt/ros/foxy/share")
+             GenMsgs.get_ros2_message_type_map("geometry_msgs/msg/Twist", @ros2_message_dir_path)
            )
   end
 
