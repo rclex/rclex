@@ -372,11 +372,29 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     var = vars |> Enum.reverse() |> Enum.join(".")
 
     case type do
-      "float64" ->
+      "bool" ->
+        "enif_make_atom(env,(res->#{var}?\"true\":\"false\"))"
+
+      "int64" ->
+        "enif_make_int64(env,res->#{var})"
+
+      "int" <> _ ->
+        "enif_make_int(env,res->#{var})"
+
+      "uint64" ->
+        "enif_make_uint64(env,res->#{var})"
+
+      "uint" <> _ ->
+        "enif_make_uint(env,res->#{var})"
+
+      "float" <> _ ->
         "enif_make_double(env,res->#{var})"
 
       "string" ->
         "enif_make_string(env,res->#{var}.data,ERL_NIF_LATIN1)"
+
+      "wstring" ->
+        "enif_make_string(env,(char*)(res->#{var}.data),ERL_NIF_LATIN1)"
     end
   end
 
@@ -420,7 +438,53 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     var_local = "#{var_caller}_#{index}"
 
     case type do
-      "float64" ->
+      "bool" ->
+        """
+        unsigned #{var_local};
+        if(!enif_get_atom_length(env,#{var_caller}[#{index}]},&#{var_local},ERL_NIF_LATIN1)) {
+          return enif_make_badarg(env);
+        }
+        if(#{var_local} == 4) res->#{var} = true;
+        else if(#{var_local} == 5) res->#{var} = false;
+        """
+
+      "int64" ->
+        """
+        int64_t #{var_local};
+        if(!enif_get_int64(env,#{var_caller}[#{index}],&#{var_local})) {
+          return enif_make_badarg(env);
+        }
+        res->#{var} = #{var_local};
+        """
+
+      "int" <> _ ->
+        """
+        int #{var_local};
+        if(!enif_get_int(env,#{var_caller}[#{index}],&#{var_local})) {
+          return enif_make_badarg(env);
+        }
+        res->#{var} = #{var_local};
+        """
+
+      "uint64" ->
+        """
+        uint64_t #{var_local};
+        if(!enif_get_uint64(env,#{var_caller}[#{index}],&#{var_local})) {
+          return enif_make_badarg(env);
+        }
+        res->#{var} = #{var_local};
+        """
+
+      "uint" <> _ ->
+        """
+        uint #{var_local};
+        if(!enif_get_uint(env,#{var_caller}[#{index}],&#{var_local})) {
+          return enif_make_badarg(env);
+        }
+        res->#{var} = #{var_local};
+        """
+
+      "float" <> _ ->
         """
         double #{var_local};
         if(!enif_get_double(env,#{var_caller}[#{index}],&#{var_local})) {
@@ -440,6 +504,20 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
           return enif_make_badarg(env);
         }
         __STRING__ASSIGN(&(res->#{var}),#{var_local});
+        free(#{var_local});
+        """
+
+      "wstring" ->
+        """
+        unsigned #{var_local}_length;
+        if(!enif_get_list_length(env,#{var_caller}[#{index}],&#{var_local}_length)) {
+        return enif_make_badarg(env);
+        }
+        char* #{var_local} = (char*) malloc(#{var_local}_length + 1);
+        if(!enif_get_string(env,#{var_caller}[#{index}],#{var_local},#{var_local}_length + 1,ERL_NIF_LATIN1)) {
+        return enif_make_badarg(env);
+        }
+        __U16STRING__ASSIGN(&(#{var_caller}[#{index}]),#{var_local});
         free(#{var_local});
         """
     end
