@@ -445,9 +445,10 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
-  def create_setdata_statements_impl(type, ros2_message_type_map, vars, var_prefix, index)
+  def create_setdata_statements_impl(type, ros2_message_type_map, vars, var_caller, index)
       when is_map(ros2_message_type_map) do
     type_var_list = Map.get(ros2_message_type_map, type)
+    var_local = "#{var_caller}_#{index}"
 
     statements =
       type_var_list
@@ -457,18 +458,18 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
           type,
           ros2_message_type_map,
           [var | vars],
-          "#{var_prefix}_#{index}",
+          var_local,
           idx
         )
       end)
 
     """
-    int #{var_prefix}_#{index}_arity;
-    const ERL_NIF_TERM* #{var_prefix}_#{index};
-    if(!enif_get_tuple(env,#{var_prefix}[#{index}],&#{var_prefix}_#{index}_arity,&#{var_prefix}_#{index})) {
+    int #{var_local}_arity;
+    const ERL_NIF_TERM* #{var_local};
+    if(!enif_get_tuple(env,#{var_caller}[#{index}],&#{var_local}_arity,&#{var_local})) {
       return enif_make_badarg(env);
     }
-    if(#{var_prefix}_#{index}_arity != #{Enum.count(type_var_list)}) {
+    if(#{var_local}_arity != #{Enum.count(type_var_list)}) {
       return enif_make_badarg(env);
     }
     """ <> "#{statements}"
