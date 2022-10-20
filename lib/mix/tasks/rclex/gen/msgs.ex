@@ -39,14 +39,14 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   }
 
   @ros2_built_in_types Map.keys(@ros2_elixir_type_map)
-  @templates_dir_path "lib/mix/tasks/rclex/gen/templates"
+  @templates_dir_path Path.join(Application.app_dir(:rclex), "priv/templates/rclex.gen.msgs")
 
   def run(args) do
     {valid_options, _, _} =
       OptionParser.parse(args, strict: [from: :string, clean: :boolean, show_types: :boolean])
 
     case valid_options do
-      [from: from] -> generate(from, File.cwd!())
+      [from: from] -> generate(from, rclex_dir_path!())
       [clean: true] -> clean()
       [show_types: true] -> show_types()
       _ -> Mix.shell().info(@moduledoc)
@@ -93,7 +93,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   def clean() do
-    dir_path = File.cwd!()
+    dir_path = rclex_dir_path!()
 
     for file_path <- ["lib/rclex/pkgs", "src/pkgs"] do
       File.rm_rf!(Path.join(dir_path, file_path))
@@ -499,5 +499,15 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   """
   def relative_msg_file_path(package_name, type_name) do
     Enum.join([package_name, "msg", type_name], "/") <> ".msg"
+  end
+
+  defp rclex_dir_path!() do
+    cwd_path = File.cwd!()
+
+    if Path.basename(cwd_path) == "rclex" do
+      cwd_path
+    else
+      Path.join(cwd_path, "deps/rclex")
+    end
   end
 end
