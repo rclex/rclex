@@ -313,7 +313,9 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
         "#{var}.#{variable}"
       else
         var = "#{var}.#{variable}"
-        "{#{create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, var)}}"
+        fields = create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, var)
+
+        "{#{fields}}"
       end
     end)
   end
@@ -327,7 +329,9 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
         "#{var}_#{to_string(index)}"
       else
         var = "#{var}_#{to_string(index)}"
-        "{#{create_fields_for_nifs_readdata_return(type, ros2_message_type_map, var)}}"
+        fields = create_fields_for_nifs_readdata_return(type, ros2_message_type_map, var)
+
+        "{#{fields}}"
       end
     end)
   end
@@ -342,8 +346,10 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
           "#{variable}: #{var}"
         else
           var = "#{var}_#{to_string(index)}"
+          module_name = get_module_name_from_type(type)
+          fields = create_fields_for_read(type, ros2_message_type_map, var)
 
-          "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_read(type, ros2_message_type_map, var)}}"
+          "#{variable}: %#{module_name}{#{fields}}"
         end
     end)
   end
@@ -354,7 +360,10 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       if type in @ros2_built_in_types or is_ros2_list(type) do
         "#{variable}: nil"
       else
-        "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_defstruct(type, ros2_message_type_map)}}"
+        module_name = get_module_name_from_type(type)
+        fields = create_fields_for_defstruct(type, ros2_message_type_map)
+
+        "#{variable}: %#{module_name}{#{fields}}"
       end
     end)
   end
@@ -370,7 +379,10 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
           "#{variable}: [#{@ros2_elixir_type_map[list_type(type)]}]"
 
         {type, variable} ->
-          "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_type(type, ros2_message_type_map)}}"
+          module_name = get_module_name_from_type(type)
+          fields = create_fields_for_type(type, ros2_message_type_map)
+
+          "#{variable}: %#{module_name}{#{fields}}"
       end
     end)
   end
