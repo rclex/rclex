@@ -39,7 +39,6 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   }
 
   @ros2_built_in_types Map.keys(@ros2_elixir_type_map)
-  @templates_dir_path Path.join(Application.app_dir(:rclex), "priv/templates/rclex.gen.msgs")
 
   def run(args) do
     {valid_options, _, _} =
@@ -101,7 +100,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
     for file_path <- ["lib/rclex/msg_types_nif.ex", "src/msg_types_nif.h", "src/msg_types_nif.ec"] do
       file_name = Path.basename(file_path)
-      src_path = Path.join(@templates_dir_path, file_name)
+      src_path = Path.join(templates_dir_path(), file_name)
       dest_path = Path.join(dir_path, file_path)
 
       # NOTE: overwrite not modified file to file which was modified by generation
@@ -133,7 +132,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
         """
       end)
 
-    EEx.eval_file("#{@templates_dir_path}/msg_types_nif.eex", statements: statements)
+    EEx.eval_file("#{templates_dir_path()}/msg_types_nif.eex", statements: statements)
   end
 
   def generate_msg_types_h(types) do
@@ -159,7 +158,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   def generate_msg_prot(type, ros2_message_type_map) do
-    EEx.eval_file("#{@templates_dir_path}/msg_prot_impl.eex",
+    EEx.eval_file("#{templates_dir_path()}/msg_prot_impl.eex",
       module_name: get_module_name_from_type(type),
       function_name: get_function_name_from_type(type),
       nifs_readdata_return_fields:
@@ -170,7 +169,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   def generate_msg_mod(type, ros2_message_type_map) do
-    EEx.eval_file("#{@templates_dir_path}/msg_mod.eex",
+    EEx.eval_file("#{templates_dir_path()}/msg_mod.eex",
       module_name: get_module_name_from_type(type),
       defstruct_fields: create_fields_for_defstruct(type, ros2_message_type_map),
       type_fields: create_fields_for_type(type, ros2_message_type_map)
@@ -178,7 +177,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   def generate_msg_nif_c(type, ros2_message_type_map) do
-    EEx.eval_file("#{@templates_dir_path}/msg_nif_c.eex",
+    EEx.eval_file("#{templates_dir_path()}/msg_nif_c.eex",
       function_name: get_function_name_from_type(type),
       file_name: get_file_name_from_type(type),
       rosidl_get_msg_type_support: String.replace(type, "/", ","),
@@ -189,7 +188,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   def generate_msg_nif_h(type, _ros2_message_type_map) do
-    EEx.eval_file("#{@templates_dir_path}/msg_nif_h.eex",
+    EEx.eval_file("#{templates_dir_path()}/msg_nif_h.eex",
       function_name: get_function_name_from_type(type)
     )
   end
@@ -719,5 +718,9 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   defp list_type(type) do
     String.split(type, "[") |> List.first()
+  end
+
+  defp templates_dir_path() do
+    Path.join(Application.app_dir(:rclex), "priv/templates/rclex.gen.msgs")
   end
 end
