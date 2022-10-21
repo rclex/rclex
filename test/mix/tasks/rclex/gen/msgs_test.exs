@@ -29,7 +29,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
     @tag :skip
     test "generate_msg_prot/2, type:#{type}" do
       type = unquote(type)
-      binary = File.read!("test/expected_files/#{String.downcase(type)}_impl.ex")
+      binary = File.read!("test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_impl.ex")
       assert binary == GenMsgs.generate_msg_prot(type, @ros2_message_type_map)
     end
   end
@@ -38,7 +38,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
     @tag :skip
     test "generate_msg_mod/2, type:#{type}" do
       type = unquote(type)
-      binary = File.read!("test/expected_files/#{String.downcase(type)}.ex")
+      binary = File.read!("test/expected_files/#{GenMsgs.get_file_name_from_type(type)}.ex")
       assert binary == GenMsgs.generate_msg_mod(type, @ros2_message_type_map)
     end
   end
@@ -47,7 +47,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
     @tag :skip
     test "generate_msg_nif_c/2, type:#{type}" do
       type = unquote(type)
-      binary = File.read!("test/expected_files/#{String.downcase(type)}_nif.c")
+      binary = File.read!("test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_nif.c")
       assert binary == GenMsgs.generate_msg_nif_c(type, @ros2_message_type_map)
     end
   end
@@ -56,7 +56,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
     @tag :skip
     test "generate_msg_nif_h/2, type:#{type}" do
       type = unquote(type)
-      binary = File.read!("test/expected_files/#{String.downcase(type)}_nif.h")
+      binary = File.read!("test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_nif.h")
       assert binary == GenMsgs.generate_msg_nif_h(type, @ros2_message_type_map)
     end
   end
@@ -157,7 +157,11 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
   test "create_readdata_statements/1" do
     ["std_msgs/msg/String", "geometry_msgs/msg/Vector3", "geometry_msgs/msg/Twist"]
     |> Enum.map(fn type ->
-      expected = File.read!("test/expected_files/#{String.downcase(type)}_readdata_function.txt")
+      expected =
+        File.read!(
+          "test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_readdata_function.txt"
+        )
+
       ros2_message_type_map = @ros2_message_type_map
 
       assert expected == GenMsgs.create_readdata_statements(type, ros2_message_type_map)
@@ -167,7 +171,11 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
   test "create_setdata_statements/1" do
     ["std_msgs/msg/String", "geometry_msgs/msg/Vector3", "geometry_msgs/msg/Twist"]
     |> Enum.map(fn type ->
-      expected = File.read!("test/expected_files/#{String.downcase(type)}_setdata_function.txt")
+      expected =
+        File.read!(
+          "test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_setdata_function.txt"
+        )
+
       ros2_message_type_map = @ros2_message_type_map
 
       assert expected == GenMsgs.create_setdata_statements(type, ros2_message_type_map)

@@ -69,7 +69,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
     for type <- types do
       [package_name, "msg", type_name] = String.split(type, "/")
-      type_name = String.downcase(type_name)
+      type_name = to_down_snake(type_name)
 
       dir_path_ex = Path.join(to, "lib/rclex/pkgs/#{package_name}/msg")
       dir_path_c = Path.join(to, "src/pkgs/#{package_name}/msg")
@@ -139,7 +139,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   def generate_msg_types_h(types) do
     Enum.map_join(types, fn type ->
       """
-      #include "pkgs/#{String.downcase(type)}_nif.h"
+      #include "pkgs/#{get_file_name_from_type(type)}_nif.h"
       """
     end)
   end
@@ -170,24 +170,19 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   def generate_msg_mod(type, ros2_message_type_map) do
-    module_name = get_module_name_from_type(type)
-
     EEx.eval_file("#{@templates_dir_path}/msg_mod.eex",
-      module_name: module_name,
+      module_name: get_module_name_from_type(type),
       defstruct_fields: create_fields_for_defstruct(type, ros2_message_type_map),
       type_fields: create_fields_for_type(type, ros2_message_type_map)
     )
   end
 
   def generate_msg_nif_c(type, ros2_message_type_map) do
-    [package_name, "msg", type_name] = String.split(type, "/")
-
     EEx.eval_file("#{@templates_dir_path}/msg_nif_c.eex",
       function_name: get_function_name_from_type(type),
-      file_name: String.downcase(type),
-      package_name: package_name,
-      type_name: type_name,
-      struct_name: "#{package_name}__msg__#{type_name}",
+      file_name: get_file_name_from_type(type),
+      rosidl_get_msg_type_support: String.replace(type, "/", ","),
+      struct_name: get_struct_name_from_type(type),
       readdata_statements: create_readdata_statements(type, ros2_message_type_map),
       setdata_statements: create_setdata_statements(type, ros2_message_type_map)
     )
@@ -262,6 +257,8 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @doc """
   iex> #{__MODULE__}.get_module_name_from_type("std_msgs/msg/String")
   "Rclex.StdMsgs.Msg.String"
+  iex> #{__MODULE__}.get_module_name_from_type("geometry_msgs/msg/TwistWithCovariance")
+  "Rclex.GeometryMsgs.Msg.TwistWithCovariance"
   """
   def get_module_name_from_type(type) do
     if not String.contains?(type, "/") do
@@ -276,21 +273,34 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @doc """
   iex> #{__MODULE__}.get_function_name_from_type("std_msgs/msg/String")
   "std_msgs_msg_string"
+  iex> #{__MODULE__}.get_function_name_from_type("geometry_msgs/msg/TwistWithCovariance")
+  "geometry_msgs_msg_twist_with_covariance"
   """
   def get_function_name_from_type(type) do
-    String.split(type, "/")
-    |> Enum.map_join("_", &String.downcase(&1))
+    [pkg, "msg", type] = String.split(type, "/")
+    Enum.join([pkg, "msg", to_down_snake(type)], "_")
   end
 
   @doc """
-  iex> #{__MODULE__}.get_file_name_from_type("std_msgs/String")
+  iex> #{__MODULE__}.get_file_name_from_type("std_msgs/msg/String")
   "std_msgs/msg/string"
+  iex> #{__MODULE__}.get_file_name_from_type("geometry_msgs/msg/TwistWithCovariance")
+  "geometry_msgs/msg/twist_with_covariance"
   """
   def get_file_name_from_type(type) do
-    [package_name, type_name] = String.split(type, "/")
+    [pkg, "msg", type] = String.split(type, "/")
+    Enum.join([pkg, "msg", to_down_snake(type)], "/")
+  end
 
-    [package_name, "msg", type_name]
-    |> Enum.map_join("/", &String.downcase(&1))
+  @doc """
+  iex> #{__MODULE__}.get_struct_name_from_type("std_msgs/msg/String")
+  "std_msgs__msg__String"
+  iex> #{__MODULE__}.get_struct_name_from_type("geometry_msgs/msg/TwistWithCovariance")
+  "geometry_msgs__msg__TwistWithCovariance"
+  """
+  def get_struct_name_from_type(type) do
+    [pkg, "msg", type] = String.split(type, "/")
+    Enum.join([pkg, "_msg_", type], "_")
   end
 
   def create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, vars \\ ["data"]) do
@@ -556,33 +566,31 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @doc """
   iex> #{__MODULE__}.get_module_name_impl(["std_msgs", "msg", "String"])
   "StdMsgs.Msg.String"
+  iex> #{__MODULE__}.get_module_name_impl(["geometry_msgs", "msg", "TwistWithCovariance"])
+  "GeometryMsgs.Msg.TwistWithCovariance"
   """
-  def get_module_name_impl(list) when is_list(list) do
-    list
-    |> Enum.map_join(".", fn binary ->
-      if String.contains?(binary, "_") do
-        convert_package_name_to_capitalized_binary(binary)
-      else
-        String.capitalize(binary)
-      end
-    end)
+  def get_module_name_impl([pkg, msg = "msg", type]) do
+    Enum.join([convert_package_name_to_capitalized(pkg), String.capitalize(msg), type], ".")
   end
 
   @doc """
-  iex> #{__MODULE__}.convert_package_name_to_capitalized_binary("std_msgs")
+  iex> #{__MODULE__}.convert_package_name_to_capitalized("std_msgs")
   "StdMsgs"
   """
-  def convert_package_name_to_capitalized_binary(binary) do
+  def convert_package_name_to_capitalized(binary) do
     String.split(binary, "_")
     |> Enum.map_join(&String.capitalize(&1))
   end
 
   @doc """
-  iex> #{__MODULE__}.relative_msg_file_path("std_msgs", "String")
-  "std_msgs/msg/String.msg"
+  iex> #{__MODULE__}.to_down_snake("Vector3")
+  "vector3"
+  iex> #{__MODULE__}.to_down_snake("TwistWithCovariance")
+  "twist_with_covariance"
   """
-  def relative_msg_file_path(package_name, type_name) do
-    Enum.join([package_name, "msg", type_name], "/") <> ".msg"
+  def to_down_snake(type_name) do
+    String.split(type_name, ~r/[A-Z][a-z0-9]+/, include_captures: true, trim: true)
+    |> Enum.map_join("_", &String.downcase(&1))
   end
 
   defp rclex_dir_path!() do

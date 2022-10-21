@@ -31,7 +31,7 @@ ERL_NIF_TERM nif_get_typesupport_<%= function_name %>(ErlNifEnv* env, int argc, 
   enif_release_resource(res);
 
   res_ts = (rosidl_message_type_support_t**) res;
-  *res_ts = ROSIDL_GET_MSG_TYPE_SUPPORT(<%= package_name %>,msg,<%= type_name %>);
+  *res_ts = ROSIDL_GET_MSG_TYPE_SUPPORT(<%= rosidl_get_msg_type_support %>);
   return ret;
 }
 
