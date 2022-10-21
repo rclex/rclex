@@ -106,10 +106,8 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
          "{data.angular.x, data.angular.y, data.angular.z}"}
     ]
     |> Enum.map(fn {type, expected_fields} ->
-      ros2_message_type_map = @ros2_message_type_map
-
       assert expected_fields ==
-               GenMsgs.create_fields_for_nifs_setdata_arg(type, ros2_message_type_map)
+               GenMsgs.create_fields_for_nifs_setdata_arg(type, @ros2_message_type_map)
     end)
   end
 
@@ -120,10 +118,8 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
        "{data_0_0, data_0_1, data_0_2}, {data_1_0, data_1_1, data_1_2}"}
     ]
     |> Enum.map(fn {type, expected_fields} ->
-      ros2_message_type_map = @ros2_message_type_map
-
       assert expected_fields ==
-               GenMsgs.create_fields_for_nifs_readdata_return(type, ros2_message_type_map)
+               GenMsgs.create_fields_for_nifs_readdata_return(type, @ros2_message_type_map)
     end)
   end
 
@@ -135,8 +131,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
          "angular: %Rclex.GeometryMsgs.Msg.Vector3{x: data_1_0, y: data_1_1, z: data_1_2}"}
     ]
     |> Enum.map(fn {type, expected_fields} ->
-      ros2_message_type_map = @ros2_message_type_map
-      assert expected_fields == GenMsgs.create_fields_for_read(type, ros2_message_type_map)
+      assert expected_fields == GenMsgs.create_fields_for_read(type, @ros2_message_type_map)
     end)
   end
 
@@ -149,8 +144,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
          "angular: %Rclex.GeometryMsgs.Msg.Vector3{x: nil, y: nil, z: nil}"}
     ]
     |> Enum.map(fn {type, expected_fields} ->
-      ros2_message_type_map = @ros2_message_type_map
-      assert expected_fields == GenMsgs.create_fields_for_defstruct(type, ros2_message_type_map)
+      assert expected_fields == GenMsgs.create_fields_for_defstruct(type, @ros2_message_type_map)
     end)
   end
 
@@ -162,9 +156,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
           "test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_readdata_function.txt"
         )
 
-      ros2_message_type_map = @ros2_message_type_map
-
-      assert expected == GenMsgs.create_readdata_statements(type, ros2_message_type_map)
+      assert expected == GenMsgs.create_readdata_statements(type, @ros2_message_type_map)
     end)
   end
 
@@ -176,9 +168,7 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
           "test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_setdata_function.txt"
         )
 
-      ros2_message_type_map = @ros2_message_type_map
-
-      assert expected == GenMsgs.create_setdata_statements(type, ros2_message_type_map)
+      assert expected == GenMsgs.create_setdata_statements(type, @ros2_message_type_map)
     end)
   end
 end
