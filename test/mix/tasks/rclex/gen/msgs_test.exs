@@ -5,7 +5,6 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
 
   alias Mix.Tasks.Rclex.Gen.Msgs, as: GenMsgs
 
-  @ros2_message_dir_path "/opt/ros/foxy/share"
   @ros2_message_type_map %{
     "geometry_msgs/msg/TwistWithCovariance" => [
       {"geometry_msgs/msg/Twist", "twist"},
@@ -22,12 +21,6 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
     ],
     "std_msgs/msg/String" => [{"string", "data"}]
   }
-
-  @tag :skip
-  @tag :tmp_dir
-  test "generate/2", %{tmp_dir: tmp_dir_path} do
-    GenMsgs.generate(@ros2_message_dir_path, tmp_dir_path)
-  end
 
   for type <- [
         "std_msgs/msg/String",
@@ -127,10 +120,14 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
       type = unquote(type)
       expected_map = unquote(Macro.escape(expected_map))
 
-      assert Map.equal?(
-               expected_map,
-               GenMsgs.get_ros2_message_type_map(type, @ros2_message_dir_path)
-             )
+      ros_distro = System.get_env("ROS_DISTRO")
+
+      if not is_nil(ros_distro) do
+        assert Map.equal?(
+                 expected_map,
+                 GenMsgs.get_ros2_message_type_map(type, "/opt/ros/#{ros_distro}/share")
+               )
+      end
     end
   end
 
