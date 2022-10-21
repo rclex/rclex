@@ -7,6 +7,10 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
 
   @ros2_message_dir_path "/opt/ros/foxy/share"
   @ros2_message_type_map %{
+    "geometry_msgs/msg/TwistWithCovariance" => [
+      {"geometry_msgs/msg/Twist", "twist"},
+      {"float64[36]", "covariance"}
+    ],
     "geometry_msgs/msg/Twist" => [
       {"geometry_msgs/msg/Vector3", "linear"},
       {"geometry_msgs/msg/Vector3", "angular"}
@@ -96,6 +100,28 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
              },
              GenMsgs.get_ros2_message_type_map("geometry_msgs/msg/Twist", @ros2_message_dir_path)
            )
+
+    assert Map.equal?(
+             %{
+               "geometry_msgs/msg/TwistWithCovariance" => [
+                 {"geometry_msgs/msg/Twist", "twist"},
+                 {"float64[36]", "covariance"}
+               ],
+               "geometry_msgs/msg/Twist" => [
+                 {"geometry_msgs/msg/Vector3", "linear"},
+                 {"geometry_msgs/msg/Vector3", "angular"}
+               ],
+               "geometry_msgs/msg/Vector3" => [
+                 {"float64", "x"},
+                 {"float64", "y"},
+                 {"float64", "z"}
+               ]
+             },
+             GenMsgs.get_ros2_message_type_map(
+               "geometry_msgs/msg/TwistWithCovariance",
+               @ros2_message_dir_path
+             )
+           )
   end
 
   test "create_fields_for_set/2" do
@@ -160,15 +186,21 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
     end)
   end
 
-  test "create_setdata_statements/1" do
-    ["std_msgs/msg/String", "geometry_msgs/msg/Vector3", "geometry_msgs/msg/Twist"]
-    |> Enum.map(fn type ->
+  for type <- [
+        "std_msgs/msg/String",
+        "geometry_msgs/msg/Vector3",
+        "geometry_msgs/msg/Twist",
+        "geometry_msgs/msg/TwistWithCovariance"
+      ] do
+    test "create_setdata_statements/1, type: #{type}" do
+      type = unquote(type)
+
       expected =
         File.read!(
           "test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_setdata_function.txt"
         )
 
       assert expected == GenMsgs.create_setdata_statements(type, @ros2_message_type_map)
-    end)
+    end
   end
 end

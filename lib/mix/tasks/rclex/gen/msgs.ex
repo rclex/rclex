@@ -217,6 +217,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
         cond do
           type in @ros2_built_in_types -> {type, variable}
+          msg_type_is_list?(type) and list_type(type) in @ros2_built_in_types -> {type, variable}
           String.contains?(type, "/") -> {type, variable}
           true -> {Path.join("#{package_name}/msg", type), variable}
         end
@@ -228,6 +229,8 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       cond do
         type in @ros2_built_in_types -> acc
         Map.has_key?(type_map, type) -> acc
+        msg_type_is_list?(type) and list_type(type) in @ros2_built_in_types -> acc
+        msg_type_is_list?(type) -> get_ros2_message_type_map(list_type(type), from, acc)
         true -> get_ros2_message_type_map(type, from, acc)
       end
     end)
@@ -427,7 +430,13 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       type_var_list
       |> Enum.with_index()
       |> Enum.map(fn {{type, var}, index} ->
-        create_setdata_statements_impl(type, ros2_message_type_map, [var], "data", index)
+        create_setdata_statements_impl(
+          type,
+          ros2_message_type_map,
+          var,
+          "data[#{index}]",
+          "data_#{index}"
+        )
       end)
 
     """
@@ -442,119 +451,180 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     """ <> "#{statements}"
   end
 
-  def create_setdata_statements_impl(type, ros2_message_type_map, vars, var_caller, index)
+  def create_setdata_statements_impl(type, ros2_message_type_map, var_res, var_term, var_local)
       when type in @ros2_built_in_types and is_map(ros2_message_type_map) do
-    var = vars |> Enum.reverse() |> Enum.join(".")
-    var_local = "#{var_caller}_#{index}"
-
     case type do
       "bool" ->
         """
         unsigned #{var_local};
-        if(!enif_get_atom_length(env,#{var_caller}[#{index}]},&#{var_local},ERL_NIF_LATIN1)) {
+        if(!enif_get_atom_length(env,#{var_term}},&#{var_local},ERL_NIF_LATIN1)) {
           return enif_make_badarg(env);
         }
-        if(#{var_local} == 4) res->#{var} = true;
-        else if(#{var_local} == 5) res->#{var} = false;
+        if(#{var_local} == 4) res->#{var_res} = true;
+        else if(#{var_local} == 5) res->#{var_res} = false;
         """
 
       "int64" ->
         """
         int64_t #{var_local};
-        if(!enif_get_int64(env,#{var_caller}[#{index}],&#{var_local})) {
+        if(!enif_get_int64(env,#{var_term},&#{var_local})) {
           return enif_make_badarg(env);
         }
-        res->#{var} = #{var_local};
+        res->#{var_res} = #{var_local};
         """
 
       "int" <> _ ->
         """
         int #{var_local};
-        if(!enif_get_int(env,#{var_caller}[#{index}],&#{var_local})) {
+        if(!enif_get_int(env,#{var_term},&#{var_local})) {
           return enif_make_badarg(env);
         }
-        res->#{var} = #{var_local};
+        res->#{var_res} = #{var_local};
         """
 
       "uint64" ->
         """
         uint64_t #{var_local};
-        if(!enif_get_uint64(env,#{var_caller}[#{index}],&#{var_local})) {
+        if(!enif_get_uint64(env,#{var_term},&#{var_local})) {
           return enif_make_badarg(env);
         }
-        res->#{var} = #{var_local};
+        res->#{var_res} = #{var_local};
         """
 
       "uint" <> _ ->
         """
         uint #{var_local};
-        if(!enif_get_uint(env,#{var_caller}[#{index}],&#{var_local})) {
+        if(!enif_get_uint(env,#{var_term},&#{var_local})) {
           return enif_make_badarg(env);
         }
-        res->#{var} = #{var_local};
+        res->#{var_res} = #{var_local};
         """
 
       "float" <> _ ->
         """
         double #{var_local};
-        if(!enif_get_double(env,#{var_caller}[#{index}],&#{var_local})) {
+        if(!enif_get_double(env,#{var_term},&#{var_local})) {
           return enif_make_badarg(env);
         }
-        res->#{var} = #{var_local};
+        res->#{var_res} = #{var_local};
         """
 
       "string" ->
         """
         unsigned #{var_local}_length;
-        if(!enif_get_list_length(env,#{var_caller}[#{index}],&#{var_local}_length)) {
+        if(!enif_get_list_length(env,#{var_term},&#{var_local}_length)) {
           return enif_make_badarg(env);
         }
         char* #{var_local} = (char*) malloc(#{var_local}_length + 1);
-        if(!enif_get_string(env,#{var_caller}[#{index}],#{var_local},#{var_local}_length + 1,ERL_NIF_LATIN1)) {
+        if(!enif_get_string(env,#{var_term},#{var_local},#{var_local}_length + 1,ERL_NIF_LATIN1)) {
           return enif_make_badarg(env);
         }
-        __STRING__ASSIGN(&(res->#{var}),#{var_local});
+        __STRING__ASSIGN(&(res->#{var_res}),#{var_local});
         free(#{var_local});
         """
 
       "wstring" ->
         """
         unsigned #{var_local}_length;
-        if(!enif_get_list_length(env,#{var_caller}[#{index}],&#{var_local}_length)) {
+        if(!enif_get_list_length(env,#{var_term},&#{var_local}_length)) {
         return enif_make_badarg(env);
         }
         char* #{var_local} = (char*) malloc(#{var_local}_length + 1);
-        if(!enif_get_string(env,#{var_caller}[#{index}],#{var_local},#{var_local}_length + 1,ERL_NIF_LATIN1)) {
+        if(!enif_get_string(env,#{var_term},#{var_local},#{var_local}_length + 1,ERL_NIF_LATIN1)) {
         return enif_make_badarg(env);
         }
-        __U16STRING__ASSIGN(&(#{var_caller}[#{index}]),#{var_local});
+        __U16STRING__ASSIGN(&(#{var_term}),#{var_local});
         free(#{var_local});
         """
     end
   end
 
-  def create_setdata_statements_impl(type, ros2_message_type_map, vars, var_caller, index)
+  def create_setdata_statements_impl(type, ros2_message_type_map, var, var_term, var_local) do
+    if msg_type_is_list?(type) do
+      create_setdata_statements_impl_for_list(
+        type,
+        ros2_message_type_map,
+        var,
+        var_term,
+        var_local
+      )
+    else
+      create_setdata_statements_impl_for_tuple(
+        type,
+        ros2_message_type_map,
+        var,
+        var_term,
+        var_local
+      )
+    end
+  end
+
+  def create_setdata_statements_impl_for_list(
+        type,
+        ros2_message_type_map,
+        var,
+        var_term,
+        var_local
+      )
+      when is_map(ros2_message_type_map) do
+    [_, list_type, list_length] = Regex.run(~r/^(.+)\[([0-9]+)\]$/, type)
+    list_length = String.to_integer(list_length)
+
+    statements =
+      for idx <- 0..(list_length - 1) do
+        """
+        if(!enif_get_list_cell(env,#{var_local}_list,&#{var_local}_head,&#{var_local}_tail)) {
+          return enif_make_badarg(env);
+        }
+        #{var_local}_list = #{var_local}_tail;
+        """ <>
+          create_setdata_statements_impl(
+            list_type,
+            ros2_message_type_map,
+            "#{var}[#{idx}]",
+            "#{var_local}_head",
+            "#{var_local}_#{idx}"
+          )
+      end
+
+    """
+    unsigned #{var_local}_length;
+    if(!enif_get_list_length(env,#{var_term},&#{var_local}_length) || #{var_local}_length != #{list_length}) {
+      return enif_make_badarg(env);
+    } 
+    ERL_NIF_TERM #{var_local}_list = #{var_term};
+    ERL_NIF_TERM #{var_local}_head;
+    ERL_NIF_TERM #{var_local}_tail;
+    """ <> "#{statements}"
+  end
+
+  def create_setdata_statements_impl_for_tuple(
+        type,
+        ros2_message_type_map,
+        var,
+        var_term,
+        var_local
+      )
       when is_map(ros2_message_type_map) do
     type_var_list = Map.get(ros2_message_type_map, type)
-    var_local = "#{var_caller}_#{index}"
 
     statements =
       type_var_list
       |> Enum.with_index()
-      |> Enum.map_join(fn {{type, var}, idx} ->
+      |> Enum.map_join(fn {{t, v}, idx} ->
         create_setdata_statements_impl(
-          type,
+          t,
           ros2_message_type_map,
-          [var | vars],
-          var_local,
-          idx
+          "#{var}.#{v}",
+          "#{var_local}[#{idx}]",
+          "#{var_local}_#{idx}"
         )
       end)
 
     """
     int #{var_local}_arity;
     const ERL_NIF_TERM* #{var_local};
-    if(!enif_get_tuple(env,#{var_caller}[#{index}],&#{var_local}_arity,&#{var_local})) {
+    if(!enif_get_tuple(env,#{var_term},&#{var_local}_arity,&#{var_local})) {
       return enif_make_badarg(env);
     }
     if(#{var_local}_arity != #{Enum.count(type_var_list)}) {
@@ -601,5 +671,13 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     else
       Path.join(cwd_path, "deps/rclex")
     end
+  end
+
+  defp msg_type_is_list?(type) when is_binary(type) do
+    String.match?(type, ~r/.+\[[0-9]+\]/)
+  end
+
+  defp list_type(type) do
+    String.split(type, "[") |> List.first()
   end
 end
