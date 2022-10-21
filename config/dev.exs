@@ -20,4 +20,4 @@ config :git_hooks,
 
 config :mix_test_watch,
   extra_extensions: [".c", ".h"],
-  exclude: [~r/\.#/, ~r{priv/repo/migrations}, ~r{tmp}]
+  exclude: [~r/\.#/, ~r{priv/repo/migrations}, ~r{tmp}, ~r{test/expected_files}]

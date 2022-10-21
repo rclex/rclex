@@ -217,7 +217,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
         cond do
           type in @ros2_built_in_types -> {type, variable}
-          msg_type_is_list?(type) and list_type(type) in @ros2_built_in_types -> {type, variable}
+          is_ros2_built_in_list(type) -> {type, variable}
           String.contains?(type, "/") -> {type, variable}
           true -> {Path.join("#{package_name}/msg", type), variable}
         end
@@ -229,8 +229,8 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       cond do
         type in @ros2_built_in_types -> acc
         Map.has_key?(type_map, type) -> acc
-        msg_type_is_list?(type) and list_type(type) in @ros2_built_in_types -> acc
-        msg_type_is_list?(type) -> get_ros2_message_type_map(list_type(type), from, acc)
+        is_ros2_built_in_list(type) -> acc
+        is_ros2_list(type) -> get_ros2_message_type_map(list_type(type), from, acc)
         true -> get_ros2_message_type_map(type, from, acc)
       end
     end)
@@ -306,72 +306,79 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     Enum.join([pkg, "_msg_", type], "_")
   end
 
-  def create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, vars \\ ["data"]) do
+  def create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, var \\ "data") do
     Map.get(ros2_message_type_map, type)
-    |> Enum.map_join(", ", fn
-      {type, variable} when type in @ros2_built_in_types ->
-        var_name = [variable | vars] |> Enum.reverse() |> Enum.join(".")
+    |> Enum.map_join(", ", fn {type, variable} ->
+      cond do
+        type in @ros2_built_in_types or is_ros2_list(type) ->
+          "#{var}.#{variable}"
 
-        "#{var_name}"
-
-      {type, variable} ->
-        vars = [variable | vars]
-
-        "{#{create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, vars)}}"
+        true ->
+          var = "#{var}.#{variable}"
+          "{#{create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, var)}}"
+      end
     end)
   end
 
-  def create_fields_for_nifs_readdata_return(type, ros2_message_type_map, vars \\ ["data"]) do
+  def create_fields_for_nifs_readdata_return(type, ros2_message_type_map, var \\ "data") do
     Map.get(ros2_message_type_map, type)
     |> Enum.with_index()
-    |> Enum.map_join(", ", fn
-      {{type, _variable}, index} when type in @ros2_built_in_types ->
-        var_name = [to_string(index) | vars] |> Enum.reverse() |> Enum.join("_")
+    |> Enum.map_join(", ", fn {{type, _variable}, index} ->
+      cond do
+        type in @ros2_built_in_types or is_ros2_list(type) ->
+          "#{var}_#{to_string(index)}"
 
-        "#{var_name}"
-
-      {{type, _variable}, index} ->
-        vars = [to_string(index) | vars]
-
-        "{#{create_fields_for_nifs_readdata_return(type, ros2_message_type_map, vars)}}"
+        true ->
+          var = "#{var}_#{to_string(index)}"
+          "{#{create_fields_for_nifs_readdata_return(type, ros2_message_type_map, var)}}"
+      end
     end)
   end
 
-  def create_fields_for_read(type, ros2_message_type_map, vars \\ ["data"]) do
+  def create_fields_for_read(type, ros2_message_type_map, var \\ "data") do
     Map.get(ros2_message_type_map, type)
     |> Enum.with_index()
     |> Enum.map_join(", ", fn
-      {{type, variable}, index} when type in @ros2_built_in_types ->
-        var_name = [to_string(index) | vars] |> Enum.reverse() |> Enum.join("_")
-
-        "#{variable}: #{var_name}"
-
       {{type, variable}, index} ->
-        vars = [to_string(index) | vars]
+        cond do
+          type in @ros2_built_in_types or is_ros2_list(type) ->
+            var = "#{var}_#{to_string(index)}"
+            "#{variable}: #{var}"
 
-        "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_read(type, ros2_message_type_map, vars)}}"
+          true ->
+            var = "#{var}_#{to_string(index)}"
+
+            "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_read(type, ros2_message_type_map, var)}}"
+        end
     end)
   end
 
   def create_fields_for_defstruct(type, ros2_message_type_map) do
     Map.get(ros2_message_type_map, type)
-    |> Enum.map_join(", ", fn
-      {type, variable} when type in @ros2_built_in_types ->
-        "#{variable}: nil"
+    |> Enum.map_join(", ", fn {type, variable} ->
+      cond do
+        type in @ros2_built_in_types or is_ros2_list(type) ->
+          "#{variable}: nil"
 
-      {type, variable} ->
-        "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_defstruct(type, ros2_message_type_map)}}"
+        true ->
+          "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_defstruct(type, ros2_message_type_map)}}"
+      end
     end)
   end
 
   def create_fields_for_type(type, ros2_message_type_map) do
     Map.get(ros2_message_type_map, type)
-    |> Enum.map_join(", ", fn
-      {type, variable} when type in @ros2_built_in_types ->
-        "#{variable}: #{@ros2_elixir_type_map[type]}"
+    |> Enum.map_join(", ", fn {type, variable} ->
+      cond do
+        type in @ros2_built_in_types ->
+          "#{variable}: #{@ros2_elixir_type_map[type]}"
 
-      {type, variable} ->
-        "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_type(type, ros2_message_type_map)}}"
+        is_ros2_list(type) ->
+          "#{variable}: [#{@ros2_elixir_type_map[list_type(type)]}]"
+
+        {type, variable} ->
+          "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_type(type, ros2_message_type_map)}}"
+      end
     end)
   end
 
@@ -419,7 +426,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   def create_readdata_statements_impl(type, ros2_message_type_map, var)
       when is_map(ros2_message_type_map) do
-    if msg_type_is_list?(type) do
+    if is_ros2_list(type) do
       create_readdata_statements_impl_for_list(type, ros2_message_type_map, var)
     else
       create_readdata_statements_impl_for_tuple(type, ros2_message_type_map, var)
@@ -569,7 +576,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   def create_setdata_statements_impl(type, ros2_message_type_map, var, var_term, var_local) do
-    if msg_type_is_list?(type) do
+    if is_ros2_list(type) do
       create_setdata_statements_impl_for_list(
         type,
         ros2_message_type_map,
@@ -702,7 +709,11 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
-  defp msg_type_is_list?(type) when is_binary(type) do
+  defp is_ros2_built_in_list(type) do
+    is_ros2_list(type) and list_type(type) in @ros2_built_in_types
+  end
+
+  defp is_ros2_list(type) when is_binary(type) do
     String.match?(type, ~r/.+\[[0-9]+\]/)
   end
 
