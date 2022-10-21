@@ -194,6 +194,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   @spec get_ros2_message_type_map(String.t(), String.t(), map()) :: map()
+  # credo:disable-for-next-line
   def get_ros2_message_type_map(ros2_message_type, from, acc \\ %{}) do
     [package_name, "msg", _type_name] = String.split(ros2_message_type, "/")
 
@@ -308,13 +309,11 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   def create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, var \\ "data") do
     Map.get(ros2_message_type_map, type)
     |> Enum.map_join(", ", fn {type, variable} ->
-      cond do
-        type in @ros2_built_in_types or is_ros2_list(type) ->
-          "#{var}.#{variable}"
-
-        true ->
-          var = "#{var}.#{variable}"
-          "{#{create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, var)}}"
+      if type in @ros2_built_in_types or is_ros2_list(type) do
+        "#{var}.#{variable}"
+      else
+        var = "#{var}.#{variable}"
+        "{#{create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, var)}}"
       end
     end)
   end
@@ -323,13 +322,12 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     Map.get(ros2_message_type_map, type)
     |> Enum.with_index()
     |> Enum.map_join(", ", fn {{type, _variable}, index} ->
-      cond do
-        type in @ros2_built_in_types or is_ros2_list(type) ->
-          "#{var}_#{to_string(index)}"
-
-        true ->
-          var = "#{var}_#{to_string(index)}"
-          "{#{create_fields_for_nifs_readdata_return(type, ros2_message_type_map, var)}}"
+      if type in @ros2_built_in_types or
+           is_ros2_list(type) do
+        "#{var}_#{to_string(index)}"
+      else
+        var = "#{var}_#{to_string(index)}"
+        "{#{create_fields_for_nifs_readdata_return(type, ros2_message_type_map, var)}}"
       end
     end)
   end
@@ -339,15 +337,13 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     |> Enum.with_index()
     |> Enum.map_join(", ", fn
       {{type, variable}, index} ->
-        cond do
-          type in @ros2_built_in_types or is_ros2_list(type) ->
-            var = "#{var}_#{to_string(index)}"
-            "#{variable}: #{var}"
+        if type in @ros2_built_in_types or is_ros2_list(type) do
+          var = "#{var}_#{to_string(index)}"
+          "#{variable}: #{var}"
+        else
+          var = "#{var}_#{to_string(index)}"
 
-          true ->
-            var = "#{var}_#{to_string(index)}"
-
-            "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_read(type, ros2_message_type_map, var)}}"
+          "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_read(type, ros2_message_type_map, var)}}"
         end
     end)
   end
@@ -355,12 +351,10 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   def create_fields_for_defstruct(type, ros2_message_type_map) do
     Map.get(ros2_message_type_map, type)
     |> Enum.map_join(", ", fn {type, variable} ->
-      cond do
-        type in @ros2_built_in_types or is_ros2_list(type) ->
-          "#{variable}: nil"
-
-        true ->
-          "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_defstruct(type, ros2_message_type_map)}}"
+      if type in @ros2_built_in_types or is_ros2_list(type) do
+        "#{variable}: nil"
+      else
+        "#{variable}: %#{get_module_name_from_type(type)}{#{create_fields_for_defstruct(type, ros2_message_type_map)}}"
       end
     end)
   end
@@ -394,6 +388,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     "enif_make_tuple(env,#{Enum.count(type_var_list)},\n  #{statements})"
   end
 
+  # credo:disable-for-next-line
   def create_readdata_statements_impl(type, ros2_message_type_map, var)
       when type in @ros2_built_in_types and is_map(ros2_message_type_map) do
     case type do
@@ -486,6 +481,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     """ <> "#{statements}"
   end
 
+  # credo:disable-for-next-line
   def create_setdata_statements_impl(type, ros2_message_type_map, var_res, var_term, var_local)
       when type in @ros2_built_in_types and is_map(ros2_message_type_map) do
     case type do
