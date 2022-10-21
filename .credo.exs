@@ -35,7 +35,7 @@
           ~r"/_build/",
           ~r"/deps/",
           ~r"/node_modules/",
-          "lib/rclex/*/msg/",
+          "lib/rclex/pkgs/*/msg/",
           "test/expected_files/"
         ]
       },
