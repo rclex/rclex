@@ -27,7 +27,6 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
         "geometry_msgs/msg/Twist",
         "geometry_msgs/msg/TwistWithCovariance"
       ] do
-    @tag :skip
     test "generate_msg_prot/2, type: #{type}" do
       type = unquote(type)
       binary = File.read!("test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_impl.ex")
@@ -41,7 +40,6 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
         "geometry_msgs/msg/Twist",
         "geometry_msgs/msg/TwistWithCovariance"
       ] do
-    @tag :skip
     test "generate_msg_mod/2, type: #{type}" do
       type = unquote(type)
       binary = File.read!("test/expected_files/#{GenMsgs.get_file_name_from_type(type)}.ex")
@@ -55,7 +53,6 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
         "geometry_msgs/msg/Twist",
         "geometry_msgs/msg/TwistWithCovariance"
       ] do
-    @tag :skip
     test "generate_msg_nif_c/2, type: #{type}" do
       type = unquote(type)
       binary = File.read!("test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_nif.c")
@@ -69,7 +66,6 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
         "geometry_msgs/msg/Twist",
         "geometry_msgs/msg/TwistWithCovariance"
       ] do
-    @tag :skip
     test "generate_msg_nif_h/2, type: #{type}" do
       type = unquote(type)
       binary = File.read!("test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_nif.h")

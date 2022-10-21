@@ -11,7 +11,7 @@
 #endif
 
 #include <geometry_msgs/msg/vector3.h>
-#include "geometry_msgs/msg/vector3_nif.h"
+#include "pkgs/geometry_msgs/msg/vector3_nif.h"
 #include "total_nif.h"
 
 ERL_NIF_TERM nif_get_typesupport_geometry_msgs_msg_vector3(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
@@ -82,29 +82,30 @@ ERL_NIF_TERM nif_setdata_geometry_msgs_msg_vector3(ErlNifEnv* env, int argc, con
     return enif_make_badarg(env);
   }
   res = (geometry_msgs__msg__Vector3*) res_tmp;
-  int data_arity;
-  const ERL_NIF_TERM* data;
-  if(!enif_get_tuple(env,argv[1],&data_arity,&data)) {
-    return enif_make_badarg(env);
-  }
-  if(data_arity != 3) {
-    return enif_make_badarg(env);
-  }
-  double data_0;
-  if(!enif_get_double(env,data[0],&data_0)) {
-    return enif_make_badarg(env);
-  }
-  res->x = data_0;
-  double data_1;
-  if(!enif_get_double(env,data[1],&data_1)) {
-    return enif_make_badarg(env);
-  }
-  res->y = data_1;
-  double data_2;
-  if(!enif_get_double(env,data[2],&data_2)) {
-    return enif_make_badarg(env);
-  }
-  res->z = data_2;
+int data_arity;
+const ERL_NIF_TERM* data;
+if(!enif_get_tuple(env,argv[1],&data_arity,&data)) {
+  return enif_make_badarg(env);
+}
+if(data_arity != 3) {
+  return enif_make_badarg(env);
+}
+double data_0;
+if(!enif_get_double(env,data[0],&data_0)) {
+  return enif_make_badarg(env);
+}
+res->x = data_0;
+double data_1;
+if(!enif_get_double(env,data[1],&data_1)) {
+  return enif_make_badarg(env);
+}
+res->y = data_1;
+double data_2;
+if(!enif_get_double(env,data[2],&data_2)) {
+  return enif_make_badarg(env);
+}
+res->z = data_2;
+
   return enif_make_atom(env,"ok");
 }
 
@@ -121,7 +122,7 @@ ERL_NIF_TERM nif_readdata_geometry_msgs_msg_vector3(ErlNifEnv* env, int argc, co
   }
   res = (geometry_msgs__msg__Vector3*) res_tmp;
   return enif_make_tuple(env,3,
-    enif_make_double(env,res->x),
-    enif_make_double(env,res->y),
-    enif_make_double(env,res->z));
+  enif_make_double(env,res->x),
+  enif_make_double(env,res->y),
+  enif_make_double(env,res->z));
 }
