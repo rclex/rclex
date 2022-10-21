@@ -174,16 +174,22 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
     end)
   end
 
-  test "create_readdata_statements/1" do
-    ["std_msgs/msg/String", "geometry_msgs/msg/Vector3", "geometry_msgs/msg/Twist"]
-    |> Enum.map(fn type ->
+  for type <- [
+        "std_msgs/msg/String",
+        "geometry_msgs/msg/Vector3",
+        "geometry_msgs/msg/Twist",
+        "geometry_msgs/msg/TwistWithCovariance"
+      ] do
+    test "create_readdata_statements/1, type: #{type}" do
+      type = unquote(type)
+
       expected =
         File.read!(
           "test/expected_files/#{GenMsgs.get_file_name_from_type(type)}_readdata_function.txt"
         )
 
       assert expected == GenMsgs.create_readdata_statements(type, @ros2_message_type_map)
-    end)
+    end
   end
 
   for type <- [

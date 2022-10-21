@@ -377,13 +377,19 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   @spec create_readdata_statements(String.t(), map()) :: String.t()
   def create_readdata_statements(type, ros2_message_type_map) do
-    create_readdata_statements_impl(type, ros2_message_type_map, [])
+    type_var_list = Map.get(ros2_message_type_map, type)
+
+    statements =
+      type_var_list
+      |> Enum.map_join(",\n  ", fn {type, var} ->
+        create_readdata_statements_impl(type, ros2_message_type_map, var)
+      end)
+
+    "enif_make_tuple(env,#{Enum.count(type_var_list)},\n  #{statements})"
   end
 
-  def create_readdata_statements_impl(type, ros2_message_type_map, vars)
+  def create_readdata_statements_impl(type, ros2_message_type_map, var)
       when type in @ros2_built_in_types and is_map(ros2_message_type_map) do
-    var = vars |> Enum.reverse() |> Enum.join(".")
-
     case type do
       "bool" ->
         "enif_make_atom(env,(res->#{var}?\"true\":\"false\"))"
@@ -411,13 +417,36 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
-  def create_readdata_statements_impl(type, ros2_message_type_map, vars)
+  def create_readdata_statements_impl(type, ros2_message_type_map, var)
+      when is_map(ros2_message_type_map) do
+    if msg_type_is_list?(type) do
+      create_readdata_statements_impl_for_list(type, ros2_message_type_map, var)
+    else
+      create_readdata_statements_impl_for_tuple(type, ros2_message_type_map, var)
+    end
+  end
+
+  def create_readdata_statements_impl_for_list(type, ros2_message_type_map, var)
+      when is_map(ros2_message_type_map) do
+    [_, list_type, list_length] = Regex.run(~r/^(.+)\[([0-9]+)\]$/, type)
+    list_length = String.to_integer(list_length)
+
+    statements =
+      0..(list_length - 1)
+      |> Enum.map_join(",\n  ", fn idx ->
+        create_readdata_statements_impl(list_type, ros2_message_type_map, "#{var}[#{idx}]")
+      end)
+
+    "enif_make_list(env,#{list_length},\n  #{statements})"
+  end
+
+  def create_readdata_statements_impl_for_tuple(type, ros2_message_type_map, var)
       when is_map(ros2_message_type_map) do
     type_var_list = Map.get(ros2_message_type_map, type)
 
     statements =
-      Enum.map_join(type_var_list, ",\n  ", fn {type, var} ->
-        create_readdata_statements_impl(type, ros2_message_type_map, [var | vars])
+      Enum.map_join(type_var_list, ",\n  ", fn {t, v} ->
+        create_readdata_statements_impl(t, ros2_message_type_map, "#{var}.#{v}")
       end)
 
     "enif_make_tuple(env,#{Enum.count(type_var_list)},\n  #{statements})"
@@ -429,7 +458,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     statements =
       type_var_list
       |> Enum.with_index()
-      |> Enum.map(fn {{type, var}, index} ->
+      |> Enum.map_join(fn {{type, var}, index} ->
         create_setdata_statements_impl(
           type,
           ros2_message_type_map,
