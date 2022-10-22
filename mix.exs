@@ -12,7 +12,7 @@ defmodule Rclex.MixProject do
     [
       app: :rclex,
       version: @version,
-      elixir: "~> 1.9",
+      elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
       description: @description,
       package: package(),
