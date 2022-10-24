@@ -50,8 +50,7 @@ defmodule Rclex.MixProject do
         "README_ja.md",
         "LICENSE",
         "CHANGELOG.md",
-        "Makefile",
-        "packages.txt"
+        "Makefile"
       ],
       licenses: ["Apache-2.0"],
       links: %{"Github" => @source_url}
