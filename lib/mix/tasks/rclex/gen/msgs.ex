@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.Rclex.Gen.Msgs do
-  @shortdoc "Generate codes of ROS2 message type"
+  @shortdoc "Generate codes of ROS 2 message type"
   @moduledoc """
   #{@shortdoc}
 
