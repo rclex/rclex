@@ -44,6 +44,7 @@ defmodule Rclex.MixProject do
       name: "rclex",
       files: [
         "lib",
+        "priv",
         "src",
         "mix.exs",
         "README.md",
