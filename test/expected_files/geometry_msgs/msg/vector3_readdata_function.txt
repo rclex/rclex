@@ -1,0 +1,4 @@
+enif_make_tuple(env,3,
+  enif_make_double(env,res->x),
+  enif_make_double(env,res->y),
+  enif_make_double(env,res->z))

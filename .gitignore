@@ -11,7 +11,7 @@
 /doc/
 
 # Ignore priv for Dialyzer
-/priv/
+/priv/plts
 
 # Ignore .fetch files in case you like to edit your project deps locally.
 /.fetch
@@ -38,7 +38,12 @@ rclex-*.tar
 #core
 #/.textdata/
 
-# for msgtype
-#/packages.txt
-/src/*/msg/
-/lib/rclex/*/msg/
+# generated codes relates to ROS 2 pkgs
+/src/pkgs/*
+/lib/rclex/pkgs/*
+/src/msg_types_nif.h
+/src/msg_types_nif.ec
+/lib/rclex/msg_types_nif.ex
+
+# for test
+/tmp

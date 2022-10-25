@@ -21,7 +21,7 @@ defmodule Rclex.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       build_embedded: true,
-      compilers: [:put_packages, :elixir_make] ++ Mix.compilers(),
+      compilers: [:elixir_make] ++ Mix.compilers(),
       make_targets: ["all"],
       make_clean: ["clean"],
       make_error_message: """
@@ -44,14 +44,14 @@ defmodule Rclex.MixProject do
       name: "rclex",
       files: [
         "lib",
+        "priv",
         "src",
         "mix.exs",
         "README.md",
         "README_ja.md",
         "LICENSE",
         "CHANGELOG.md",
-        "Makefile",
-        "packages.txt"
+        "Makefile"
       ],
       licenses: ["Apache-2.0"],
       links: %{"Github" => @source_url}
@@ -61,7 +61,7 @@ defmodule Rclex.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :eex]
     ]
   end
 
@@ -72,7 +72,6 @@ defmodule Rclex.MixProject do
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.22", only: :dev, runtime: false},
-      {:rclex_gen_msgs, "~> 0.1.0", runtime: false},
       # lock git_hooks version to avoid https://github.com/qgadrian/elixir_git_hooks/issues/123
       {:git_hooks, "== 0.6.5", only: [:dev], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test]}
@@ -104,6 +103,7 @@ defmodule Rclex.MixProject do
 
   defp dialyzer do
     [
+      plt_add_apps: [:eex, :mix],
       plt_core_path: "priv/plts",
       plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
     ]

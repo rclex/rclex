@@ -167,16 +167,7 @@ ErlNifFunc nif_funcs[] = {
   {"check_subscription",1,nif_check_subscription,0},
   {"get_sublist_from_waitset",1,nif_get_sublist_from_waitset,0},
   //-----<custom_msgtype>_nif.c-----start-----
-  {"get_typesupport_geometry_msgs_msg_twist",0,nif_get_typesupport_geometry_msgs_msg_twist,0},
-  {"create_empty_msg_geometry_msgs_msg_twist",0,nif_create_empty_msg_geometry_msgs_msg_twist,0},
-  {"init_msg_geometry_msgs_msg_twist",1,nif_init_msg_geometry_msgs_msg_twist,0},
-  {"setdata_geometry_msgs_msg_twist",2,nif_setdata_geometry_msgs_msg_twist,0},
-  {"readdata_geometry_msgs_msg_twist",1,nif_readdata_geometry_msgs_msg_twist,0},
-  {"get_typesupport_std_msgs_msg_string",0,nif_get_typesupport_std_msgs_msg_string,0},
-  {"create_empty_msg_std_msgs_msg_string",0,nif_create_empty_msg_std_msgs_msg_string,0},
-  {"init_msg_std_msgs_msg_string",1,nif_init_msg_std_msgs_msg_string,0},
-  {"setdata_std_msgs_msg_string",2,nif_setdata_std_msgs_msg_string,0},
-  {"readdata_std_msgs_msg_string",1,nif_readdata_std_msgs_msg_string,0},
+#include "msg_types_nif.ec"
   //-----<custom_msgtype>_nif.c-----end-----
   //-------------------msg_nif.c------------------
   {"create_msginfo",0,nif_create_msginfo,0}

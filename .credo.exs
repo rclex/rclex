@@ -31,7 +31,13 @@
           "apps/*/test/",
           "apps/*/web/"
         ],
-        excluded: [~r"/_build/", ~r"/deps/", ~r"/node_modules/", "lib/rclex/*/msg/"]
+        excluded: [
+          ~r"/_build/",
+          ~r"/deps/",
+          ~r"/node_modules/",
+          "lib/rclex/pkgs/*/msg/",
+          "test/expected_files/"
+        ]
       },
       #
       # Load and configure plugins here:

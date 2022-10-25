@@ -1,0 +1,6 @@
+#include <erl_nif.h>
+ERL_NIF_TERM nif_get_typesupport_<%= function_name %>(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+ERL_NIF_TERM nif_create_empty_msg_<%= function_name %>(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+ERL_NIF_TERM nif_init_msg_<%= function_name %>(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+ERL_NIF_TERM nif_setdata_<%= function_name %>(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+ERL_NIF_TERM nif_readdata_<%= function_name %>(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);

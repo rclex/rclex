@@ -1,0 +1,9 @@
+enif_make_tuple(env,2,
+  enif_make_tuple(env,3,
+  enif_make_double(env,res->linear.x),
+  enif_make_double(env,res->linear.y),
+  enif_make_double(env,res->linear.z)),
+  enif_make_tuple(env,3,
+  enif_make_double(env,res->angular.x),
+  enif_make_double(env,res->angular.y),
+  enif_make_double(env,res->angular.z)))

@@ -1,0 +1,25 @@
+defimpl Rclex.MsgProt, for: <%= module_name %> do
+  alias Rclex.Nifs, as: Nifs
+
+  @spec typesupport(any) :: reference()
+  def typesupport(_) do
+    Nifs.get_typesupport_<%= function_name %>()
+  end
+
+  @spec initialize(any) :: reference()
+  def initialize(_) do
+    Nifs.create_empty_msg_<%= function_name %>()
+    |> Nifs.init_msg_<%= function_name %>()
+  end
+
+  @spec set(<%= module_name %>.t(), any) :: :ok
+  def set(data, msg) do
+    Nifs.setdata_<%= function_name %>(msg, {<%= setdata_arg_fields %>})
+  end
+
+  @spec read(any, any) :: <%= module_name %>.t()
+  def read(_, msg) do
+    {<%= nifs_readdata_return_fields %>} = Nifs.readdata_<%= function_name %>(msg)
+    %<%= module_name %>{<%= read_return_module_fields %>}
+  end
+end

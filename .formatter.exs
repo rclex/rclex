@@ -6,4 +6,6 @@
     |> Enum.flat_map(&Path.wildcard(&1, match_dot: true))
     # exclude msgs, ex) lib/rclex/geometry_msgs/msg/*.ex
     |> Enum.reject(fn path -> Regex.match?(~r{lib/rclex/.*/msg/.*}, path) end)
+    |> Enum.reject(fn path -> Regex.match?(~r{lib/rclex/msg_types_nif.ex}, path) end)
+    |> Enum.reject(fn path -> Regex.match?(~r{test/expected_files/.*}, path) end)
 ]
