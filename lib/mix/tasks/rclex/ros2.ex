@@ -5,13 +5,13 @@ defmodule Mix.Tasks.Rclex.Ros2 do
   @supported_arch ["arm64v8"]
   @supported_ros2_distros %{"arm64v8" => @arm64v8_ros2_distros}
 
-  @shortdoc "Prepare ROS2 resources under .ros2 directory."
+  @shortdoc "Prepare ROS 2 resources under .ros2 directory."
   @moduledoc """
   #{@shortdoc}
 
       mix rclex.ros2 --arch ARCH --ros2-distro DISTRO
 
-  ROS2 resources will be prepared under .ros2.
+  ROS 2 resources will be prepared under .ros2.
 
   An `--arch` option should be specified, option value is `arm64v8`, currently only supported.
 
