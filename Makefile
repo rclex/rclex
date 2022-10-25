@@ -3,8 +3,6 @@
 ROS_DISTRO ?= foxy
 ROS_DIR ?= /opt/ros/$(ROS_DISTRO)
 
-ROS_DISTRO_UPPER = $(shell echo $(ROS_DISTRO) | tr '[:lower:]' '[:upper:]')
-
 PREFIX = $(MIX_APP_PATH)/priv
 BUILD  = $(MIX_APP_PATH)/obj
 
@@ -57,7 +55,7 @@ install: $(BUILD) $(BUILD_MSG) $(PREFIX) $(TEMPLATES) $(NIF)
 $(OBJ): $(HEADERS) Makefile
 
 $(BUILD)/%.o: src/%.c
-	$(CC) -o $@ -c $(CFLAGS) $(ERL_CFLAGS) $(ROS_CFLAGS) -D$(ROS_DISTRO_UPPER) $<
+	$(CC) -o $@ -c $(CFLAGS) $(ERL_CFLAGS) $(ROS_CFLAGS) $<
 
 # gcc 
 $(NIF): $(OBJ)
