@@ -283,7 +283,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   """
   def get_module_name_from_type(type) do
     if not String.contains?(type, "/") do
-      raise RuntimeError, "type must contain ROS2 package name"
+      raise RuntimeError, "type must contain ROS 2 package name"
     end
 
     String.split(type, "/")
@@ -652,7 +652,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     unsigned #{var_local}_length;
     if(!enif_get_list_length(env,#{var_term},&#{var_local}_length) || #{var_local}_length != #{list_length}) {
       return enif_make_badarg(env);
-    } 
+    }
     ERL_NIF_TERM #{var_local}_list = #{var_term};
     ERL_NIF_TERM #{var_local}_head;
     ERL_NIF_TERM #{var_local}_tail;

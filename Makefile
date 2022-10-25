@@ -1,5 +1,5 @@
-# ROS_DISTRO is set by ROS2 setup.bash.
-# If not set, ROS2 default distro value is following.
+# ROS_DISTRO is set by setup.bash in /opt/ros/${ROS_DISTRO}/.
+# If not set, ROS 2 default distro value is the follow.
 ROS_DISTRO ?= foxy
 ROS_DIR ?= /opt/ros/$(ROS_DISTRO)
 
@@ -34,7 +34,7 @@ SRC = $(wildcard src/*.c)
 HEADERS = $(SRC:src/%.c=src/%.h)
 OBJ = $(SRC:src/%.c=$(BUILD)/%.o)
 
-# WRITE ROS2 package-related settings HERE
+# ROS 2 package-related setting, especially for msg types
 MSG_PKGS = $(patsubst src/pkgs/%/msg,%,$(wildcard src/pkgs/*/msg))
 ifneq "$(MSG_PKGS)" ""
 BUILD_MSG    = $(MSG_PKGS:%=$(BUILD)/pkgs/%/msg)
