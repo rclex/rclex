@@ -147,7 +147,7 @@ res->twist.angular.z = data_0_1_2;
 unsigned data_1_length;
 if(!enif_get_list_length(env,data[1],&data_1_length) || data_1_length != 36) {
   return enif_make_badarg(env);
-} 
+}
 ERL_NIF_TERM data_1_list = data[1];
 ERL_NIF_TERM data_1_head;
 ERL_NIF_TERM data_1_tail;
