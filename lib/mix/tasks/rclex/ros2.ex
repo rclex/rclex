@@ -70,7 +70,11 @@ defmodule Mix.Tasks.Rclex.Ros2 do
   def copy_ros2_resources_impl!(dest_path, arch, ros2_distro) do
     tag = ros2_docker_image_tag(arch, ros2_distro)
 
-    ["/opt/ros/#{ros2_distro}/include", "/opt/ros/#{ros2_distro}/lib"]
+    [
+      "/opt/ros/#{ros2_distro}/include",
+      "/opt/ros/#{ros2_distro}/lib",
+      "/opt/ros/#{ros2_distro}/share"
+    ]
     |> Enum.map(&copy_ros2_impl!(tag, &1, dest_path))
   end
 
