@@ -11,6 +11,13 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   ## How to generate
 
+    $ mix rclex.gen.msgs
+
+    This task assumes that the environment variable ROS_DISTRO is set
+    and refers to the message types from "/opt/ros/ROS_DISTRO/share".
+
+    We can also specify directly as follows
+
     $ mix rclex.gen.msgs --from /opt/ros/foxy/share
 
   ## How to clean
@@ -45,11 +52,22 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       OptionParser.parse(args, strict: [from: :string, clean: :boolean, show_types: :boolean])
 
     case valid_options do
+      [] -> generate(rclex_dir_path!())
       [from: from] -> generate(from, rclex_dir_path!())
       [clean: true] -> clean()
       [show_types: true] -> show_types()
       _ -> Mix.shell().info(@moduledoc)
     end
+  end
+
+  def generate(to) do
+    ros_distro = System.get_env("ROS_DISTRO")
+
+    if is_nil(ros_distro) do
+      raise(RuntimeError, "environment variable ROS_DISTRO is not set.")
+    end
+
+    generate("/opt/ros/#{ros_distro}/share", to)
   end
 
   def generate(from, to) do
