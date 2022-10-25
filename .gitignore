@@ -38,9 +38,12 @@ rclex-*.tar
 #core
 #/.textdata/
 
-# for ros2 pkgs
+# generated codes relates to ROS 2 pkgs
 /src/pkgs/*
 /lib/rclex/pkgs/*
+/src/msg_types_nif.h
+/src/msg_types_nif.ec
+/lib/rclex/msg_types_nif.ex
 
 # for test
 /tmp

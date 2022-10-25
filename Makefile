@@ -45,12 +45,14 @@ ROS_LDFLAGS += $(MSG_PKGS:%=-l%__rosidl_generator_c)
 ROS_LDFLAGS += $(MSG_PKGS:%=-l%__rosidl_typesupport_c)
 endif
 
+TEMPLATES = src/msg_types_nif.h src/msg_types_nif.ec lib/rclex/msg_types_nif.ex
+
 calling_from_make:
 	mix compile
 
 all: install
 
-install: $(BUILD) $(BUILD_MSG) $(PREFIX) $(NIF)
+install: $(BUILD) $(BUILD_MSG) $(PREFIX) $(TEMPLATES) $(NIF)
 
 $(OBJ): $(HEADERS) Makefile
 
@@ -64,6 +66,9 @@ $(NIF): $(OBJ)
 $(BUILD) $(BUILD_MSG) $(PREFIX):
 	@mkdir -p $@
 
+$(TEMPLATES):
+	test ! -f $@ && cp -f $(PREFIX)/templates/rclex.gen.msgs/$@ $@
+
 clean:
 	$(RM) -r $(NIF) $(BUILD)/*.o
 	mix rclex.gen.msgs --clean
@@ -72,8 +77,6 @@ clean:
 clean_without_mix:
 	$(RM) -r $(NIF) $(BUILD)/*.o
 	$(RM) -r lib/rclex/pkgs src/pkgs
-	cp -f priv/templates/rclex.gen.msgs/msg_types_nif.ex lib/rclex/msg_types_nif.ex
-	cp -f priv/templates/rclex.gen.msgs/msg_types_nif.h  src/msg_types_nif.h
-	cp -f priv/templates/rclex.gen.msgs/msg_types_nif.ec  src/msg_types_nif.ec
+	$(RM) $(TEMPLATES)
 
 .PHONY: all clean clean_without_mix calling_from_make install

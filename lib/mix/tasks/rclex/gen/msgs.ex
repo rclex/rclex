@@ -117,12 +117,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
 
     for file_path <- ["lib/rclex/msg_types_nif.ex", "src/msg_types_nif.h", "src/msg_types_nif.ec"] do
-      file_name = Path.basename(file_path)
-      src_path = Path.join(templates_dir_path(), file_name)
-      dest_path = Path.join(dir_path, file_path)
-
-      # NOTE: overwrite not modified file to file which was modified by generation
-      File.cp!(src_path, dest_path)
+      File.rm_rf!(Path.join(dir_path, file_path))
     end
   end
 
