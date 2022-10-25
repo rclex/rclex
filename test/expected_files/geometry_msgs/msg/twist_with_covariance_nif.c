@@ -1,14 +1,8 @@
 #include <erl_nif.h>
 
-#ifdef DASHING
-#include <rosidl_generator_c/message_type_support_struct.h>
-#define __STRING__ASSIGN rosidl_generator_c__String__assign
-#define __U16STRING__ASSIGN rosidl_generator_c__U16String__assign_from_char
-#elif FOXY
 #include <rosidl_runtime_c/message_type_support_struct.h>
 #define __STRING__ASSIGN rosidl_runtime_c__String__assign
 #define __U16STRING__ASSIGN rosidl_runtime_c__U16String__assign_from_char
-#endif
 
 #include <geometry_msgs/msg/twist_with_covariance.h>
 #include "pkgs/geometry_msgs/msg/twist_with_covariance_nif.h"
