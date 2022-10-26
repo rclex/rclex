@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Rclex.Ros2 do
+defmodule Mix.Tasks.Rclex.Prep.Ros2 do
   use Mix.Task
 
   @arm64v8_ros2_distros ["foxy", "galactic", "humble"]
@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Rclex.Ros2 do
   @moduledoc """
   #{@shortdoc}
 
-      mix rclex.ros2 --arch ARCH --ros2-distro DISTRO
+      mix rclex.prep.ros2 --arch ARCH --ros2-distro DISTRO
 
   ROS 2 resources will be prepared under .ros2.
 
@@ -19,7 +19,7 @@ defmodule Mix.Tasks.Rclex.Ros2 do
 
   ## Examples
 
-      mix rclex.ros2 --arch arm64v8 --ros2-distro foxy
+      mix rclex.prep.ros2 --arch arm64v8 --ros2-distro foxy
   """
 
   @switches [arch: :string, nerves_system: :string, ros2_distro: :string]
