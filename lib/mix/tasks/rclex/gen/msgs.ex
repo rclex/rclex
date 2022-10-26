@@ -107,6 +107,8 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     File.write!(Path.join(to, "lib/rclex/msg_types_nif.ex"), generate_msg_types_ex(types))
     File.write!(Path.join(to, "src/msg_types_nif.h"), generate_msg_types_h(types))
     File.write!(Path.join(to, "src/msg_types_nif.ec"), generate_msg_types_c(types))
+
+    recompile!()
   end
 
   def clean() do
@@ -724,6 +726,14 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       File.cwd!()
     else
       Path.join(File.cwd!(), "deps/rclex")
+    end
+  end
+
+  defp recompile!() do
+    if Mix.Project.config()[:app] == :rclex do
+      Mix.Task.rerun("compile.elixir_make")
+    else
+      Mix.Task.rerun("deps.compile", ["rclex", "--force"])
     end
   end
 
