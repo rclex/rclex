@@ -67,7 +67,8 @@ $(TEMPLATES):
 	test ! -f $@ && cp $(PREFIX)/templates/rclex.gen.msgs/$@ $@
 
 clean:
-	$(RM) -r $(NIF) $(BUILD)/*.o
-	mix rclex.gen.msgs --clean
+	$(RM) $(NIF) $(OBJ)
+	$(RM) -r lib/rclex/pkgs src/pkgs
+	$(RM) $(TEMPLATES)
 
 .PHONY: all clean calling_from_make install
