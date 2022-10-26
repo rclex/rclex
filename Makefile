@@ -70,10 +70,4 @@ clean:
 	$(RM) -r $(NIF) $(BUILD)/*.o
 	mix rclex.gen.msgs --clean
 
-# Even if mix compile failed, we can clean by following
-clean_without_mix:
-	$(RM) -r $(NIF) $(BUILD)/*.o
-	$(RM) -r lib/rclex/pkgs src/pkgs
-	$(RM) $(TEMPLATES)
-
-.PHONY: all clean clean_without_mix calling_from_make install
+.PHONY: all clean calling_from_make install
