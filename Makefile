@@ -57,7 +57,6 @@ $(OBJ): $(HEADERS) Makefile
 $(BUILD)/%.o: src/%.c
 	$(CC) -o $@ -c $(CFLAGS) $(ERL_CFLAGS) $(ROS_CFLAGS) $<
 
-# gcc 
 $(NIF): $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS) $(ERL_LDFLAGS) $(ROS_LDFLAGS)
 
