@@ -64,7 +64,7 @@ $(BUILD) $(BUILD_MSG) $(PREFIX):
 	@mkdir -p $@
 
 $(TEMPLATES):
-	test ! -f $@ && cp -f $(PREFIX)/templates/rclex.gen.msgs/$@ $@
+	test ! -f $@ && cp $(PREFIX)/templates/rclex.gen.msgs/$@ $@
 
 clean:
 	$(RM) -r $(NIF) $(BUILD)/*.o
