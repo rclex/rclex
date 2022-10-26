@@ -52,7 +52,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
       """)
     end
 
-    copy_ros2_resources!(File.cwd!(), arch, ros2_distro)
+    directory_path = create_resources_directory!(File.cwd!(), arch, ros2_distro)
+    copy_ros2_resources!(directory_path, arch, ros2_distro)
   end
 
   def command_exists?(command) when is_binary(command) do
@@ -60,14 +61,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     exit_status == 0
   end
 
-  def copy_ros2_resources!(dest_base_path, arch, ros2_distro) do
-    directory_path = create_resources_directory!(dest_base_path, arch, ros2_distro)
-    File.write!(Path.join(directory_path, ".gitignore"), "*")
-
-    copy_ros2_resources_impl!(directory_path, arch, ros2_distro)
-  end
-
-  def copy_ros2_resources_impl!(dest_path, arch, ros2_distro) do
+  def copy_ros2_resources!(dest_path, arch, ros2_distro) do
     tag = ros2_docker_image_tag(arch, ros2_distro)
 
     [
@@ -107,6 +101,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
   def create_resources_directory!(base_path, arch, ros2_distro) do
     directory_path = Path.join(base_path, ".ros2/resources/from-docker/#{arch}/#{ros2_distro}")
     File.mkdir_p!(directory_path)
+    File.write!(Path.join(directory_path, ".gitignore"), "*")
 
     directory_path
   end
