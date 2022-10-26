@@ -8,20 +8,16 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2Test do
 
   @tag skip: "take time"
   @tag :tmp_dir
-  test "copy_ros2_resources!/3", %{tmp_dir: tmp_dir_path} do
-    Mix.Tasks.Rclex.Prep.Ros2.copy_ros2_resources!(tmp_dir_path, "arm64v8", "foxy")
+  test "copy_ros2_resources_from_docker!/3", %{tmp_dir: tmp_dir_path} do
+    Mix.Tasks.Rclex.Prep.Ros2.copy_ros2_resources_from_docker!(tmp_dir_path, "arm64v8", "foxy")
 
     assert File.ls!(tmp_dir_path) |> Enum.count() > 0
   end
 
   @tag skip: "take time"
   @tag :tmp_dir
-  test "copy_ros2_impl!/1", %{tmp_dir: tmp_dir_path} do
-    Mix.Tasks.Rclex.Prep.Ros2.copy_ros2_impl!(
-      "arm64v8/ros:foxy-ros-core",
-      "/opt/ros/foxy/setup.sh",
-      tmp_dir_path
-    )
+  test "copy_vendor_resources_from_docker!/3", %{tmp_dir: tmp_dir_path} do
+    Mix.Tasks.Rclex.Prep.Ros2.copy_vendor_resources_from_docker!(tmp_dir_path, "arm64v8", "foxy")
 
     assert File.ls!(tmp_dir_path) |> Enum.count() > 0
   end

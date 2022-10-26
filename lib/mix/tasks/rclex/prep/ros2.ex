@@ -53,7 +53,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     end
 
     directory_path = create_resources_directory!(File.cwd!(), arch, ros2_distro)
-    copy_ros2_resources!(directory_path, arch, ros2_distro)
+    copy_ros2_resources_from_docker!(directory_path, arch, ros2_distro)
+    copy_vendor_resources_from_docker!(directory_path, arch, ros2_distro)
   end
 
   def command_exists?(command) when is_binary(command) do
@@ -61,22 +62,35 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     exit_status == 0
   end
 
-  def copy_ros2_resources!(dest_path, arch, ros2_distro) do
-    tag = ros2_docker_image_tag(arch, ros2_distro)
+  def copy_ros2_resources_from_docker!(dest_path, arch, ros2_distro) do
+    dest_path = Path.join(dest_path, "/opt/ros/#{ros2_distro}")
+    File.mkdir_p!(dest_path)
 
     [
       "/opt/ros/#{ros2_distro}/include",
       "/opt/ros/#{ros2_distro}/lib",
       "/opt/ros/#{ros2_distro}/share"
     ]
-    |> Enum.map(&copy_ros2_impl!(tag, &1, dest_path))
+    |> Enum.map(&copy_from_docker!(ros2_docker_image_tag(arch, ros2_distro), &1, dest_path))
   end
 
-  def copy_ros2_impl!(docker_tag, src_path, dest_path) do
-    with true <- File.exists?(src_path),
-         true <- File.exists?(dest_path) do
+  def copy_vendor_resources_from_docker!(dest_path, arch, ros2_distro) do
+    dir_name = arch_dir_name(arch)
+
+    dest_path = Path.join(dest_path, "/lib/#{dir_name}")
+    File.mkdir_p!(dest_path)
+
+    [
+      "/lib/#{dir_name}/libspdlog.so*",
+      "/lib/#{dir_name}/libtinyxml2.so*"
+    ]
+    |> Enum.map(&copy_from_docker!(ros2_docker_image_tag(arch, ros2_distro), &1, dest_path))
+  end
+
+  def copy_from_docker!(docker_tag, src_path, dest_path) do
+    with true <- File.exists?(dest_path) do
       docker_command_args = ["run", "--rm", "-v", "#{dest_path}:/root", docker_tag]
-      copy_command = ["cp", "-rf", src_path, "/root"]
+      copy_command = ["bash", "-c", "cp -rf #{src_path} /root"]
 
       {_, 0} = System.cmd("docker", docker_command_args ++ copy_command)
     end
@@ -85,6 +99,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
   def ros2_docker_image_tag("arm64v8", ros2_distro) when ros2_distro in @arm64v8_ros2_distros do
     "arm64v8/ros:#{ros2_distro}-ros-core"
   end
+
+  def arch_dir_name("arm64v8"), do: "aarch64-linux-gnu"
 
   def parse_args(args) do
     {parsed_args, _remaining_args, _invalid} = OptionParser.parse(args, strict: @switches)
