@@ -48,9 +48,7 @@ TEMPLATES = src/msg_types_nif.h src/msg_types_nif.ec lib/rclex/msg_types_nif.ex
 calling_from_make:
 	mix compile
 
-all: install
-
-install: $(BUILD) $(BUILD_MSG) $(PREFIX) $(TEMPLATES) $(NIF)
+all: $(BUILD) $(BUILD_MSG) $(PREFIX) $(TEMPLATES) $(NIF)
 
 $(OBJ): $(HEADERS) Makefile
 
@@ -71,4 +69,4 @@ clean:
 	$(RM) -r lib/rclex/pkgs src/pkgs
 	$(RM) $(TEMPLATES)
 
-.PHONY: all clean calling_from_make install
+.PHONY: all clean calling_from_make
