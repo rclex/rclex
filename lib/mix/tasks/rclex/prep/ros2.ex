@@ -37,7 +37,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
     if arch not in @supported_arch do
       Mix.raise("""
-      Please select and specify the appropriate arch from the following.
+      Please select and specify the appropriate --arch from the following.
       #{Enum.join(@supported_arch, ", ")}
       """)
     end
@@ -47,7 +47,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
     if ros2_distro not in supported_ros2_distros do
       Mix.raise("""
-      Please select and specify the appropriate ros2 distro from the following.
+      Please select and specify the appropriate --ros2-distro from the following.
       #{Enum.join(supported_ros2_distros, ", ")}
       """)
     end
