@@ -720,12 +720,10 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   defp rclex_dir_path!() do
-    cwd_path = File.cwd!()
-
-    if Path.basename(cwd_path) == "rclex" do
-      cwd_path
+    if Mix.Project.config()[:app] == :rclex do
+      File.cwd!()
     else
-      Path.join(cwd_path, "deps/rclex")
+      Path.join(File.cwd!(), "deps/rclex")
     end
   end
 
