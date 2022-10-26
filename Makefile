@@ -57,7 +57,6 @@ $(OBJ): $(HEADERS) Makefile
 $(BUILD)/%.o: src/%.c
 	$(CC) -o $@ -c $(CFLAGS) $(ERL_CFLAGS) $(ROS_CFLAGS) $<
 
-# gcc 
 $(NIF): $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS) $(ERL_LDFLAGS) $(ROS_LDFLAGS)
 
@@ -65,16 +64,11 @@ $(BUILD) $(BUILD_MSG) $(PREFIX):
 	@mkdir -p $@
 
 $(TEMPLATES):
-	test ! -f $@ && cp -f $(PREFIX)/templates/rclex.gen.msgs/$@ $@
+	test ! -f $@ && cp $(PREFIX)/templates/rclex.gen.msgs/$@ $@
 
 clean:
-	$(RM) -r $(NIF) $(BUILD)/*.o
-	mix rclex.gen.msgs --clean
-
-# Even if mix compile failed, we can clean by following
-clean_without_mix:
-	$(RM) -r $(NIF) $(BUILD)/*.o
+	$(RM) $(NIF) $(OBJ)
 	$(RM) -r lib/rclex/pkgs src/pkgs
 	$(RM) $(TEMPLATES)
 
-.PHONY: all clean clean_without_mix calling_from_make install
+.PHONY: all clean calling_from_make install
