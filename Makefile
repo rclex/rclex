@@ -1,6 +1,4 @@
 # ROS_DISTRO is set by setup.bash in /opt/ros/${ROS_DISTRO}/.
-# If not set, ROS 2 default distro value is the follow.
-ROS_DISTRO ?= foxy
 ROS_DIR ?= /opt/ros/$(ROS_DISTRO)
 
 PREFIX = $(MIX_APP_PATH)/priv

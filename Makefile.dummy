@@ -1,0 +1,14 @@
+# NOTE:
+# Users don't have ROS 2 directory wants to use rclex mix tasks to get it.
+# This Makefile enables to use rclex's mix tasks before nifs compilation.
+
+PREFIX = $(MIX_APP_PATH)/priv
+TEMPLATES = src/msg_types_nif.h src/msg_types_nif.ec lib/rclex/msg_types_nif.ex
+
+all: $(TEMPLATES)
+	@echo ROS_DISTRO or ROS_DIR is not.
+
+$(TEMPLATES):
+	test ! -f $@ && cp $(PREFIX)/templates/rclex.gen.msgs/$@ $@
+
+.PHONY: all
