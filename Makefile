@@ -60,7 +60,7 @@ $(BUILD) $(BUILD_MSG) $(PREFIX):
 	@mkdir -p $@
 
 $(TEMPLATES):
-	test ! -f $@ && cp $(PREFIX)/templates/rclex.gen.msgs/$@ $@
+	@test ! -f $@ && cp $(PREFIX)/templates/rclex.gen.msgs/$@ $@
 
 clean:
 	$(RM) $(NIF) $(OBJ)

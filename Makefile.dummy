@@ -9,6 +9,6 @@ all: $(TEMPLATES)
 	@echo ROS_DISTRO or ROS_DIR is not.
 
 $(TEMPLATES):
-	test ! -f $@ && cp $(PREFIX)/templates/rclex.gen.msgs/$@ $@
+	@test ! -f $@ && cp $(PREFIX)/templates/rclex.gen.msgs/$@ $@
 
 .PHONY: all
