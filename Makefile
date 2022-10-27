@@ -1,5 +1,7 @@
 # ROS_DISTRO is set by setup.bash in /opt/ros/${ROS_DISTRO}/.
+ifneq ($(origin ROS_DISTRO), undefined)
 ROS_DIR ?= /opt/ros/$(ROS_DISTRO)
+endif
 
 PREFIX = $(MIX_APP_PATH)/priv
 BUILD  = $(MIX_APP_PATH)/obj
@@ -46,7 +48,11 @@ TEMPLATES = src/msg_types_nif.h src/msg_types_nif.ec lib/rclex/msg_types_nif.ex
 calling_from_make:
 	mix compile
 
+ifneq ($(origin ROS_DIR), undefined)
 all: $(BUILD) $(BUILD_MSG) $(PREFIX) $(TEMPLATES) $(NIF)
+else
+all: $(TEMPLATES)
+endif
 
 $(OBJ): $(HEADERS) Makefile
 

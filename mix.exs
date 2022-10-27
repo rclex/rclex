@@ -24,7 +24,6 @@ defmodule Rclex.MixProject do
       compilers: [:elixir_make] ++ Mix.compilers(),
       make_targets: ["all"],
       make_clean: ["clean"],
-      make_makefile: makefile(),
       make_error_message: """
       If the error message above says that rcl/rcl.h can't be found,
       then the fix is to setup the ROS 2 environment. If you have
@@ -52,8 +51,7 @@ defmodule Rclex.MixProject do
         "README_ja.md",
         "LICENSE",
         "CHANGELOG.md",
-        "Makefile",
-        "Makefile.dummy"
+        "Makefile"
       ],
       licenses: ["Apache-2.0"],
       links: %{"Github" => @source_url}
@@ -109,13 +107,5 @@ defmodule Rclex.MixProject do
       plt_core_path: "priv/plts",
       plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
     ]
-  end
-
-  defp makefile() do
-    cond do
-      not is_nil(System.get_env("ROS_DISTRO")) -> "Makefile"
-      not is_nil(System.get_env("ROS_DIR")) -> "Makefile"
-      true -> "Makefile.dummy"
-    end
   end
 end
