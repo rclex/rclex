@@ -34,7 +34,7 @@ OBJ = $(SRC:src/%.c=$(BUILD)/%.o)
 
 # ROS 2 package-related setting, especially for msg types
 MSG_PKGS = $(patsubst src/pkgs/%/msg,%,$(wildcard src/pkgs/*/msg))
-ifneq "$(MSG_PKGS)" ""
+ifneq ($(MSG_PKGS), "")
 BUILD_MSG    = $(MSG_PKGS:%=$(BUILD)/pkgs/%/msg)
 SRC         += $(wildcard $(MSG_PKGS:%=src/pkgs/%/msg/*.c))
 HEADERS      = $(SRC:src/%.c=src/%.h)
