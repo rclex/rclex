@@ -1,7 +1,7 @@
 # ROS_DISTRO is set by setup.bash in /opt/ros/${ROS_DISTRO}/.
-# If not set, ROS 2 default distro value is the follow.
-ROS_DISTRO ?= foxy
+ifneq ($(origin ROS_DISTRO), undefined)
 ROS_DIR ?= /opt/ros/$(ROS_DISTRO)
+endif
 
 PREFIX = $(MIX_APP_PATH)/priv
 BUILD  = $(MIX_APP_PATH)/obj
@@ -34,7 +34,7 @@ OBJ = $(SRC:src/%.c=$(BUILD)/%.o)
 
 # ROS 2 package-related setting, especially for msg types
 MSG_PKGS = $(patsubst src/pkgs/%/msg,%,$(wildcard src/pkgs/*/msg))
-ifneq "$(MSG_PKGS)" ""
+ifneq ($(MSG_PKGS), "")
 BUILD_MSG    = $(MSG_PKGS:%=$(BUILD)/pkgs/%/msg)
 SRC         += $(wildcard $(MSG_PKGS:%=src/pkgs/%/msg/*.c))
 HEADERS      = $(SRC:src/%.c=src/%.h)
@@ -48,9 +48,11 @@ TEMPLATES = src/msg_types_nif.h src/msg_types_nif.ec lib/rclex/msg_types_nif.ex
 calling_from_make:
 	mix compile
 
-all: install
-
-install: $(BUILD) $(BUILD_MSG) $(PREFIX) $(TEMPLATES) $(NIF)
+ifneq ($(origin ROS_DIR), undefined)
+all: $(BUILD) $(BUILD_MSG) $(PREFIX) $(TEMPLATES) $(NIF)
+else
+all: $(TEMPLATES)
+endif
 
 $(OBJ): $(HEADERS) Makefile
 
@@ -64,11 +66,11 @@ $(BUILD) $(BUILD_MSG) $(PREFIX):
 	@mkdir -p $@
 
 $(TEMPLATES):
-	test ! -f $@ && cp $(PREFIX)/templates/rclex.gen.msgs/$@ $@
+	@test ! -f $@ && cp $(PREFIX)/templates/rclex.gen.msgs/$@ $@
 
 clean:
 	$(RM) $(NIF) $(OBJ)
 	$(RM) -r lib/rclex/pkgs src/pkgs
 	$(RM) $(TEMPLATES)
 
-.PHONY: all clean calling_from_make install
+.PHONY: all clean calling_from_make
