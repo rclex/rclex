@@ -27,15 +27,40 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 - Ubuntu 20.04.2 LTS (Focal Fossa)
 - ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
-- Elixir 1.12.3-otp-24
-- Erlang/OTP 24.1.5
+- Elixir 1.13.4-otp-25
+- Erlang/OTP 25.0.3
 
 動作検証の対象としている環境は[こちら](https://github.com/rclex/rclex_docker#available-versions-docker-tags)を参照してください．
 
 [Docker Hub](https://hub.docker.com/r/rclex/rclex_docker)にてビルド済みのDockerイメージを公開しており，これを用いてRclexを簡単に試行することもできます．
 詳細は[「Docker環境の利用」](#Docker環境の利用)のセクションを参照してください．
 
-## インストール方法
+`rclex` はNerves上での実行も可能です．詳細は[b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)を参照してください．
+
+## 機能
+
+現時点では以下のことができるようにRclex APIを提供しています．
+1. 同一トピックに対して，複数のパブリッシャおよびサブスクライバを大量に作成できる．
+2. パブリッシャ，トピック，サブスクライバが1つずつのペアを大量に作成できる．
+
+ドキュメントは[ExDoc](https://github.com/elixir-lang/ex_doc)で生成されて[HexDocs](https://hexdocs.pm)に公開されています．  
+[https://hexdocs.pm/rclex](https://hexdocs.pm/rclex)をご参照ください．
+
+使用例は[rclex/rclex_examples](https://github.com/rclex/rclex_examples)を参照してください．サンプルコードとともに使い方を記しています．
+
+## 使用方法
+
+ここでは，ROS 2およびElixirの動作環境が導入済みである計算機での`rclex`の使用方法を示します．
+
+### プロジェクトの作成
+
+通常のElixirプロジェクトと同様に作成します．
+
+```
+mix new rclex_usage
+```
+
+### rclexのインストール
 
 `rclex` は[Hexパッケージとして公開](https://hex.pm/docs/publish)しています．
 
@@ -49,16 +74,99 @@ def deps do
 end
 ```
 
-ドキュメントは[ExDoc](https://github.com/elixir-lang/ex_doc)で生成されて[HexDocs](https://hexdocs.pm)に公開されています．  
-[https://hexdocs.pm/rclex](https://hexdocs.pm/rclex)をご参照ください．
+上記を追加後，プロジェクトのディレクトリ内で `mix deps.get` を実行してください．
 
-## 使い方
+```
+cd rclex_usage
+mix deps.get
+```
 
-現時点では以下のことができるよう，Rclex APIを提供しています．
-1. 同一トピックに対して，複数のパブリッシャおよびサブスクライバを大量に作成できる．
-2. パブリッシャ，トピック，サブスクライバが1つずつのペアを大量に作成できる．
+### メッセージの型の設定
 
-[こちら](https://github.com/rclex/rclex_examples)を参照してください．サンプルコードとともに使い方を記しています．
+Rclexでは，ROS 2において定義されるメッセージの型を利用して出版購読型のトピック通信を行うことができます．ROS 2におけるメッセージの型については[こちら](https://docs.ros.org/en/foxy/Concepts/About-ROS-Interfaces.html)を参照してください．
+
+ここでは`String`型を例として，トピック通信で使用したいメッセージの型を設定する方法を示します．まず，`config/config.exs` に次のように記述してください．
+
+```elixir
+import Config
+
+config :rclex, ros2_message_types: ["std_msgs/msg/String"]
+```
+
+ROS 2の環境を設定ファイルから読み込んでください．
+
+```
+source /opt/ros/foxy/setup.bash
+```
+
+その後，次のMixタスクを実行し，メッセージの型を使用するために必要な定義とファイル群を自動生成します．
+
+```
+mix rclex.gen.msgs
+```
+
+これで Rclex を使用する準備が整いました！  
+IEx上で[RclexのAPI](https://hexdocs.pm/rclex/api-reference.html)を実行することができます．
+
+### プロジェクトの実装と実行
+
+ここでは，最も単純なコードを対象として，プロジェクトの実装例を示します．
+次のコード `lib/rclex_usage.ex` は，`String`型のトピック `/chatter` に対して文字列を出版する処理を示しています．
+
+```elixir
+defmodule RclexUsage do
+  def publish_message do
+    context = Rclex.rclexinit()
+    {:ok, node} = Rclex.ResourceServer.create_node(context, 'talker')
+    {:ok, publisher} = Rclex.Node.create_publisher(node, 'StdMsgs.Msg.String', 'chatter')
+
+    msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
+    data = "Hello World from Rclex!"
+    msg_struct = %Rclex.StdMsgs.Msg.String{data: String.to_charlist(data)}
+    Rclex.Msg.set(msg, msg_struct, 'StdMsgs.Msg.String')
+
+    IO.puts("Rclex: Publishing: #{data}")
+    Rclex.Publisher.publish([publisher], [msg])
+
+    Rclex.Node.finish_job(publisher)
+    Rclex.ResourceServer.finish_node(node)
+    Rclex.shutdown(context)
+  end
+end
+```
+
+上記のコードを `lib/rclex_usage.ex` にコピペして，IExを立ち上げてください．
+
+```
+iex -S mix
+```
+
+IEx上で次のように実行してください．
+
+```
+iex()> RclexUsage.publish_message
+
+00:04:40.701 [debug] JobExecutor start
+ 
+00:04:40.705 [debug] talker0/chatter/pub
+Rclex: Publishing: Hello World from Rclex!
+
+00:04:40.706 [debug] publish ok
+ 
+00:04:40.706 [debug] publisher finished: talker0/chatter/pub
+ 
+00:04:40.710 [debug] finish node: talker0
+{:ok, #Reference<0.2970499651.1284374532.3555>}
+```
+
+このメッセージの出版結果は，ROS 2コマンド`ros2 topic echo`によって購読して確認できます．
+
+```
+$ source /opt/ros/foxy/setup.bash
+$ ros2 topic echo /chatter std_msgs/msg/String 
+data: Hello World from Rclex!
+---
+```
 
 ## 開発の円滑化
 
