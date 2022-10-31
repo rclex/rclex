@@ -45,6 +45,8 @@ please refer to [here](https://github.com/rclex/rclex_docker#available-versions-
 The pre-built Docker images are available at [Docker Hub](https://hub.docker.com/r/rclex/rclex_docker).
 You can also try the power of Rclex with it easily. Please check ["Docker Environment"](#Docker-environment) section for details.
 
+`rclex` can be operated onto Nerves. Please refer to [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves) for more details!
+
 ## Features
 
 Currently, the Rclex API allows for the following:
