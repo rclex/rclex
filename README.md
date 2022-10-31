@@ -80,7 +80,7 @@ by adding `rclex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:rclex, "~> 0.7.2"}
+    {:rclex, "~> 0.8.0"}
   ]
 end
 ```
