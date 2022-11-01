@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## v0.8.0 on 01 Nov 2022
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.7.2...v0.8.0
+
+**Holy Shit! Rclex now works on Nerves as well!!** :tada:
+
+* New features:
+  * Refactor generate messages codes pojiro by @pojiro in https://github.com/rclex/rclex/pull/185
+  * refactor Makefile and msgs.ex by @pojiro in https://github.com/rclex/rclex/pull/192
+  * Feature add tasks to prepare ros2 resources by @pojiro in https://github.com/rclex/rclex/pull/190
+* Code Improvements/Fixes:
+  * Add docker command to mix test.watch section on README.md by @pojiro in https://github.com/rclex/rclex/pull/177
+  * Fix `mix deps.get` error on GitHub Actions by @s-hosoai in https://github.com/rclex/rclex/pull/178
+  * Fix multiple definition by @pojiro in https://github.com/rclex/rclex/pull/182
+  * Remove DASHING support from c source by @pojiro in https://github.com/rclex/rclex/pull/189
+  * Remove unused rclex_gen_msgs from mix.lock by @pojiro in https://github.com/rclex/rclex/pull/191
+* Bumps:
+  *  `ex_doc` from 0.28.6 to 0.29.0 by @dependabot in https://github.com/rclex/rclex/pull/184
+* Known issues to be addressed in the near future:
+  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
+  * Bump to Humble Hawksbill in https://github.com/rclex/rclex/issues/114
+  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
+* Note in this release:
+  * set supported/tested elixir version to above 1.12 by @takasehideki in https://github.com/rclex/rclex/pull/186
+
 ## v0.7.2 on 22 Sep 2022
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.7.1...v0.7.2

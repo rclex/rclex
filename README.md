@@ -45,7 +45,34 @@ please refer to [here](https://github.com/rclex/rclex_docker#available-versions-
 The pre-built Docker images are available at [Docker Hub](https://hub.docker.com/r/rclex/rclex_docker).
 You can also try the power of Rclex with it easily. Please check ["Docker Environment"](#Docker-environment) section for details.
 
-## Installation
+`rclex` can be operated onto Nerves. Please refer to [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves) for more details!
+
+## Features
+
+Currently, the Rclex API allows for the following:
+
+1. The ability to create a large number of publishers sending to the same topic.
+2. The ability to create large numbers of each combination of publishers, topics, and subscribers.
+
+Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
+and published on [HexDocs](https://hexdocs.pm).  
+You can find the docs at [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex).
+
+Please refer [rclex/rclex_examples](https://github.com/rclex/rclex_examples) for the examples of usage along with the sample code.
+
+## How to use
+
+This section explains the quickstart for `rclex` onto the environment where ROS 2 and Elixir have been prepared.
+
+### Create the project
+
+First of all, create the Mix project as a normal Elixir project.
+
+```
+mix new rclex_usage
+```
+
+### Install rclex
 
 `rclex` is [available in Hex](https://hex.pm/docs/publish).
 
@@ -55,23 +82,103 @@ by adding `rclex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:rclex, "~> 0.7.2"}
+    {:rclex, "~> 0.8.0"}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm).  
-You can find the docs at [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex).
+After that, execute `mix deps.get` into the project repository.
 
-## Usage
+```
+cd rclex_usage
+mix deps.get
+```
 
-Currently, the Rclex API allows for the following:
+### Prepare message types
 
-1. The ability to create a large number of publishers sending to the same topic.
-2. The ability to create large numbers of each combination of publishers, topics, and subscribers.
+Rclex provides pub/sub based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/foxy/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
 
-Please reference examples [here](https://github.com/rclex/rclex_examples). Also note the usage alongside the sample code.
+Here, we show how to prepare the message type for topic communication, using the `String` type as an example. First, write the following in `config/config.exs`.
+
+```elixir
+import Config
+
+config :rclex, ros2_message_types: ["std_msgs/msg/String"]
+```
+
+Setup the environment for ROS 2.
+
+```
+source /opt/ros/foxy/setup.bash
+```
+
+Then, execute the following Mix task to generate required definitions and files for using message types.
+
+```
+mix rclex.gen.msgs
+```
+
+Now, you can acquire the environment for Rclex!
+You can operate [Rclex API](https://hexdocs.pm/rclex/api-reference.html) onto IEx.
+
+### Implementation and execution of project
+
+Here is the simplest example `lib/rclex_usage.ex` that will publish the string to `/chatter` topic.
+
+```elixir
+defmodule RclexUsage do
+  def publish_message do
+    context = Rclex.rclexinit()
+    {:ok, node} = Rclex.ResourceServer.create_node(context, 'talker')
+    {:ok, publisher} = Rclex.Node.create_publisher(node, 'StdMsgs.Msg.String', 'chatter')
+
+    msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
+    data = "Hello World from Rclex!"
+    msg_struct = %Rclex.StdMsgs.Msg.String{data: String.to_charlist(data)}
+    Rclex.Msg.set(msg, msg_struct, 'StdMsgs.Msg.String')
+
+    IO.puts("Rclex: Publishing: #{data}")
+    Rclex.Publisher.publish([publisher], [msg])
+
+    Rclex.Node.finish_job(publisher)
+    Rclex.ResourceServer.finish_node(node)
+    Rclex.shutdown(context)
+  end
+end
+```
+
+Copy and paste the above code to `lib/rclex_usage.ex`, and execute IEx.
+
+```
+iex -S mix
+```
+
+Operate the following on IEx.
+
+```
+iex()> RclexUsage.publish_message
+
+00:04:40.701 [debug] JobExecutor start
+ 
+00:04:40.705 [debug] talker0/chatter/pub
+Rclex: Publishing: Hello World from Rclex!
+
+00:04:40.706 [debug] publish ok
+ 
+00:04:40.706 [debug] publisher finished: talker0/chatter/pub
+ 
+00:04:40.710 [debug] finish node: talker0
+{:ok, #Reference<0.2970499651.1284374532.3555>}
+```
+
+You can confirm the above operation by subscribing with `ros2 topic echo`.
+
+```
+$ source /opt/ros/foxy/setup.bash
+$ ros2 topic echo /chatter std_msgs/msg/String 
+data: Hello World from Rclex!
+---
+```
 
 ## Enhance devepoment experience
 
