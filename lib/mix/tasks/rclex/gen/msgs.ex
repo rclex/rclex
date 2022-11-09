@@ -64,7 +64,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     ros_distro = System.get_env("ROS_DISTRO")
 
     if is_nil(ros_distro) do
-      raise(RuntimeError, "environment variable ROS_DISTRO is not set.")
+      Mix.raise("environment variable ROS_DISTRO is not set.")
     end
 
     generate("/opt/ros/#{ros_distro}/share", to)
@@ -74,7 +74,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     types = Application.get_env(:rclex, :ros2_message_types, [])
 
     if Enum.empty?(types) do
-      raise RuntimeError, "ros2_message_types is not specified in config"
+      Mix.raise("ros2_message_types is not specified in config.")
     end
 
     ros2_message_type_map =
@@ -127,7 +127,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     types = Application.get_env(:rclex, :ros2_message_types, [])
 
     if Enum.empty?(types) do
-      raise RuntimeError, "ros2_message_types is not specified in config"
+      Mix.raise("ros2_message_types is not specified in config.")
     end
 
     Mix.shell().info(Enum.join(types, " "))
@@ -280,7 +280,10 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   """
   def get_module_name_from_type(type) do
     if not String.contains?(type, "/") do
-      raise RuntimeError, "type must contain ROS 2 package name"
+      Mix.raise("""
+      type must contain ROS 2 package name,
+      ex) "std_msgs/msg/String", "geometry_msgs/msg/Twist"
+      """)
     end
 
     String.split(type, "/")
