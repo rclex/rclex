@@ -1,6 +1,12 @@
 # ROS_DISTRO is set by setup.bash in /opt/ros/${ROS_DISTRO}/.
-ifneq ($(origin ROS_DISTRO), undefined)
+ifeq ($(origin ROS_DISTRO), undefined)
+$(error ROS_DISTRO is not defined)
+else
+ifeq ($(MIX_TARGET), host)
 ROS_DIR ?= /opt/ros/$(ROS_DISTRO)
+else
+ROS_DIR ?= $(NERVES_APP)/rootfs_overlay/opt/ros/$(ROS_DISTRO)
+endif
 endif
 
 PREFIX = $(MIX_APP_PATH)/priv
@@ -48,10 +54,13 @@ TEMPLATES = src/msg_types_nif.h src/msg_types_nif.ec lib/rclex/msg_types_nif.ex
 calling_from_make:
 	mix compile
 
-ifneq ($(origin ROS_DIR), undefined)
+$(shell test -d "$(ROS_DIR)")
+ifeq ($(.SHELLSTATUS), 0)
 all: $(BUILD) $(BUILD_MSG) $(PREFIX) $(TEMPLATES) $(NIF)
 else
 all: $(TEMPLATES)
+	@echo $(ROS_DIR) does not exist.
+	@echo If you would not like to install ROS 2 on your HOST, please check \`mix help rclex.prep.ros2\`.
 endif
 
 $(OBJ): $(HEADERS) Makefile
