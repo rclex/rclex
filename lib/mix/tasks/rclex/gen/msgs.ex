@@ -27,6 +27,8 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   use Mix.Task
 
+  import Rclex.MixProject, only: [default_ros_distro: 0]
+
   @ros2_elixir_type_map %{
     "bool" => "boolean",
     "byte" => "integer",
@@ -61,13 +63,20 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   def generate(to) do
-    ros_distro = System.get_env("ROS_DISTRO")
+    ros_distro = System.get_env("ROS_DISTRO", default_ros_distro())
 
-    if is_nil(ros_distro) do
-      Mix.raise("environment variable ROS_DISTRO is not set.")
+    ros_directory_path =
+      if Mix.target() == :host do
+        System.get_env("ROS_DIR", "/opt/ros/#{ros_distro}")
+      else
+        Path.join(File.cwd!(), "rootfs_overlay/opt/ros/#{ros_distro}")
+      end
+
+    if not File.exists?(ros_directory_path) do
+      Mix.raise("#{ros_directory_path} does not exist.")
     end
 
-    generate("/opt/ros/#{ros_distro}/share", to)
+    generate(Path.join(ros_directory_path, "share"), to)
   end
 
   def generate(from, to) do

@@ -1,12 +1,13 @@
 # ROS_DISTRO is set by setup.bash in /opt/ros/${ROS_DISTRO}/.
 ifeq ($(origin ROS_DISTRO), undefined)
-$(error ROS_DISTRO is not defined)
-else
+$(warning ROS_DISTRO is not defined, so default value `foxy` will be used.)
+ROS_DISTRO = foxy
+endif
+
 ifeq ($(MIX_TARGET), host)
 ROS_DIR ?= /opt/ros/$(ROS_DISTRO)
 else
 ROS_DIR ?= $(NERVES_APP)/rootfs_overlay/opt/ros/$(ROS_DISTRO)
-endif
 endif
 
 PREFIX = $(MIX_APP_PATH)/priv

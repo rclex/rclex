@@ -8,48 +8,29 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2Test do
 
   @tag skip: "take time"
   @tag :tmp_dir
-  test "copy_ros2_resources_from_docker!/3", %{tmp_dir: tmp_dir_path} do
-    Mix.Tasks.Rclex.Prep.Ros2.copy_ros2_resources_from_docker!(tmp_dir_path, "arm64v8", "foxy")
+  test "copy_from_docker!/2", %{tmp_dir: tmp_dir_path} do
+    Mix.Tasks.Rclex.Prep.Ros2.copy_from_docker!(tmp_dir_path, "arm64v8", "foxy")
 
+    assert File.exists?(Path.join(tmp_dir_path, ".gitignore"))
     assert File.ls!(tmp_dir_path) |> Enum.count() > 0
   end
 
-  @tag skip: "take time"
-  @tag :tmp_dir
-  test "copy_vendor_resources_from_docker!/3", %{tmp_dir: tmp_dir_path} do
-    Mix.Tasks.Rclex.Prep.Ros2.copy_vendor_resources_from_docker!(tmp_dir_path, "arm64v8", "foxy")
-
-    assert File.ls!(tmp_dir_path) |> Enum.count() > 0
-  end
-
-  test "ros2_docker_image_tag/2" do
+  test "ros_docker_image_tag/2" do
     assert "arm64v8/ros:foxy-ros-core" =
-             Mix.Tasks.Rclex.Prep.Ros2.ros2_docker_image_tag("arm64v8", "foxy")
+             Mix.Tasks.Rclex.Prep.Ros2.ros_docker_image_tag("arm64v8", "foxy")
+
+    assert "amd64/ros:humble-ros-core" =
+             Mix.Tasks.Rclex.Prep.Ros2.ros_docker_image_tag("amd64", "humble")
   end
 
   test "parse_args/1" do
-    assert [arch: "arm64v8", ros2_distro: "foxy"] =
-             Mix.Tasks.Rclex.Prep.Ros2.parse_args(["--arch", "arm64v8", "--ros2-distro", "foxy"])
-
-    assert [nerves_system: "rpi4", ros2_distro: "foxy"] =
-             Mix.Tasks.Rclex.Prep.Ros2.parse_args([
-               "--nerves-system",
-               "rpi4",
-               "--ros2-distro",
-               "foxy"
-             ])
+    assert [arch: "arm64v8"] = Mix.Tasks.Rclex.Prep.Ros2.parse_args(["--arch", "arm64v8"])
+    assert [] = Mix.Tasks.Rclex.Prep.Ros2.parse_args([])
   end
 
   @tag :tmp_dir
-  test "create_resources_directory!/2", %{tmp_dir: tmp_dir_path} do
-    arch = "arm64v8"
-    ros2_distro = "foxy"
-
-    directory_path = Path.join(tmp_dir_path, ".ros2/resources/from-docker/#{arch}/#{ros2_distro}")
-
-    ^directory_path =
-      Mix.Tasks.Rclex.Prep.Ros2.create_resources_directory!(tmp_dir_path, arch, ros2_distro)
-
-    assert File.exists?(directory_path)
+  test "create_resources_directory!/1", %{tmp_dir: tmp_dir_path} do
+    :ok = Mix.Tasks.Rclex.Prep.Ros2.create_resources_directory!(tmp_dir_path)
+    assert File.exists?(Path.join(tmp_dir_path, ".gitignore"))
   end
 end
