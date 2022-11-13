@@ -1,7 +1,9 @@
-# ROS_DISTRO is set by setup.bash in /opt/ros/${ROS_DISTRO}/.
+define ERROR_ANNOUNCEMENT
+ROS_DISTRO is not defined.
+If you installed ROS 2 on your host and use on it, do `source /opt/ros/ROS_DISTRO/setup.bash` first.
+endef
 ifeq ($(origin ROS_DISTRO), undefined)
-$(warning ROS_DISTRO is not defined, so default value `foxy` will be used.)
-ROS_DISTRO = foxy
+$(error $(ERROR_ANNOUNCEMENT))
 endif
 
 ifeq ($(MIX_TARGET), host)

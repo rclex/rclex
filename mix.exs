@@ -7,12 +7,6 @@ defmodule Rclex.MixProject do
 
   @version "0.8.0"
   @source_url "https://github.com/rclex/rclex"
-  @default_ros_distro Regex.run(
-                        ~r/ROS_DISTRO\s*=\s*([[:alpha:]]+)/,
-                        File.read!("Makefile"),
-                        capture: :all_but_first
-                      )
-                      |> List.first()
 
   def project do
     [
@@ -40,8 +34,6 @@ defmodule Rclex.MixProject do
       dialyzer: dialyzer()
     ]
   end
-
-  def default_ros_distro(), do: @default_ros_distro
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]

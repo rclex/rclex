@@ -27,8 +27,6 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   use Mix.Task
 
-  import Rclex.MixProject, only: [default_ros_distro: 0]
-
   @ros2_elixir_type_map %{
     "bool" => "boolean",
     "byte" => "integer",
@@ -63,7 +61,11 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   def generate(to) do
-    ros_distro = System.get_env("ROS_DISTRO", default_ros_distro())
+    ros_distro = System.get_env("ROS_DISTRO")
+
+    if is_nil(ros_distro) do
+      Mix.raise("Please set ROS_DISTRO.")
+    end
 
     ros_directory_path =
       if Mix.target() == :host do

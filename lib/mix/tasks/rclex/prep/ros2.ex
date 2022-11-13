@@ -20,8 +20,6 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   use Mix.Task
 
-  import Rclex.MixProject, only: [default_ros_distro: 0]
-
   @arm64v8_ros_distros ["foxy", "galactic", "humble"]
   @amd64_ros_distros ["foxy", "galactic", "humble"]
   @supported_arch ["arm64v8", "amd64"]
@@ -55,7 +53,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
       """)
     end
 
-    ros_distro = System.get_env("ROS_DISTRO", default_ros_distro())
+    ros_distro = System.get_env("ROS_DISTRO")
     supported_ros_distros = Map.get(@supported_ros_distros, arch, [])
 
     if ros_distro not in supported_ros_distros do
