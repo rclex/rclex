@@ -118,7 +118,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
   defp copy_vendor_resources_from_docker!(dest_dir_path, arch, ros_distro) do
     dir_name = arch_dir_name(arch)
 
-    dest_path = Path.join(dest_dir_path, "/lib/#{dir_name}")
+    dest_path = Path.join(dest_dir_path, "/opt/ros/#{ros_distro}/lib")
     File.mkdir_p!(dest_path)
 
     [
