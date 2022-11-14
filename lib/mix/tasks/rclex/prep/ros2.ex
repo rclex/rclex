@@ -169,10 +169,10 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
   end
 
   defp copy_dest_dir_path(path \\ File.cwd!(), arch, ros_distro) do
-    if File.exists?(Path.join(path, "rootfs_overlay")) do
-      Path.join(path, "rootfs_overlay")
-    else
+    if Mix.target() == :host do
       Path.join(path, ".ros2/resources/from-docker/#{arch}/#{ros_distro}")
+    else
+      Path.join(path, "rootfs_overlay")
     end
   end
 end
