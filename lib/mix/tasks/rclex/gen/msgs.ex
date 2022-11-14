@@ -3,26 +3,35 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @moduledoc """
   #{@shortdoc}
 
-  Before generating, we have to specify message types in config.exs.
+  Before generating, specifing message types in config.exs is needed.
 
-  ex. config :rclex, ros2_message_types: ["std_msgs/msg/String"]
+  ```
+  config :rclex, ros2_message_types: ["std_msgs/msg/String"]
+  ```
 
-  Be careful, ros2 message type is case sensitive.
+  > #### Info {: .info }
+  > Be careful, ros2 message type is case sensitive.
 
   ## How to generate
 
-    $ mix rclex.gen.msgs
+  ```
+  mix rclex.gen.msgs
+  ```
 
-    This task assumes that the environment variable ROS_DISTRO is set
-    and refers to the message types from "/opt/ros/ROS_DISTRO/share".
+  This task assumes that the environment variable `ROS_DISTRO` is set
+  and refers to the message types from `/opt/ros/[ROS_DISTRO]/share`.
 
-    We can also specify directly as follows
+  We can also specify explicitly as follows
 
-    $ mix rclex.gen.msgs --from /opt/ros/foxy/share
+  ```
+  mix rclex.gen.msgs --from /opt/ros/foxy/share
+  ```
 
   ## How to clean
 
-    $ mix rclex.gen.msgs --clean
+  ```
+  mix rclex.gen.msgs --clean
+  ```
   """
 
   use Mix.Task
