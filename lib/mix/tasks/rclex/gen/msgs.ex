@@ -69,7 +69,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
     ros_directory_path =
       if Mix.target() == :host do
-        System.get_env("ROS_DIR", "/opt/ros/#{ros_distro}")
+        "/opt/ros/#{ros_distro}"
       else
         Path.join(File.cwd!(), "rootfs_overlay/opt/ros/#{ros_distro}")
       end
