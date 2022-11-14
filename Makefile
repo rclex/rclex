@@ -1,9 +1,9 @@
-define ERROR_ANNOUNCEMENT
+define ERROR_ROS_DISTRO_NOT_DEFINED
 ROS_DISTRO is not defined.
 If you installed ROS 2 on your host and use on it, do `source /opt/ros/ROS_DISTRO/setup.bash` first.
 endef
 ifeq ($(origin ROS_DISTRO), undefined)
-$(error $(ERROR_ANNOUNCEMENT))
+$(error $(ERROR_ROS_DISTRO_NOT_DEFINED))
 endif
 
 ifeq ($(MIX_TARGET), host)
