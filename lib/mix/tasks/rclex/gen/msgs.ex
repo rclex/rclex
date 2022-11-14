@@ -52,11 +52,22 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       OptionParser.parse(args, strict: [from: :string, clean: :boolean, show_types: :boolean])
 
     case valid_options do
-      [] -> generate(rclex_dir_path!())
-      [from: from] -> generate(from, rclex_dir_path!())
-      [clean: true] -> clean()
-      [show_types: true] -> show_types()
-      _ -> Mix.shell().info(@moduledoc)
+      [] ->
+        clean()
+        generate(rclex_dir_path!())
+
+      [from: from] ->
+        clean()
+        generate(from, rclex_dir_path!())
+
+      [clean: true] ->
+        clean()
+
+      [show_types: true] ->
+        show_types()
+
+      _ ->
+        Mix.shell().info(@moduledoc)
     end
   end
 
