@@ -56,6 +56,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   @ros2_built_in_types Map.keys(@ros2_elixir_type_map)
 
+  @doc false
   def run(args) do
     {valid_options, _, _} =
       OptionParser.parse(args, strict: [from: :string, clean: :boolean, show_types: :boolean])
@@ -80,6 +81,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  @doc false
   def generate(to) do
     ros_distro = System.get_env("ROS_DISTRO")
 
@@ -101,6 +103,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     generate(Path.join(ros_directory_path, "share"), to)
   end
 
+  @doc false
   def generate(from, to) do
     types = Application.get_env(:rclex, :ros2_message_types, [])
 
@@ -142,6 +145,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     recompile!()
   end
 
+  @doc false
   def clean() do
     dir_path = rclex_dir_path!()
 
@@ -154,6 +158,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  @doc false
   def show_types() do
     types = Application.get_env(:rclex, :ros2_message_types, [])
 
@@ -164,6 +169,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     Mix.shell().info(Enum.join(types, " "))
   end
 
+  @doc false
   def generate_msg_types_ex(types) do
     statements =
       Enum.map_join(types, fn type ->
@@ -181,6 +187,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     EEx.eval_file("#{templates_dir_path()}/msg_types_nif.eex", statements: statements)
   end
 
+  @doc false
   def generate_msg_types_h(types) do
     Enum.map_join(types, fn type ->
       """
@@ -189,6 +196,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def generate_msg_types_c(types) do
     Enum.map_join(types, fn type ->
       function_name = get_function_name_from_type(type)
@@ -203,6 +211,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def generate_msg_prot(type, ros2_message_type_map) do
     EEx.eval_file("#{templates_dir_path()}/msg_prot_impl.eex",
       module_name: get_module_name_from_type(type),
@@ -214,6 +223,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     )
   end
 
+  @doc false
   def generate_msg_mod(type, ros2_message_type_map) do
     EEx.eval_file("#{templates_dir_path()}/msg_mod.eex",
       module_name: get_module_name_from_type(type),
@@ -222,6 +232,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     )
   end
 
+  @doc false
   def generate_msg_nif_c(type, ros2_message_type_map) do
     EEx.eval_file("#{templates_dir_path()}/msg_nif_c.eex",
       function_name: get_function_name_from_type(type),
@@ -233,12 +244,14 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     )
   end
 
+  @doc false
   def generate_msg_nif_h(type, _ros2_message_type_map) do
     EEx.eval_file("#{templates_dir_path()}/msg_nif_h.eex",
       function_name: get_function_name_from_type(type)
     )
   end
 
+  @doc false
   @spec get_ros2_message_type_map(String.t(), String.t(), map()) :: map()
   # credo:disable-for-next-line
   def get_ros2_message_type_map(ros2_message_type, from, acc \\ %{}) do
@@ -355,6 +368,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     Enum.join([pkg, "_msg_", type], "_")
   end
 
+  @doc false
   def create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, var \\ "data") do
     Map.get(ros2_message_type_map, type)
     |> Enum.map_join(", ", fn {type, variable} ->
@@ -369,6 +383,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def create_fields_for_nifs_readdata_return(type, ros2_message_type_map, var \\ "data") do
     Map.get(ros2_message_type_map, type)
     |> Enum.with_index()
@@ -385,6 +400,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def create_fields_for_read(type, ros2_message_type_map, var \\ "data") do
     Map.get(ros2_message_type_map, type)
     |> Enum.with_index()
@@ -403,6 +419,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def create_fields_for_defstruct(type, ros2_message_type_map) do
     Map.get(ros2_message_type_map, type)
     |> Enum.map_join(", ", fn {type, variable} ->
@@ -417,6 +434,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def create_fields_for_type(type, ros2_message_type_map) do
     Map.get(ros2_message_type_map, type)
     |> Enum.map_join(", ", fn {type, variable} ->
@@ -436,6 +454,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   @spec create_readdata_statements(String.t(), map()) :: String.t()
   def create_readdata_statements(type, ros2_message_type_map) do
     type_var_list = Map.get(ros2_message_type_map, type)
@@ -449,6 +468,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     "enif_make_tuple(env,#{Enum.count(type_var_list)},\n  #{statements})"
   end
 
+  @doc false
   # credo:disable-for-next-line
   def create_readdata_statements_impl(type, ros2_message_type_map, var)
       when type in @ros2_built_in_types and is_map(ros2_message_type_map) do
@@ -479,6 +499,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  @doc false
   def create_readdata_statements_impl(type, ros2_message_type_map, var)
       when is_map(ros2_message_type_map) do
     if is_ros2_list(type) do
@@ -488,6 +509,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  @doc false
   def create_readdata_statements_impl_for_list(type, ros2_message_type_map, var)
       when is_map(ros2_message_type_map) do
     [_, list_type, list_length] = Regex.run(~r/^(.+)\[([0-9]+)\]$/, type)
@@ -502,6 +524,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     "enif_make_list(env,#{list_length},\n  #{statements})"
   end
 
+  @doc false
   def create_readdata_statements_impl_for_tuple(type, ros2_message_type_map, var)
       when is_map(ros2_message_type_map) do
     type_var_list = Map.get(ros2_message_type_map, type)
@@ -514,6 +537,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     "enif_make_tuple(env,#{Enum.count(type_var_list)},\n  #{statements})"
   end
 
+  @doc false
   def create_setdata_statements(type, ros2_message_type_map) do
     type_var_list = Map.get(ros2_message_type_map, type)
 
@@ -542,6 +566,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     """ <> "#{statements}"
   end
 
+  @doc false
   # credo:disable-for-next-line
   def create_setdata_statements_impl(type, ros2_message_type_map, var_res, var_term, var_local)
       when type in @ros2_built_in_types and is_map(ros2_message_type_map) do
@@ -631,6 +656,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  @doc false
   def create_setdata_statements_impl(type, ros2_message_type_map, var, var_term, var_local) do
     if is_ros2_list(type) do
       create_setdata_statements_impl_for_list(
@@ -651,6 +677,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  @doc false
   def create_setdata_statements_impl_for_list(
         type,
         ros2_message_type_map,
@@ -690,6 +717,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     """ <> "#{statements}"
   end
 
+  @doc false
   def create_setdata_statements_impl_for_tuple(
         type,
         ros2_message_type_map,
