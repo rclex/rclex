@@ -13,8 +13,16 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   ## Examples
 
+  specify arch explicitly with `--arch` option
+
   ```
   mix rclex.prep.ros2 --arch arm64v8
+  ```
+
+  For Nerves, `export MIX_TARGET=[TARGET]` is invoked properly, `--arch` option is not needed.
+
+  ```
+  mix rclex.prep.ros2
   ```
   """
 
