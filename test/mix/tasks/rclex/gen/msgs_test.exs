@@ -1,8 +1,6 @@
 defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
   use ExUnit.Case
 
-  doctest Mix.Tasks.Rclex.Gen.Msgs
-
   alias Mix.Tasks.Rclex.Gen.Msgs, as: GenMsgs
 
   @ros2_message_type_map %{
@@ -253,6 +251,86 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
         )
 
       assert expected == GenMsgs.create_setdata_statements(type, @ros2_message_type_map)
+    end
+  end
+
+  test "get_module_name_from_path/1" do
+    assert "StdMsgs.Msg.String" == GenMsgs.get_module_name_from_path("std_msgs/msg/String")
+  end
+
+  for {expected, type} <- [
+        {"Rclex.StdMsgs.Msg.String", "std_msgs/msg/String"},
+        {"Rclex.GeometryMsgs.Msg.TwistWithCovariance", "geometry_msgs/msg/TwistWithCovariance"}
+      ] do
+    test "get_module_name_from_type/1, type: #{type}" do
+      expected = unquote(expected)
+      type = unquote(type)
+
+      assert expected == GenMsgs.get_module_name_from_type(type)
+    end
+  end
+
+  for {expected, type} <- [
+        {"std_msgs_msg_string", "std_msgs/msg/String"},
+        {"geometry_msgs_msg_twist_with_covariance", "geometry_msgs/msg/TwistWithCovariance"}
+      ] do
+    test "get_function_name_from_type/1, type: #{type}" do
+      expected = unquote(expected)
+      type = unquote(type)
+
+      assert expected == GenMsgs.get_function_name_from_type(type)
+    end
+  end
+
+  for {expected, type} <- [
+        {"std_msgs/msg/string", "std_msgs/msg/String"},
+        {"geometry_msgs/msg/twist_with_covariance", "geometry_msgs/msg/TwistWithCovariance"}
+      ] do
+    test "get_file_name_from_type/1, type: #{type}" do
+      expected = unquote(expected)
+      type = unquote(type)
+
+      assert expected == GenMsgs.get_file_name_from_type(type)
+    end
+  end
+
+  for {expected, type} <- [
+        {"std_msgs__msg__String", "std_msgs/msg/String"},
+        {"geometry_msgs__msg__TwistWithCovariance", "geometry_msgs/msg/TwistWithCovariance"}
+      ] do
+    test "get_struct_name_from_type/1, type: #{type}" do
+      expected = unquote(expected)
+      type = unquote(type)
+
+      assert expected == GenMsgs.get_struct_name_from_type(type)
+    end
+  end
+
+  for {expected, list} <- [
+        {"StdMsgs.Msg.String", ["std_msgs", "msg", "String"]},
+        {"GeometryMsgs.Msg.TwistWithCovariance", ["geometry_msgs", "msg", "TwistWithCovariance"]}
+      ] do
+    test "get_module_name_impl/1, list: #{inspect(list)}" do
+      expected = unquote(expected)
+      list = unquote(list)
+
+      assert expected == GenMsgs.get_module_name_impl(list)
+    end
+  end
+
+  test "convert_package_name_to_capitalized/1" do
+    assert "StdMsgs" == GenMsgs.convert_package_name_to_capitalized("std_msgs")
+  end
+
+  for {expected, type} <- [
+        {"vector3", "Vector3"},
+        {"twist_with_covariance", "TwistWithCovariance"}
+      ] do
+    test "to_down_snake/1, type: #{type}" do
+      expected = unquote(expected)
+      type = unquote(type)
+
+      assert expected == GenMsgs.to_down_snake(type)
     end
   end
 end

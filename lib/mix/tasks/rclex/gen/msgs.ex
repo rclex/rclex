@@ -307,21 +307,13 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     Enum.reject(rows, fn row -> String.contains?(row, "=") end)
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_module_name_from_path("std_msgs/msg/String")
-  "StdMsgs.Msg.String"
-  """
+  @doc false
   @spec get_module_name_from_path(String.t()) :: String.t()
   def get_module_name_from_path(path) do
     get_module_name_impl(String.split(path, "/"))
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_module_name_from_type("std_msgs/msg/String")
-  "Rclex.StdMsgs.Msg.String"
-  iex> #{__MODULE__}.get_module_name_from_type("geometry_msgs/msg/TwistWithCovariance")
-  "Rclex.GeometryMsgs.Msg.TwistWithCovariance"
-  """
+  @doc false
   def get_module_name_from_type(type) do
     if not String.contains?(type, "/") do
       Mix.raise("""
@@ -335,34 +327,19 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     |> then(&"Rclex.#{&1}")
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_function_name_from_type("std_msgs/msg/String")
-  "std_msgs_msg_string"
-  iex> #{__MODULE__}.get_function_name_from_type("geometry_msgs/msg/TwistWithCovariance")
-  "geometry_msgs_msg_twist_with_covariance"
-  """
+  @doc false
   def get_function_name_from_type(type) do
     [pkg, "msg", type] = String.split(type, "/")
     Enum.join([pkg, "msg", to_down_snake(type)], "_")
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_file_name_from_type("std_msgs/msg/String")
-  "std_msgs/msg/string"
-  iex> #{__MODULE__}.get_file_name_from_type("geometry_msgs/msg/TwistWithCovariance")
-  "geometry_msgs/msg/twist_with_covariance"
-  """
+  @doc false
   def get_file_name_from_type(type) do
     [pkg, "msg", type] = String.split(type, "/")
     Enum.join([pkg, "msg", to_down_snake(type)], "/")
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_struct_name_from_type("std_msgs/msg/String")
-  "std_msgs__msg__String"
-  iex> #{__MODULE__}.get_struct_name_from_type("geometry_msgs/msg/TwistWithCovariance")
-  "geometry_msgs__msg__TwistWithCovariance"
-  """
+  @doc false
   def get_struct_name_from_type(type) do
     [pkg, "msg", type] = String.split(type, "/")
     Enum.join([pkg, "_msg_", type], "_")
@@ -753,31 +730,18 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     """ <> "#{statements}"
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_module_name_impl(["std_msgs", "msg", "String"])
-  "StdMsgs.Msg.String"
-  iex> #{__MODULE__}.get_module_name_impl(["geometry_msgs", "msg", "TwistWithCovariance"])
-  "GeometryMsgs.Msg.TwistWithCovariance"
-  """
+  @doc false
   def get_module_name_impl([pkg, msg = "msg", type]) do
     Enum.join([convert_package_name_to_capitalized(pkg), String.capitalize(msg), type], ".")
   end
 
-  @doc """
-  iex> #{__MODULE__}.convert_package_name_to_capitalized("std_msgs")
-  "StdMsgs"
-  """
+  @doc false
   def convert_package_name_to_capitalized(binary) do
     String.split(binary, "_")
     |> Enum.map_join(&String.capitalize(&1))
   end
 
-  @doc """
-  iex> #{__MODULE__}.to_down_snake("Vector3")
-  "vector3"
-  iex> #{__MODULE__}.to_down_snake("TwistWithCovariance")
-  "twist_with_covariance"
-  """
+  @doc false
   def to_down_snake(type_name) do
     String.split(type_name, ~r/[A-Z][a-z0-9]+/, include_captures: true, trim: true)
     |> Enum.map_join("_", &String.downcase(&1))
