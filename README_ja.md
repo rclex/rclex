@@ -21,7 +21,9 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 詳しくはROS 2の[公式ドキュメント](https://index.ros.org/doc/ros2/)を参照ください．
 
-## 動作環境（開発環境）
+## 対象とする環境
+
+### ホスト（開発環境）とターゲット（実行環境）が同一の場合
 
 現在，下記の環境を主な対象として開発を進めています．
 
@@ -32,10 +34,16 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 動作検証の対象としている環境は[こちら](https://github.com/rclex/rclex_docker#available-versions-docker-tags)を参照してください．
 
+### Docker環境
+
 [Docker Hub](https://hub.docker.com/r/rclex/rclex_docker)にてビルド済みのDockerイメージを公開しており，これを用いてRclexを簡単に試行することもできます．
 詳細は[「Docker環境の利用」](#Docker環境の利用)のセクションを参照してください．
 
-`rclex` はNerves上での実行も可能です．詳細は[b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)を参照してください．
+### Nervesデバイス（ターゲット）
+
+`rclex` はNerves上での実行も可能です．この場合，ホスト環境にはROS 2環境を導入する必要はありません．
+
+詳細は[Use on Nerves](USE_ON_NERVES.md)の章および[b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)のリポジトリによる例を参照してください．
 
 ## 機能
 
