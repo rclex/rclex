@@ -34,7 +34,8 @@ by adding `rclex` to your list of dependencies in `mix.exs`:
     [
       ...
       # FIXME when merged
-      {:rclex, "~> 0.8.1"},
+      {:rclex,
+       git: "https://github.com/rclex/rclex.git", branch: "improve-mix_tasks_usability-pojiro"},
       ...
     ]
   end

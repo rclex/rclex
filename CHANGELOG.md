@@ -1,24 +1,5 @@
 # CHANGELOG
 
-## v0.8.1 on 03 Dec 2022
-
-**Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.0...v0.8.1
-
-* New features:
-  * Create docs for Use on Nerves and improve related mix tasks by @pojiro in https://github.com/rclex/rclex/pull/198
-* Code Improvements/Fixes:
-  * Change `raise` to `Mix.raise` to proper mix task error handling by @pojiro in https://github.com/rclex/rclex/pull/194
-  * Change Makefile's if statement to confirm ROS_DIR exists by @pojiro in https://github.com/rclex/rclex/pull/195
-  * Improve mix tasks usability by @pojiro in https://github.com/rclex/rclex/pull/196
-* Bumps:
-  * Bump ex_doc from 0.29.0 to 0.29.1 by @dependabot in https://github.com/rclex/rclex/pull/199
-  * Bump elixir_make from 0.6.3 to 0.7.0 by @dependabot in https://github.com/rclex/rclex/pull/200
-* Known issues to be addressed in the near future:
-  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
-  * Bump to Humble Hawksbill in https://github.com/rclex/rclex/issues/114
-  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
-* Note in this release: none
-
 ## v0.8.0 on 01 Nov 2022
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.7.2...v0.8.0
