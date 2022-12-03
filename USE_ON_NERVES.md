@@ -10,8 +10,8 @@ We have also published the Nerves project that has been prepared and includes ex
 ## Create Nerves Project
 
 ```
-mix nerves.new rclex_on_nerves --target rpi4
-cd rclex_on_nerves
+mix nerves.new rclex_usage_on_nerves --target rpi4
+cd rclex_usage_on_nerves
 export MIX_TARGET=rpi4
 mix deps.get
 ```
