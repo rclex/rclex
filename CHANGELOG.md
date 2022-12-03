@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## v0.8.2 on 03 Dec 2022
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.1...v0.8.2
+
+* New features: none
+* Code Improvements/Fixes:
+  * fix to check ROS_DIR by @takasehideki in https://github.com/rclex/rclex/pull/206
+* Bumps: none
+* Known issues to be addressed in the near future:
+  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
+  * Bump to Humble Hawksbill in https://github.com/rclex/rclex/issues/114
+  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
+* Note in this release:
+  * This release only fixes a critical issue that existed in the previous release,,,
+
 ## v0.8.1 on 03 Dec 2022
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.0...v0.8.1
