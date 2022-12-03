@@ -55,7 +55,7 @@ Add ros2_message_types config to config/config.exs, like following
 config :rclex, ros2_message_types: ["std_msgs/msg/String", "geometry_msgs/msg/Twist"]
 ```
 
-Generate message types codes for topic comm.
+Generate message types codes for topic communication.
 
 ```
 mix rclex.gen.msgs
