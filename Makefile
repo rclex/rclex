@@ -1,12 +1,16 @@
-# ROS_DISTRO is set by setup.bash in /opt/ros/${ROS_DISTRO}/.
+define ERROR_ROS_DISTRO_NOT_DEFINED
+Environmental varialbe `ROS_DISTRO` is not defined.
+To use Rclex on a host where ROS 2 is already installed, run `source /opt/ros/ROS_DISTRO/setup.bash` first.
+Or, if you are going to use Nerves as a target, set the target name of ROS 2 distribution, e.g., `export ROS_DISTRO=foxy`.
+endef
 ifeq ($(origin ROS_DISTRO), undefined)
-$(error ROS_DISTRO is not defined)
-else
+$(error $(ERROR_ROS_DISTRO_NOT_DEFINED))
+endif
+
 ifeq ($(MIX_TARGET), host)
 ROS_DIR ?= /opt/ros/$(ROS_DISTRO)
 else
 ROS_DIR ?= $(NERVES_APP)/rootfs_overlay/opt/ros/$(ROS_DISTRO)
-endif
 endif
 
 PREFIX = $(MIX_APP_PATH)/priv
@@ -54,8 +58,7 @@ TEMPLATES = src/msg_types_nif.h src/msg_types_nif.ec lib/rclex/msg_types_nif.ex
 calling_from_make:
 	mix compile
 
-$(shell test -d "$(ROS_DIR)")
-ifeq ($(.SHELLSTATUS), 0)
+ifneq ($(wildcard $(ROS_DIR)), "")
 all: $(BUILD) $(BUILD_MSG) $(PREFIX) $(TEMPLATES) $(NIF)
 else
 all: $(TEMPLATES)

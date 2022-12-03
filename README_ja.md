@@ -21,7 +21,9 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 詳しくはROS 2の[公式ドキュメント](https://index.ros.org/doc/ros2/)を参照ください．
 
-## 動作環境（開発環境）
+## 対象とする環境
+
+### ホスト（開発環境）とターゲット（実行環境）が同一の場合
 
 現在，下記の環境を主な対象として開発を進めています．
 
@@ -32,10 +34,16 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 動作検証の対象としている環境は[こちら](https://github.com/rclex/rclex_docker#available-versions-docker-tags)を参照してください．
 
+### Docker環境
+
 [Docker Hub](https://hub.docker.com/r/rclex/rclex_docker)にてビルド済みのDockerイメージを公開しており，これを用いてRclexを簡単に試行することもできます．
 詳細は[「Docker環境の利用」](#Docker環境の利用)のセクションを参照してください．
 
-`rclex` はNerves上での実行も可能です．詳細は[b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)を参照してください．
+### Nervesデバイス（ターゲット）
+
+`rclex` はNerves上での実行も可能です．この場合，ホスト環境にはROS 2環境を導入する必要はありません．
+
+詳細は[Use on Nerves](USE_ON_NERVES.md)の章および[b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)のリポジトリによる例を参照してください．
 
 ## 機能
 
@@ -50,7 +58,7 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 ## 使用方法
 
-ここでは，ROS 2およびElixirの動作環境が導入済みである計算機での`rclex`の使用方法を示します．
+ここでは，ROS 2およびElixirの動作環境がインストール済みである計算機での`rclex`の使用方法を示します．
 
 ### プロジェクトの作成
 
@@ -58,6 +66,7 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 ```
 mix new rclex_usage
+cd rclex_usage
 ```
 
 ### rclexのインストール
@@ -67,36 +76,39 @@ mix new rclex_usage
 `mix.exs` の依存関係に `rclex` を追加することで，ご自身のプロジェクトにて使用することができます．
 
 ```elixir
-def deps do
-  [
-    {:rclex, "~> 0.8.0"}
-  ]
-end
+  defp deps do
+    [
+      ...
+      {:rclex, "~> 0.8.0"},
+      ...
+    ]
+  end
 ```
 
 上記を追加後，プロジェクトのディレクトリ内で `mix deps.get` を実行してください．
 
 ```
-cd rclex_usage
 mix deps.get
+```
+
+### ROS 2の環境設定
+
+```
+source /opt/ros/foxy/setup.bash
 ```
 
 ### メッセージの型の設定
 
 Rclexでは，ROS 2において定義されるメッセージの型を利用して出版購読型のトピック通信を行うことができます．ROS 2におけるメッセージの型については[こちら](https://docs.ros.org/en/foxy/Concepts/About-ROS-Interfaces.html)を参照してください．
 
-ここでは`String`型を例として，トピック通信で使用したいメッセージの型を設定する方法を示します．まず，`config/config.exs` に次のように記述してください．
+プロジェクトで使用したいメッセージの型は，`config/config.exs` における `ros2_message_types` で指定します．コンマ区切り `,` で複数の型を指定することもできます．
+
+ここでは `String` 型を使用したい `config/config.exs` の例を示します．
 
 ```elixir
 import Config
 
 config :rclex, ros2_message_types: ["std_msgs/msg/String"]
-```
-
-ROS 2の環境を設定ファイルから読み込んでください．
-
-```
-source /opt/ros/foxy/setup.bash
 ```
 
 その後，次のMixタスクを実行し，メッセージの型を使用するために必要な定義とファイル群を自動生成します．
@@ -105,10 +117,10 @@ source /opt/ros/foxy/setup.bash
 mix rclex.gen.msgs
 ```
 
-これで Rclex を使用する準備が整いました！  
-IEx上で[RclexのAPI](https://hexdocs.pm/rclex/api-reference.html)を実行することができます．
+### コードの実装
 
-### プロジェクトの実装と実行
+これで Rclex を使用する準備が整いました！  
+もちろんIEx上で[RclexのAPI](https://hexdocs.pm/rclex/api-reference.html)を直接実行することもできます．
 
 ここでは，最も単純なコードを対象として，プロジェクトの実装例を示します．
 次のコード `lib/rclex_usage.ex` は，`String`型のトピック `/chatter` に対して文字列を出版する処理を示しています．
@@ -135,9 +147,13 @@ defmodule RclexUsage do
 end
 ```
 
-上記のコードを `lib/rclex_usage.ex` にコピペして，IExを立ち上げてください．
+この他の実装例は，下記も参照してください．
+- [rclex/rclex_examples](https://github.com/rclex/rclex_examples)
+
+### ビルドと実行
 
 ```
+mix compile
 iex -S mix
 ```
 
@@ -163,7 +179,7 @@ Rclex: Publishing: Hello World from Rclex!
 
 ```
 $ source /opt/ros/foxy/setup.bash
-$ ros2 topic echo /chatter std_msgs/msg/String 
+$ ros2 topic echo /chatter std_msgs/msg/String
 data: Hello World from Rclex!
 ---
 ```

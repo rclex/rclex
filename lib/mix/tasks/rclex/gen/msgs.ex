@@ -3,26 +3,35 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @moduledoc """
   #{@shortdoc}
 
-  Before generating, we have to specify message types in config.exs.
+  Before generating, specifing message types in config.exs is needed.
 
-  ex. config :rclex, ros2_message_types: ["std_msgs/msg/String"]
+  ```
+  config :rclex, ros2_message_types: ["std_msgs/msg/String"]
+  ```
 
-  Be careful, ros2 message type is case sensitive.
+  > #### Info {: .info }
+  > Be careful, ros2 message type is case sensitive.
 
   ## How to generate
 
-    $ mix rclex.gen.msgs
+  ```
+  mix rclex.gen.msgs
+  ```
 
-    This task assumes that the environment variable ROS_DISTRO is set
-    and refers to the message types from "/opt/ros/ROS_DISTRO/share".
+  This task assumes that the environment variable `ROS_DISTRO` is set
+  and refers to the message types from `/opt/ros/[ROS_DISTRO]/share`.
 
-    We can also specify directly as follows
+  We can also specify explicitly as follows
 
-    $ mix rclex.gen.msgs --from /opt/ros/foxy/share
+  ```
+  mix rclex.gen.msgs --from /opt/ros/foxy/share
+  ```
 
   ## How to clean
 
-    $ mix rclex.gen.msgs --clean
+  ```
+  mix rclex.gen.msgs --clean
+  ```
   """
 
   use Mix.Task
@@ -47,29 +56,54 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   @ros2_built_in_types Map.keys(@ros2_elixir_type_map)
 
+  @doc false
   def run(args) do
     {valid_options, _, _} =
       OptionParser.parse(args, strict: [from: :string, clean: :boolean, show_types: :boolean])
 
     case valid_options do
-      [] -> generate(rclex_dir_path!())
-      [from: from] -> generate(from, rclex_dir_path!())
-      [clean: true] -> clean()
-      [show_types: true] -> show_types()
-      _ -> Mix.shell().info(@moduledoc)
+      [] ->
+        clean()
+        generate(rclex_dir_path!())
+
+      [from: from] ->
+        clean()
+        generate(from, rclex_dir_path!())
+
+      [clean: true] ->
+        clean()
+
+      [show_types: true] ->
+        show_types()
+
+      _ ->
+        Mix.shell().info(@moduledoc)
     end
   end
 
+  @doc false
   def generate(to) do
     ros_distro = System.get_env("ROS_DISTRO")
 
     if is_nil(ros_distro) do
-      Mix.raise("environment variable ROS_DISTRO is not set.")
+      Mix.raise("Please set ROS_DISTRO.")
     end
 
-    generate("/opt/ros/#{ros_distro}/share", to)
+    ros_directory_path =
+      if Mix.target() == :host do
+        "/opt/ros/#{ros_distro}"
+      else
+        Path.join(File.cwd!(), "rootfs_overlay/opt/ros/#{ros_distro}")
+      end
+
+    if not File.exists?(ros_directory_path) do
+      Mix.raise("#{ros_directory_path} does not exist.")
+    end
+
+    generate(Path.join(ros_directory_path, "share"), to)
   end
 
+  @doc false
   def generate(from, to) do
     types = Application.get_env(:rclex, :ros2_message_types, [])
 
@@ -111,6 +145,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     recompile!()
   end
 
+  @doc false
   def clean() do
     dir_path = rclex_dir_path!()
 
@@ -123,6 +158,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  @doc false
   def show_types() do
     types = Application.get_env(:rclex, :ros2_message_types, [])
 
@@ -133,6 +169,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     Mix.shell().info(Enum.join(types, " "))
   end
 
+  @doc false
   def generate_msg_types_ex(types) do
     statements =
       Enum.map_join(types, fn type ->
@@ -150,6 +187,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     EEx.eval_file("#{templates_dir_path()}/msg_types_nif.eex", statements: statements)
   end
 
+  @doc false
   def generate_msg_types_h(types) do
     Enum.map_join(types, fn type ->
       """
@@ -158,6 +196,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def generate_msg_types_c(types) do
     Enum.map_join(types, fn type ->
       function_name = get_function_name_from_type(type)
@@ -172,6 +211,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def generate_msg_prot(type, ros2_message_type_map) do
     EEx.eval_file("#{templates_dir_path()}/msg_prot_impl.eex",
       module_name: get_module_name_from_type(type),
@@ -183,6 +223,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     )
   end
 
+  @doc false
   def generate_msg_mod(type, ros2_message_type_map) do
     EEx.eval_file("#{templates_dir_path()}/msg_mod.eex",
       module_name: get_module_name_from_type(type),
@@ -191,6 +232,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     )
   end
 
+  @doc false
   def generate_msg_nif_c(type, ros2_message_type_map) do
     EEx.eval_file("#{templates_dir_path()}/msg_nif_c.eex",
       function_name: get_function_name_from_type(type),
@@ -202,12 +244,14 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     )
   end
 
+  @doc false
   def generate_msg_nif_h(type, _ros2_message_type_map) do
     EEx.eval_file("#{templates_dir_path()}/msg_nif_h.eex",
       function_name: get_function_name_from_type(type)
     )
   end
 
+  @doc false
   @spec get_ros2_message_type_map(String.t(), String.t(), map()) :: map()
   # credo:disable-for-next-line
   def get_ros2_message_type_map(ros2_message_type, from, acc \\ %{}) do
@@ -263,21 +307,13 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     Enum.reject(rows, fn row -> String.contains?(row, "=") end)
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_module_name_from_path("std_msgs/msg/String")
-  "StdMsgs.Msg.String"
-  """
+  @doc false
   @spec get_module_name_from_path(String.t()) :: String.t()
   def get_module_name_from_path(path) do
     get_module_name_impl(String.split(path, "/"))
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_module_name_from_type("std_msgs/msg/String")
-  "Rclex.StdMsgs.Msg.String"
-  iex> #{__MODULE__}.get_module_name_from_type("geometry_msgs/msg/TwistWithCovariance")
-  "Rclex.GeometryMsgs.Msg.TwistWithCovariance"
-  """
+  @doc false
   def get_module_name_from_type(type) do
     if not String.contains?(type, "/") do
       Mix.raise("""
@@ -291,39 +327,25 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     |> then(&"Rclex.#{&1}")
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_function_name_from_type("std_msgs/msg/String")
-  "std_msgs_msg_string"
-  iex> #{__MODULE__}.get_function_name_from_type("geometry_msgs/msg/TwistWithCovariance")
-  "geometry_msgs_msg_twist_with_covariance"
-  """
+  @doc false
   def get_function_name_from_type(type) do
     [pkg, "msg", type] = String.split(type, "/")
     Enum.join([pkg, "msg", to_down_snake(type)], "_")
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_file_name_from_type("std_msgs/msg/String")
-  "std_msgs/msg/string"
-  iex> #{__MODULE__}.get_file_name_from_type("geometry_msgs/msg/TwistWithCovariance")
-  "geometry_msgs/msg/twist_with_covariance"
-  """
+  @doc false
   def get_file_name_from_type(type) do
     [pkg, "msg", type] = String.split(type, "/")
     Enum.join([pkg, "msg", to_down_snake(type)], "/")
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_struct_name_from_type("std_msgs/msg/String")
-  "std_msgs__msg__String"
-  iex> #{__MODULE__}.get_struct_name_from_type("geometry_msgs/msg/TwistWithCovariance")
-  "geometry_msgs__msg__TwistWithCovariance"
-  """
+  @doc false
   def get_struct_name_from_type(type) do
     [pkg, "msg", type] = String.split(type, "/")
     Enum.join([pkg, "_msg_", type], "_")
   end
 
+  @doc false
   def create_fields_for_nifs_setdata_arg(type, ros2_message_type_map, var \\ "data") do
     Map.get(ros2_message_type_map, type)
     |> Enum.map_join(", ", fn {type, variable} ->
@@ -338,6 +360,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def create_fields_for_nifs_readdata_return(type, ros2_message_type_map, var \\ "data") do
     Map.get(ros2_message_type_map, type)
     |> Enum.with_index()
@@ -354,6 +377,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def create_fields_for_read(type, ros2_message_type_map, var \\ "data") do
     Map.get(ros2_message_type_map, type)
     |> Enum.with_index()
@@ -372,6 +396,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def create_fields_for_defstruct(type, ros2_message_type_map) do
     Map.get(ros2_message_type_map, type)
     |> Enum.map_join(", ", fn {type, variable} ->
@@ -386,6 +411,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   def create_fields_for_type(type, ros2_message_type_map) do
     Map.get(ros2_message_type_map, type)
     |> Enum.map_join(", ", fn {type, variable} ->
@@ -405,6 +431,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
+  @doc false
   @spec create_readdata_statements(String.t(), map()) :: String.t()
   def create_readdata_statements(type, ros2_message_type_map) do
     type_var_list = Map.get(ros2_message_type_map, type)
@@ -418,6 +445,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     "enif_make_tuple(env,#{Enum.count(type_var_list)},\n  #{statements})"
   end
 
+  @doc false
   # credo:disable-for-next-line
   def create_readdata_statements_impl(type, ros2_message_type_map, var)
       when type in @ros2_built_in_types and is_map(ros2_message_type_map) do
@@ -448,6 +476,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  @doc false
   def create_readdata_statements_impl(type, ros2_message_type_map, var)
       when is_map(ros2_message_type_map) do
     if is_ros2_list(type) do
@@ -457,6 +486,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  @doc false
   def create_readdata_statements_impl_for_list(type, ros2_message_type_map, var)
       when is_map(ros2_message_type_map) do
     [_, list_type, list_length] = Regex.run(~r/^(.+)\[([0-9]+)\]$/, type)
@@ -471,6 +501,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     "enif_make_list(env,#{list_length},\n  #{statements})"
   end
 
+  @doc false
   def create_readdata_statements_impl_for_tuple(type, ros2_message_type_map, var)
       when is_map(ros2_message_type_map) do
     type_var_list = Map.get(ros2_message_type_map, type)
@@ -483,6 +514,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     "enif_make_tuple(env,#{Enum.count(type_var_list)},\n  #{statements})"
   end
 
+  @doc false
   def create_setdata_statements(type, ros2_message_type_map) do
     type_var_list = Map.get(ros2_message_type_map, type)
 
@@ -511,6 +543,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     """ <> "#{statements}"
   end
 
+  @doc false
   # credo:disable-for-next-line
   def create_setdata_statements_impl(type, ros2_message_type_map, var_res, var_term, var_local)
       when type in @ros2_built_in_types and is_map(ros2_message_type_map) do
@@ -600,6 +633,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  @doc false
   def create_setdata_statements_impl(type, ros2_message_type_map, var, var_term, var_local) do
     if is_ros2_list(type) do
       create_setdata_statements_impl_for_list(
@@ -620,6 +654,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  @doc false
   def create_setdata_statements_impl_for_list(
         type,
         ros2_message_type_map,
@@ -659,6 +694,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     """ <> "#{statements}"
   end
 
+  @doc false
   def create_setdata_statements_impl_for_tuple(
         type,
         ros2_message_type_map,
@@ -694,31 +730,18 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     """ <> "#{statements}"
   end
 
-  @doc """
-  iex> #{__MODULE__}.get_module_name_impl(["std_msgs", "msg", "String"])
-  "StdMsgs.Msg.String"
-  iex> #{__MODULE__}.get_module_name_impl(["geometry_msgs", "msg", "TwistWithCovariance"])
-  "GeometryMsgs.Msg.TwistWithCovariance"
-  """
+  @doc false
   def get_module_name_impl([pkg, msg = "msg", type]) do
     Enum.join([convert_package_name_to_capitalized(pkg), String.capitalize(msg), type], ".")
   end
 
-  @doc """
-  iex> #{__MODULE__}.convert_package_name_to_capitalized("std_msgs")
-  "StdMsgs"
-  """
+  @doc false
   def convert_package_name_to_capitalized(binary) do
     String.split(binary, "_")
     |> Enum.map_join(&String.capitalize(&1))
   end
 
-  @doc """
-  iex> #{__MODULE__}.to_down_snake("Vector3")
-  "vector3"
-  iex> #{__MODULE__}.to_down_snake("TwistWithCovariance")
-  "twist_with_covariance"
-  """
+  @doc false
   def to_down_snake(type_name) do
     String.split(type_name, ~r/[A-Z][a-z0-9]+/, include_captures: true, trim: true)
     |> Enum.map_join("_", &String.downcase(&1))

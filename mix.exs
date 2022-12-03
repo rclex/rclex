@@ -24,12 +24,6 @@ defmodule Rclex.MixProject do
       compilers: [:elixir_make] ++ Mix.compilers(),
       make_targets: ["all"],
       make_clean: ["clean"],
-      make_error_message: """
-      If the error message above says that rcl/rcl.h can't be found,
-      then the fix is to setup the ROS 2 environment. If you have
-      already installed ROS 2 environment, run the following command.
-      `. /opt/ros/${ROS_DISTRO}/setup.bash`
-      """,
       aliases: [format: [&format_c/1, "format"]],
       dialyzer: dialyzer()
     ]
@@ -80,7 +74,7 @@ defmodule Rclex.MixProject do
 
   defp docs do
     [
-      extras: ["README.md", "README_ja.md", "CHANGELOG.md"],
+      extras: ["README.md", "README_ja.md", "USE_ON_NERVES.md", "CHANGELOG.md"],
       main: "readme",
       source_ref: "v#{@version}",
       source_url: @source_url

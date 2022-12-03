@@ -32,6 +32,8 @@ For details on ROS 2, see the official [ROS 2 documentation](https://index.ros.o
 
 ## Recommended environment
 
+### The environment where host (development) and target (operation) are the same
+
 Currently, we use the following environment as the main development target:
 
 - Ubuntu 20.04.2 LTS (Focal Fossa)
@@ -42,10 +44,16 @@ Currently, we use the following environment as the main development target:
 For other environments used to check the operation of this library,
 please refer to [here](https://github.com/rclex/rclex_docker#available-versions-docker-tags).
 
+### Docker environment
+
 The pre-built Docker images are available at [Docker Hub](https://hub.docker.com/r/rclex/rclex_docker).
 You can also try the power of Rclex with it easily. Please check ["Docker Environment"](#Docker-environment) section for details.
 
-`rclex` can be operated onto Nerves. Please refer to [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves) for more details!
+### Nerves device (target)
+
+`rclex` can be operated onto Nerves. In this case, you do not need to prepare the ROS 2 environment on the host computer to build Nerves project (so awesome!).
+
+Please refer to [Use on Nerves](USE_ON_NERVES.md) section and [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves) example repository for more details!
 
 ## Features
 
@@ -62,7 +70,7 @@ Please refer [rclex/rclex_examples](https://github.com/rclex/rclex_examples) for
 
 ## How to use
 
-This section explains the quickstart for `rclex` onto the environment where ROS 2 and Elixir have been prepared.
+This section explains the quickstart for `rclex` onto the environment where ROS 2 and Elixir have been installed.
 
 ### Create the project
 
@@ -70,6 +78,7 @@ First of all, create the Mix project as a normal Elixir project.
 
 ```
 mix new rclex_usage
+cd rclex_usage
 ```
 
 ### Install rclex
@@ -80,25 +89,35 @@ You can install this package into your project
 by adding `rclex` to your list of dependencies in `mix.exs`:
 
 ```elixir
-def deps do
-  [
-    {:rclex, "~> 0.8.0"}
-  ]
-end
+  defp deps do
+    [
+      ...
+      {:rclex, "~> 0.8.0"},
+      ...
+    ]
+  end
 ```
 
 After that, execute `mix deps.get` into the project repository.
 
 ```
-cd rclex_usage
 mix deps.get
 ```
 
-### Prepare message types
+### Setup the ROS 2 environment
+
+```
+source /opt/ros/foxy/setup.bash
+```
+
+## Configure ROS 2 message types you want to use
 
 Rclex provides pub/sub based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/foxy/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
 
-Here, we show how to prepare the message type for topic communication, using the `String` type as an example. First, write the following in `config/config.exs`.
+The message types you want to use in your project can be specified in `ros2_message_types` in `config/config.exs`. 
+Multiple message types can be specified separated by comma `,`.
+
+The following `config/config.exs` example wants to use `String` type.
 
 ```elixir
 import Config
@@ -106,24 +125,19 @@ import Config
 config :rclex, ros2_message_types: ["std_msgs/msg/String"]
 ```
 
-Setup the environment for ROS 2.
-
-```
-source /opt/ros/foxy/setup.bash
-```
-
-Then, execute the following Mix task to generate required definitions and files for using message types.
+Then, execute the following Mix task to generate required definitions and files for message types.
 
 ```
 mix rclex.gen.msgs
 ```
 
-Now, you can acquire the environment for Rclex!
-You can operate [Rclex API](https://hexdocs.pm/rclex/api-reference.html) onto IEx.
+If you want to change the message types in config, do `mix rclex.gen.msgs` again.
 
-### Implementation and execution of project
+### Write Rclex code
 
-Here is the simplest example `lib/rclex_usage.ex` that will publish the string to `/chatter` topic.
+Now, you can acquire the environment for [Rclex API](https://hexdocs.pm/rclex/api-reference.html)! Of course, you can execute APIs on IEx directly.
+
+Here is the simplest implementation example `lib/rclex_usage.ex` that will publish the string to `/chatter` topic.
 
 ```elixir
 defmodule RclexUsage do
@@ -147,13 +161,17 @@ defmodule RclexUsage do
 end
 ```
 
-Copy and paste the above code to `lib/rclex_usage.ex`, and execute IEx.
+Please also check the examples for Rclex.
+- [rclex/rclex_examples](https://github.com/rclex/rclex_examples)
+
+### Build and Execute
 
 ```
+mix compile
 iex -S mix
 ```
 
-Operate the following on IEx.
+Operate the following command on IEx.
 
 ```
 iex()> RclexUsage.publish_message
@@ -171,11 +189,11 @@ Rclex: Publishing: Hello World from Rclex!
 {:ok, #Reference<0.2970499651.1284374532.3555>}
 ```
 
-You can confirm the above operation by subscribing with `ros2 topic echo`.
+You can confirm the above operation by subscribing with `ros2 topic echo` from the other terminal.
 
 ```
 $ source /opt/ros/foxy/setup.bash
-$ ros2 topic echo /chatter std_msgs/msg/String 
+$ ros2 topic echo /chatter std_msgs/msg/String
 data: Hello World from Rclex!
 ---
 ```
