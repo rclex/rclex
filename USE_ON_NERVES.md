@@ -42,10 +42,14 @@ mix deps.get
 
 ## Prepare ROS 2 resoures
 
+Please start Docker first since Docker is used in this step.
+
 ```
 export ROS_DISTRO=foxy
 mix rclex.prep.ros2
 ```
+
+The above command extracts the ROS 2 Docker image and copies resources required for Rclex to the Nerves file system.
 
 ## Configure ROS 2 message types you want to use
 
