@@ -61,7 +61,13 @@ Generate message types codes for topic communication.
 mix rclex.gen.msgs
 ```
 
-Then Write your ROS 2 codes with Rclex.
+## Write Rclex code
+
+Now you can write your ROS 2 codes with Rclex!
+
+Please also check the examples for Rclex.
+- [rclex/rclex_examples](https://github.com/rclex/rclex_examples)
+- [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)
 
 If you change the message types in config, do `mix rclex.gen.msgs` again.
 
