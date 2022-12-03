@@ -70,7 +70,7 @@ Please refer [rclex/rclex_examples](https://github.com/rclex/rclex_examples) for
 
 ## How to use
 
-This section explains the quickstart for `rclex` onto the environment where ROS 2 and Elixir have been prepared.
+This section explains the quickstart for `rclex` onto the environment where ROS 2 and Elixir have been installed.
 
 ### Create the project
 
@@ -102,11 +102,20 @@ cd rclex_usage
 mix deps.get
 ```
 
-### Prepare message types
+### Setup the ROS 2 environment
+
+```
+source /opt/ros/foxy/setup.bash
+```
+
+## Configure ROS 2 message types you want to use
 
 Rclex provides pub/sub based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/foxy/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
 
-Here, we show how to prepare the message type for topic communication, using the `String` type as an example. First, write the following in `config/config.exs`.
+The message types you want to use in your project can be specified in `ros2_message_types` in `config/config.exs`. 
+Multiple message types can be specified separated by comma `,`.
+
+The following `config/config.exs` example wants to use `String` type.
 
 ```elixir
 import Config
@@ -114,24 +123,19 @@ import Config
 config :rclex, ros2_message_types: ["std_msgs/msg/String"]
 ```
 
-Setup the environment for ROS 2.
-
-```
-source /opt/ros/foxy/setup.bash
-```
-
-Then, execute the following Mix task to generate required definitions and files for using message types.
+Then, execute the following Mix task to generate required definitions and files for message types.
 
 ```
 mix rclex.gen.msgs
 ```
 
-Now, you can acquire the environment for Rclex!
-You can operate [Rclex API](https://hexdocs.pm/rclex/api-reference.html) onto IEx.
+If you want to change the message types in config, do `mix rclex.gen.msgs` again.
 
-### Implementation and execution of project
+### Write Rclex code
 
-Here is the simplest example `lib/rclex_usage.ex` that will publish the string to `/chatter` topic.
+Now, you can acquire the environment for [Rclex API](https://hexdocs.pm/rclex/api-reference.html)! Of course, you can execute APIs on IEx directly.
+
+Here is the simplest implementation example `lib/rclex_usage.ex` that will publish the string to `/chatter` topic.
 
 ```elixir
 defmodule RclexUsage do
@@ -155,13 +159,17 @@ defmodule RclexUsage do
 end
 ```
 
-Copy and paste the above code to `lib/rclex_usage.ex`, and execute IEx.
+Please also check the examples for Rclex.
+- [rclex/rclex_examples](https://github.com/rclex/rclex_examples)
+
+### Build and Execute
 
 ```
+mix compile
 iex -S mix
 ```
 
-Operate the following on IEx.
+Operate the following command on IEx.
 
 ```
 iex()> RclexUsage.publish_message

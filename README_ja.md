@@ -58,7 +58,7 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 ## 使用方法
 
-ここでは，ROS 2およびElixirの動作環境が導入済みである計算機での`rclex`の使用方法を示します．
+ここでは，ROS 2およびElixirの動作環境がインストール済みである計算機での`rclex`の使用方法を示します．
 
 ### プロジェクトの作成
 
@@ -89,22 +89,24 @@ cd rclex_usage
 mix deps.get
 ```
 
+### ROS 2の環境設定
+
+```
+source /opt/ros/foxy/setup.bash
+```
+
 ### メッセージの型の設定
 
 Rclexでは，ROS 2において定義されるメッセージの型を利用して出版購読型のトピック通信を行うことができます．ROS 2におけるメッセージの型については[こちら](https://docs.ros.org/en/foxy/Concepts/About-ROS-Interfaces.html)を参照してください．
 
-ここでは`String`型を例として，トピック通信で使用したいメッセージの型を設定する方法を示します．まず，`config/config.exs` に次のように記述してください．
+プロジェクトで使用したいメッセージの型は，`config/config.exs` における `ros2_message_types` で指定します．コンマ区切り `,` で複数の型を指定することもできます．
+
+ここでは `String` 型を使用したい `config/config.exs` の例を示します．
 
 ```elixir
 import Config
 
 config :rclex, ros2_message_types: ["std_msgs/msg/String"]
-```
-
-ROS 2の環境を設定ファイルから読み込んでください．
-
-```
-source /opt/ros/foxy/setup.bash
 ```
 
 その後，次のMixタスクを実行し，メッセージの型を使用するために必要な定義とファイル群を自動生成します．
@@ -113,10 +115,10 @@ source /opt/ros/foxy/setup.bash
 mix rclex.gen.msgs
 ```
 
-これで Rclex を使用する準備が整いました！  
-IEx上で[RclexのAPI](https://hexdocs.pm/rclex/api-reference.html)を実行することができます．
+### コードの実装
 
-### プロジェクトの実装と実行
+これで Rclex を使用する準備が整いました！  
+もちろんIEx上で[RclexのAPI](https://hexdocs.pm/rclex/api-reference.html)を直接実行することもできます．
 
 ここでは，最も単純なコードを対象として，プロジェクトの実装例を示します．
 次のコード `lib/rclex_usage.ex` は，`String`型のトピック `/chatter` に対して文字列を出版する処理を示しています．
@@ -143,9 +145,13 @@ defmodule RclexUsage do
 end
 ```
 
-上記のコードを `lib/rclex_usage.ex` にコピペして，IExを立ち上げてください．
+この他の実装例は，下記も参照してください．
+- [rclex/rclex_examples](https://github.com/rclex/rclex_examples)
+
+### ビルドと実行
 
 ```
+mix compile
 iex -S mix
 ```
 

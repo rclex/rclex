@@ -1,5 +1,7 @@
 # Use on Nerves
 
+`rclex` can be operated onto Nerves. In this case, you do not need to prepare the ROS 2 environment on the host computer to build Nerves project (so awesome!).
+
 This doc shows the steps on how to use Rclex on Nerves from scratch.
 
 We have also published the Nerves project that has been prepared and includes example code at [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves). Please also refer to this repository. 
@@ -53,27 +55,34 @@ The above command extracts the ROS 2 Docker image and copies resources required 
 
 ## Configure ROS 2 message types you want to use
 
-Add `ros2_message_types` config to config/config.exs. The following example wants to use messages of type String and Twist.
+Rclex provides pub/sub based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/foxy/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
+
+The message types you want to use in your project can be specified in `ros2_message_types` in `config/config.exs`. 
+Multiple message types can be specified separated by comma `,`.
+
+The following `config/config.exs` example wants to use `String` type.
 
 ```elixir
-config :rclex, ros2_message_types: ["std_msgs/msg/String", "geometry_msgs/msg/Twist"]
+import Config
+
+config :rclex, ros2_message_types: ["std_msgs/msg/String"]
 ```
 
-Generate message types codes for topic communication.
+Then, execute the following Mix task to generate required definitions and files for message types.
 
 ```
 mix rclex.gen.msgs
 ```
 
+If you want to change the message types in config, do `mix rclex.gen.msgs` again.
+
 ## Write Rclex code
 
-Now you can write your ROS 2 codes with Rclex!
+Now, you can acquire the environment for [Rclex API](https://hexdocs.pm/rclex/api-reference.html)! Of course, you can execute APIs on IEx directly.
 
 Please also check the examples for Rclex.
 - [rclex/rclex_examples](https://github.com/rclex/rclex_examples)
 - [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)
-
-If you change the message types in config, do `mix rclex.gen.msgs` again.
 
 ## Copy erlinit.config to rootfs_overlay/etc and add LD_LIBRARY_PATH
 
