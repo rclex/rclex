@@ -49,7 +49,7 @@ mix rclex.prep.ros2
 
 ## Configure ROS 2 message types you want to use
 
-Add ros2_message_types config to config/config.exs, like following
+Add `ros2_message_types` config to config/config.exs. The following example wants to use messages of type String and Twist.
 
 ```elixir
 config :rclex, ros2_message_types: ["std_msgs/msg/String", "geometry_msgs/msg/Twist"]
