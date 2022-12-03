@@ -5,7 +5,7 @@ defmodule Rclex.MixProject do
   ROS 2 Client Library for Elixir.
   """
 
-  @version "0.8.0"
+  @version "0.8.1"
   @source_url "https://github.com/rclex/rclex"
 
   def project do
