@@ -1,7 +1,8 @@
 # Use on Nerves
 
-This doc shows the steps how to use Rclex on Nerves.
+This doc shows the steps on how to use Rclex on Nerves from scratch.
 
+We have also published the Nerves project that has been prepared and includes example code at [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves). Please also refer to this repository. 
 > #### Support Target {: .neutral }
 >
 > Currentry Rclex only support aarch64 for Nerves, following steps use rpi4 as an example.
