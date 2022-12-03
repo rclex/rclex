@@ -47,7 +47,7 @@ export ROS_DISTRO=foxy
 mix rclex.prep.ros2
 ```
 
-## Cofigure ROS 2 message types you want to use and write codes
+## Configure ROS 2 message types you want to use
 
 Add ros2_message_types config to config/config.exs, like following
 
