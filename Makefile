@@ -58,8 +58,7 @@ TEMPLATES = src/msg_types_nif.h src/msg_types_nif.ec lib/rclex/msg_types_nif.ex
 calling_from_make:
 	mix compile
 
-$(shell test -d "$(ROS_DIR)")
-ifeq ($(.SHELLSTATUS), 0)
+ifneq ($(wildcard $(ROS_DIR)), "")
 all: $(BUILD) $(BUILD_MSG) $(PREFIX) $(TEMPLATES) $(NIF)
 else
 all: $(TEMPLATES)
