@@ -20,7 +20,9 @@ mix deps.get
 >
 > If `mix deps.get` failed, you may need to create SSH key and configure config/target.exs.
 
-## Add rclex to mix.exs and get
+## Add rclex as the dependency in mix.exs
+
+Please edit mix.exs to add rclex as the dependency of your Nerves project as the following.
 
 ```elixir
   defp deps do
