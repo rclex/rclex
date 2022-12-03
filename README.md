@@ -187,11 +187,11 @@ Rclex: Publishing: Hello World from Rclex!
 {:ok, #Reference<0.2970499651.1284374532.3555>}
 ```
 
-You can confirm the above operation by subscribing with `ros2 topic echo`.
+You can confirm the above operation by subscribing with `ros2 topic echo` from the other terminal.
 
 ```
 $ source /opt/ros/foxy/setup.bash
-$ ros2 topic echo /chatter std_msgs/msg/String 
+$ ros2 topic echo /chatter std_msgs/msg/String
 data: Hello World from Rclex!
 ---
 ```

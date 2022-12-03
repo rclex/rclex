@@ -63,8 +63,6 @@ Multiple message types can be specified separated by comma `,`.
 The following `config/config.exs` example wants to use `String` type.
 
 ```elixir
-import Config
-
 config :rclex, ros2_message_types: ["std_msgs/msg/String"]
 ```
 
@@ -75,14 +73,6 @@ mix rclex.gen.msgs
 ```
 
 If you want to change the message types in config, do `mix rclex.gen.msgs` again.
-
-## Write Rclex code
-
-Now, you can acquire the environment for [Rclex API](https://hexdocs.pm/rclex/api-reference.html)! Of course, you can execute APIs on IEx directly.
-
-Please also check the examples for Rclex.
-- [rclex/rclex_examples](https://github.com/rclex/rclex_examples)
-- [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)
 
 ## Copy erlinit.config to rootfs_overlay/etc and add LD_LIBRARY_PATH
 
@@ -108,9 +98,66 @@ Add `-e LD_LIBRARY_PATH=/opt/ros/foxy/lib` line like following.
 > - https://github.com/ros-tooling/cross_compile/issues/363
 > - https://github.com/ros2/rcpputils/pull/122
 
+## Write Rclex code
+
+Now, you can acquire the environment for [Rclex API](https://hexdocs.pm/rclex/api-reference.html)! Of course, you can execute APIs on IEx directly.
+
+Here is the simplest implementation example `lib/rclex_usage_on_nerves.ex` that will publish the string to `/chatter` topic.
+
+```elixir
+defmodule RclexUsageOnNerves do
+  def publish_message do
+    context = Rclex.rclexinit()
+    {:ok, node} = Rclex.ResourceServer.create_node(context, 'talker')
+    {:ok, publisher} = Rclex.Node.create_publisher(node, 'StdMsgs.Msg.String', 'chatter')
+
+    msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
+    data = "Hello World from Rclex!"
+    msg_struct = %Rclex.StdMsgs.Msg.String{data: String.to_charlist(data)}
+    Rclex.Msg.set(msg, msg_struct, 'StdMsgs.Msg.String')
+
+    IO.puts("Rclex: Publishing: #{data}")
+    Rclex.Publisher.publish([publisher], [msg])
+
+    Rclex.Node.finish_job(publisher)
+    Rclex.ResourceServer.finish_node(node)
+    Rclex.shutdown(context)
+  end
+end
+```
+
+Please also check the examples for Rclex.
+- [rclex/rclex_examples](https://github.com/rclex/rclex_examples)
+- [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)
+
 ## Create fw, and burn (or, upload)
 
 ```
 mix firmware
 mix burn # or, mix upload
+```
+
+### Execute
+
+Connect the Nerves device via ssh.
+
+```
+ssh nerves.local
+```
+
+Operate the following command on IEx.
+
+```
+iex()> RclexUsageOnNerves.publish_message
+Rclex: Publishing: Hello World from Rclex!
+{:ok, #Reference<0.2970499651.1284374532.3555>}
+```
+
+You can confirm the above operation by subscribing with `ros2 topic echo` on the machine where ROS 2 env has been installed.
+
+```
+$ source /opt/ros/foxy/setup.bash
+$ ros2 topic echo /chatter std_msgs/msg/String
+data: Hello World from Rclex!
+---
 ```

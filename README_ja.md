@@ -177,7 +177,7 @@ Rclex: Publishing: Hello World from Rclex!
 
 ```
 $ source /opt/ros/foxy/setup.bash
-$ ros2 topic echo /chatter std_msgs/msg/String 
+$ ros2 topic echo /chatter std_msgs/msg/String
 data: Hello World from Rclex!
 ---
 ```
