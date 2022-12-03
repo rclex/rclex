@@ -78,6 +78,7 @@ First of all, create the Mix project as a normal Elixir project.
 
 ```
 mix new rclex_usage
+cd rclex_usage
 ```
 
 ### Install rclex
@@ -88,17 +89,18 @@ You can install this package into your project
 by adding `rclex` to your list of dependencies in `mix.exs`:
 
 ```elixir
-def deps do
-  [
-    {:rclex, "~> 0.8.0"}
-  ]
-end
+  defp deps do
+    [
+      ...
+      {:rclex, "~> 0.8.0"},
+      ...
+    ]
+  end
 ```
 
 After that, execute `mix deps.get` into the project repository.
 
 ```
-cd rclex_usage
 mix deps.get
 ```
 

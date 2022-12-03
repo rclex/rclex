@@ -66,6 +66,7 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 ```
 mix new rclex_usage
+cd rclex_usage
 ```
 
 ### rclexのインストール
@@ -75,17 +76,18 @@ mix new rclex_usage
 `mix.exs` の依存関係に `rclex` を追加することで，ご自身のプロジェクトにて使用することができます．
 
 ```elixir
-def deps do
-  [
-    {:rclex, "~> 0.8.0"}
-  ]
-end
+  defp deps do
+    [
+      ...
+      {:rclex, "~> 0.8.0"},
+      ...
+    ]
+  end
 ```
 
 上記を追加後，プロジェクトのディレクトリ内で `mix deps.get` を実行してください．
 
 ```
-cd rclex_usage
 mix deps.get
 ```
 
