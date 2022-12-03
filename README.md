@@ -32,6 +32,8 @@ For details on ROS 2, see the official [ROS 2 documentation](https://index.ros.o
 
 ## Recommended environment
 
+### The environment where host (development) and target (operation) are the same
+
 Currently, we use the following environment as the main development target:
 
 - Ubuntu 20.04.2 LTS (Focal Fossa)
@@ -42,10 +44,16 @@ Currently, we use the following environment as the main development target:
 For other environments used to check the operation of this library,
 please refer to [here](https://github.com/rclex/rclex_docker#available-versions-docker-tags).
 
+### Docker environment
+
 The pre-built Docker images are available at [Docker Hub](https://hub.docker.com/r/rclex/rclex_docker).
 You can also try the power of Rclex with it easily. Please check ["Docker Environment"](#Docker-environment) section for details.
 
-`rclex` can be operated onto Nerves. Please refer to [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves) for more details!
+### Nerves device (target)
+
+`rclex` can be operated onto Nerves. In this case, you do not need to prepare the ROS 2 environment on the host computer to build Nerves project (so awesome!).
+
+Please refer to [Use on Nerves](USE_ON_NERVES.md) section and [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves) example repository for more details!
 
 ## Features
 
