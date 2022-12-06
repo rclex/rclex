@@ -9,6 +9,15 @@ We have also published the Nerves project that has been prepared and includes ex
 >
 > Currentry Rclex only support aarch64 for Nerves, following steps use rpi4 as an example.
 
+## Preliminaries
+
+During the procedure for Rclex on Nerves, the docker command is used to copy the necessary directory in `mix rclex.prep.ros2`.
+Please install [Docker Desktop](https://docs.docker.com/desktop/) or [Docker Engine](https://docs.docker.com/engine/), and start it first.  
+And also, Rclex on Nerves will deploy an docker container for arm64 arch. If you want to operate this project by Docker Engine on other platforms (x86_64), you need to install qemu as the follows: `sudo apt-get install qemu binfmt-support qemu-user-static`
+
+It should be noted that do not perform the following steps inside a docker container.  
+Once again, they can be operated even if ROS 2 is not installed on the host machine!
+
 ## Create Nerves Project
 
 ```
@@ -48,14 +57,12 @@ mix deps.get
 
 ## Prepare ROS 2 resoures
 
-Please start Docker first since Docker is used in this step.
+The following command extracts the ROS 2 Docker image and copies resources required for Rclex to the Nerves file system.
 
 ```
 export ROS_DISTRO=foxy
 mix rclex.prep.ros2
 ```
-
-The above command extracts the ROS 2 Docker image and copies resources required for Rclex to the Nerves file system.
 
 ## Configure ROS 2 message types you want to use
 
