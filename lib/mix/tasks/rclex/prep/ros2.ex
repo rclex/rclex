@@ -30,8 +30,13 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   @arm64v8_ros_distros ["foxy", "galactic", "humble"]
   @amd64_ros_distros ["foxy", "galactic", "humble"]
-  @supported_arch ["arm64v8", "amd64"]
-  @supported_ros_distros %{"arm64v8" => @arm64v8_ros_distros, "amd64" => @amd64_ros_distros}
+  @arm32v7_ros_distros ["foxy"]
+  @supported_ros_distros %{
+    "arm64v8" => @arm64v8_ros_distros,
+    "amd64" => @amd64_ros_distros,
+    "arm32v7" => @arm32v7_ros_distros
+  }
+  @supported_arch Map.keys(@supported_ros_distros)
 
   @nerves_target_arch_map %{"rpi4" => "arm64v8", "rpi3" => "arm32v7"}
 
@@ -71,21 +76,16 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
       """)
     end
 
-    if arch in ["arm64v8", "amd64"] do
-      # NOTE: If you implement the copy destination option, pass the path here.
-      dest_dir_path = copy_dest_dir_path(arch, ros_distro)
+    # NOTE: If you implement the copy destination option, pass the path here.
+    dest_dir_path = copy_dest_dir_path(arch, ros_distro)
 
-      message = """
-      Are you sure to copy ROS 2 resources to following directory?
-      path: #{dest_dir_path}
-      """
+    message = """
+    Are you sure to copy ROS 2 resources to following directory?
+    path: #{dest_dir_path}
+    """
 
-      if Mix.shell().yes?(String.trim_trailing(message)) do
-        copy_from_docker!(dest_dir_path, arch, ros_distro)
-      end
-    else
-      # NOTE: arm32v7 support should be implemented here
-      Mix.raise("Not Implemented")
+    if Mix.shell().yes?(String.trim_trailing(message)) do
+      copy_from_docker!(dest_dir_path, arch, ros_distro)
     end
   end
 
@@ -111,7 +111,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     copy_vendor_resources_from_docker!(dest_dir_path, arch, ros_distro)
   end
 
-  defp copy_ros_resources_from_docker!(dest_dir_path, arch, ros_distro) do
+  defp copy_ros_resources_from_docker!(dest_dir_path, arch, ros_distro)
+       when arch in ["arm64v8", "amd64"] do
     dest_path = Path.join(dest_dir_path, "/opt/ros/#{ros_distro}")
     File.mkdir_p!(dest_path)
 
@@ -123,7 +124,21 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     |> Enum.map(fn src_path -> copy_from_docker_impl!(arch, ros_distro, src_path, dest_path) end)
   end
 
-  defp copy_vendor_resources_from_docker!(dest_dir_path, arch, ros_distro) do
+  defp copy_ros_resources_from_docker!(dest_dir_path, arch, ros_distro)
+       when arch in ["arm32v7"] do
+    dest_path = Path.join(dest_dir_path, "/opt/ros/#{ros_distro}")
+    File.mkdir_p!(dest_path)
+
+    [
+      "/root/ros2_ws/install/*/include",
+      "/root/ros2_ws/install/*/lib",
+      "/root/ros2_ws/install/*/share"
+    ]
+    |> Enum.map(fn src_path -> copy_from_docker_impl!(arch, ros_distro, src_path, dest_path) end)
+  end
+
+  defp copy_vendor_resources_from_docker!(dest_dir_path, arch, ros_distro)
+       when arch in ["arm64v8", "amd64", "arm32v7"] do
     dir_name = arch_dir_name(arch)
 
     dest_path = Path.join(dest_dir_path, "/opt/ros/#{ros_distro}/lib")
@@ -139,8 +154,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
   defp copy_from_docker_impl!(arch, ros_distro, src_path, dest_path) do
     with true <- File.exists?(dest_path) do
       docker_tag = ros_docker_image_tag(arch, ros_distro)
-      docker_command_args = ["run", "--rm", "-v", "#{dest_path}:/root", docker_tag]
-      copy_command = ["bash", "-c", "cp -rf #{src_path} /root"]
+      docker_command_args = ["run", "--rm", "-v", "#{dest_path}:/mnt", docker_tag]
+      copy_command = ["bash", "-c", "for s in #{src_path}; do cp -rf $s /mnt; done"]
 
       {_, 0} = System.cmd("docker", docker_command_args ++ copy_command)
     end
@@ -159,8 +174,13 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     "amd64/ros:#{ros_distro}-ros-core"
   end
 
+  def ros_docker_image_tag("arm32v7", ros_distro) when ros_distro in @arm32v7_ros_distros do
+    "rclex/arm32v7_ros_docker_with_vendor_resources:#{ros_distro}"
+  end
+
   defp arch_dir_name("arm64v8"), do: "aarch64-linux-gnu"
   defp arch_dir_name("amd64"), do: "x86_64-linux-gnu"
+  defp arch_dir_name("arm32v7"), do: "arm-linux-gnueabihf"
 
   @doc false
   @spec create_resources_directory!(directory_path :: String.t()) :: :ok
