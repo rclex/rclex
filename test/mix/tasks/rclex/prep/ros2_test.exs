@@ -29,8 +29,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2Test do
   end
 
   @tag :tmp_dir
-  test "create_resources_directory!/1", %{tmp_dir: tmp_dir_path} do
-    :ok = Mix.Tasks.Rclex.Prep.Ros2.create_resources_directory!(tmp_dir_path)
+  test "create_resources_directory!/2", %{tmp_dir: tmp_dir_path} do
+    :ok = Mix.Tasks.Rclex.Prep.Ros2.create_resources_directory!(tmp_dir_path, true)
     assert File.exists?(Path.join(tmp_dir_path, ".gitignore"))
   end
 end
