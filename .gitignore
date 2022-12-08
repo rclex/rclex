@@ -25,11 +25,6 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 rclex-*.tar
 
-## Original ignoring files
-# for NIFs
-*.so
-*.o
-
 # for VSCode
 /.elixir_ls/
 /.vscode/
