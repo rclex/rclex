@@ -151,6 +151,9 @@ defmodule RclexUsage do
     msg_struct = %Rclex.StdMsgs.Msg.String{data: String.to_charlist(data)}
     Rclex.Msg.set(msg, msg_struct, 'StdMsgs.Msg.String')
 
+    # This sleep is essential for now, see Issue #212
+    Process.sleep(100)
+
     IO.puts("Rclex: Publishing: #{data}")
     Rclex.Publisher.publish([publisher], [msg])
 
