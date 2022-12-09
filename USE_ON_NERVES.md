@@ -4,10 +4,18 @@
 
 This doc shows the steps on how to use Rclex on Nerves from scratch.
 
-We have also published the Nerves project that has been prepared and includes example code at [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves). Please also refer to this repository. 
-> #### Support Target {: .neutral }
->
-> Currentry Rclex only support aarch64 for Nerves, following steps use rpi4 as an example.
+We have also published the Nerves project that has been prepared and includes example code at [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves). Please also refer to this repository.
+
+## Supported Targets
+
+Currently, we have confirmed the following boards as the Nerves device that can operate Rclex (good luck to get one!).
+
+| board | tag | arch | support for nerves_system |
+| :--- | :--- | :---| :---|
+| [Raspberry Pi 4](https://github.com/nerves-project/nerves_system_rpi4) | rpi4 | arm64v8 | Officially supported, recommended |
+| [BeagleBone Green](https://github.com/nerves-project/nerves_system_bbb) | bbb | arm32v7 | Officially supported |
+| [Kria KR260](https://github.com/b5g-ex/nerves_system_kr260) | kr260 | arm64v8 | Third-party supported |
+| [ODYSSEY - STM32MP157C](https://github.com/b5g-ex/nerves_system_stm32mp157c_odyssey) | stm32mp157c_odyssey | arm32v7 | Third-party supported |
 
 ## Preliminaries
 
@@ -18,7 +26,14 @@ And also, Rclex on Nerves will deploy an docker container for arm64 arch. If you
 It should be noted that do not perform the following steps inside a docker container.  
 Once again, they can be operated even if ROS 2 is not installed on the host machine!
 
-## Create Nerves Project
+## Procedure
+
+> #### Target device {: .neutral }
+>
+> The following steps assume that `rpi4` and `arm64v8` will be used as the target Nerves device.
+> You may change the values of `MIX_TARGET` and `--arch` to match the "tag" and "arch" columns on the supported target list according to the board you want to use.
+
+### Create Nerves Project
 
 ```
 mix nerves.new rclex_usage_on_nerves --target rpi4
@@ -50,21 +65,26 @@ by adding `rclex` to your list of dependencies in `mix.exs`:
 
 After that, execute `mix deps.get` into the project repository.
 
-
 ```
 mix deps.get
 ```
 
-## Prepare ROS 2 resoures
+### Prepare ROS 2 resoures
 
 The following command extracts the ROS 2 Docker image and copies resources required for Rclex to the Nerves file system.
+You may change the value of `--arch` according to the architecture of your target board (see the "arch" column on the supported target list)
 
 ```
 export ROS_DISTRO=foxy
-mix rclex.prep.ros2
+mix rclex.prep.ros2 --arch arm64v8
 ```
 
-## Configure ROS 2 message types you want to use
+> #### Note {: .warning }
+>
+> The following warning messages will occur at several times when the host and target architectures are different. These can be ignored.
+> > WARNING: The requested image's platform (linux/arm/v7) does not match the detected host platform (linux/amd64) and no specific platform was requested
+
+### Configure ROS 2 message types you want to use
 
 Rclex provides pub/sub based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/foxy/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
 
@@ -85,7 +105,7 @@ mix rclex.gen.msgs
 
 If you want to change the message types in config, do `mix rclex.gen.msgs` again.
 
-## Copy erlinit.config to rootfs_overlay/etc and add LD_LIBRARY_PATH
+### Copy erlinit.config to rootfs_overlay/etc and add LD_LIBRARY_PATH
 
 Copy erlinit.config from `nerves_system_***`.
 
@@ -109,7 +129,7 @@ Add `-e LD_LIBRARY_PATH=/opt/ros/foxy/lib` line like following.
 > - https://github.com/ros-tooling/cross_compile/issues/363
 > - https://github.com/ros2/rcpputils/pull/122
 
-## Write Rclex code
+### Write Rclex code
 
 Now, you can acquire the environment for [Rclex API](https://hexdocs.pm/rclex/api-reference.html)! Of course, you can execute APIs on IEx directly.
 
@@ -144,7 +164,7 @@ Please also check the examples for Rclex.
 - [rclex/rclex_examples](https://github.com/rclex/rclex_examples)
 - [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)
 
-## Create fw, and burn (or, upload)
+### Create fw, and burn (or, upload)
 
 ```
 mix firmware
