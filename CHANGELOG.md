@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## v0.8.3 on 12 Dec 2022
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.2...v0.8.3
+
+* New features: none
+  * Add arm32v7 support to mix rclex.prep.ros2 by @pojiro in https://github.com/rclex/rclex/pull/210
+* Code Improvements/Fixes:
+  * improve doc about docker env by @takasehideki in https://github.com/rclex/rclex/pull/208
+  * Remove useless gitignore line by @pojiro in https://github.com/rclex/rclex/pull/211
+  * insert sleep before publishing on example code (see #212) by @takasehideki in https://github.com/rclex/rclex/pull/213
+* Bumps:
+  * Bump elixir_make from 0.7.0 to 0.7.1 by @dependabot in https://github.com/rclex/rclex/pull/209
+* Known issues to be addressed in the near future:
+  * `publish/2` sometimes failed just after `create_publisher/3` in https://github.com/rclex/rclex/issues/212
+  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
+  * Bump to Humble Hawksbill in https://github.com/rclex/rclex/issues/114
+  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
+* Note in this release: none
+
 ## v0.8.2 on 03 Dec 2022
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.1...v0.8.2
