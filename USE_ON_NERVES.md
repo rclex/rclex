@@ -16,6 +16,7 @@ Currently, we have confirmed the following boards as the Nerves device that can 
 | [BeagleBone Green](https://github.com/nerves-project/nerves_system_bbb) | bbb | arm32v7 | Officially supported |
 | [Kria KR260](https://github.com/b5g-ex/nerves_system_kr260) | kr260 | arm64v8 | Third-party supported |
 | [ODYSSEY - STM32MP157C](https://github.com/b5g-ex/nerves_system_stm32mp157c_odyssey) | stm32mp157c_odyssey | arm32v7 | Third-party supported |
+| [F3RP70 (e-RT3 Plus)](https://github.com/pojiro/nerves_system_f3rp70) | f3rp70 | arm32v7 | Third-party supported |
 
 ## Preliminaries
 
