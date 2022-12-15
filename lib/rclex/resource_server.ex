@@ -17,7 +17,7 @@ defmodule Rclex.ResourceServer do
       ResourceServerプロセスの初期化
       状態:
           supervisor_ids :: map()
-          keyがnode_identifer、valueがnode情報。現在はnodeプロセスのsupervisorのidを格納している
+          keyがnode_identifier、valueがnode情報。現在はnodeプロセスのsupervisorのidを格納している
   """
   @impl GenServer
   @spec init(any()) :: {:ok, {map()}}

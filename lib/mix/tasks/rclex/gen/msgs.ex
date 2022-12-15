@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @moduledoc """
   #{@shortdoc}
 
-  Before generating, specifing message types in config.exs is needed.
+  Before generating, specifying message types in config.exs is needed.
 
   ```
   config :rclex, ros2_message_types: ["std_msgs/msg/String"]

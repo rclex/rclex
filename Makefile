@@ -1,5 +1,5 @@
 define ERROR_ROS_DISTRO_NOT_DEFINED
-Environmental varialbe `ROS_DISTRO` is not defined.
+Environmental variable `ROS_DISTRO` is not defined.
 To use Rclex on a host where ROS 2 is already installed, run `source /opt/ros/ROS_DISTRO/setup.bash` first.
 Or, if you are going to use Nerves as a target, set the target name of ROS 2 distribution, e.g., `export ROS_DISTRO=foxy`.
 endef

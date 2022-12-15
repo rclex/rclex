@@ -225,7 +225,7 @@ docker compose down
 
 ### Automatic execution of mix test, etc.
 
-`mix test.watch` is introduced to automatically run unit test `mix test` and code formatting `mix format` every time the source code was editted.
+`mix test.watch` is introduced to automatically run unit test `mix test` and code formatting `mix format` every time the source code was edited.
 
 ```
 $ mix test.watch
