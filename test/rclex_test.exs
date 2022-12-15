@@ -65,7 +65,7 @@ defmodule RclexTest do
         end,
         publisher,
         100,
-        'continus_timer',
+        'continuous_timer',
         1
       )
 

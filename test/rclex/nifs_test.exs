@@ -174,9 +174,9 @@ defmodule Rclex.NifsTest do
     end
 
     test "rcl_publisher_fini/2 return reference", %{node: node} do
-      publihser = get_initialized_publisher(node)
+      publisher = get_initialized_publisher(node)
 
-      assert is_reference(Nifs.rcl_publisher_fini(publihser, node))
+      assert is_reference(Nifs.rcl_publisher_fini(publisher, node))
     end
 
     test "rcl_publisher_init/5 return reference", %{node: node} do

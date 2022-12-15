@@ -127,7 +127,7 @@ defmodule Rclex.ResourceServerTest do
     end
   end
 
-  describe "craete_timer/4" do
+  describe "create_timer/4" do
     test "return {:ok, timer_id}", %{pid: pid} do
       callback = fn _ -> nil end
       args = nil
@@ -144,7 +144,7 @@ defmodule Rclex.ResourceServerTest do
     end
   end
 
-  describe "craete_timer_with_limit/5" do
+  describe "create_timer_with_limit/5" do
     test "return {:ok, timer_id}", %{pid: pid} do
       callback = fn _ -> nil end
       args = nil

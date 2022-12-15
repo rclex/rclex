@@ -70,7 +70,7 @@ After that, execute `mix deps.get` into the project repository.
 mix deps.get
 ```
 
-### Prepare ROS 2 resoures
+### Prepare ROS 2 resources
 
 The following command extracts the ROS 2 Docker image and copies resources required for Rclex to the Nerves file system.
 You may change the value of `--arch` according to the architecture of your target board (see the "arch" column on the supported target list)
@@ -125,7 +125,7 @@ Add `-e LD_LIBRARY_PATH=/opt/ros/foxy/lib` line like following.
 
 > #### Why add LD_LIBRARY_PATH explicitly {: .info }
 >
-> ROS 2 needs the path. If you want to know the details, please read followings
+> ROS 2 needs the path. If you want to know the details, please read following
 >
 > - https://github.com/ros-tooling/cross_compile/issues/363
 > - https://github.com/ros2/rcpputils/pull/122

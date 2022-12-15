@@ -53,7 +53,7 @@ defmodule Rclex.NodeTest do
   end
 
   describe "create_publishers/4 " do
-    test "call with :sigle, return {:ok, publisher_id_list}", %{
+    test "call with :single, return {:ok, publisher_id_list}", %{
       node_id_list: node_id_list,
       msg_type: msg_type,
       topic: topic
@@ -100,7 +100,7 @@ defmodule Rclex.NodeTest do
   end
 
   describe "create_subscribers/4 " do
-    test "call with :sigle, return {:ok, subscriber_id_list}", %{
+    test "call with :single, return {:ok, subscriber_id_list}", %{
       node_id_list: node_id_list,
       msg_type: msg_type,
       topic: topic
