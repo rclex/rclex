@@ -1,10 +1,29 @@
 # CHANGELOG
 
+## v0.8.4 on 11 Apr 2023
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.3...v0.8.4
+
+* New features: none
+* Code Improvements/Fixes:
+  * Fix typos by @kianmeng in https://github.com/rclex/rclex/pull/217
+* Bumps:
+  * Bump elixir_make from 0.7.1 to 0.7.6
+  * Bump ex_doc from 0.29.1 to 0.29.4
+  * Bump credo from 1.6.7 to 1.7.0
+  * Bump dialyxir from 1.2.0 to 1.3.0
+* Known issues to be addressed in the near future:
+  * `publish/2` sometimes failed just after `create_publisher/3` in https://github.com/rclex/rclex/issues/212
+  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
+  * Bump to Humble Hawksbill in https://github.com/rclex/rclex/issues/114
+  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
+* Note in this release: none
+
 ## v0.8.3 on 12 Dec 2022
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.2...v0.8.3
 
-* New features: none
+* New features:
   * Add arm32v7 support to mix rclex.prep.ros2 by @pojiro in https://github.com/rclex/rclex/pull/210
 * Code Improvements/Fixes:
   * improve doc about docker env by @takasehideki in https://github.com/rclex/rclex/pull/208
