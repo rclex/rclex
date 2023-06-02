@@ -257,6 +257,10 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   def get_ros2_message_type_map(ros2_message_type, from, acc \\ %{}) do
     [package_name, "msg", _type_name] = String.split(ros2_message_type, "/")
 
+    package_name = case String.split(ros2_message_type, "/") do
+      [pn, "msg", _type_name]  -> pn
+      [pn, _type_name] -> pn
+    end
     rows =
       "#{Path.join(from, ros2_message_type)}.msg"
       |> File.read!()
@@ -277,7 +281,11 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
         cond do
           type in @ros2_built_in_types -> {type, variable}
           is_ros2_built_in_list(type) -> {type, variable}
-          String.contains?(type, "/") -> {type, variable}
+          String.contains?(type, "/") ->
+            case String.split(type, "/") do
+              [_package_name, "msg", _t] -> {type, variable}
+              [pn, t] -> {Path.join("#{pn}/msg", t), variable}
+            end
           true -> {Path.join("#{package_name}/msg", type), variable}
         end
       end)
