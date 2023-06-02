@@ -255,7 +255,6 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @spec get_ros2_message_type_map(String.t(), String.t(), map()) :: map()
   # credo:disable-for-next-line
   def get_ros2_message_type_map(ros2_message_type, from, acc \\ %{}) do
-    [package_name, "msg", _type_name] = String.split(ros2_message_type, "/")
 
     package_name = case String.split(ros2_message_type, "/") do
       [pn, "msg", _type_name]  -> pn
