@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## v0.8.5 on 05 Jun 2023
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.4...v0.8.5
+
+* New features:
+  * * Adding handling for nested Message types from different Packages by @steve-at in https://github.com/rclex/rclex/pull/230
+* Code Improvements/Fixes: none
+* Bumps:
+  * Bump elixir_make from 0.7.6 to 0.7.7
+* Known issues to be addressed in the near future:
+  * `publish/2` sometimes failed just after `create_publisher/3` in https://github.com/rclex/rclex/issues/212
+  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
+  * Bump to Humble Hawksbill in https://github.com/rclex/rclex/issues/114
+  * Bump to Iron Irwini in https://github.com/rclex/rclex/issues/228
+  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
+* Note in this release: none
+
 ## v0.8.4 on 11 Apr 2023
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.3...v0.8.4
