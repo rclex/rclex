@@ -255,7 +255,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @spec get_ros2_message_type_map(String.t(), String.t(), map()) :: map()
   # credo:disable-for-next-line
   def get_ros2_message_type_map(ros2_message_type, from, acc \\ %{}) do
-    [package_name, "msg", _type_name] = String.split(ros2_message_type, "/")
+    package_name = get_package_name(ros2_message_type)
 
     rows =
       "#{Path.join(from, ros2_message_type)}.msg"
@@ -274,12 +274,15 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
           # NOTE: currently we do not support default value
           |> Enum.take(2)
 
-        cond do
-          type in @ros2_built_in_types -> {type, variable}
-          is_ros2_built_in_list(type) -> {type, variable}
-          String.contains?(type, "/") -> {type, variable}
-          true -> {Path.join("#{package_name}/msg", type), variable}
-        end
+        type =
+          cond do
+            type in @ros2_built_in_types -> type
+            is_ros2_built_in_list(type) -> type
+            String.contains?(type, "/") -> get_nested_ros2_type(type)
+            true -> Path.join("#{package_name}/msg", type)
+          end
+
+        {type, variable}
       end)
 
     type_map = Map.put(acc, ros2_message_type, type_variable_tuples)
@@ -769,6 +772,20 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   defp is_ros2_list(type) when is_binary(type) do
     String.match?(type, ~r/.+\[[0-9]+\]/)
+  end
+
+  defp get_package_name(ros2_message_type) do
+    case String.split(ros2_message_type, "/") do
+      [package_name, "msg", _type_name] -> package_name
+      [package_name, _type_name] -> package_name
+    end
+  end
+
+  defp get_nested_ros2_type(type) do
+    case String.split(type, "/") do
+      [_package_name, "msg", _t] -> type
+      [package_name, t] -> Path.join("#{package_name}/msg", t)
+    end
   end
 
   defp list_type(type) do
