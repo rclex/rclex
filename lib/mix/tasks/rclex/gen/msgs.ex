@@ -554,7 +554,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       "bool" ->
         """
         unsigned #{var_local};
-        if(!enif_get_atom_length(env,#{var_term}},&#{var_local},ERL_NIF_LATIN1)) {
+        if(!enif_get_atom_length(env,#{var_term},&#{var_local},ERL_NIF_LATIN1)) {
           return enif_make_badarg(env);
         }
         if(#{var_local} == 4) res->#{var_res} = true;
