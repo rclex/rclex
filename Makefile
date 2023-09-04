@@ -29,7 +29,11 @@ ERL_CFLAGS  ?= -I$(ERL_EI_INCLUDE_DIR)
 ERL_LDFLAGS ?= -L$(ERL_EI_LIBDIR)
 
 # for ROS libs
+ifeq ($(ROS_DISTRO), humble)
+ROS_CFLAGS  ?= -I$(ROS_DIR)/include $(addprefix -I,$(sort $(dir $(wildcard $(ROS_DIR)/include/*/))))
+else
 ROS_CFLAGS  ?= -I$(ROS_DIR)/include
+endif
 ROS_LDFLAGS ?= -L$(ROS_DIR)/lib
 ROS_LDFLAGS += -lrcl -lrmw -lrcutils \
 	-lrosidl_runtime_c -lrosidl_typesupport_c \
