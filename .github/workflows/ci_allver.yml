@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dockertags: [latest, foxy-ex1.14.0-otp25.0.4, foxy-ex1.13.4-otp25.0.3, foxy-ex1.12.3-otp24.1.5]
+        dockertags: [latest, humble-ex1.13.4-otp25.0.3, foxy-ex1.14.0-otp25.0.4, foxy-ex1.13.4-otp25.0.3, foxy-ex1.12.3-otp24.1.5]
     container: rclex/rclex_docker:${{ matrix.dockertags }}
 
     steps:
