@@ -17,21 +17,11 @@ defmodule Rclex.NifsTest do
   alias Rclex.Nifs
 
   describe "init_nif" do
-    test "rcl_get_zero_initialized_init_options/0 return reference" do
-      options = Nifs.rcl_get_zero_initialized_init_options()
-
-      try do
-        assert is_reference(options)
-      after
-        # clean up resource
-        Nifs.rcl_init_options_fini(options)
-      end
-    end
-
     test "rcl_init_options_init/1 return :ok" do
       options = Nifs.rcl_get_zero_initialized_init_options()
 
       try do
+        assert is_reference(options)
         assert :ok = Nifs.rcl_init_options_init(options)
       after
         # clean up resource
