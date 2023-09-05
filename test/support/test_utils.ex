@@ -13,7 +13,7 @@ defmodule Rclex.TestUtils do
     context
   end
 
-  def get_initialized_no_namespace_node(context, node_name \\ 'node') do
+  def get_initialized_no_namespace_node(context, node_name \\ ~c"node") do
     node = Nifs.rcl_get_zero_initialized_node()
     options = Nifs.rcl_node_get_default_options()
 
@@ -22,8 +22,8 @@ defmodule Rclex.TestUtils do
 
   def get_initialized_publisher(
         node,
-        topic \\ 'topic',
-        message_type \\ 'StdMsgs.Msg.String',
+        topic \\ ~c"topic",
+        message_type \\ ~c"StdMsgs.Msg.String",
         publisher_options \\ Nifs.rcl_publisher_get_default_options()
       ) do
     publisher = Nifs.rcl_get_zero_initialized_publisher()
@@ -34,8 +34,8 @@ defmodule Rclex.TestUtils do
 
   def get_initialized_subscription(
         node,
-        topic \\ 'topic',
-        message_type \\ 'StdMsgs.Msg.String',
+        topic \\ ~c"topic",
+        message_type \\ ~c"StdMsgs.Msg.String",
         subscription_options \\ Nifs.rcl_subscription_get_default_options()
       ) do
     subscription = Nifs.rcl_get_zero_initialized_subscription()

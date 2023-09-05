@@ -8,7 +8,7 @@ defmodule Rclex.TimerTest do
     callback = fn message -> Logger.info(message) end
     args = "test"
     time = 1000
-    timer_name = 'timer'
+    timer_name = ~c"timer"
     limit = 0
     queue_length = 1
     change_order = fn l when is_list(l) -> l end

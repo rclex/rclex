@@ -13,11 +13,11 @@ defmodule Rclex.NodeTest do
   setup do
     context = get_initialized_context()
 
-    node_a_id = 'node_a0'
+    node_a_id = ~c"node_a0"
     node_a = get_initialized_no_namespace_node(context, node_a_id)
     start_supervised!({Rclex.Node, {node_a, node_a_id, {1, & &1}}})
 
-    node_b_id_list = ['node_b0', 'node_b1']
+    node_b_id_list = [~c"node_b0", ~c"node_b1"]
 
     node_b_list =
       for node_b_id <- node_b_id_list do
@@ -35,8 +35,8 @@ defmodule Rclex.NodeTest do
     %{
       node_id: node_a_id,
       node_id_list: node_b_id_list,
-      msg_type: 'StdMsgs.Msg.String',
-      topic: 'topic'
+      msg_type: ~c"StdMsgs.Msg.String",
+      topic: ~c"topic"
     }
   end
 

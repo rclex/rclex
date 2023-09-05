@@ -4,7 +4,7 @@ defmodule Rclex.MsgTest do
   alias Rclex.Msg
 
   describe "typesupport/1" do
-    for message_type <- ['StdMsgs.Msg.String', 'GeometryMsgs.Msg.Twist'] do
+    for message_type <- [~c"StdMsgs.Msg.String", ~c"GeometryMsgs.Msg.Twist"] do
       test "return #{message_type} reference" do
         message_type = unquote(message_type)
         assert is_reference(Msg.typesupport(message_type))
@@ -13,7 +13,7 @@ defmodule Rclex.MsgTest do
   end
 
   describe "initialize/1" do
-    for message_type <- ['StdMsgs.Msg.String', 'GeometryMsgs.Msg.Twist'] do
+    for message_type <- [~c"StdMsgs.Msg.String", ~c"GeometryMsgs.Msg.Twist"] do
       test "return #{message_type} reference" do
         message_type = unquote(message_type)
         assert is_reference(Msg.initialize(message_type))
@@ -22,7 +22,7 @@ defmodule Rclex.MsgTest do
   end
 
   describe "initialize_msgs/2" do
-    for message_type <- ['StdMsgs.Msg.String', 'GeometryMsgs.Msg.Twist'] do
+    for message_type <- [~c"StdMsgs.Msg.String", ~c"GeometryMsgs.Msg.Twist"] do
       test "return list of #{message_type} reference" do
         message_type = unquote(message_type)
         assert [h | _t] = Msg.initialize_msgs(2, message_type)
@@ -36,11 +36,11 @@ defmodule Rclex.MsgTest do
     alias Rclex.GeometryMsgs.Msg.Vector3
 
     for {message_type, ex_struct} <- [
-          {'StdMsgs.Msg.String',
+          {~c"StdMsgs.Msg.String",
            Macro.escape(%Rclex.StdMsgs.Msg.String{
              data: String.to_charlist("data")
            })},
-          {'GeometryMsgs.Msg.Twist',
+          {~c"GeometryMsgs.Msg.Twist",
            Macro.escape(%Twist{
              linear: %Vector3{x: 0.0, y: 0.0, z: 0.0},
              angular: %Vector3{x: 0.0, y: 0.0, z: 0.0}

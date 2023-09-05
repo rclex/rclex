@@ -94,8 +94,8 @@ defmodule Rclex.NifsTest do
 
     test "rcl_node_init/5 return reference", %{context: context} do
       node = Nifs.rcl_get_zero_initialized_node()
-      node_name = 'node'
-      node_namespace = 'namespace'
+      node_name = ~c"node"
+      node_namespace = ~c"namespace"
       options = Nifs.rcl_node_get_default_options()
 
       try do
@@ -107,7 +107,7 @@ defmodule Rclex.NifsTest do
     end
 
     test "rcl_node_init_without_namespace/4 return reference", %{context: context} do
-      node_name = 'node'
+      node_name = ~c"node"
       node = Nifs.rcl_get_zero_initialized_node()
       options = Nifs.rcl_node_get_default_options()
 
@@ -128,7 +128,7 @@ defmodule Rclex.NifsTest do
     end
 
     test "rcl_node_get_name/1 return charlist", %{context: context} do
-      node_name = 'test'
+      node_name = ~c"test"
       node = get_initialized_no_namespace_node(context, node_name)
 
       try do
@@ -172,8 +172,8 @@ defmodule Rclex.NifsTest do
     test "rcl_publisher_init/5 return reference", %{node: node} do
       publisher = Nifs.rcl_get_zero_initialized_publisher()
 
-      topic = 'topic'
-      typesupport = Rclex.Msg.typesupport('StdMsgs.Msg.String')
+      topic = ~c"topic"
+      typesupport = Rclex.Msg.typesupport(~c"StdMsgs.Msg.String")
       publisher_options = Nifs.rcl_publisher_get_default_options()
 
       try do
@@ -202,13 +202,13 @@ defmodule Rclex.NifsTest do
 
       publisher_allocation = Nifs.create_pub_alloc()
 
-      message = Rclex.Msg.initialize('StdMsgs.Msg.String')
+      message = Rclex.Msg.initialize(~c"StdMsgs.Msg.String")
 
       :ok =
         Rclex.Msg.set(
           message,
-          %Rclex.StdMsgs.Msg.String{data: 'data'},
-          'StdMsgs.Msg.String'
+          %Rclex.StdMsgs.Msg.String{data: ~c"data"},
+          ~c"StdMsgs.Msg.String"
         )
 
       rcl_ret_ok = Rclex.ReturnCode.rcl_ret_ok()
@@ -258,8 +258,8 @@ defmodule Rclex.NifsTest do
     test "rcl_subscription_init/5 return reference", %{node: node} do
       subscription = Nifs.rcl_get_zero_initialized_subscription()
 
-      topic = 'topic'
-      typesupport = Rclex.Msg.typesupport('StdMsgs.Msg.String')
+      topic = ~c"topic"
+      typesupport = Rclex.Msg.typesupport(~c"StdMsgs.Msg.String")
       subscription_options = Nifs.rcl_subscription_get_default_options()
 
       try do
@@ -285,7 +285,7 @@ defmodule Rclex.NifsTest do
     end
 
     test "rcl_subscription_get_topic_name/1 return charlist", %{node: node} do
-      topic_name = 'test'
+      topic_name = ~c"test"
       subscription = get_initialized_subscription(node, topic_name)
 
       try do
@@ -301,7 +301,7 @@ defmodule Rclex.NifsTest do
     test "rcl_take/4 return tuple", %{node: node} do
       subscription = get_initialized_subscription(node)
 
-      msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
+      msg = Rclex.Msg.initialize(~c"StdMsgs.Msg.String")
       msginfo = Nifs.create_msginfo()
       subscription_allocation = Nifs.create_sub_alloc()
 
@@ -341,15 +341,15 @@ defmodule Rclex.NifsTest do
     end
 
     test "node is assigned publisher, return list", %{node: node} do
-      topic_name = 'test'
+      topic_name = ~c"test"
       publisher = get_initialized_publisher(node, topic_name)
       allocator = Nifs.rcl_get_default_allocator()
 
       try do
-        assert [{'/' ++ topic_name, ['std_msgs/msg/String']}] ==
+        assert [{~c"/" ++ topic_name, [~c"std_msgs/msg/String"]}] ==
                  Nifs.rcl_get_topic_names_and_types(node, allocator, true)
 
-        assert [{'/' ++ topic_name, ['std_msgs/msg/String']}] ==
+        assert [{~c"/" ++ topic_name, [~c"std_msgs/msg/String"]}] ==
                  Nifs.rcl_get_topic_names_and_types(node, allocator, false)
       after
         Nifs.rcl_publisher_fini(publisher, node)
@@ -357,15 +357,15 @@ defmodule Rclex.NifsTest do
     end
 
     test "node is assigned subscription, return list", %{node: node} do
-      topic_name = 'test'
+      topic_name = ~c"test"
       subscription = get_initialized_subscription(node, topic_name)
       allocator = Nifs.rcl_get_default_allocator()
 
       try do
-        assert [{'/' ++ topic_name, ['std_msgs/msg/String']}] ==
+        assert [{~c"/" ++ topic_name, [~c"std_msgs/msg/String"]}] ==
                  Nifs.rcl_get_topic_names_and_types(node, allocator, true)
 
-        assert [{'/' ++ topic_name, ['std_msgs/msg/String']}] ==
+        assert [{~c"/" ++ topic_name, [~c"std_msgs/msg/String"]}] ==
                  Nifs.rcl_get_topic_names_and_types(node, allocator, false)
       after
         Nifs.rcl_subscription_fini(subscription, node)

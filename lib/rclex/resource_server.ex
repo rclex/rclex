@@ -32,7 +32,7 @@ defmodule Rclex.ResourceServer do
   @spec create_node(Nifs.rcl_context(), charlist(), integer(), (list() -> list())) ::
           {:ok, node_identifier :: charlist()}
   def create_node(context, node_name, queue_length \\ 1, change_order \\ & &1) do
-    create_node_with_namespace(context, node_name, '', queue_length, change_order)
+    create_node_with_namespace(context, node_name, ~c"", queue_length, change_order)
   end
 
   @doc """
@@ -76,7 +76,7 @@ defmodule Rclex.ResourceServer do
   @spec create_nodes(Nifs.rcl_context(), charlist(), integer(), integer(), (list() -> list())) ::
           {:ok, [node_identifier :: charlist()]} | :error
   def create_nodes(context, node_name, num_node, queue_length \\ 1, change_order \\ & &1) do
-    create_nodes_with_namespace(context, node_name, '', num_node, queue_length, change_order)
+    create_nodes_with_namespace(context, node_name, ~c"", num_node, queue_length, change_order)
   end
 
   @doc """
@@ -298,12 +298,12 @@ defmodule Rclex.ResourceServer do
   end
 
   @spec get_identifier_name(charlist(), charlist()) :: charlist()
-  defp get_identifier_name(node_name, _node_namespace = '') do
+  defp get_identifier_name(node_name, _node_namespace = ~c"") do
     node_name
   end
 
   defp get_identifier_name(node_name, node_namespace) do
-    node_namespace ++ '/' ++ node_name
+    node_namespace ++ ~c"/" ++ node_name
   end
 
   @spec get_initialized_node(
@@ -322,7 +322,7 @@ defmodule Rclex.ResourceServer do
          node_op \\ Nifs.rcl_node_get_default_options()
        )
 
-  defp get_initialized_node(context, node_name, _node_namespace = '', node, node_op) do
+  defp get_initialized_node(context, node_name, _node_namespace = ~c"", node, node_op) do
     Nifs.rcl_node_init_without_namespace(node, node_name, context, node_op)
   end
 

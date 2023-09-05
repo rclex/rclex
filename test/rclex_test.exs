@@ -19,12 +19,12 @@ defmodule RclexTest do
   test "rcl_node_get_name" do
     context = Rclex.rclexinit()
 
-    node_name = 'test_node'
+    node_name = ~c"test_node"
     {:ok, node_list} = Rclex.ResourceServer.create_nodes(context, node_name, 2)
     [node_0, node_1] = node_list
 
-    assert Rclex.Node.node_get_name(node_0) == 'test_node0'
-    assert Rclex.Node.node_get_name(node_1) == 'test_node1'
+    assert Rclex.Node.node_get_name(node_0) == ~c"test_node0"
+    assert Rclex.Node.node_get_name(node_1) == ~c"test_node1"
 
     Rclex.ResourceServer.finish_nodes(node_list)
     Rclex.shutdown(context)
@@ -35,37 +35,38 @@ defmodule RclexTest do
     str_data = "data"
     pid = self()
 
-    {:ok, sub_node} = Rclex.ResourceServer.create_node(context, 'listener')
+    {:ok, sub_node} = Rclex.ResourceServer.create_node(context, ~c"listener")
 
-    {:ok, subscriber} = Rclex.Node.create_subscriber(sub_node, 'StdMsgs.Msg.String', 'chatter')
+    {:ok, subscriber} =
+      Rclex.Node.create_subscriber(sub_node, ~c"StdMsgs.Msg.String", ~c"chatter")
 
     Rclex.Subscriber.start_subscribing([subscriber], context, fn msg ->
-      recv_msg = Rclex.Msg.read(msg, 'StdMsgs.Msg.String')
+      recv_msg = Rclex.Msg.read(msg, ~c"StdMsgs.Msg.String")
       assert List.to_string(recv_msg.data) == str_data, "received data is correct."
       _msg_data = List.to_string(recv_msg.data)
       send(pid, :message_received)
     end)
 
-    {:ok, pub_node} = Rclex.ResourceServer.create_node(context, 'talker')
+    {:ok, pub_node} = Rclex.ResourceServer.create_node(context, ~c"talker")
 
-    {:ok, publisher} = Rclex.Node.create_publisher(pub_node, 'StdMsgs.Msg.String', 'chatter')
+    {:ok, publisher} = Rclex.Node.create_publisher(pub_node, ~c"StdMsgs.Msg.String", ~c"chatter")
 
     {:ok, timer} =
       Rclex.ResourceServer.create_timer_with_limit(
         fn publisher ->
-          msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
+          msg = Rclex.Msg.initialize(~c"StdMsgs.Msg.String")
 
           Rclex.Msg.set(
             msg,
             %Rclex.StdMsgs.Msg.String{data: String.to_charlist(str_data)},
-            'StdMsgs.Msg.String'
+            ~c"StdMsgs.Msg.String"
           )
 
           Rclex.Publisher.publish([publisher], [msg])
         end,
         publisher,
         100,
-        'continuous_timer',
+        ~c"continuous_timer",
         1
       )
 
@@ -82,15 +83,15 @@ defmodule RclexTest do
   test "rcl_get_topic_names_and_types" do
     context = Rclex.rclexinit()
 
-    {:ok, node_list} = Rclex.ResourceServer.create_nodes(context, 'test_pub_node', 1)
+    {:ok, node_list} = Rclex.ResourceServer.create_nodes(context, ~c"test_pub_node", 1)
 
     {:ok, publisher_list} =
-      Rclex.Node.create_publishers(node_list, 'StdMsgs.Msg.String', 'testtopic', :single)
+      Rclex.Node.create_publishers(node_list, ~c"StdMsgs.Msg.String", ~c"testtopic", :single)
 
-    {:ok, node_list_2} = Rclex.ResourceServer.create_nodes(context, 'test_sub_node', 1)
+    {:ok, node_list_2} = Rclex.ResourceServer.create_nodes(context, ~c"test_sub_node", 1)
 
     {:ok, subscriber_list} =
-      Rclex.Node.create_subscribers(node_list_2, 'StdMsgs.Msg.String', 'testtopic', :single)
+      Rclex.Node.create_subscribers(node_list_2, ~c"StdMsgs.Msg.String", ~c"testtopic", :single)
 
     node = hd(node_list)
 
@@ -106,9 +107,9 @@ defmodule RclexTest do
     name = elem(name_and_types_tuple, 0)
     types_list = elem(name_and_types_tuple, 1)
 
-    assert name == '/testtopic'
+    assert name == ~c"/testtopic"
     type = hd(types_list)
-    assert type == 'std_msgs/msg/String'
+    assert type == ~c"std_msgs/msg/String"
 
     Rclex.Node.finish_jobs(publisher_list)
     Rclex.Node.finish_jobs(subscriber_list)

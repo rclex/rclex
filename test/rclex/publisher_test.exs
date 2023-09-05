@@ -14,9 +14,9 @@ defmodule Rclex.PublisherTest do
   alias Rclex.Nifs
 
   setup do
-    msg_type = 'StdMsgs.Msg.String'
-    node_id = 'node'
-    topic = 'topic'
+    msg_type = ~c"StdMsgs.Msg.String"
+    node_id = ~c"node"
+    topic = ~c"topic"
 
     context = get_initialized_context()
     node = get_initialized_no_namespace_node(context, node_id)
@@ -37,13 +37,13 @@ defmodule Rclex.PublisherTest do
     test "capture_log", %{publisher: publisher, node: node} do
       publisher_allocation = Nifs.create_pub_alloc()
 
-      message = Rclex.Msg.initialize('StdMsgs.Msg.String')
+      message = Rclex.Msg.initialize(~c"StdMsgs.Msg.String")
 
       :ok =
         Rclex.Msg.set(
           message,
-          %Rclex.StdMsgs.Msg.String{data: 'data'},
-          'StdMsgs.Msg.String'
+          %Rclex.StdMsgs.Msg.String{data: ~c"data"},
+          ~c"StdMsgs.Msg.String"
         )
 
       try do
@@ -59,13 +59,13 @@ defmodule Rclex.PublisherTest do
   describe "publish/2" do
     @tag capture_log: true
     test "return :ok", %{id_tuple: id_tuple, publisher: publisher, node: node} do
-      message = Rclex.Msg.initialize('StdMsgs.Msg.String')
+      message = Rclex.Msg.initialize(~c"StdMsgs.Msg.String")
 
       :ok =
         Rclex.Msg.set(
           message,
-          %Rclex.StdMsgs.Msg.String{data: 'data'},
-          'StdMsgs.Msg.String'
+          %Rclex.StdMsgs.Msg.String{data: ~c"data"},
+          ~c"StdMsgs.Msg.String"
         )
 
       try do
@@ -78,13 +78,13 @@ defmodule Rclex.PublisherTest do
 
   describe "handle_cast({:publish, msg}, pub)" do
     test "capture_log", %{pid: pid, publisher: publisher, node: node} do
-      message = Rclex.Msg.initialize('StdMsgs.Msg.String')
+      message = Rclex.Msg.initialize(~c"StdMsgs.Msg.String")
 
       :ok =
         Rclex.Msg.set(
           message,
-          %Rclex.StdMsgs.Msg.String{data: 'data'},
-          'StdMsgs.Msg.String'
+          %Rclex.StdMsgs.Msg.String{data: ~c"data"},
+          ~c"StdMsgs.Msg.String"
         )
 
       try do
@@ -100,7 +100,7 @@ defmodule Rclex.PublisherTest do
 
   describe "handle_call({:finish, node}, ...)" do
     test "return", %{pid: pid, node: node} do
-      assert {:ok, 'publisher finished: '} = GenServer.call(pid, {:finish, node})
+      assert {:ok, ~c"publisher finished: "} = GenServer.call(pid, {:finish, node})
     end
   end
 end
