@@ -148,7 +148,7 @@ defmodule Rclex.Subscriber do
   def handle_call({:finish, node}, _from, state) do
     {:ok, sub} = Map.fetch(state, :subscriber)
     Nifs.rcl_subscription_fini(sub, node)
-    {:reply, {:ok, 'subscriber finished: '}, state}
+    {:reply, {:ok, ~c"subscriber finished: "}, state}
   end
 
   @impl GenServer

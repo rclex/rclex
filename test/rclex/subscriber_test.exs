@@ -14,9 +14,9 @@ defmodule Rclex.SubscriberTest do
   alias Rclex.Nifs
 
   setup do
-    msg_type = 'StdMsgs.Msg.String'
-    node_id = 'node'
-    topic = 'topic'
+    msg_type = ~c"StdMsgs.Msg.String"
+    node_id = ~c"node"
+    topic = ~c"topic"
 
     context = get_initialized_context()
     node = get_initialized_no_namespace_node(context, node_id)
@@ -78,7 +78,7 @@ defmodule Rclex.SubscriberTest do
 
   describe "handle_call({:finish, node}, ...)" do
     test "return ok tuple", %{node: node, pid: pid} do
-      assert {:ok, 'subscriber finished: '} = GenServer.call(pid, {:finish, node})
+      assert {:ok, ~c"subscriber finished: "} = GenServer.call(pid, {:finish, node})
     end
   end
 

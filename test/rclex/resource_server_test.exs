@@ -17,10 +17,10 @@ defmodule Rclex.ResourceServerTest do
 
   describe "create_node/2" do
     test "return {:ok, node_id}", %{context: context, pid: pid} do
-      node_id = 'node0'
+      node_id = ~c"node0"
 
       try do
-        assert {:ok, ^node_id} = ResourceServer.create_node(context, _node_name = 'node')
+        assert {:ok, ^node_id} = ResourceServer.create_node(context, _node_name = ~c"node")
       after
         :ok = GenServer.call(pid, {:finish_node, node_id})
       end
@@ -29,10 +29,10 @@ defmodule Rclex.ResourceServerTest do
 
   describe "create_node_with_namespace/3" do
     test "return {:ok, node_id}", %{context: context, pid: pid} do
-      node_name = 'node'
-      namespace = 'namespace'
+      node_name = ~c"node"
+      namespace = ~c"namespace"
 
-      node_id = 'namespace/node0'
+      node_id = ~c"namespace/node0"
 
       try do
         assert {:ok, ^node_id} =
@@ -49,10 +49,10 @@ defmodule Rclex.ResourceServerTest do
 
   describe "create_nodes/3" do
     test "return {:ok, [node_id]}", %{context: context, pid: pid} do
-      node_name = 'node'
+      node_name = ~c"node"
       node_count = 2
 
-      node_id_list = ['node0', 'node1']
+      node_id_list = [~c"node0", ~c"node1"]
 
       try do
         assert {:ok, ^node_id_list} =
@@ -69,10 +69,10 @@ defmodule Rclex.ResourceServerTest do
     end
 
     test "return :error, when node already exists", %{context: context, pid: pid} do
-      node_name = 'node'
+      node_name = ~c"node"
       node_count = 2
 
-      node_id = 'node0'
+      node_id = ~c"node0"
 
       try do
         {:ok, ^node_id} = ResourceServer.create_node(context, node_name)
@@ -87,13 +87,13 @@ defmodule Rclex.ResourceServerTest do
 
   describe "create_nodes_with_namespace/3" do
     test "return {:ok, [node_id]}", %{context: context, pid: pid} do
-      node_name = 'node'
-      namespace = 'namespace'
-      another_namespace = 'namespace2'
+      node_name = ~c"node"
+      namespace = ~c"namespace"
+      another_namespace = ~c"namespace2"
       node_count = 2
 
-      node_id_list = ['namespace/node0', 'namespace/node1']
-      another_node_id_list = ['namespace2/node0', 'namespace2/node1']
+      node_id_list = [~c"namespace/node0", ~c"namespace/node1"]
+      another_node_id_list = [~c"namespace2/node0", ~c"namespace2/node1"]
 
       try do
         assert {:ok, ^node_id_list} =
@@ -132,7 +132,7 @@ defmodule Rclex.ResourceServerTest do
       callback = fn _ -> nil end
       args = nil
       time_ms = 1000
-      timer_name = 'timer'
+      timer_name = ~c"timer"
 
       timer_id = "timer/Timer"
 
@@ -149,7 +149,7 @@ defmodule Rclex.ResourceServerTest do
       callback = fn _ -> nil end
       args = nil
       time_ms = 1000
-      timer_name = 'timer'
+      timer_name = ~c"timer"
       limit = 5
 
       timer_id = "timer/Timer"
@@ -174,7 +174,7 @@ defmodule Rclex.ResourceServerTest do
       callback = fn _ -> nil end
       args = nil
       time_ms = 1000
-      timer_name = 'timer'
+      timer_name = ~c"timer"
 
       {:ok, timer_id = "timer/Timer"} =
         ResourceServer.create_timer(callback, args, time_ms, timer_name)
@@ -194,7 +194,7 @@ defmodule Rclex.ResourceServerTest do
 
   describe "finish_node/1" do
     setup %{context: context} do
-      node_name = 'node'
+      node_name = ~c"node"
 
       {:ok, node_id} =
         ResourceServer.create_node(
@@ -217,7 +217,7 @@ defmodule Rclex.ResourceServerTest do
 
   describe "finish_nodes/1" do
     setup %{context: context} do
-      node_name = 'node'
+      node_name = ~c"node"
       node_count = 2
 
       {:ok, node_id_list} =

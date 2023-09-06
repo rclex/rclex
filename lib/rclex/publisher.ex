@@ -74,7 +74,7 @@ defmodule Rclex.Publisher do
   @impl GenServer
   def handle_call({:finish, node}, _from, pub) do
     Nifs.rcl_publisher_fini(pub, node)
-    {:reply, {:ok, 'publisher finished: '}, pub}
+    {:reply, {:ok, ~c"publisher finished: "}, pub}
   end
 
   @impl GenServer
