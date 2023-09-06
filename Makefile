@@ -38,7 +38,7 @@ ROS_LDFLAGS ?= -L$(ROS_DIR)/lib
 ROS_LDFLAGS += -lrcl -lrmw -lrcutils \
 	-lrosidl_runtime_c -lrosidl_typesupport_c \
 	-lrosidl_typesupport_introspection_c \
-	-lfastcdr -lfastrtps -lrmw_fastrtps_cpp \
+	-lfastcdr
 
 SRC = $(wildcard src/*.c)
 HEADERS = $(SRC:src/%.c=src/%.h)
