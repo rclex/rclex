@@ -39,8 +39,6 @@ ROS_LDFLAGS += -lrcl -lrmw -lrcutils \
 	-lrosidl_runtime_c -lrosidl_typesupport_c \
 	-lrosidl_typesupport_introspection_c \
 	-lfastcdr -lfastrtps -lrmw_fastrtps_cpp \
-# if you want to use OpenSplice DDS
-#ROS_LDFLAGS += -lrmw_opensplice_cpp -lrosidl_typesupport_opensplice_cpp
 
 SRC = $(wildcard src/*.c)
 HEADERS = $(SRC:src/%.c=src/%.h)
