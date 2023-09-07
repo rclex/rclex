@@ -137,13 +137,30 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   defp copy_vendor_resources_from_docker!(dest_path, arch, ros_distro)
        when arch in ["arm64v8", "amd64", "arm32v7"] do
+    vendor_resources(arch, ros_distro)
+    |> Enum.map(fn src_path -> copy_from_docker_impl!(arch, ros_distro, src_path, dest_path) end)
+  end
+
+  defp vendor_resources(arch, "humble") do
+    dir_name = arch_dir_name(arch)
+
+    [
+      "/lib/#{dir_name}/libspdlog.so*",
+      "/lib/#{dir_name}/libtinyxml2.so*",
+      "/lib/#{dir_name}/libfmt.so*",
+      # humble needs OpenSSL 3.x which Nerves doesn't have
+      "/lib/#{dir_name}/libssl.so*",
+      "/lib/#{dir_name}/libcrypto.so*"
+    ]
+  end
+
+  defp vendor_resources(arch, "foxy") do
     dir_name = arch_dir_name(arch)
 
     [
       "/lib/#{dir_name}/libspdlog.so*",
       "/lib/#{dir_name}/libtinyxml2.so*"
     ]
-    |> Enum.map(fn src_path -> copy_from_docker_impl!(arch, ros_distro, src_path, dest_path) end)
   end
 
   defp copy_from_docker_impl!(arch, ros_distro, src_path, dest_path) do
