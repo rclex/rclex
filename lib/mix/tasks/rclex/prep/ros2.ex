@@ -30,7 +30,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   @arm64v8_ros_distros ["foxy", "galactic", "humble"]
   @amd64_ros_distros ["foxy", "galactic", "humble"]
-  @arm32v7_ros_distros ["foxy"]
+  @arm32v7_ros_distros ["foxy", "humble"]
   @supported_ros_distros %{
     "arm64v8" => @arm64v8_ros_distros,
     "amd64" => @amd64_ros_distros,
