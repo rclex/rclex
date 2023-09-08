@@ -27,10 +27,13 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 
 現在，下記の環境を主な対象として開発を進めています．
 
-- Ubuntu 20.04.2 LTS (Focal Fossa)
-- ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
-- Elixir 1.13.4-otp-25
-- Erlang/OTP 25.0.3
+- Ubuntu 22.04.3 LTS (Jammy Jellyfish)
+- ROS 2 [Humble Hawksbill](https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html)
+- Elixir 1.15.5-otp-26
+- Erlang/OTP 26.0.2
+
+ROS 2にはHumbleの利用を強く推奨します．
+FoxyとGalacticもCI対象としていますが，これらはすでにEOLとなっています．
 
 動作検証の対象としている環境は[こちら](https://github.com/rclex/rclex_docker#available-versions-docker-tags)を参照してください．
 

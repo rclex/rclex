@@ -36,10 +36,13 @@ For details on ROS 2, see the official [ROS 2 documentation](https://index.ros.o
 
 Currently, we use the following environment as the main development target:
 
-- Ubuntu 20.04.2 LTS (Focal Fossa)
-- ROS 2 [Foxy Fitzroy](https://docs.ros.org/en/foxy/Releases/Release-Foxy-Fitzroy.html)
-- Elixir 1.13.4-otp-25
-- Erlang/OTP 25.0.3
+- Ubuntu 22.04.3 LTS (Jammy Jellyfish)
+- ROS 2 [Humble Hawksbill](https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html)
+- Elixir 1.15.5-otp-26
+- Erlang/OTP 26.0.2
+
+We highly recommend using Humble for ROS 2 distribution.
+Although we also use Foxy and Galactic as CI targets, they have already reached EOL.
 
 For other environments used to check the operation of this library,
 please refer to [here](https://github.com/rclex/rclex_docker#available-versions-docker-tags).
