@@ -76,7 +76,7 @@ The following command extracts the ROS 2 Docker image and copies resources requi
 You may change the value of `--arch` according to the architecture of your target board (see the "arch" column on the supported target list)
 
 ```
-export ROS_DISTRO=foxy
+export ROS_DISTRO=humble
 mix rclex.prep.ros2 --arch arm64v8
 ```
 
@@ -87,7 +87,7 @@ mix rclex.prep.ros2 --arch arm64v8
 
 ### Configure ROS 2 message types you want to use
 
-Rclex provides pub/sub based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/foxy/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
+Rclex provides pub/sub based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/humble/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
 
 The message types you want to use in your project can be specified in `ros2_message_types` in `config/config.exs`. 
 Multiple message types can be specified separated by comma `,`.
@@ -114,13 +114,20 @@ Copy erlinit.config from `nerves_system_***`.
 cp deps/nerves_system_rpi4/rootfs_overlay/etc/erlinit.config rootfs_overlay/etc
 ```
 
-Add `-e LD_LIBRARY_PATH=/opt/ros/foxy/lib` line like following.  
-`ROS_DISTRO` is needed to be written directly, following is the case of `foxy`.
+Add LD_LIBRARY_PATH line like following.  
+`ROS_DISTRO` is needed to be written directly, following is the case of `humble`.
 
 ```
 # Enable UTF-8 filename handling in Erlang and custom inet configuration
--e LANG=en_US.UTF-8;LANGUAGE=en;ERL_INETRC=/etc/erl_inetrc;ERL_CRASH_DUMP=/root/crash.dump
--e LD_LIBRARY_PATH=/opt/ros/foxy/lib
+-e LANG=en_US.UTF-8;LANGUAGE=en;ERL_INETRC=/etc/erl_inetrc
+
+# Enable crash dumps (set ERL_CRASH_DUMP_SECONDS=0 to disable)
+-e ERL_CRASH_DUMP=/root/erl_crash.dump;ERL_CRASH_DUMP_SECONDS=5
+
+# ROS 2
+-e LD_LIBRARY_PATH=/opt/ros/humble/lib
+## only galactic needs /opt/ros/galactic/lib/aarch64-linux-gnu also, for libddsc
+# -e LD_LIBRARY_PATH=/opt/ros/galactic/lib/aarch64-linux-gnu:/opt/ros/galactic/lib
 ```
 
 > #### Why add LD_LIBRARY_PATH explicitly {: .info }
@@ -191,7 +198,7 @@ Rclex: Publishing: Hello World from Rclex!
 You can confirm the above operation by subscribing with `ros2 topic echo` on the machine where ROS 2 env has been installed.
 
 ```
-$ source /opt/ros/foxy/setup.bash
+$ source /opt/ros/humble/setup.bash
 $ ros2 topic echo /chatter std_msgs/msg/String
 data: Hello World from Rclex!
 ---
