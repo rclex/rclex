@@ -72,6 +72,11 @@ mix deps.get
 
 ### Prepare ROS 2 resources
 
+> #### Note {: .info }
+>
+> In the following steps, Humble Hawksbill (`humble`) is assumed to be used as `ROS_DISTRO` (strongly recommend to use).
+> If you want to use `foxy` or `galactic`, you need to replace it appropriately in the subsequent steps. Note that these have already reached EOL.
+
 The following command extracts the ROS 2 Docker image and copies resources required for Rclex to the Nerves file system.
 You may change the value of `--arch` according to the architecture of your target board (see the "arch" column on the supported target list)
 
@@ -115,7 +120,7 @@ cp deps/nerves_system_rpi4/rootfs_overlay/etc/erlinit.config rootfs_overlay/etc
 ```
 
 Add LD_LIBRARY_PATH line like following.  
-`ROS_DISTRO` is needed to be written directly, following is the case of `humble`.
+`ROS_DISTRO` should be written directly such as `humble`, as the below.
 
 ```
 # Enable UTF-8 filename handling in Erlang and custom inet configuration
@@ -124,10 +129,8 @@ Add LD_LIBRARY_PATH line like following.
 # Enable crash dumps (set ERL_CRASH_DUMP_SECONDS=0 to disable)
 -e ERL_CRASH_DUMP=/root/erl_crash.dump;ERL_CRASH_DUMP_SECONDS=5
 
-# ROS 2
+# add for ROS 2 (rclex_on_nerves)
 -e LD_LIBRARY_PATH=/opt/ros/humble/lib
-## only galactic needs /opt/ros/galactic/lib/aarch64-linux-gnu also, for libddsc
-# -e LD_LIBRARY_PATH=/opt/ros/galactic/lib/aarch64-linux-gnu:/opt/ros/galactic/lib
 ```
 
 > #### Why add LD_LIBRARY_PATH explicitly {: .info }
@@ -136,6 +139,15 @@ Add LD_LIBRARY_PATH line like following.
 >
 > - https://github.com/ros-tooling/cross_compile/issues/363
 > - https://github.com/ros2/rcpputils/pull/122
+
+> #### Note {: .warning }
+>
+> If you want to use `galactic`, adding line should be as the below.
+> 
+> ```
+> ## only galactic needs /opt/ros/galactic/lib/aarch64-linux-gnu also, for libddsc
+> # -e LD_LIBRARY_PATH=/opt/ros/galactic/lib/aarch64-linux-gnu:/opt/ros/galactic/lib
+> ```
 
 ### Write Rclex code
 
