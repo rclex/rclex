@@ -154,6 +154,15 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     ]
   end
 
+  defp vendor_resources(arch, "galactic") do
+    dir_name = arch_dir_name(arch)
+
+    [
+      "/lib/#{dir_name}/libspdlog.so*",
+      "/usr/lib/#{dir_name}/libacl.so*"
+    ]
+  end
+
   defp vendor_resources(arch, "foxy") do
     dir_name = arch_dir_name(arch)
 
