@@ -14,13 +14,12 @@ jobs:
       matrix:
         dockertags: [
           latest,
+          iron-ex1.15.5-otp26.0.2,
           humble-ex1.15.5-otp26.0.2,
           humble-ex1.14.5-otp25.3.2.5,
           humble-ex1.13.4-otp25.0.3,
           galactic-ex1.15.5-otp26.0.2,
           foxy-ex1.15.5-otp26.0.2,
-          foxy-ex1.14.5-otp25.3.2.5,
-          foxy-ex1.13.4-otp25.0.3,
         ]
     container: rclex/rclex_docker:${{ matrix.dockertags }}
 
