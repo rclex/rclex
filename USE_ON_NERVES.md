@@ -18,6 +18,15 @@ Currently, we have confirmed the following boards as the Nerves device that can 
 | [ODYSSEY - STM32MP157C](https://github.com/b5g-ex/nerves_system_stm32mp157c_odyssey) | stm32mp157c_odyssey | arm32v7 | Third-party supported |
 | [F3RP70 (e-RT3 Plus)](https://github.com/pojiro/nerves_system_f3rp70) | f3rp70 | arm32v7 | Third-party supported |
 
+The below is the supported ROS 2 distribution and architecture that can operate rclex_on_nerves.
+The "support" colomn refers to its status of official support as the ROS 2 distribution.
+
+| `ROS_DISTRO` | arm64v8 | arm32v7 | support |
+| :--- | :--- | :---| :---|
+| humble | ○ | ○ | LTS until May 2027 |
+| galactic | ○ | - | EOL at Dec 2022 |
+| foxy | ○ | ○ | EOL at Jun 2023 |
+
 ## Preliminaries
 
 During the procedure for Rclex on Nerves, the docker command is used to copy the necessary directory in `mix rclex.prep.ros2`.
