@@ -41,7 +41,8 @@ Currently, we use the following environment as the main development target:
 - Elixir 1.15.5-otp-26
 - Erlang/OTP 26.0.2
 
-We highly recommend using Humble for ROS 2 distribution.
+We highly recommend using Humble for ROS 2 LTS distribution.
+Iron is also supported and confirmed for the operation as the STS distribution.
 Although we also use Foxy and Galactic as CI targets, they have already reached EOL.
 
 For other environments used to check the operation of this library,
