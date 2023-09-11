@@ -1,11 +1,36 @@
 # CHANGELOG
 
+## v0.9.0 on 11 Sep 2023
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.5...v0.9.0
+
+* New features:
+  * Support Humble (and format with Elixir 1.15.5) by @pojiro in https://github.com/rclex/rclex/pull/241
+  * Support humble, galactic Nerves by @pojiro in https://github.com/rclex/rclex/pull/244
+  * change the recommended environment and versions by @takasehideki in https://github.com/rclex/rclex/pull/247
+  * Add humble support to arm32v7_ros_distros by @pojiro in https://github.com/rclex/rclex/pull/248
+* Code Improvements/Fixes:
+  * Fix bug of `mix rclex.gen.msgs` by @pojiro in https://github.com/rclex/rclex/pull/236
+  * fix docs about ROS_DISTRO from `foxy` to `humble` by @takasehideki in https://github.com/rclex/rclex/pull/249
+* Bumps:
+  * Bump ex_doc from 0.29.4 to 0.30.6 by @dependabot in https://github.com/rclex/rclex/pull/234 https://github.com/rclex/rclex/pull/237 https://github.com/rclex/rclex/pull/238
+  * Bump dialyxir from 1.3.0 to 1.4.1 by @dependabot in https://github.com/rclex/rclex/pull/240
+  * Bump mix_test_watch from 1.1.0 to 1.1.1 by @dependabot in https://github.com/rclex/rclex/pull/242
+* Known issues to be addressed in the near future:
+  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
+  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
+  * `publish/2` sometimes failed just after `create_publisher/3` in https://github.com/rclex/rclex/issues/212
+  * CI fails randomly at mix test in https://github.com/rclex/rclex/issues/246
+  * Bump to Iron Irwini in https://github.com/rclex/rclex/issues/228
+* Note in this release:
+  * Please welcome Humble Hawksbill (and Galactic Geochelone) as the new supported distribution for Rclex!! :tada:
+
 ## v0.8.5 on 05 Jun 2023
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.4...v0.8.5
 
 * New features:
-  * * Adding handling for nested Message types from different Packages by @steve-at in https://github.com/rclex/rclex/pull/230
+  * Adding handling for nested Message types from different Packages by @steve-at in https://github.com/rclex/rclex/pull/230
 * Code Improvements/Fixes: none
 * Bumps:
   * Bump elixir_make from 0.7.6 to 0.7.7
