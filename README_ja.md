@@ -97,12 +97,12 @@ mix deps.get
 ### ROS 2の環境設定
 
 ```
-source /opt/ros/foxy/setup.bash
+source /opt/ros/humble/setup.bash
 ```
 
 ### メッセージの型の設定
 
-Rclexでは，ROS 2において定義されるメッセージの型を利用して出版購読型のトピック通信を行うことができます．ROS 2におけるメッセージの型については[こちら](https://docs.ros.org/en/foxy/Concepts/About-ROS-Interfaces.html)を参照してください．
+Rclexでは，ROS 2において定義されるメッセージの型を利用して出版購読型のトピック通信を行うことができます．ROS 2におけるメッセージの型については[こちら](https://docs.ros.org/en/humble/Concepts/About-ROS-Interfaces.html)を参照してください．
 
 プロジェクトで使用したいメッセージの型は，`config/config.exs` における `ros2_message_types` で指定します．コンマ区切り `,` で複数の型を指定することもできます．
 
@@ -184,7 +184,7 @@ Rclex: Publishing: Hello World from Rclex!
 このメッセージの出版結果は，ROS 2コマンド`ros2 topic echo`によって購読して確認できます．
 
 ```
-$ source /opt/ros/foxy/setup.bash
+$ source /opt/ros/humble/setup.bash
 $ ros2 topic echo /chatter std_msgs/msg/String
 data: Hello World from Rclex!
 ---
