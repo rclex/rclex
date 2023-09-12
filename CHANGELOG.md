@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## v0.9.1 on 12 Sep 2023
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.9.0...v0.9.1
+
+* New features:
+  * Experimental support for Iron Irwini by @takasehideki in https://github.com/rclex/rclex/pull/251
+* Code Improvements/Fixes: none
+* Bumps: none
+* Known issues to be addressed in the near future:
+  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
+  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
+  * `publish/2` sometimes failed just after `create_publisher/3` in https://github.com/rclex/rclex/issues/212
+  * CI fails randomly at mix test in https://github.com/rclex/rclex/issues/246
+  * Bump to Iron Irwini, for Docker and Nerves environments in https://github.com/rclex/rclex/issues/228
+* Note in this release:
+  * Please welcome Iron Irwini as the experimental supported distribution for Rclex!! :tada:
+
 ## v0.9.0 on 11 Sep 2023
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.8.5...v0.9.0
