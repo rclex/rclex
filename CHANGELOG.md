@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## v0.9.2 on 03 Oct 2023
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.9.1...v0.9.2
+
+* New features: none
+* Code Improvements/Fixes:
+  * add ROS_INCS path for using with Iron properly (fix #253) by @takasehideki in https://github.com/rclex/rclex/pull/256
+* Bumps:
+  * Bump credo from 1.7.0 to 1.7.1 by @dependabot in https://github.com/rclex/rclex/pull/254
+* Known issues to be addressed in the near future:
+  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
+  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
+  * `publish/2` sometimes failed just after `create_publisher/3` in https://github.com/rclex/rclex/issues/212
+  * CI fails randomly at mix test in https://github.com/rclex/rclex/issues/246
+  * Bump to Iron Irwini, for Docker and Nerves environments in https://github.com/rclex/rclex/issues/228
+* Note in this release: none
+
 ## v0.9.1 on 12 Sep 2023
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.9.0...v0.9.1
