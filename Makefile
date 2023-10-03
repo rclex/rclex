@@ -16,7 +16,13 @@ LDFLAGS += -shared
 ERL_CFLAGS  = -I$(ERL_EI_INCLUDE_DIR)
 ERL_LDFLAGS = -L$(ERL_EI_LIBDIR)
 
+ifeq ($(ROS_DISTRO), humble)
+ROS_INCS    ?= rcl rcutils rmw rcl_yaml_param_parser rosidl_runtime_c rosidl_typesupport_interface
+ROS_CFLAGS  ?= $(addprefix -I$(ROS_DIR)/include/, $(ROS_INCS)) -I$(ROS_DIR)/include/std_msgs
+else ifeq ($(ROS_DISTRO), foxy)
 ROS_CFLAGS  ?= -I$(ROS_DIR)/include
+endif
+
 ROS_LDFLAGS ?= -L$(ROS_DIR)/lib
 ROS_LDFLAGS += -lrcl
 

@@ -12,7 +12,7 @@ jobs:
     env:
       MIX_ENV: test
 
-    container: rclex/rclex_docker:foxy-ex1.15.5-otp26.0.2
+    container: rclex/rclex_docker:humble-ex1.15.5-otp26.0.2
 
     steps:
       - uses: actions/checkout@v3
