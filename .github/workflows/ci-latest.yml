@@ -1,0 +1,37 @@
+name: ci-latest
+
+on:
+  pull_request:
+    branches:
+      - '0.10.0-dev'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      MIX_ENV: test
+
+    container: rclex/rclex_docker:foxy-ex1.15.5-otp26.0.2
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: get, compile deps
+        run: mix do deps.get, deps.compile
+
+      - name: compile
+        run: |
+          export LD_LIBRARY_PATH=/opt/ros/${ROS_DISTRO}/lib
+          mix compile --warnings-as-errors
+
+      - name: test
+        run: |
+          export LD_LIBRARY_PATH=/opt/ros/${ROS_DISTRO}/lib
+          mix test --warnings-as-errors --cover
+
+      - name: format
+        run: mix format --check-formatted
+
+      - name: credo
+        run: mix credo

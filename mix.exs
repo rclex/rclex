@@ -1,105 +1,72 @@
 defmodule Rclex.MixProject do
   use Mix.Project
 
-  @description """
-  ROS 2 Client Library for Elixir.
-  """
-
-  @version "0.9.1"
-  @source_url "https://github.com/rclex/rclex"
-
   def project do
     [
       app: :rclex,
-      version: @version,
-      elixir: "~> 1.12",
-      elixirc_paths: elixirc_paths(Mix.env()),
-      description: @description,
-      package: package(),
-      name: "Rclex",
-      docs: docs(),
+      version: "0.1.0",
+      elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      build_embedded: true,
       compilers: [:elixir_make] ++ Mix.compilers(),
-      make_targets: ["all"],
-      make_clean: ["clean"],
-      aliases: [format: [&format_c/1, "format"]],
-      dialyzer: dialyzer()
+      aliases: [format: [&format_c/1, "format"], iwyu: [&iwyu/1]],
+      test_coverage: [ignore_modules: [Rclex.Nif]]
     ]
-  end
-
-  # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_), do: ["lib"]
-
-  defp package do
-    %{
-      name: "rclex",
-      files: [
-        "lib",
-        "priv",
-        "src",
-        "mix.exs",
-        "README.md",
-        "README_ja.md",
-        "LICENSE",
-        "CHANGELOG.md",
-        "Makefile"
-      ],
-      licenses: ["Apache-2.0"],
-      links: %{"Github" => @source_url}
-    }
   end
 
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :eex]
+      extra_applications: [:logger, :runtime_tools, :wx, :observer],
+      mod: {Rclex.Application, []}
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:elixir_make, "~> 0.4", runtime: false},
-      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:ex_doc, "~> 0.22", only: :dev, runtime: false},
-      # lock git_hooks version to avoid https://github.com/qgadrian/elixir_git_hooks/issues/123
-      {:git_hooks, "== 0.6.5", only: [:dev], runtime: false},
-      {:mix_test_watch, "~> 1.0", only: [:dev, :test]}
+      {:elixir_make, "~> 0.7", runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:benchee, "~> 1.0", only: :dev}
     ]
   end
 
-  defp docs do
-    [
-      extras: ["README.md", "README_ja.md", "USE_ON_NERVES.md", "CHANGELOG.md"],
-      main: "readme",
-      source_ref: "v#{@version}",
-      source_url: @source_url
-    ]
-  end
+  defp format_c(_args) do
+    file_names = File.ls!("src") |> Enum.filter(&String.ends_with?(&1, [".c", ".h"]))
+    [formatter | args] = ~w"clang-format -i --Werror" ++ file_names
 
-  defp format_c([]) do
-    case System.find_executable("astyle") do
+    case System.find_executable(formatter) do
       nil ->
-        Mix.Shell.IO.info("Install astyle to format C code.")
+        Mix.Shell.IO.info("Install C code formatter: #{formatter}.")
 
-      astyle ->
-        System.cmd(astyle, ["-n", "--style=1tbs", "-s2", "src/*.c"],
-          into: IO.stream(:stdio, :line)
+      bin ->
+        System.cmd(bin, args, into: IO.stream(:stdio, :line), cd: "src")
+    end
+  end
+
+  defp iwyu(_args) do
+    script_path = Path.join(File.cwd!(), "scripts/iwyu.sh")
+
+    case System.find_executable("include-what-you-use") do
+      nil ->
+        Mix.Shell.IO.info("Install include-what-you-use.")
+
+      _ ->
+        Enum.each(
+          c_src_paths(),
+          fn file_path ->
+            case System.cmd(script_path, [file_path], stderr_to_stdout: true) do
+              {_, 2} -> nil
+              {return, _} -> Mix.Shell.IO.error("#{return}")
+            end
+          end
         )
     end
   end
 
-  defp format_c(_args), do: true
-
-  defp dialyzer do
-    [
-      plt_add_apps: [:eex, :mix],
-      plt_core_path: "priv/plts",
-      plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
-    ]
+  defp c_src_paths() do
+    [bin | args] = ~w"find src -name *.c"
+    {return, 0} = System.cmd(bin, args)
+    String.split(return, "\n") |> Enum.reject(&(&1 == ""))
   end
 end

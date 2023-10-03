@@ -1,9 +1,9 @@
-defmodule Rclex.PublisherTest do
+defmodule Rclex.SubscriptionTest do
   use ExUnit.Case
 
   import ExUnit.CaptureLog
 
-  alias Rclex.Publisher
+  alias Rclex.Subscription
   alias Rclex.Nif
   alias Rclex.Pkgs.StdMsgs
 
@@ -28,17 +28,18 @@ defmodule Rclex.PublisherTest do
     Process.flag(:trap_exit, true)
 
     assert {:ok, pid} =
-             Publisher.start_link(
+             Subscription.start_link(
                context: context,
                node: node,
                message_type: StdMsgs.Msg.String,
                topic_name: "/chatter",
                name: name,
-               namespace: namespace
+               namespace: namespace,
+               callback: fn _message -> nil end
              )
 
     assert capture_log(fn -> :ok = GenServer.stop(pid, :shutdown) end) =~
-             "Publisher: :shutdown"
+             "Subscription: :shutdown"
   end
 
   test "start_link/1 failed in init/1 callback", %{
@@ -50,13 +51,14 @@ defmodule Rclex.PublisherTest do
     Process.flag(:trap_exit, true)
 
     assert {:error, _} =
-             Publisher.start_link(
+             Subscription.start_link(
                context: context,
                node: node,
                message_type: StdMsgs.Msg.String,
                topic_name: "no_leading_slash",
                name: name,
-               namespace: namespace
+               namespace: namespace,
+               callback: fn _message -> nil end
              )
   end
 end
