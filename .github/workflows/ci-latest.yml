@@ -1,3 +1,5 @@
+name: ci-latest
+
 on:
   pull_request:
     branches:
