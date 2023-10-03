@@ -1,0 +1,29 @@
+#include "terms.h"
+#include "macros.h"
+#include <erl_nif.h>
+
+ERL_NIF_TERM atom_ok;
+ERL_NIF_TERM atom_error;
+ERL_NIF_TERM atom_true;
+ERL_NIF_TERM atom_false;
+
+void make_atoms(ErlNifEnv *env) {
+  atom_ok    = enif_make_atom(env, "ok");
+  atom_error = enif_make_atom(env, "error");
+  atom_true  = enif_make_atom(env, "true");
+  atom_false = enif_make_atom(env, "false");
+}
+
+ERL_NIF_TERM nif_raise_for_test(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  ignore_unused(argc);
+  ignore_unused(argv);
+
+  return raise(env, __FILE__, __LINE__);
+}
+
+ERL_NIF_TERM nif_raise_with_message_for_test(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  ignore_unused(argc);
+  ignore_unused(argv);
+
+  return raise_with_message(env, __FILE__, __LINE__, "test");
+}

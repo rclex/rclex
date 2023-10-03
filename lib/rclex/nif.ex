@@ -1,0 +1,93 @@
+defmodule Rclex.Nif do
+  @moduledoc false
+
+  @on_load :load
+
+  def load() do
+    Application.app_dir(:rclex)
+    |> Path.join("priv/rclex.so")
+    |> String.replace_suffix(".so", "")
+    |> to_charlist()
+    |> :erlang.load_nif(_load_info = :any_term)
+  end
+
+  def raise!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def raise_with_message!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_init!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_fini!(_context) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_node_init!(_context, _name, _namespace) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_node_fini!(_node) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_publisher_init!(_node, _type_support, _topic_name) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_publisher_fini!(_publisher, _node) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_publish!(_publisher, _ros_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_subscription_init!(_node, _type_support, _topic_name) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_subscription_fini!(_subscription, _node) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_take!(_subscription, _message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_wait_set_init_subscription!(_context) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_wait_set_fini!(_wait_set) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_wait_subscription!(_wait_set, _timeout_us, _subscription) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rosidl_get_std_msgs_msg_string_type_support!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_string_create!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_string_destroy!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_string_set!(_message, _data) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_string_get!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+end
