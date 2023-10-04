@@ -19,6 +19,9 @@ ERL_LDFLAGS = -L$(ERL_EI_LIBDIR)
 ifeq ($(ROS_DISTRO), humble)
 ROS_INCS    ?= rcl rcutils rmw rcl_yaml_param_parser rosidl_runtime_c rosidl_typesupport_interface
 ROS_CFLAGS  ?= $(addprefix -I$(ROS_DIR)/include/, $(ROS_INCS)) -I$(ROS_DIR)/include/std_msgs
+else ifeq ($(ROS_DISTRO), iron)
+ROS_INCS    ?= rcl rcutils rmw rcl_yaml_param_parser type_description_interfaces rosidl_runtime_c service_msgs builtin_interfaces rosidl_typesupport_interface rosidl_dynamic_typesupport
+ROS_CFLAGS  ?= $(addprefix -I$(ROS_DIR)/include/, $(ROS_INCS)) -I$(ROS_DIR)/include/std_msgs
 else ifeq ($(ROS_DISTRO), foxy)
 ROS_CFLAGS  ?= -I$(ROS_DIR)/include
 endif
