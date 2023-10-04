@@ -84,6 +84,40 @@ jobs:
           mix local.hex --force
           mix credo
 
+      - name: Restore PLT cache
+        id: plt-cache
+        uses: actions/cache/restore@v3
+        with:
+          key: |
+            plt-${{ runner.os }}-${{ matrix.dockertags }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            plt-${{ runner.os }}-${{ matrix.dockertags }}-mix-
+          path: |
+            rclex/priv/plts
+
+      - name: Create PLTs
+        if: steps.plt-cache.outputs.cache-hit != 'true'
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix dialyzer --plt
+
+      - name: Save PLT cache
+        id: plt_cache_save
+        uses: actions/cache/save@v3
+        if: steps.plt-cache.outputs.cache-hit != 'true'
+        with:
+          key: |
+            plt-${{ runner.os }}-${{ matrix.dockertags }}-mix-${{ hashFiles('**/mix.lock') }}
+          path: |
+            rclex/priv/plts
+
+      - name: mix dialyzer
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix dialyzer
+
   test:
     needs: build_deps
     runs-on: ubuntu-latest
