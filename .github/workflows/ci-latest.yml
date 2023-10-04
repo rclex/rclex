@@ -84,6 +84,12 @@ jobs:
           mix local.hex --force
           mix credo
 
+      - name: mix dialyzer
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix dialyzer
+
   test:
     needs: build_deps
     runs-on: ubuntu-latest
