@@ -26,3 +26,7 @@ rclex-*.tar
 /tmp/
 
 /.vscode/
+
+# dialyxir
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
