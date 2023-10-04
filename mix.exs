@@ -10,7 +10,8 @@ defmodule Rclex.MixProject do
       deps: deps(),
       compilers: [:elixir_make] ++ Mix.compilers(),
       aliases: [format: [&format_c/1, "format"], iwyu: [&iwyu/1]],
-      test_coverage: [ignore_modules: [Rclex.Nif]]
+      test_coverage: [ignore_modules: [Rclex.Nif]],
+      dialyzer: dialyzer()
     ]
   end
 
@@ -69,5 +70,12 @@ defmodule Rclex.MixProject do
     [bin | args] = ~w"find src -name *.c"
     {return, 0} = System.cmd(bin, args)
     String.split(return, "\n") |> Enum.reject(&(&1 == ""))
+  end
+
+  defp dialyzer() do
+    [
+      plt_local_path: "priv/plts/rclex.plt",
+      plt_core_path: "priv/plts/core.plt"
+    ]
   end
 end
