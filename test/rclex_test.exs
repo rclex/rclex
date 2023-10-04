@@ -72,8 +72,7 @@ defmodule RclexTest do
     end
 
     test "start_publisher/3, wrong topic name" do
-      assert {:error, _} =
-               Rclex.start_publisher(StdMsgs.Msg.String, "chatter", "name")
+      assert {:error, _} = Rclex.start_publisher(StdMsgs.Msg.String, "chatter", "name")
     end
 
     test "stop_publisher/3" do
@@ -83,8 +82,7 @@ defmodule RclexTest do
                :ok = Rclex.stop_publisher(StdMsgs.Msg.String, "/chatter", "name")
              end) =~ "Publisher: :shutdown"
 
-      assert {:error, :not_found} =
-               Rclex.stop_publisher(StdMsgs.Msg.String, "/chatter", "name")
+      assert {:error, :not_found} = Rclex.stop_publisher(StdMsgs.Msg.String, "/chatter", "name")
     end
 
     test "stop_publisher/3, node doesn't exist" do
