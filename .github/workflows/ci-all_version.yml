@@ -1,0 +1,67 @@
+name: ci-all_version
+
+on:
+  pull_request:
+    branches:
+      - '0.10.0-dev'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  CI_on_PR:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dockertags: [
+          latest,
+          # WHY commented out: see https://github.com/rclex/rclex/issues/228#issuecomment-1715288806
+          #iron-ex1.15.5-otp26.0.2,
+          humble-ex1.15.5-otp26.0.2,
+          humble-ex1.14.5-otp25.3.2.5,
+          humble-ex1.13.4-otp25.0.3,
+          foxy-ex1.15.5-otp26.0.2,
+        ]
+    container: rclex/rclex_docker:${{ matrix.dockertags }}
+
+    steps:
+      - name: Checkout rclex repo
+        uses: actions/checkout@v3
+        with:
+          repository: rclex/rclex
+          path: rclex
+
+      - name: Retrieve cached dependencies
+        uses: actions/cache@v3
+        id: mix-cache
+        with:
+          path: |
+            rclex/deps
+            rclex/_build
+          key: ${{ runner.os }}-${{ matrix.dockertags }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.dockertags }}-mix-
+
+      - name: Build dependencies
+        if: steps.mix-cache.outputs.cache-hit != 'true'
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix local.hex --force
+          mix deps.get
+          mix deps.compile
+
+      - name: mix format
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix format --check-formatted
+
+      - name: mix test
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex
+          mix local.hex --force
+          mix test
