@@ -66,7 +66,11 @@ ERL_NIF_TERM nif_std_msgs_msg_string_set(ErlNifEnv *env, int argc, const ERL_NIF
   std_msgs__msg__String *message_p = (std_msgs__msg__String *)*ros_message_pp;
 
   unsigned length;
+#if (ERL_NIF_MAJOR_VERSION == 2 && ERL_NIF_MINOR_VERSION >= 17) // OTP-26 and later
   if (!enif_get_string_length(env, argv[1], &length, ERL_NIF_LATIN1)) return enif_make_badarg(env);
+#else
+  if (!enif_get_list_length(env, argv[1], &length)) return enif_make_badarg(env);
+#endif
 
   char data[length + 1];
   if (enif_get_string(env, argv[1], data, length + 1, ERL_NIF_LATIN1) <= 0)
