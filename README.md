@@ -251,10 +251,20 @@ cd /path/to/yours/rclex_connection_tests
 
 In [GitHub Actions](https://github.com/rclex/rclex/actions), we perform CI on multiple environments at Pull Requests. HOwever, we cannot guarantee operation in all of these environments.
 
+## Presentations
+
+- On the way to achieve autonomous node communication in the Elixir ecosystem
+  - [Code BEAM America 2022](https://codebeamamerica.com/archives/CBA_2023/index.html) at 2022/11/03
+  - [Video](https://www.youtube.com/watch?v=Y4IASAU4Bjo) | [SpeakerDeck](https://speakerdeck.com/takasehideki/on-the-way-to-achieve-autonomous-node-communication-in-the-elixir-ecosystem)
+- Rclex: A Library for Robotics meet Elixir
+  - [Code BEAM America 2021](https://codesync.global/conferences/code-beam-sf-2021/) at 2021/11/05
+  - [Video](https://www.youtube.com/watch?v=9B5lQ3kQ_wI) | [SlideShare](https://www.slideshare.net/takasehideki/rclex-a-library-for-robotics-meet-elixir)
+
 ## Maintainers and developers (including past)
 
 - [@takasehideki](https://github.com/takasehideki)
-- [@HiroiImanishi](https://github.com/HiroiImanishi)
+- [@s-hosoai](https://github.com/s-hosoai)
+- [@pojiro](https://github.com/pojiro)
 - [@kebus426](https://github.com/kebus426)
 - [@shiroro466](https://github.com/shiroro466)
-- [@s-hosoai](https://github.com/s-hosoai)
+
