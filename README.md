@@ -254,7 +254,8 @@ In [GitHub Actions](https://github.com/rclex/rclex/actions), we perform CI on mu
 ## Maintainers and developers (including past)
 
 - [@takasehideki](https://github.com/takasehideki)
-- [@HiroiImanishi](https://github.com/HiroiImanishi)
+- [@s-hosoai](https://github.com/s-hosoai)
+- [@pojiro](https://github.com/pojiro)
 - [@kebus426](https://github.com/kebus426)
 - [@shiroro466](https://github.com/shiroro466)
-- [@s-hosoai](https://github.com/s-hosoai)
+
