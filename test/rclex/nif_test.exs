@@ -84,8 +84,8 @@ defmodule Rclex.NifTest do
 
     test "std_msgs_msg_string_set!/1, std_msgs_msg_string_get!/1" do
       message = Nif.std_msgs_msg_string_create!()
-      assert Nif.std_msgs_msg_string_set!(message, ~c"test") == :ok
-      assert Nif.std_msgs_msg_string_get!(message) == ~c"test"
+      assert Nif.std_msgs_msg_string_set!(message, {~c"test"}) == :ok
+      assert Nif.std_msgs_msg_string_get!(message) == {~c"test"}
       :ok = Nif.std_msgs_msg_string_destroy!(message)
     end
   end
