@@ -84,7 +84,8 @@ defmodule Rclex.MixProject do
   defp dialyzer() do
     [
       plt_local_path: "priv/plts/rclex.plt",
-      plt_core_path: "priv/plts/core.plt"
+      plt_core_path: "priv/plts/core.plt",
+      plt_add_apps: [:mix]
     ]
   end
 end
