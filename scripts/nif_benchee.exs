@@ -88,7 +88,7 @@ Benchee.run(
          type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
          publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter")
          message = Nif.std_msgs_msg_string_create!()
-         :ok = Nif.std_msgs_msg_string_set!(message, ~c"hello")
+         :ok = Nif.std_msgs_msg_string_set!(message, {~c"hello"})
          {message, publisher, node, context}
        end,
        after_scenario: fn {message, publisher, node, context} ->
@@ -145,7 +145,7 @@ Benchee.run(
          subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/chatter")
          wait_set = Nif.rcl_wait_set_init_subscription!(context)
          message = Nif.std_msgs_msg_string_create!()
-         :ok = Nif.std_msgs_msg_string_set!(message, ~c"hello")
+         :ok = Nif.std_msgs_msg_string_set!(message, {~c"hello"})
          {message, wait_set, subscription, publisher, node, context}
        end,
        before_each: fn {message, wait_set, subscription, publisher, _node, _context} ->

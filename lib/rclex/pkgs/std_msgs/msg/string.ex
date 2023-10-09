@@ -3,7 +3,7 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.String do
   @behaviour Rclex.MessageBehaviour
 
   defstruct data: []
-  @type t :: %__MODULE__{data: charlist()}
+  @type t :: %__MODULE__{data: String.t()}
 
   alias Rclex.Nif
 
@@ -19,13 +19,12 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.String do
     Nif.std_msgs_msg_string_destroy!(message)
   end
 
-  def set!(message, data) do
-    %__MODULE__{data: data} = data
-    Nif.std_msgs_msg_string_set!(message, ~c"#{data}")
+  def set!(message, %__MODULE__{} = struct) do
+    Nif.std_msgs_msg_string_set!(message, {~c"#{struct.data}"})
   end
 
   def get!(message) do
-    data = Nif.std_msgs_msg_string_get!(message)
+    {data} = Nif.std_msgs_msg_string_get!(message)
     %__MODULE__{data: "#{data}"}
   end
 end
