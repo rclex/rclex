@@ -62,10 +62,10 @@ defmodule Rclex.Parsers.Helpers do
   defp field_type(combinator) do
     combinator
     |> choice([
-      static_array(),
-      unbounded_dynamic_array(),
-      bounded_dynamic_array(),
-      type()
+      built_in_type_array() |> unwrap_and_tag(:built_in_type_array),
+      msg_type_array() |> unwrap_and_tag(:msg_type_array),
+      built_in_type() |> unwrap_and_tag(:built_in_type),
+      msg_type() |> unwrap_and_tag(:msg_type)
     ])
   end
 
@@ -83,14 +83,6 @@ defmodule Rclex.Parsers.Helpers do
     ])
   end
 
-  defp type(combinator \\ empty()) do
-    combinator
-    |> choice([
-      bounded_string(),
-      ascii_string([?a..?z, ?A..?Z, ?0..?9, ?_, ?/], min: 1)
-    ])
-  end
-
   defp bounded_string(combinator \\ empty()) do
     combinator
     |> string("string<=")
@@ -98,29 +90,72 @@ defmodule Rclex.Parsers.Helpers do
     |> reduce({Enum, :join, []})
   end
 
+  defp built_in_type(combinator \\ empty()) do
+    combinator
+    |> choice([
+      bounded_string(),
+      string("bool"),
+      string("byte"),
+      string("char"),
+      string("float32"),
+      string("float64"),
+      string("int8"),
+      string("uint8"),
+      string("int16"),
+      string("uint16"),
+      string("int32"),
+      string("uint32"),
+      string("int64"),
+      string("uint64"),
+      string("string"),
+      string("wstring")
+    ])
+  end
+
+  defp msg_type(combinator \\ empty()) do
+    combinator
+    |> ascii_string([?a..?z, ?A..?Z, ?0..?9, ?_, ?/], min: 1)
+  end
+
+  defp built_in_type_array(combinator \\ empty()) do
+    combinator
+    |> built_in_type()
+    |> choice([
+      static_array(),
+      unbounded_dynamic_array(),
+      bounded_dynamic_array()
+    ])
+    |> reduce({Enum, :join, []})
+  end
+
+  defp msg_type_array(combinator \\ empty()) do
+    combinator
+    |> msg_type()
+    |> choice([
+      static_array(),
+      unbounded_dynamic_array(),
+      bounded_dynamic_array()
+    ])
+    |> reduce({Enum, :join, []})
+  end
+
   defp static_array(combinator \\ empty()) do
     combinator
-    |> type()
     |> string("[")
     |> ascii_string([?0..?9], min: 1)
     |> string("]")
-    |> reduce({Enum, :join, []})
   end
 
   defp unbounded_dynamic_array(combinator \\ empty()) do
     combinator
-    |> type()
     |> string("[]")
-    |> reduce({Enum, :join, []})
   end
 
   defp bounded_dynamic_array(combinator \\ empty()) do
     combinator
-    |> type()
     |> string("[<=")
     |> integer(min: 1)
     |> string("]")
-    |> reduce({Enum, :join, []})
   end
 
   defp value_integer(combinator \\ empty()) do
