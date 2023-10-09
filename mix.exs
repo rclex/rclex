@@ -10,7 +10,14 @@ defmodule Rclex.MixProject do
       deps: deps(),
       compilers: [:elixir_make] ++ Mix.compilers(),
       aliases: [format: [&format_c/1, "format"], iwyu: [&iwyu/1]],
-      test_coverage: [ignore_modules: [Rclex.Nif]],
+      test_coverage: [
+        ignore_modules: [
+          Rclex.Nif,
+          Rclex.Pkgs.StdMsgs.Msg.String,
+          Rclex.Pkgs.GeometryMsgs.Msg.Vector3,
+          Rclex.Pkgs.GeometryMsgs.Msg.Twist
+        ]
+      ],
       dialyzer: dialyzer()
     ]
   end
