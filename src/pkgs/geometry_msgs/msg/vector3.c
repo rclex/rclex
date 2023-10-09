@@ -9,8 +9,8 @@
 #include <rosidl_runtime_c/message_type_support_struct.h>
 #include <stddef.h>
 
-ERL_NIF_TERM nif_rosidl_get_geometry_msgs_msg_vector3_type_support(ErlNifEnv *env, int argc,
-                                                                   const ERL_NIF_TERM argv[]) {
+ERL_NIF_TERM nif_geometry_msgs_msg_vector3_type_support(ErlNifEnv *env, int argc,
+                                                        const ERL_NIF_TERM argv[]) {
   ignore_unused(argv);
 
   if (argc != 0) return enif_make_badarg(env);

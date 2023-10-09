@@ -11,8 +11,8 @@
 #include <std_msgs/msg/detail/string__type_support.h>
 #include <stddef.h>
 
-ERL_NIF_TERM nif_rosidl_get_std_msgs_msg_string_type_support(ErlNifEnv *env, int argc,
-                                                             const ERL_NIF_TERM argv[]) {
+ERL_NIF_TERM nif_std_msgs_msg_string_type_support(ErlNifEnv *env, int argc,
+                                                  const ERL_NIF_TERM argv[]) {
   ignore_unused(argv);
 
   if (argc != 0) return enif_make_badarg(env);

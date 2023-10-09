@@ -8,7 +8,7 @@ defmodule Rclex.Pkgs.GeometryMsgs.Msg.Vector3 do
   alias Rclex.Nif
 
   def type_support!() do
-    Nif.rosidl_get_geometry_msgs_msg_vector3_type_support!()
+    Nif.geometry_msgs_msg_vector3_type_support!()
   end
 
   def create!() do

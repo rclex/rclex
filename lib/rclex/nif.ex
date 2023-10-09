@@ -71,7 +71,7 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
-  def rosidl_get_std_msgs_msg_string_type_support!() do
+  def std_msgs_msg_string_type_support!() do
     :erlang.nif_error(:nif_not_loaded)
   end
 
@@ -91,7 +91,7 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
-  def rosidl_get_geometry_msgs_msg_vector3_type_support!() do
+  def geometry_msgs_msg_vector3_type_support!() do
     :erlang.nif_error(:nif_not_loaded)
   end
 
@@ -111,7 +111,7 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
-  def rosidl_get_geometry_msgs_msg_twist_type_support!() do
+  def geometry_msgs_msg_twist_type_support!() do
     :erlang.nif_error(:nif_not_loaded)
   end
 

@@ -13,7 +13,7 @@ defmodule Rclex.Pkgs.GeometryMsgs.Msg.Twist do
   alias Rclex.Nif
 
   def type_support!() do
-    Nif.rosidl_get_geometry_msgs_msg_twist_type_support!()
+    Nif.geometry_msgs_msg_twist_type_support!()
   end
 
   def create!() do

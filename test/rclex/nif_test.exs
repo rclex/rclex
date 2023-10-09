@@ -72,8 +72,8 @@ defmodule Rclex.NifTest do
   end
 
   describe "std_msgs_msgs_string" do
-    test "rosidl_get_std_msgs_msg_string_type_support!/0" do
-      assert is_reference(Nif.rosidl_get_std_msgs_msg_string_type_support!())
+    test "std_msgs_msg_string_type_support!/0" do
+      assert is_reference(Nif.std_msgs_msg_string_type_support!())
     end
 
     test "std_msgs_msg_string_create!/1, std_msgs_msg_string_destroy!/1" do
@@ -91,8 +91,8 @@ defmodule Rclex.NifTest do
   end
 
   describe "geometry_msgs_msgs_vector3" do
-    test "rosidl_get_geometry_msgs_msg_vector3_type_support!/0" do
-      assert is_reference(Nif.rosidl_get_geometry_msgs_msg_vector3_type_support!())
+    test "geometry_msgs_msg_vector3_type_support!/0" do
+      assert is_reference(Nif.geometry_msgs_msg_vector3_type_support!())
     end
 
     test "geometry_msgs_msg_vector3_create!/1, geometry_msgs_msg_vector3_destroy!/1" do
@@ -110,8 +110,8 @@ defmodule Rclex.NifTest do
   end
 
   describe "geometry_msgs_msgs_twist" do
-    test "rosidl_get_geometry_msgs_msg_twist_type_support!/0" do
-      assert is_reference(Nif.rosidl_get_geometry_msgs_msg_twist_type_support!())
+    test "geometry_msgs_msg_twist_type_support!/0" do
+      assert is_reference(Nif.geometry_msgs_msg_twist_type_support!())
     end
 
     test "geometry_msgs_msg_twist_create!/1, geometry_msgs_msg_twist_destroy!/1" do
@@ -132,7 +132,7 @@ defmodule Rclex.NifTest do
     setup do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
-      type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
+      type_support = Nif.std_msgs_msg_string_type_support!()
 
       on_exit(fn ->
         Nif.rcl_node_fini!(node)
@@ -162,7 +162,7 @@ defmodule Rclex.NifTest do
     setup do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
-      type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
+      type_support = Nif.std_msgs_msg_string_type_support!()
       publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter")
       subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/chatter")
       wait_set = Nif.rcl_wait_set_init_subscription!(context)
@@ -206,7 +206,7 @@ defmodule Rclex.NifTest do
     setup do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
-      type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
+      type_support = Nif.std_msgs_msg_string_type_support!()
 
       on_exit(fn ->
         Nif.rcl_node_fini!(node)
@@ -239,7 +239,7 @@ defmodule Rclex.NifTest do
     setup do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
-      type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
+      type_support = Nif.std_msgs_msg_string_type_support!()
       subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic")
 
       on_exit(fn ->

@@ -8,7 +8,7 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.String do
   alias Rclex.Nif
 
   def type_support!() do
-    Nif.rosidl_get_std_msgs_msg_string_type_support!()
+    Nif.std_msgs_msg_string_type_support!()
   end
 
   def create!() do

@@ -53,7 +53,7 @@ defmodule Rclex.NifBenchmarkTest do
     setup do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
-      type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
+      type_support = Nif.std_msgs_msg_string_type_support!()
 
       on_exit(fn ->
         :ok = Nif.rcl_node_fini!(node)
@@ -82,7 +82,7 @@ defmodule Rclex.NifBenchmarkTest do
     setup do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
-      type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
+      type_support = Nif.std_msgs_msg_string_type_support!()
 
       on_exit(fn ->
         :ok = Nif.rcl_node_fini!(node)
@@ -111,7 +111,7 @@ defmodule Rclex.NifBenchmarkTest do
     setup do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
-      type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
+      type_support = Nif.std_msgs_msg_string_type_support!()
       subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic")
 
       on_exit(fn ->
