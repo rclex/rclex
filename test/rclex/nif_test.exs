@@ -90,6 +90,44 @@ defmodule Rclex.NifTest do
     end
   end
 
+  describe "geometry_msgs_msgs_vector3" do
+    test "rosidl_get_geometry_msgs_msg_vector3_type_support!/0" do
+      assert is_reference(Nif.rosidl_get_geometry_msgs_msg_vector3_type_support!())
+    end
+
+    test "geometry_msgs_msg_vector3_create!/1, geometry_msgs_msg_vector3_destroy!/1" do
+      message = Nif.geometry_msgs_msg_vector3_create!()
+      assert is_reference(message)
+      assert Nif.geometry_msgs_msg_vector3_destroy!(message) == :ok
+    end
+
+    test "geometry_msgs_msg_vector3_set!/1, geometry_msgs_msg_vector3_get!/1" do
+      message = Nif.geometry_msgs_msg_vector3_create!()
+      assert Nif.geometry_msgs_msg_vector3_set!(message, {1.0, 2.0, 3.0}) == :ok
+      assert Nif.geometry_msgs_msg_vector3_get!(message) == {1.0, 2.0, 3.0}
+      :ok = Nif.geometry_msgs_msg_vector3_destroy!(message)
+    end
+  end
+
+  describe "geometry_msgs_msgs_twist" do
+    test "rosidl_get_geometry_msgs_msg_twist_type_support!/0" do
+      assert is_reference(Nif.rosidl_get_geometry_msgs_msg_twist_type_support!())
+    end
+
+    test "geometry_msgs_msg_twist_create!/1, geometry_msgs_msg_twist_destroy!/1" do
+      message = Nif.geometry_msgs_msg_twist_create!()
+      assert is_reference(message)
+      assert Nif.geometry_msgs_msg_twist_destroy!(message) == :ok
+    end
+
+    test "geometry_msgs_msg_twist_set!/1, geometry_msgs_msg_twist_get!/1" do
+      message = Nif.geometry_msgs_msg_twist_create!()
+      assert Nif.geometry_msgs_msg_twist_set!(message, {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}}) == :ok
+      assert Nif.geometry_msgs_msg_twist_get!(message) == {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}}
+      :ok = Nif.geometry_msgs_msg_twist_destroy!(message)
+    end
+  end
+
   describe "publisher" do
     setup do
       context = Nif.rcl_init!()
@@ -129,7 +167,7 @@ defmodule Rclex.NifTest do
       subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/chatter")
       wait_set = Nif.rcl_wait_set_init_subscription!(context)
       message = Nif.std_msgs_msg_string_create!()
-      :ok = Nif.std_msgs_msg_string_set!(message, ~c"Hello from Rclex")
+      :ok = Nif.std_msgs_msg_string_set!(message, {~c"Hello from Rclex"})
 
       on_exit(fn ->
         Nif.std_msgs_msg_string_destroy!(message)
@@ -160,7 +198,7 @@ defmodule Rclex.NifTest do
       :ok = Nif.rcl_publish!(publisher, message)
       :ok = Nif.rcl_wait_subscription!(wait_set, 1000, subscription)
       assert Nif.rcl_take!(subscription, message) == :ok
-      assert Nif.std_msgs_msg_string_get!(message) == ~c"Hello from Rclex"
+      assert Nif.std_msgs_msg_string_get!(message) == {~c"Hello from Rclex"}
     end
   end
 

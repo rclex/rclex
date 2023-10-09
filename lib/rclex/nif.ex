@@ -90,4 +90,44 @@ defmodule Rclex.Nif do
   def std_msgs_msg_string_get!(_message) do
     :erlang.nif_error(:nif_not_loaded)
   end
+
+  def rosidl_get_geometry_msgs_msg_vector3_type_support!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_vector3_create!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_vector3_destroy!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_vector3_set!(_message, _data) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_vector3_get!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rosidl_get_geometry_msgs_msg_twist_type_support!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_twist_create!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_twist_destroy!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_twist_set!(_message, _data) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_twist_get!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
 end
