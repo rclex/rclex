@@ -111,6 +111,26 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def std_msgs_msg_u_int32_multi_array_type_support!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_u_int32_multi_array_create!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_u_int32_multi_array_destroy!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_u_int32_multi_array_set!(_message, _data) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_u_int32_multi_array_get!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def geometry_msgs_msg_vector3_type_support!() do
     :erlang.nif_error(:nif_not_loaded)
   end

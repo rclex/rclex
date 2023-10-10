@@ -116,6 +116,32 @@ defmodule Rclex.NifTest do
     end
   end
 
+  describe "std_msgs_msgs_u_int32_multi_array" do
+    test "std_msgs_msg_u_int32_multi_array_type_support!/0" do
+      assert is_reference(Nif.std_msgs_msg_u_int32_multi_array_type_support!())
+    end
+
+    test "std_msgs_msg_u_int32_multi_array_create!/1, std_msgs_msg_u_int32_multi_array_destroy!/1" do
+      message = Nif.std_msgs_msg_u_int32_multi_array_create!()
+      assert is_reference(message)
+      assert Nif.std_msgs_msg_u_int32_multi_array_destroy!(message) == :ok
+    end
+
+    test "std_msgs_msg_u_int32_multi_array_set!/1, std_msgs_msg_u_int32_multi_array_get!/1" do
+      message = Nif.std_msgs_msg_u_int32_multi_array_create!()
+
+      assert Nif.std_msgs_msg_u_int32_multi_array_set!(
+               message,
+               {{[{~c"test", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}, [1, 2, 3]}
+             ) == :ok
+
+      assert Nif.std_msgs_msg_u_int32_multi_array_get!(message) ==
+               {{[{~c"test", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}, [1, 2, 3]}
+
+      :ok = Nif.std_msgs_msg_u_int32_multi_array_destroy!(message)
+    end
+  end
+
   describe "geometry_msgs_msgs_vector3" do
     test "geometry_msgs_msg_vector3_type_support!/0" do
       assert is_reference(Nif.geometry_msgs_msg_vector3_type_support!())

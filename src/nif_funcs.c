@@ -3,6 +3,7 @@
 #include "pkgs/geometry_msgs/msg/vector3.h"
 #include "pkgs/std_msgs/msg/multi_array_layout.h"
 #include "pkgs/std_msgs/msg/string.h"
+#include "pkgs/std_msgs/msg/u_int32_multi_array.h"
 #include "rcl_init.h"
 #include "rcl_node.h"
 #include "rcl_publisher.h"
@@ -46,6 +47,11 @@ static ErlNifFunc nif_funcs[] = {
     {"std_msgs_msg_multi_array_layout_destroy!", 1, nif_std_msgs_msg_multi_array_layout_destroy, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"std_msgs_msg_multi_array_layout_set!", 2, nif_std_msgs_msg_multi_array_layout_set, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"std_msgs_msg_multi_array_layout_get!", 1, nif_std_msgs_msg_multi_array_layout_get, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"std_msgs_msg_u_int32_multi_array_type_support!", 0, nif_std_msgs_msg_u_int32_multi_array_type_support, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"std_msgs_msg_u_int32_multi_array_create!", 0, nif_std_msgs_msg_u_int32_multi_array_create, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"std_msgs_msg_u_int32_multi_array_destroy!", 1, nif_std_msgs_msg_u_int32_multi_array_destroy, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"std_msgs_msg_u_int32_multi_array_set!", 2, nif_std_msgs_msg_u_int32_multi_array_set, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"std_msgs_msg_u_int32_multi_array_get!", 1, nif_std_msgs_msg_u_int32_multi_array_get, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"geometry_msgs_msg_vector3_type_support!", 0, nif_geometry_msgs_msg_vector3_type_support, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"geometry_msgs_msg_vector3_create!", 0, nif_geometry_msgs_msg_vector3_create, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"geometry_msgs_msg_vector3_destroy!", 1, nif_geometry_msgs_msg_vector3_destroy, ERL_NIF_DIRTY_JOB_IO_BOUND},
