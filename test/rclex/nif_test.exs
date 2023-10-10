@@ -90,6 +90,32 @@ defmodule Rclex.NifTest do
     end
   end
 
+  describe "std_msgs_msgs_mutli_array_layout" do
+    test "std_msgs_msg_multi_array_layout_type_support!/0" do
+      assert is_reference(Nif.std_msgs_msg_multi_array_layout_type_support!())
+    end
+
+    test "std_msgs_msg_multi_array_layout_create!/1, std_msgs_msg_multi_array_layout_destroy!/1" do
+      message = Nif.std_msgs_msg_multi_array_layout_create!()
+      assert is_reference(message)
+      assert Nif.std_msgs_msg_multi_array_layout_destroy!(message) == :ok
+    end
+
+    test "std_msgs_msg_multi_array_layout_set!/1, std_msgs_msg_multi_array_layout_get!/1" do
+      message = Nif.std_msgs_msg_multi_array_layout_create!()
+
+      assert Nif.std_msgs_msg_multi_array_layout_set!(
+               message,
+               {[{~c"1", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}
+             ) == :ok
+
+      assert Nif.std_msgs_msg_multi_array_layout_get!(message) ==
+               {[{~c"1", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}
+
+      :ok = Nif.std_msgs_msg_multi_array_layout_destroy!(message)
+    end
+  end
+
   describe "geometry_msgs_msgs_vector3" do
     test "geometry_msgs_msg_vector3_type_support!/0" do
       assert is_reference(Nif.geometry_msgs_msg_vector3_type_support!())

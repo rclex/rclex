@@ -14,6 +14,7 @@ defmodule Rclex.MixProject do
         ignore_modules: [
           Rclex.Nif,
           Rclex.Pkgs.StdMsgs.Msg.String,
+          Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout,
           Rclex.Pkgs.GeometryMsgs.Msg.Vector3,
           Rclex.Pkgs.GeometryMsgs.Msg.Twist
         ]
