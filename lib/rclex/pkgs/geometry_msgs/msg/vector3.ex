@@ -20,11 +20,26 @@ defmodule Rclex.Pkgs.GeometryMsgs.Msg.Vector3 do
   end
 
   def set!(message, %__MODULE__{} = struct) do
-    Nif.geometry_msgs_msg_vector3_set!(message, {struct.x, struct.y, struct.z})
+    Nif.geometry_msgs_msg_vector3_set!(message, to_tuple(struct))
   end
 
   def get!(message) do
-    {x, y, z} = Nif.geometry_msgs_msg_vector3_get!(message)
-    %__MODULE__{x: x, y: y, z: z}
+    Nif.geometry_msgs_msg_vector3_get!(message) |> to_struct()
+  end
+
+  def to_tuple(%__MODULE__{x: x, y: y, z: z}) do
+    {
+      x,
+      y,
+      z
+    }
+  end
+
+  def to_struct({x, y, z}) do
+    %__MODULE__{
+      x: x,
+      y: y,
+      z: z
+    }
   end
 end

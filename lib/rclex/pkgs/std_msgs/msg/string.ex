@@ -2,8 +2,11 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.String do
   @moduledoc false
   @behaviour Rclex.MessageBehaviour
 
-  defstruct data: []
-  @type t :: %__MODULE__{data: String.t()}
+  defstruct data: nil
+
+  @type t :: %__MODULE__{
+          data: String.t()
+        }
 
   alias Rclex.Nif
 
@@ -20,11 +23,22 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.String do
   end
 
   def set!(message, %__MODULE__{} = struct) do
-    Nif.std_msgs_msg_string_set!(message, {~c"#{struct.data}"})
+    Nif.std_msgs_msg_string_set!(message, to_tuple(struct))
   end
 
   def get!(message) do
-    {data} = Nif.std_msgs_msg_string_get!(message)
-    %__MODULE__{data: "#{data}"}
+    Nif.std_msgs_msg_string_get!(message) |> to_struct()
+  end
+
+  def to_tuple(%__MODULE__{data: data}) do
+    {
+      ~c"#{data}"
+    }
+  end
+
+  def to_struct({data}) do
+    %__MODULE__{
+      data: "#{data}"
+    }
   end
 end
