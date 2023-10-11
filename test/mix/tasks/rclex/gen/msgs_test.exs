@@ -27,8 +27,8 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
             {"geometry_msgs/msg/Twist",
              %{
                "geometry_msgs/msg/Twist" => [
-                 [{:msg_type, "Vector3"}, "linear"],
-                 [{:msg_type, "Vector3"}, "angular"]
+                 [{:msg_type, "geometry_msgs/msg/Vector3"}, "linear"],
+                 [{:msg_type, "geometry_msgs/msg/Vector3"}, "angular"]
                ],
                "geometry_msgs/msg/Vector3" => [
                  [{:built_in_type, "float64"}, "x"],
