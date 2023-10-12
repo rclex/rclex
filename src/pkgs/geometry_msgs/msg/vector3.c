@@ -71,17 +71,11 @@ ERL_NIF_TERM nif_geometry_msgs_msg_vector3_set(ErlNifEnv *env, int argc,
   const ERL_NIF_TERM *tuple;
   if (!enif_get_tuple(env, argv[1], &arity, &tuple)) return enif_make_badarg(env);
 
-  double data_0;
-  if (!enif_get_double(env, tuple[0], &data_0)) return enif_make_badarg(env);
-  message_p->x = data_0;
+  if (!enif_get_double(env, tuple[0], &(message_p->x))) return enif_make_badarg(env);
 
-  double data_1;
-  if (!enif_get_double(env, tuple[1], &data_1)) return enif_make_badarg(env);
-  message_p->y = data_1;
+  if (!enif_get_double(env, tuple[1], &(message_p->y))) return enif_make_badarg(env);
 
-  double data_2;
-  if (!enif_get_double(env, tuple[2], &data_2)) return enif_make_badarg(env);
-  message_p->z = data_2;
+  if (!enif_get_double(env, tuple[2], &(message_p->z))) return enif_make_badarg(env);
 
   return atom_ok;
 }

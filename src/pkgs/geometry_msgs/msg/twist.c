@@ -91,17 +91,14 @@ ERL_NIF_TERM nif_geometry_msgs_msg_twist_set(ErlNifEnv *env, int argc, const ERL
   const ERL_NIF_TERM *angular_tuple;
   if (!enif_get_tuple(env, tuple[1], &angular_arity, &angular_tuple)) return enif_make_badarg(env);
 
-  double angular_x;
-  if (!enif_get_double(env, angular_tuple[0], &angular_x)) return enif_make_badarg(env);
-  message_p->angular.x = angular_x;
+  if (!enif_get_double(env, angular_tuple[0], &(message_p->angular.x)))
+    return enif_make_badarg(env);
 
-  double angular_y;
-  if (!enif_get_double(env, angular_tuple[1], &angular_y)) return enif_make_badarg(env);
-  message_p->angular.y = angular_y;
+  if (!enif_get_double(env, angular_tuple[1], &(message_p->angular.y)))
+    return enif_make_badarg(env);
 
-  double angular_z;
-  if (!enif_get_double(env, angular_tuple[2], &angular_z)) return enif_make_badarg(env);
-  message_p->angular.z = angular_z;
+  if (!enif_get_double(env, angular_tuple[2], &(message_p->angular.z)))
+    return enif_make_badarg(env);
 
   return atom_ok;
 }
