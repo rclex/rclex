@@ -3,7 +3,12 @@ defmodule Rclex.Pkgs.GeometryMsgs.Msg.Vector3 do
   @behaviour Rclex.MessageBehaviour
 
   defstruct x: nil, y: nil, z: nil
-  @type t :: %__MODULE__{x: float(), y: float(), z: float()}
+
+  @type t :: %__MODULE__{
+          x: float(),
+          y: float(),
+          z: float()
+        }
 
   alias Rclex.Nif
 
