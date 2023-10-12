@@ -39,6 +39,12 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     )
   end
 
+  def generate_msg_h(type, _ros2_message_type_map) do
+    EEx.eval_file(Path.join(templates_dir_path(), "msg_h.eex"),
+      function_id: function_id(type)
+    )
+  end
+
   def get_ros2_message_type_map(ros2_message_type, from, acc \\ %{}) do
     {:ok, fields, _rest, _context, _line, _column} =
       Path.join(from, [ros2_message_type, ".msg"])
