@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "pkgs/geometry_msgs/msg/twist.h"
 #include "pkgs/geometry_msgs/msg/vector3.h"
+#include "pkgs/std_msgs/msg/multi_array_dimension.h"
 #include "pkgs/std_msgs/msg/multi_array_layout.h"
 #include "pkgs/std_msgs/msg/string.h"
 #include "pkgs/std_msgs/msg/u_int32_multi_array.h"
@@ -42,6 +43,11 @@ static ErlNifFunc nif_funcs[] = {
     {"std_msgs_msg_string_destroy!", 1, nif_std_msgs_msg_string_destroy, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"std_msgs_msg_string_set!", 2, nif_std_msgs_msg_string_set, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"std_msgs_msg_string_get!", 1, nif_std_msgs_msg_string_get, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"std_msgs_msg_multi_array_dimension_type_support!", 0, nif_std_msgs_msg_multi_array_dimension_type_support, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"std_msgs_msg_multi_array_dimension_create!", 0, nif_std_msgs_msg_multi_array_dimension_create, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"std_msgs_msg_multi_array_dimension_destroy!", 1, nif_std_msgs_msg_multi_array_dimension_destroy, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"std_msgs_msg_multi_array_dimension_set!", 2, nif_std_msgs_msg_multi_array_dimension_set, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"std_msgs_msg_multi_array_dimension_get!", 1, nif_std_msgs_msg_multi_array_dimension_get, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"std_msgs_msg_multi_array_layout_type_support!", 0, nif_std_msgs_msg_multi_array_layout_type_support, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"std_msgs_msg_multi_array_layout_create!", 0, nif_std_msgs_msg_multi_array_layout_create, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"std_msgs_msg_multi_array_layout_destroy!", 1, nif_std_msgs_msg_multi_array_layout_destroy, ERL_NIF_DIRTY_JOB_IO_BOUND},

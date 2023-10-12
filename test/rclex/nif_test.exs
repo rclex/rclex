@@ -90,6 +90,25 @@ defmodule Rclex.NifTest do
     end
   end
 
+  describe "std_msgs_msgs_mutli_array_dimension" do
+    test "std_msgs_msg_multi_array_dimension_type_support!/0" do
+      assert is_reference(Nif.std_msgs_msg_multi_array_dimension_type_support!())
+    end
+
+    test "std_msgs_msg_multi_array_dimension_create!/1, std_msgs_msg_multi_array_dimension_destroy!/1" do
+      message = Nif.std_msgs_msg_multi_array_dimension_create!()
+      assert is_reference(message)
+      assert Nif.std_msgs_msg_multi_array_dimension_destroy!(message) == :ok
+    end
+
+    test "std_msgs_msg_multi_array_dimension_set!/1, std_msgs_msg_multi_array_dimension_get!/1" do
+      message = Nif.std_msgs_msg_multi_array_dimension_create!()
+      assert Nif.std_msgs_msg_multi_array_dimension_set!(message, {~c"1", 2, 3}) == :ok
+      assert Nif.std_msgs_msg_multi_array_dimension_get!(message) == {~c"1", 2, 3}
+      :ok = Nif.std_msgs_msg_multi_array_dimension_destroy!(message)
+    end
+  end
+
   describe "std_msgs_msgs_mutli_array_layout" do
     test "std_msgs_msg_multi_array_layout_type_support!/0" do
       assert is_reference(Nif.std_msgs_msg_multi_array_layout_type_support!())

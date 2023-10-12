@@ -91,6 +91,26 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def std_msgs_msg_multi_array_dimension_type_support!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_multi_array_dimension_create!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_multi_array_dimension_destroy!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_multi_array_dimension_set!(_message, _data) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_multi_array_dimension_get!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def std_msgs_msg_multi_array_layout_type_support!() do
     :erlang.nif_error(:nif_not_loaded)
   end
