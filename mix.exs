@@ -88,7 +88,7 @@ defmodule Rclex.MixProject do
     [
       plt_local_path: "priv/plts/rclex.plt",
       plt_core_path: "priv/plts/core.plt",
-      plt_add_apps: [:mix]
+      plt_add_apps: [:mix, :eex]
     ]
   end
 end
