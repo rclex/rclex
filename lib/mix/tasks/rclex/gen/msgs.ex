@@ -31,7 +31,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       module_name: module_name(type),
       defstruct_fields: defstruct_fields(type, ros2_message_type_map),
       type_fields: type_fields(type, ros2_message_type_map),
-      function_prefix: function_prefix(type),
+      function_id: function_id(type),
       to_tuple_args_fields: to_tuple_args_fields(type, ros2_message_type_map),
       to_struct_args_fields: to_struct_args_fields(type, ros2_message_type_map),
       to_tuple_return_fields: to_tuple_return_fields(type, ros2_message_type_map),
@@ -224,13 +224,13 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   end
 
   @doc """
-  iex> Mix.Tasks.Rclex.Gen.Msgs.function_prefix("std_msgs/msg/String")
+  iex> Mix.Tasks.Rclex.Gen.Msgs.function_id("std_msgs/msg/String")
   "std_msgs_msg_string"
 
-  iex> Mix.Tasks.Rclex.Gen.Msgs.function_prefix("std_msgs/msg/UInt32MultiArray")
+  iex> Mix.Tasks.Rclex.Gen.Msgs.function_id("std_msgs/msg/UInt32MultiArray")
   "std_msgs_msg_u_int32_multi_array"
   """
-  def function_prefix(ros2_message_type) do
+  def function_id(ros2_message_type) do
     [package, "msg" = msg, type] = ros2_message_type |> String.split("/")
     [package, msg, to_down_snake(type)] |> Enum.join("_")
   end
