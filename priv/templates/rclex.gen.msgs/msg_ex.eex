@@ -1,4 +1,4 @@
-defmodule <%= module_name %> do
+defmodule Rclex.Pkgs.<%= module_name %> do
   @moduledoc false
   @behaviour Rclex.MessageBehaviour
 

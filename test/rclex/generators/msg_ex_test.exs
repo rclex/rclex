@@ -12,6 +12,26 @@ defmodule Rclex.Generators.MsgExTest do
 
   alias Mix.Tasks.Rclex.Gen.Msgs
   alias Rclex.Generators.MsgEx
+  alias Rclex.Generators.Util
+
+  for ros2_message_type <- [
+        "std_msgs/msg/String",
+        "std_msgs/msg/MultiArrayLayout",
+        "std_msgs/msg/UInt32MultiArray",
+        "geometry_msgs/msg/Vector3",
+        "geometry_msgs/msg/Twist"
+      ] do
+    test "generate/2 #{ros2_message_type}" do
+      ros2_message_type = unquote(ros2_message_type)
+      ros2_message_type_map = Msgs.get_ros2_message_type_map(ros2_message_type, @ros_share_path)
+
+      [interfaces, msg, type] = String.split(ros2_message_type, "/")
+      type_path = Enum.join([interfaces, msg, Util.to_down_snake(type)], "/")
+
+      assert MsgEx.generate(ros2_message_type, ros2_message_type_map) ==
+               File.read!(Path.join(File.cwd!(), "test/expected_files/#{type_path}.ex"))
+    end
+  end
 
   describe "fields functions," do
     setup do
@@ -35,19 +55,21 @@ defmodule Rclex.Generators.MsgExTest do
 
     for {ros2_message_type, expected} <- [
           {"std_msgs/msg/String", "data: nil"},
-          {"std_msgs/msg/MultiArrayDimension", "label: nil, size: nil, stride: nil"},
-          {"std_msgs/msg/MultiArrayLayout", "dim: [], data_offset: nil"},
+          {"std_msgs/msg/MultiArrayDimension", "label: nil,\nsize: nil,\nstride: nil"},
+          {"std_msgs/msg/MultiArrayLayout", "dim: [],\ndata_offset: nil"},
           {"std_msgs/msg/UInt32MultiArray",
-           "layout: %Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout{}, data: []"},
-          {"geometry_msgs/msg/Vector3", "x: nil, y: nil, z: nil"},
+           "layout: %Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout{},\ndata: []"},
+          {"geometry_msgs/msg/Vector3", "x: nil,\ny: nil,\nz: nil"},
           {"geometry_msgs/msg/Twist",
-           "linear: %Rclex.Pkgs.GeometryMsgs.Msg.Vector3{}, angular: %Rclex.Pkgs.GeometryMsgs.Msg.Vector3{}"}
+           "linear: %Rclex.Pkgs.GeometryMsgs.Msg.Vector3{},\nangular: %Rclex.Pkgs.GeometryMsgs.Msg.Vector3{}"}
         ] do
       test "defstruct_fields/2, #{ros2_message_type}", %{
         ros2_message_type_map: ros2_message_type_map
       } do
-        assert MsgEx.defstruct_fields(unquote(ros2_message_type), ros2_message_type_map) ==
-                 unquote(expected)
+        indent = String.duplicate(" ", 12)
+        remove_indent = fn fields -> String.replace(fields, indent, "") end
+        fields = MsgEx.defstruct_fields(unquote(ros2_message_type), ros2_message_type_map)
+        assert remove_indent.(fields) == unquote(expected)
       end
     end
 
@@ -131,7 +153,7 @@ defmodule Rclex.Generators.MsgExTest do
           {"std_msgs/msg/MultiArrayDimension",
            "label: \"\#{label}\",\nsize: size,\nstride: stride"},
           {"std_msgs/msg/MultiArrayLayout",
-           "dim:\n  for tuple <- dim do\n    Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension.to_tuple(tuple)\n  end,\ndata_offset: data_offset"},
+           "dim:\n  for tuple <- dim do\n    Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension.to_struct(tuple)\n  end,\ndata_offset: data_offset"},
           {"std_msgs/msg/UInt32MultiArray",
            "layout: Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout.to_struct(layout),\ndata: data"},
           {"geometry_msgs/msg/Vector3", "x: x,\ny: y,\nz: z"},
