@@ -1,9 +1,9 @@
 #include <erl_nif.h>
 
 // clang-format off
-ERL_NIF_TERM nif_<%= function_id %>_type_support(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
-ERL_NIF_TERM nif_<%= function_id %>_create(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
-ERL_NIF_TERM nif_<%= function_id %>_destroy(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
-ERL_NIF_TERM nif_<%= function_id %>_set(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
-ERL_NIF_TERM nif_<%= function_id %>_get(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
+ERL_NIF_TERM <%= function_prefix %>_type_support(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
+ERL_NIF_TERM <%= function_prefix %>_create(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
+ERL_NIF_TERM <%= function_prefix %>_destroy(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
+ERL_NIF_TERM <%= function_prefix %>_set(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
+ERL_NIF_TERM <%= function_prefix %>_get(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
 // clang-format on

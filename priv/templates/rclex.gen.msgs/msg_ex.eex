@@ -11,23 +11,23 @@ defmodule <%= module_name %> do
   alias Rclex.Nif
 
   def type_support!() do
-    Nif.<%= function_id %>_type_support!()
+    Nif.<%= function_prefix %>_type_support!()
   end
 
   def create!() do
-    Nif.<%= function_id %>_create!()
+    Nif.<%= function_prefix %>_create!()
   end
 
   def destroy!(message) do
-    Nif.<%= function_id %>_destroy!(message)
+    Nif.<%= function_prefix %>_destroy!(message)
   end
 
   def set!(message, %__MODULE__{} = struct) do
-    Nif.<%= function_id %>_set!(message, to_tuple(struct))
+    Nif.<%= function_prefix %>_set!(message, to_tuple(struct))
   end
 
   def get!(message) do
-    Nif.<%= function_id %>_get!(message) |> to_struct()
+    Nif.<%= function_prefix %>_get!(message) |> to_struct()
   end
 
   def to_tuple(%__MODULE__{<%= to_tuple_args_fields %>}) do
