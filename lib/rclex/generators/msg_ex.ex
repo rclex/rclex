@@ -36,8 +36,10 @@ defmodule Rclex.Generators.MsgEx do
   end
 
   def defstruct_fields(ros2_message_type, ros2_message_type_map) do
+    indent = String.duplicate(" ", 12)
+
     Map.get(ros2_message_type_map, ros2_message_type)
-    |> Enum.map_join(", ", fn field ->
+    |> Enum.map_join(",\n", fn field ->
       case field do
         [{:built_in_type, _type}, name] ->
           "#{name}: nil"
@@ -59,6 +61,8 @@ defmodule Rclex.Generators.MsgEx do
           "#{name}: []"
       end
     end)
+    |> String.split("\n")
+    |> Enum.join("\n#{indent}")
   end
 
   def type_fields(ros2_message_type, ros2_message_type_map) do
@@ -167,7 +171,7 @@ defmodule Rclex.Generators.MsgEx do
           """
           #{name}:
             for tuple <- #{name} do
-              Rclex.Pkgs.#{module_name}.to_tuple(tuple)
+              Rclex.Pkgs.#{module_name}.to_struct(tuple)
             end
           """
           |> String.replace_suffix("\n", "")
