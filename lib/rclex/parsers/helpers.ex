@@ -6,6 +6,16 @@ defmodule Rclex.Parsers.Helpers do
 
   import NimbleParsec
 
+  def parse_type(combinator \\ empty()) do
+    combinator
+    |> choice([
+      built_in_type_array(),
+      msg_type_array(),
+      built_in_type(),
+      msg_type()
+    ])
+  end
+
   def parse_message(combinator \\ empty()) do
     combinator
     |> choice([
@@ -62,8 +72,8 @@ defmodule Rclex.Parsers.Helpers do
   defp field_type(combinator) do
     combinator
     |> choice([
-      built_in_type_array() |> unwrap_and_tag(:built_in_type_array),
-      msg_type_array() |> unwrap_and_tag(:msg_type_array),
+      built_in_type_array() |> reduce({Enum, :join, []}) |> unwrap_and_tag(:built_in_type_array),
+      msg_type_array() |> reduce({Enum, :join, []}) |> unwrap_and_tag(:msg_type_array),
       built_in_type() |> unwrap_and_tag(:built_in_type),
       msg_type() |> unwrap_and_tag(:msg_type)
     ])
@@ -125,7 +135,6 @@ defmodule Rclex.Parsers.Helpers do
       unbounded_dynamic_array(),
       bounded_dynamic_array()
     ])
-    |> reduce({Enum, :join, []})
   end
 
   defp msg_type_array(combinator \\ empty()) do
@@ -136,13 +145,12 @@ defmodule Rclex.Parsers.Helpers do
       unbounded_dynamic_array(),
       bounded_dynamic_array()
     ])
-    |> reduce({Enum, :join, []})
   end
 
   defp static_array(combinator \\ empty()) do
     combinator
     |> string("[")
-    |> ascii_string([?0..?9], min: 1)
+    |> integer(min: 1)
     |> string("]")
   end
 
