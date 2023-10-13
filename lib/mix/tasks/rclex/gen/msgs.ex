@@ -8,12 +8,6 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   def run(_args) do
   end
 
-  def generate_msg_h(type, _ros2_message_type_map) do
-    EEx.eval_file(Path.join(templates_dir_path(), "msg_h.eex"),
-      function_prefix: "nif_" <> type_down_snake(type)
-    )
-  end
-
   def get_ros2_message_type_map(ros2_message_type, from, acc \\ %{}) do
     {:ok, fields, _rest, _context, _line, _column} =
       Path.join(from, [ros2_message_type, ".msg"])
@@ -99,9 +93,5 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   defp get_array_type(type) do
     String.replace(type, ~r/\[.*\]$/, "")
-  end
-
-  defp templates_dir_path() do
-    Path.join(Application.app_dir(:rclex), "priv/templates/rclex.gen.msgs")
   end
 end
