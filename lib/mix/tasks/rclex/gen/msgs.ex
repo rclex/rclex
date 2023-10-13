@@ -51,7 +51,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       |> File.read!()
       |> MessageParser.parse()
 
-    fields = to_abs_fields(fields, ros2_message_type)
+    fields = to_complete_fields(fields, ros2_message_type)
     type_map = Map.put(acc, ros2_message_type, fields)
 
     Enum.reduce(fields, type_map, fn [head | _], acc ->
@@ -256,17 +256,17 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     |> Enum.map_join("_", &String.downcase(&1))
   end
 
-  defp to_abs_fields(fields, ros2_message_type) do
+  defp to_complete_fields(fields, ros2_message_type) do
     Enum.map(fields, fn field ->
       [head | tail] = field
 
       case head do
         {:msg_type, type} ->
-          type = to_abs_type(type, ros2_message_type)
+          type = to_complete_type(type, ros2_message_type)
           [{:msg_type, type} | tail]
 
         {:msg_type_array, type} ->
-          type = to_abs_type(type, ros2_message_type)
+          type = to_complete_type(type, ros2_message_type)
           [{:msg_type_array, type} | tail]
 
         _ ->
@@ -275,13 +275,13 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end)
   end
 
-  defp to_abs_type(type, ros2_message_type) do
+  defp to_complete_type(type, ros2_message_type) do
     if String.contains?(type, "/") do
-      [package, type] = String.split("/")
-      [package, "msg", type]
+      [interfaces, type] = String.split("/")
+      [interfaces, "msg", type]
     else
-      [package, "msg", _] = String.split(ros2_message_type, "/")
-      [package, "msg", type]
+      [interfaces, "msg", _] = String.split(ros2_message_type, "/")
+      [interfaces, "msg", type]
     end
     |> Path.join()
   end
