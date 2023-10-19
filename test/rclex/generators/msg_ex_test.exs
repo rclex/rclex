@@ -15,6 +15,7 @@ defmodule Rclex.Generators.MsgExTest do
   alias Rclex.Generators.Util
 
   for ros2_message_type <- [
+        "sensor_msgs/msg/PointCloud",
         "std_msgs/msg/String",
         "std_msgs/msg/MultiArrayLayout",
         "std_msgs/msg/UInt32MultiArray",

@@ -82,7 +82,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   defp to_complete_type(type, ros2_message_type) do
     if String.contains?(type, "/") do
-      [interfaces, type] = String.split("/")
+      [interfaces, type] = String.split(type, "/")
       [interfaces, "msg", type]
     else
       [interfaces, "msg", _] = String.split(ros2_message_type, "/")
