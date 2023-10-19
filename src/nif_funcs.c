@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "pkgs/geometry_msgs/msg/twist.h"
 #include "pkgs/geometry_msgs/msg/vector3.h"
+#include "pkgs/sensor_msgs/msg/point_cloud.h"
 #include "pkgs/std_msgs/msg/multi_array_dimension.h"
 #include "pkgs/std_msgs/msg/multi_array_layout.h"
 #include "pkgs/std_msgs/msg/string.h"
@@ -68,6 +69,11 @@ static ErlNifFunc nif_funcs[] = {
     {"geometry_msgs_msg_twist_destroy!", 1, nif_geometry_msgs_msg_twist_destroy, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"geometry_msgs_msg_twist_set!", 2, nif_geometry_msgs_msg_twist_set, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"geometry_msgs_msg_twist_get!", 1, nif_geometry_msgs_msg_twist_get, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"sensor_msgs_msg_point_cloud_type_support!", 0, nif_sensor_msgs_msg_point_cloud_type_support, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"sensor_msgs_msg_point_cloud_create!", 0, nif_sensor_msgs_msg_point_cloud_create, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"sensor_msgs_msg_point_cloud_destroy!", 1, nif_sensor_msgs_msg_point_cloud_destroy, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"sensor_msgs_msg_point_cloud_set!", 2, nif_sensor_msgs_msg_point_cloud_set, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"sensor_msgs_msg_point_cloud_get!", 1, nif_sensor_msgs_msg_point_cloud_get, ERL_NIF_DIRTY_JOB_IO_BOUND},
     // clang-format on
 };
 

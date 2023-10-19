@@ -71,6 +71,26 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def sensor_msgs_msg_point_cloud_type_support!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def sensor_msgs_msg_point_cloud_create!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def sensor_msgs_msg_point_cloud_destroy!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def sensor_msgs_msg_point_cloud_set!(_message, _data) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def sensor_msgs_msg_point_cloud_get!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def std_msgs_msg_string_type_support!() do
     :erlang.nif_error(:nif_not_loaded)
   end
