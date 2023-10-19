@@ -71,6 +71,34 @@ defmodule Rclex.NifTest do
     end
   end
 
+  describe "sensor_msgs_msg_point_cloud" do
+    test "sensor_msgs_msg_point_cloud_type_support!/0" do
+      assert is_reference(Nif.sensor_msgs_msg_point_cloud_type_support!())
+    end
+
+    test "sensor_msgs_msg_point_cloud_create!/1, sensor_msgs_msg_point_cloud_destroy!/1" do
+      message = Nif.sensor_msgs_msg_point_cloud_create!()
+      assert is_reference(message)
+      assert Nif.sensor_msgs_msg_point_cloud_destroy!(message) == :ok
+    end
+
+    test "sensor_msgs_msg_point_cloud_set!/1, sensor_msgs_msg_point_cloud_get!/1" do
+      message = Nif.sensor_msgs_msg_point_cloud_create!()
+
+      assert Nif.sensor_msgs_msg_point_cloud_set!(
+               message,
+               {{{-9, 8}, ~c"test"}, [{0.1, 0.2, 0.3}, {0.4, 0.5, 0.6}, {0.7, 0.8, 0.9}],
+                [{~c"channels_name", [0.0]}]}
+             ) == :ok
+
+      # assert Nif.sensor_msgs_msg_point_cloud_get!(message) ==
+      #          {{{-9, 8}, ~c"test"}, [{0.1, 0.2, 0.3}, {0.4, 0.5, 0.6}, {0.7, 0.8, 0.9}],
+      #           [{~c"channels_name", [0.0]}]}
+
+      :ok = Nif.sensor_msgs_msg_point_cloud_destroy!(message)
+    end
+  end
+
   describe "std_msgs_msgs_string" do
     test "std_msgs_msg_string_type_support!/0" do
       assert is_reference(Nif.std_msgs_msg_string_type_support!())
