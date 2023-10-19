@@ -99,7 +99,7 @@ defmodule Rclex.NifTest do
     end
   end
 
-  describe "std_msgs_msgs_string" do
+  describe "std_msgs_msg_string" do
     test "std_msgs_msg_string_type_support!/0" do
       assert is_reference(Nif.std_msgs_msg_string_type_support!())
     end
@@ -118,7 +118,7 @@ defmodule Rclex.NifTest do
     end
   end
 
-  describe "std_msgs_msgs_mutli_array_dimension" do
+  describe "std_msgs_msg_mutli_array_dimension" do
     test "std_msgs_msg_multi_array_dimension_type_support!/0" do
       assert is_reference(Nif.std_msgs_msg_multi_array_dimension_type_support!())
     end
@@ -137,7 +137,7 @@ defmodule Rclex.NifTest do
     end
   end
 
-  describe "std_msgs_msgs_mutli_array_layout" do
+  describe "std_msgs_msg_mutli_array_layout" do
     test "std_msgs_msg_multi_array_layout_type_support!/0" do
       assert is_reference(Nif.std_msgs_msg_multi_array_layout_type_support!())
     end
@@ -163,7 +163,7 @@ defmodule Rclex.NifTest do
     end
   end
 
-  describe "std_msgs_msgs_u_int32_multi_array" do
+  describe "std_msgs_msg_u_int32_multi_array" do
     test "std_msgs_msg_u_int32_multi_array_type_support!/0" do
       assert is_reference(Nif.std_msgs_msg_u_int32_multi_array_type_support!())
     end
@@ -189,7 +189,7 @@ defmodule Rclex.NifTest do
     end
   end
 
-  describe "geometry_msgs_msgs_vector3" do
+  describe "geometry_msgs_msg_vector3" do
     test "geometry_msgs_msg_vector3_type_support!/0" do
       assert is_reference(Nif.geometry_msgs_msg_vector3_type_support!())
     end
@@ -208,7 +208,7 @@ defmodule Rclex.NifTest do
     end
   end
 
-  describe "geometry_msgs_msgs_twist" do
+  describe "geometry_msgs_msg_twist" do
     test "geometry_msgs_msg_twist_type_support!/0" do
       assert is_reference(Nif.geometry_msgs_msg_twist_type_support!())
     end
