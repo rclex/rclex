@@ -1,0 +1,6 @@
+return enif_make_tuple(env, 3,
+enif_make_double(env, message_p->x),
+enif_make_double(env, message_p->y),
+enif_make_double(env, message_p->z)
+)
+;

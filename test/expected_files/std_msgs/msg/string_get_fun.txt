@@ -1,0 +1,4 @@
+return enif_make_tuple(env, 1,
+enif_make_string(env, message_p->data.data, ERL_NIF_LATIN1)
+)
+;
