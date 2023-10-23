@@ -16,10 +16,10 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
     for {type, expected} <-
           Macro.escape([
             {"std_msgs/msg/String",
-             %{"std_msgs/msg/String" => [[{:built_in_type, "string"}, "data"]]}},
+             %{{:msg_type, "std_msgs/msg/String"} => [[{:built_in_type, "string"}, "data"]]}},
             {"geometry_msgs/msg/Vector3",
              %{
-               "geometry_msgs/msg/Vector3" => [
+               {:msg_type, "geometry_msgs/msg/Vector3"} => [
                  [{:built_in_type, "float64"}, "x"],
                  [{:built_in_type, "float64"}, "y"],
                  [{:built_in_type, "float64"}, "z"]
@@ -27,11 +27,11 @@ defmodule Mix.Tasks.Rclex.Gen.MsgsTest do
              }},
             {"geometry_msgs/msg/Twist",
              %{
-               "geometry_msgs/msg/Twist" => [
+               {:msg_type, "geometry_msgs/msg/Twist"} => [
                  [{:msg_type, "geometry_msgs/msg/Vector3"}, "linear"],
                  [{:msg_type, "geometry_msgs/msg/Vector3"}, "angular"]
                ],
-               "geometry_msgs/msg/Vector3" => [
+               {:msg_type, "geometry_msgs/msg/Vector3"} => [
                  [{:built_in_type, "float64"}, "x"],
                  [{:built_in_type, "float64"}, "y"],
                  [{:built_in_type, "float64"}, "z"]

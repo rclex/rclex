@@ -15,7 +15,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       |> MessageParser.parse()
 
     fields = to_complete_fields(fields, ros2_message_type)
-    type_map = Map.put(acc, ros2_message_type, fields)
+    type_map = Map.put(acc, {:msg_type, ros2_message_type}, fields)
 
     Enum.reduce(fields, type_map, fn [head | _], acc ->
       case head do
