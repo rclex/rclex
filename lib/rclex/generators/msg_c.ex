@@ -73,7 +73,7 @@ defmodule Rclex.Generators.MsgC do
   end
 
   def build_get_fun_fragments(acc, lhs \\ "return", ros2_message_type_map) do
-    {binary, accs} = enif_make_field([acc.type], acc, ros2_message_type_map)
+    {binary, accs} = enif_make(acc.type, acc, ros2_message_type_map)
 
     array_accs =
       Enum.filter(accs, fn acc ->
@@ -116,23 +116,20 @@ defmodule Rclex.Generators.MsgC do
     )
   end
 
-  def enif_make({type_atom, type}, acc, ros2_messaage_type_map)
-      when type_atom in [:built_in_type_array, :msg_type_array] do
-    {enif_make_array(type, acc, ros2_messaage_type_map), [acc]}
-  end
-
-  def enif_make({:built_in_type, type}, acc, ros2_messaage_type_map) do
-    {enif_make_builtin(type, acc, ros2_messaage_type_map), [acc]}
-  end
-
   def enif_make({:msg_type, ros2_message_type}, acc, ros2_message_type_map) do
     fields = get_fields(ros2_message_type, ros2_message_type_map)
 
     {binaries, accs} =
-      Enum.reduce(fields, {[], []}, fn field, {binaries, accs} ->
-        {binary, new_accs} = enif_make_field(field, acc, ros2_message_type_map)
+      Enum.map_reduce(fields, [], fn field, accs ->
+        acc =
+          case field do
+            [_, name | _] -> %Acc{acc | vars: acc.vars ++ [name], mbrs: acc.mbrs ++ [name]}
+            [_] -> acc
+          end
+          |> then(&%Acc{&1 | depth: acc.depth + 1, type: hd(field)})
 
-        {binaries ++ [binary], accs ++ new_accs}
+        {binary, accs_} = enif_make(acc.type, acc, ros2_message_type_map)
+        {binary, accs ++ accs_}
       end)
 
     binary =
@@ -145,13 +142,16 @@ defmodule Rclex.Generators.MsgC do
     {binary, accs}
   end
 
-  def enif_make_field(field, acc, ros2_message_type_map) when is_list(field) do
-    case field do
-      [_, name | _] -> %Acc{acc | vars: acc.vars ++ [name], mbrs: acc.mbrs ++ [name]}
-      [_] -> acc
-    end
-    |> then(&%Acc{&1 | depth: acc.depth + 1, type: hd(field)})
-    |> then(&enif_make(hd(field), &1, ros2_message_type_map))
+  def enif_make({:msg_type_array, type}, acc, ros2_messaage_type_map) do
+    {enif_make_array(type, acc, ros2_messaage_type_map), [acc]}
+  end
+
+  def enif_make({:built_in_type_array, type}, acc, ros2_messaage_type_map) do
+    {enif_make_array(type, acc, ros2_messaage_type_map), [acc]}
+  end
+
+  def enif_make({:built_in_type, type}, acc, ros2_messaage_type_map) do
+    {enif_make_builtin(type, acc, ros2_messaage_type_map), [acc]}
   end
 
   defp enif_make_array(_type, acc, _ros2_messaage_type_map) do
