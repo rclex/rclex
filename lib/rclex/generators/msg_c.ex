@@ -65,17 +65,21 @@ defmodule Rclex.Generators.MsgC do
 
   defmodule Acc do
     @moduledoc false
-    defstruct vars: [], mbrs: [], depth: 0, type: nil, is_array: false
+    defstruct vars: [], mbrs: [], depth: 0, type: nil
   end
 
   def get_fun_fragments(ros2_message_type, ros2_message_type_map) do
-    build_get_fun_fragments(%Acc{type: ros2_message_type}, ros2_message_type_map)
+    build_get_fun_fragments(%Acc{type: {:msg_type, ros2_message_type}}, ros2_message_type_map)
   end
 
   def build_get_fun_fragments(acc, lhs \\ "return", ros2_message_type_map) do
-    {binary, accs} = enif_make(acc.type, acc, ros2_message_type_map)
+    {binary, accs} = enif_make_field([acc.type], acc, ros2_message_type_map)
 
-    array_accs = Enum.filter(accs, fn acc -> acc.is_array end)
+    array_accs =
+      Enum.filter(accs, fn acc ->
+        {type_atom, _} = acc.type
+        type_atom in [:msg_type_array, :built_in_type_array]
+      end)
 
     if Enum.empty?(array_accs) do
       """
@@ -103,25 +107,26 @@ defmodule Rclex.Generators.MsgC do
   end
 
   defp to_not_array_acc(acc) do
-    %Acc{
-      acc
-      | mbrs: acc.mbrs ++ ["data[#{Enum.join(acc.vars, "_")}_i]"],
-        depth: acc.depth + 1,
-        type: get_array_type(acc.type),
-        is_array: false
-    }
+    case acc.type do
+      {:msg_type_array, type} -> %Acc{acc | type: {:msg_type, get_array_type(type)}}
+      {:built_in_type_array, type} -> %Acc{acc | type: {:built_in_type, get_array_type(type)}}
+    end
+    |> then(
+      &%Acc{&1 | mbrs: acc.mbrs ++ ["data[#{Enum.join(acc.vars, "_")}_i]"], depth: acc.depth + 1}
+    )
   end
 
-  def enif_make(type, %Acc{is_array: true} = acc, ros2_messaage_type_map) do
+  def enif_make({type_atom, type}, acc, ros2_messaage_type_map)
+      when type_atom in [:built_in_type_array, :msg_type_array] do
     {enif_make_array(type, acc, ros2_messaage_type_map), [acc]}
   end
 
-  def enif_make(type, acc, ros2_messaage_type_map) when type in @ros2_builtin_types do
+  def enif_make({:built_in_type, type}, acc, ros2_messaage_type_map) do
     {enif_make_builtin(type, acc, ros2_messaage_type_map), [acc]}
   end
 
-  def enif_make(type, acc, ros2_message_type_map) when is_binary(type) do
-    fields = Map.get(ros2_message_type_map, type)
+  def enif_make({:msg_type, ros2_message_type}, acc, ros2_message_type_map) do
+    fields = get_fields(ros2_message_type, ros2_message_type_map)
 
     {binaries, accs} =
       Enum.reduce(fields, {[], []}, fn field, {binaries, accs} ->
@@ -141,22 +146,12 @@ defmodule Rclex.Generators.MsgC do
   end
 
   def enif_make_field(field, acc, ros2_message_type_map) when is_list(field) do
-    [{type_atom, type}, name | _] = field
-
-    acc = %Acc{
-      acc
-      | vars: acc.vars ++ [name],
-        mbrs: acc.mbrs ++ [name],
-        depth: acc.depth + 1,
-        type: type
-    }
-
-    case type_atom do
-      :msg_type -> enif_make(type, acc, ros2_message_type_map)
-      :built_in_type -> enif_make(type, acc, ros2_message_type_map)
-      :msg_type_array -> enif_make(type, %Acc{acc | is_array: true}, ros2_message_type_map)
-      :built_in_type_array -> enif_make(type, %Acc{acc | is_array: true}, ros2_message_type_map)
+    case field do
+      [_, name | _] -> %Acc{acc | vars: acc.vars ++ [name], mbrs: acc.mbrs ++ [name]}
+      [_] -> acc
     end
+    |> then(&%Acc{&1 | depth: acc.depth + 1, type: hd(field)})
+    |> then(&enif_make(hd(field), &1, ros2_message_type_map))
   end
 
   defp enif_make_array(_type, acc, _ros2_messaage_type_map) do
@@ -188,7 +183,7 @@ defmodule Rclex.Generators.MsgC do
   end
 
   defp get_deps_types(ros2_message_type, types \\ MapSet.new([]), ros2_message_type_map) do
-    Map.get(ros2_message_type_map, ros2_message_type)
+    get_fields(ros2_message_type, ros2_message_type_map)
     |> Enum.reduce(types, fn field, acc ->
       [head | _] = field
 
@@ -204,6 +199,10 @@ defmodule Rclex.Generators.MsgC do
           acc
       end
     end)
+  end
+
+  defp get_fields(ros2_message_type, ros2_message_type_map) do
+    Map.get(ros2_message_type_map, {:msg_type, ros2_message_type})
   end
 
   defp get_array_type(type) do
