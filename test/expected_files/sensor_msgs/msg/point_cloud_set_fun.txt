@@ -57,17 +57,17 @@ for (points_i = 0, points_left = tuple[1]; points_i < points_length; ++points_i,
     return enif_make_badarg(env);
 
   double points_i_x;
-if (!enif_get_double(env, points_i_tuple[0], &points_i_x)
+if (!enif_get_double(env, points_i_tuple[0], &points_i_x))
   return enif_make_badarg(env);
 message_p->points.data[points_i].x = (float)points_i_x;
 
 double points_i_y;
-if (!enif_get_double(env, points_i_tuple[1], &points_i_y)
+if (!enif_get_double(env, points_i_tuple[1], &points_i_y))
   return enif_make_badarg(env);
 message_p->points.data[points_i].y = (float)points_i_y;
 
 double points_i_z;
-if (!enif_get_double(env, points_i_tuple[2], &points_i_z)
+if (!enif_get_double(env, points_i_tuple[2], &points_i_z))
   return enif_make_badarg(env);
 message_p->points.data[points_i].z = (float)points_i_z;
 
@@ -126,7 +126,7 @@ for (channels_i_values_i = 0, channels_i_values_left = channels_i_tuple[1]; chan
     return enif_make_badarg(env);
 
   double channels_i_values_float32;
-if (!enif_get_double(env, channels_i_values_head, &channels_i_values_float32)
+if (!enif_get_double(env, channels_i_values_head, &channels_i_values_float32))
   return enif_make_badarg(env);
 message_p->channels.data[channels_i].values.data[channels_i_values_i] = (float)channels_i_values_float32;
 

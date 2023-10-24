@@ -236,7 +236,7 @@ defmodule Rclex.Generators.MsgC do
   defp enif_get_builtin("float64", var, mbr, term) do
     """
     double #{var};
-    if (!enif_get_double(env, #{term}, &#{var})
+    if (!enif_get_double(env, #{term}, &#{var}))
       return enif_make_badarg(env);
     message_p->#{mbr} = #{var};
     """
@@ -245,7 +245,7 @@ defmodule Rclex.Generators.MsgC do
   defp enif_get_builtin("float32", var, mbr, term) do
     """
     double #{var};
-    if (!enif_get_double(env, #{term}, &#{var})
+    if (!enif_get_double(env, #{term}, &#{var}))
       return enif_make_badarg(env);
     message_p->#{mbr} = (float)#{var};
     """
