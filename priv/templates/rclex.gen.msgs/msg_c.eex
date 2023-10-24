@@ -1,8 +1,11 @@
+// clang-format off
 #include "<%= header_name %>.h"
 #include "../../../macros.h"
 #include "../../../resource_types.h"
 #include "../../../terms.h"
+
 #include <erl_nif.h>
+
 #include <rosidl_runtime_c/message_type_support_struct.h>
 #include <rosidl_runtime_c/primitives_sequence.h>
 #include <rosidl_runtime_c/primitives_sequence_functions.h>
@@ -19,7 +22,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// clang-format off
 ERL_NIF_TERM <%= function_prefix %>_type_support(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   ignore_unused(argv);
 

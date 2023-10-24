@@ -1,5 +1,5 @@
   ERL_NIF_TERM layout_dim[message_p->layout.dim.size];
-  
+
   for (size_t layout_dim_i = 0; layout_dim_i < message_p->layout.dim.size; ++layout_dim_i)
   {
     layout_dim[layout_dim_i] = enif_make_tuple(env, 3,
@@ -8,14 +8,14 @@
       enif_make_uint(env, message_p->layout.dim.data[layout_dim_i].stride)
     );
   }
-  
+
   ERL_NIF_TERM data[message_p->data.size];
-  
+
   for (size_t data_i = 0; data_i < message_p->data.size; ++data_i)
   {
     data[data_i] = enif_make_uint(env, message_p->data.data[data_i]);
   }
-  
+
   return enif_make_tuple(env, 2,
     enif_make_tuple(env, 2,
       enif_make_list_from_array(env, layout_dim, message_p->layout.dim.size),
