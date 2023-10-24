@@ -1,6 +1,5 @@
-return enif_make_tuple(env, 3,
-enif_make_string(env, message_p->label.data, ERL_NIF_LATIN1),
-enif_make_uint(env, message_p->size),
-enif_make_uint(env, message_p->stride)
-)
-;
+  return enif_make_tuple(env, 3,
+    enif_make_string(env, message_p->label.data, ERL_NIF_LATIN1),
+    enif_make_uint(env, message_p->size),
+    enif_make_uint(env, message_p->stride)
+  );

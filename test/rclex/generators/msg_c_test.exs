@@ -32,6 +32,7 @@ defmodule Rclex.Generators.MsgCTest do
 
       assert MsgC.get_fun_fragments(ros2_message_type, ros2_message_type_map) ==
                File.read!(Path.join(File.cwd!(), "test/expected_files/#{type_path}_get_fun.txt"))
+               |> String.replace_suffix("\n", "")
     end
   end
 

@@ -292,6 +292,9 @@ defmodule Rclex.Generators.MsgC do
 
   def get_fun_fragments(ros2_message_type, ros2_message_type_map) do
     build_get_fun_fragments(%Acc{type: {:msg_type, ros2_message_type}}, ros2_message_type_map)
+    |> String.replace_suffix("\n", "")
+    |> String.split("\n")
+    |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
   end
 
   def build_get_fun_fragments(acc, lhs \\ "return", ros2_message_type_map) do
@@ -303,29 +306,32 @@ defmodule Rclex.Generators.MsgC do
         type_atom in [:msg_type_array, :built_in_type_array]
       end)
 
-    if Enum.empty?(array_accs) do
-      """
-      #{lhs} #{binary};
-      """
-    else
-      """
-      #{Enum.map_join(array_accs, fn acc ->
-        var = Enum.join(acc.vars, "_")
-        mbr = Enum.join(acc.mbrs, ".")
-        """
-        ERL_NIF_TERM #{var}[message_p->#{mbr}.size];
+    rhs = binary |> String.replace_suffix("\n", "")
 
-        for (size_t #{var}_i = 0; #{var}_i < message_p->#{mbr}.size; ++#{var}_i)
-        {
-        #{build_get_fun_fragments(to_not_array_acc(acc), "#{var}[#{var}_i] =", ros2_message_type_map)}
-        }
-        """
-      end)}
+    Enum.map_join(array_accs, fn acc ->
+      var = Enum.join(acc.vars, "_")
+      mbr = Enum.join(acc.mbrs, ".")
 
+      binary =
+        build_get_fun_fragments(
+          to_not_array_acc(acc),
+          "#{var}[#{var}_i] =",
+          ros2_message_type_map
+        )
+        |> String.replace_suffix("\n", "")
+        |> String.split("\n")
+        |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
 
-      #{lhs} #{binary};
       """
-    end
+      ERL_NIF_TERM #{var}[message_p->#{mbr}.size];
+
+      for (size_t #{var}_i = 0; #{var}_i < message_p->#{mbr}.size; ++#{var}_i)
+      {
+      #{binary}
+      }
+
+      """
+    end) <> "#{lhs} #{rhs};"
   end
 
   defp to_not_array_acc(acc) do
@@ -355,53 +361,62 @@ defmodule Rclex.Generators.MsgC do
       end)
 
     binary =
+      Enum.join(binaries, ",\n")
+      |> String.split("\n")
+      |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
+
+    binary =
       """
       enif_make_tuple(env, #{Enum.count(binaries)},
-      #{Enum.join(binaries, ",\n")}
+      #{binary}
       )
       """
+      |> String.replace_suffix("\n", "")
 
     {binary, accs}
   end
 
-  def enif_make({:msg_type_array, type}, acc, ros2_messaage_type_map) do
-    {enif_make_array(type, acc, ros2_messaage_type_map), [acc]}
+  def enif_make({:msg_type_array, type}, acc, ros2_message_type_map) do
+    {enif_make_array(type, acc, ros2_message_type_map), [acc]}
   end
 
-  def enif_make({:built_in_type_array, type}, acc, ros2_messaage_type_map) do
-    {enif_make_array(type, acc, ros2_messaage_type_map), [acc]}
+  def enif_make({:built_in_type_array, type}, acc, ros2_message_type_map) do
+    {enif_make_array(type, acc, ros2_message_type_map), [acc]}
   end
 
-  def enif_make({:built_in_type, type}, acc, ros2_messaage_type_map) do
-    {enif_make_builtin(type, acc, ros2_messaage_type_map), [acc]}
+  def enif_make({:built_in_type, type}, acc, _ros2_message_type_map) do
+    mbr = Enum.join(acc.mbrs, ".")
+    {enif_make_builtin(type, mbr), [acc]}
   end
 
-  defp enif_make_array(_type, acc, _ros2_messaage_type_map) do
-    "enif_make_list_from_array(env, #{Enum.join(acc.vars, "_")}, message_p->#{Enum.join(acc.mbrs, ".")}.size)"
+  defp enif_make_array(_type, acc, _ros2_message_type_map) do
+    var = Enum.join(acc.vars, "_")
+    mbr = Enum.join(acc.mbrs, ".")
+    "enif_make_list_from_array(env, #{var}, message_p->#{mbr}.size)"
   end
 
-  defp enif_make_builtin("int64", acc, _ros2_messaage_type_map) do
-    "enif_make_int64(env, message_p->#{Enum.join(acc.mbrs, ".")})"
+  defp enif_make_builtin("int64", mbr) do
+    "enif_make_int64(env, message_p->#{mbr})"
   end
 
-  defp enif_make_builtin("int" <> _, acc, _ros2_messaage_type_map) do
-    "enif_make_int(env, message_p->#{Enum.join(acc.mbrs, ".")})"
+  defp enif_make_builtin("int" <> _, mbr) do
+    "enif_make_int(env, message_p->#{mbr})"
   end
 
-  defp enif_make_builtin("uint64", acc, _ros2_messaage_type_map) do
-    "enif_make_uint64(env, message_p->#{Enum.join(acc.mbrs, ".")})"
+  defp enif_make_builtin("uint64", mbr) do
+    "enif_make_uint64(env, message_p->#{mbr})"
   end
 
-  defp enif_make_builtin("uint" <> _, acc, _ros2_messaage_type_map) do
-    "enif_make_uint(env, message_p->#{Enum.join(acc.mbrs, ".")})"
+  defp enif_make_builtin("uint" <> _, mbr) do
+    "enif_make_uint(env, message_p->#{mbr})"
   end
 
-  defp enif_make_builtin("float" <> _, acc, _ros2_messaage_type_map) do
-    "enif_make_double(env, message_p->#{Enum.join(acc.mbrs, ".")})"
+  defp enif_make_builtin("float" <> _, mbr) do
+    "enif_make_double(env, message_p->#{mbr})"
   end
 
-  defp enif_make_builtin("string", acc, _ros2_messaage_type_map) do
-    "enif_make_string(env, message_p->#{Enum.join(acc.mbrs, ".")}.data, ERL_NIF_LATIN1)"
+  defp enif_make_builtin("string", mbr) do
+    "enif_make_string(env, message_p->#{mbr}.data, ERL_NIF_LATIN1)"
   end
 
   defp get_deps_types(ros2_message_type, types \\ MapSet.new([]), ros2_message_type_map) do
