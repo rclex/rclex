@@ -14,12 +14,8 @@ defmodule Rclex.MixProject do
       test_coverage: [
         ignore_modules: [
           Rclex.Nif,
-          Rclex.Pkgs.StdMsgs.Msg.String,
-          Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension,
-          Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout,
-          Rclex.Pkgs.StdMsgs.Msg.UInt32MultiArray,
-          Rclex.Pkgs.GeometryMsgs.Msg.Vector3,
-          Rclex.Pkgs.GeometryMsgs.Msg.Twist
+          Rclex.Generators.MsgC.Acc,
+          ~r/Rclex\.Pkgs.+/
         ]
       ],
       dialyzer: dialyzer()
