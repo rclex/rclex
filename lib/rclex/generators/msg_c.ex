@@ -29,6 +29,7 @@ defmodule Rclex.Generators.MsgC do
       header_prefix: to_header_prefix(type),
       function_prefix: "nif_" <> Util.type_down_snake(type),
       c_type: to_c_type(type),
+      set_fun_fragments: set_fun_fragments(type, ros2_message_type_map),
       get_fun_fragments: get_fun_fragments(type, ros2_message_type_map)
     )
   end
@@ -65,7 +66,227 @@ defmodule Rclex.Generators.MsgC do
 
   defmodule Acc do
     @moduledoc false
-    defstruct vars: [], mbrs: [], depth: 0, type: nil
+    defstruct vars: [], mbrs: [], depth: 0, type: nil, terms: []
+  end
+
+  def set_fun_fragments(ros2_message_type, ros2_message_type_map) do
+    enif_get({:msg_type, ros2_message_type}, %Acc{}, ros2_message_type_map)
+  end
+
+  def enif_get({:msg_type, ros2_message_type}, acc, ros2_message_type_map) do
+    fields = get_fields(ros2_message_type, ros2_message_type_map)
+
+    Enum.with_index(fields)
+    |> Enum.map_join("\n", fn {field, index} ->
+      acc =
+        case field do
+          [_, name | _] ->
+            %Acc{
+              acc
+              | vars: acc.vars ++ [name],
+                mbrs: acc.mbrs ++ [name],
+                terms: acc.vars ++ ["tuple[#{index}]"]
+            }
+
+          [_] ->
+            acc
+        end
+        |> then(&%Acc{&1 | depth: acc.depth + 1, type: hd(field)})
+
+      case acc.type do
+        {:msg_type, _type} ->
+          var = Enum.join(acc.vars, "_")
+          term = Enum.join(acc.terms, "_")
+
+          """
+          int #{var}_arity;
+          const ERL_NIF_TERM *#{var}_tuple;
+          if (!enif_get_tuple(env, #{term}, &#{var}_arity, &#{var}_tuple))
+            return enif_make_badarg(env);
+
+          #{enif_get(acc.type, acc, ros2_message_type_map)}
+          """
+
+        _ ->
+          enif_get(acc.type, acc, ros2_message_type_map)
+      end
+    end)
+  end
+
+  def enif_get({:built_in_type, type}, acc, _ros2_message_type_map) do
+    var = Enum.join(acc.vars, "_")
+    mbr = Enum.join(acc.mbrs, ".")
+    term = Enum.join(acc.terms, "_")
+
+    enif_get_builtin(type, var, mbr, term)
+  end
+
+  def enif_get({:msg_type_array, type}, acc, ros2_message_type_map) do
+    var = Enum.join(acc.vars, "_")
+    mbr = Enum.join(acc.mbrs, ".")
+    term = Enum.join(acc.terms, "_")
+
+    sequence = "#{to_c_type(get_array_type(type))}__Sequence"
+
+    binary =
+      (fn ->
+         acc = %Acc{acc | vars: acc.vars ++ ["i"], mbrs: acc.mbrs ++ ["data[#{var}_i]"]}
+         enif_get({:msg_type, get_array_type(type)}, acc, ros2_message_type_map)
+       end).()
+
+    """
+    unsigned int #{var}_length;
+    if (!enif_get_list_length(env, #{term}, &#{var}_length))
+      return enif_make_badarg(env);
+
+    #{sequence} *#{var} = #{sequence}__create(#{var}_length);
+    if (#{var} == NULL) return raise(env, __FILE__, __LINE__);
+    message_p->#{mbr} = *#{var};
+
+    unsigned int #{var}_i;
+    ERL_NIF_TERM #{var}_left, #{var}_head, #{var}_tail;
+    for (#{var}_i = 0, #{var}_left = #{term}; #{var}_i < #{var}_length; ++#{var}_i, #{var}_left = #{var}_tail)
+    {
+      if (!enif_get_list_cell(env, #{var}_left, &#{var}_head, &#{var}_tail))
+        return enif_make_badarg(env);
+
+      int #{var}_i_arity;
+      const ERL_NIF_TERM *#{var}_i_tuple;
+      if (!enif_get_tuple(env, #{var}_head, &#{var}_i_arity, &#{var}_i_tuple))
+        return enif_make_badarg(env);
+
+      #{binary}
+    }
+    """
+  end
+
+  def enif_get({:built_in_type_array, type}, acc, ros2_message_type_map) do
+    var = Enum.join(acc.vars, "_")
+    mbr = Enum.join(acc.mbrs, ".")
+    term = Enum.join(acc.terms, "_")
+
+    sequence = "rosidl_runtime_c__#{get_array_type(type)}__Sequence"
+
+    binary =
+      (fn ->
+         acc = %Acc{
+           acc
+           | vars: acc.vars ++ [get_array_type(type)],
+             mbrs: acc.mbrs ++ ["data[#{var}_i]"],
+             terms: acc.vars ++ ["head"]
+         }
+
+         enif_get({:built_in_type, get_array_type(type)}, acc, ros2_message_type_map)
+       end).()
+
+    """
+    unsigned int #{var}_length;
+    if (!enif_get_list_length(env, #{term}, &#{var}_length))
+      return enif_make_badarg(env);
+
+    #{sequence} #{var};
+    if(!#{sequence}__init(&#{var}, #{var}_length))
+      return enif_make_badarg(env);
+    message_p->#{mbr} = #{var};
+
+    unsigned int #{var}_i;
+    ERL_NIF_TERM #{var}_left, #{var}_head, #{var}_tail;
+    for (#{var}_i = 0, #{var}_left = #{term}; #{var}_i < #{var}_length; ++#{var}_i, #{var}_left = #{var}_tail)
+    {
+      if (!enif_get_list_cell(env, #{var}_left, &#{var}_head, &#{var}_tail))
+        return enif_make_badarg(env);
+
+      #{binary}
+    }
+    """
+  end
+
+  defp enif_get_builtin("bool", var, mbr, term) do
+    """
+    unsigned int #{var}_length;
+    if (!enif_get_atom_length(env, #{term}, &#{var}_length, ERL_NIF_LATIN1))
+      return enif_make_badarg(env);
+
+    char #{var}[#{var}_length + 1];
+    if (enif_get_atom(env, #{term}, #{var}, #{var}_length + 1, ERL_NIF_LATIN1) <= 0)
+      return enif_make_badarg(env);
+
+    strcmp(#{var}, "true") == 0 ? message_p->#{mbr} = true : message_p->#{mbr} = false;
+    """
+  end
+
+  defp enif_get_builtin("int64", var, mbr, term) do
+    """
+    int64_t #{var};
+    if (!enif_get_int64(env, #{term}, &#{var}))
+      return enif_make_badarg(env);
+    message_p->#{mbr} = #{var};
+    """
+  end
+
+  defp enif_get_builtin("int" <> _, var, mbr, term) do
+    """
+    int #{var};
+    if (!enif_get_int(env, #{term}, &#{var}))
+      return enif_make_badarg(env);
+    message_p->#{mbr} = #{var};
+    """
+  end
+
+  defp enif_get_builtin("uint64", var, mbr, term) do
+    """
+    uint64_t #{var};
+    if (!enif_get_uint64(env, #{term}, &#{var}))
+      return enif_make_badarg(env);
+    message_p->#{mbr} = #{var};
+    """
+  end
+
+  defp enif_get_builtin("uint" <> _, var, mbr, term) do
+    """
+    unsigned int #{var};
+    if (!enif_get_uint(env, #{term}, &#{var}))
+      return enif_make_badarg(env);
+    message_p->#{mbr} = #{var};
+    """
+  end
+
+  defp enif_get_builtin("float64", var, mbr, term) do
+    """
+    double #{var};
+    if (!enif_get_double(env, #{term}, &#{var})
+      return enif_make_badarg(env);
+    message_p->#{mbr} = #{var};
+    """
+  end
+
+  defp enif_get_builtin("float32", var, mbr, term) do
+    """
+    double #{var};
+    if (!enif_get_double(env, #{term}, &#{var})
+      return enif_make_badarg(env);
+    message_p->#{mbr} = (float)#{var};
+    """
+  end
+
+  defp enif_get_builtin("string", var, mbr, term) do
+    """
+    unsigned int #{var}_length;
+    #if (ERL_NIF_MAJOR_VERSION == 2 && ERL_NIF_MINOR_VERSION >= 17) // OTP-26 and later
+    if (!enif_get_string_length(env, #{term}, &#{var}_length, ERL_NIF_LATIN1))
+      return enif_make_badarg(env);
+    #else
+    if (!enif_get_list_length(env, #{term}, &#{var}_length))
+      return enif_make_badarg(env);
+    #endif
+
+    char #{var}[#{var}_length + 1];
+    if (enif_get_string(env, #{term}, #{var}, #{var}_length + 1, ERL_NIF_LATIN1) <= 0)
+      return enif_make_badarg(env);
+
+    if (!rosidl_runtime_c__String__assign(&(message_p->#{mbr}), #{var}))
+      return raise(env, __FILE__, __LINE__);
+    """
   end
 
   def get_fun_fragments(ros2_message_type, ros2_message_type_map) do

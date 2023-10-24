@@ -1,0 +1,15 @@
+unsigned int data_length;
+#if (ERL_NIF_MAJOR_VERSION == 2 && ERL_NIF_MINOR_VERSION >= 17) // OTP-26 and later
+if (!enif_get_string_length(env, tuple[0], &data_length, ERL_NIF_LATIN1))
+  return enif_make_badarg(env);
+#else
+if (!enif_get_list_length(env, tuple[0], &data_length))
+  return enif_make_badarg(env);
+#endif
+
+char data[data_length + 1];
+if (enif_get_string(env, tuple[0], data, data_length + 1, ERL_NIF_LATIN1) <= 0)
+  return enif_make_badarg(env);
+
+if (!rosidl_runtime_c__String__assign(&(message_p->data), data))
+  return raise(env, __FILE__, __LINE__);
