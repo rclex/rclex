@@ -39,8 +39,10 @@ MSG_OBJ_DIR  = $(MSG_PKGS:%=$(OBJ_DIR)/pkgs/%/msg)
 ROS_LDFLAGS += $(MSG_PKGS:%=-l%__rosidl_typesupport_c)
 ROS_LDFLAGS += $(MSG_PKGS:%=-l%__rosidl_generator_c)
 
+TEMPLATES = lib/rclex/msg_funcs.ex src/msg_funcs.h src/msg_funcs.ec
+
 .PHONY: all
-all: $(OBJ_DIR) $(PRIV_DIR) $(MSG_OBJ_DIR) $(NIF_SO)
+all: $(OBJ_DIR) $(PRIV_DIR) $(MSG_OBJ_DIR) $(TEMPLATES) $(NIF_SO)
 
 $(NIF_SO): $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS) $(ERL_LDFLAGS) $(ROS_LDFLAGS)
@@ -51,6 +53,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c Makefile $(SRC_H)
 $(OBJ_DIR) $(PRIV_DIR) $(MSG_OBJ_DIR):
 	@mkdir -p $@
 
+$(TEMPLATES):
+	@test ! -f $@ && cp $(PRIV_DIR)/templates/rclex.gen.msgs/$@ $@
+
 .PHONY: clean
 clean:
 	$(RM) $(NIF_SO) $(OBJ)
+	$(RM) $(TEMPLATES)
