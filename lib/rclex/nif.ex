@@ -290,4 +290,6 @@ defmodule Rclex.Nif do
   def geometry_msgs_msg_twist_get!(_message) do
     :erlang.nif_error(:nif_not_loaded)
   end
+
+  @before_compile Rclex.MsgFuncs
 end
