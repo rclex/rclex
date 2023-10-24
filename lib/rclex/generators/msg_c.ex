@@ -59,6 +59,9 @@ defmodule Rclex.Generators.MsgC do
 
   def set_fun_fragments(ros2_message_type, ros2_message_type_map) do
     enif_get({:msg_type, ros2_message_type}, %Acc{}, ros2_message_type_map)
+    |> String.replace_suffix("\n", "")
+    |> String.split("\n")
+    |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
   end
 
   def enif_get({:msg_type, ros2_message_type}, acc, ros2_message_type_map) do
@@ -86,13 +89,17 @@ defmodule Rclex.Generators.MsgC do
           var = Enum.join(acc.vars, "_")
           term = Enum.join(acc.terms, "_")
 
+          binary =
+            enif_get(acc.type, acc, ros2_message_type_map)
+            |> String.replace_suffix("\n", "")
+
           """
           int #{var}_arity;
           const ERL_NIF_TERM *#{var}_tuple;
           if (!enif_get_tuple(env, #{term}, &#{var}_arity, &#{var}_tuple))
             return enif_make_badarg(env);
 
-          #{enif_get(acc.type, acc, ros2_message_type_map)}
+          #{binary}
           """
 
         _ ->
@@ -121,6 +128,9 @@ defmodule Rclex.Generators.MsgC do
          acc = %Acc{acc | vars: acc.vars ++ ["i"], mbrs: acc.mbrs ++ ["data[#{var}_i]"]}
          enif_get({:msg_type, get_array_type(type)}, acc, ros2_message_type_map)
        end).()
+      |> String.replace_suffix("\n", "")
+      |> String.split("\n")
+      |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
 
     """
     unsigned int #{var}_length;
@@ -143,7 +153,7 @@ defmodule Rclex.Generators.MsgC do
       if (!enif_get_tuple(env, #{var}_head, &#{var}_i_arity, &#{var}_i_tuple))
         return enif_make_badarg(env);
 
-      #{binary}
+    #{binary}
     }
     """
   end
@@ -166,6 +176,9 @@ defmodule Rclex.Generators.MsgC do
 
          enif_get({:built_in_type, get_array_type(type)}, acc, ros2_message_type_map)
        end).()
+      |> String.replace_suffix("\n", "")
+      |> String.split("\n")
+      |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
 
     """
     unsigned int #{var}_length;
@@ -184,7 +197,7 @@ defmodule Rclex.Generators.MsgC do
       if (!enif_get_list_cell(env, #{var}_left, &#{var}_head, &#{var}_tail))
         return enif_make_badarg(env);
 
-      #{binary}
+    #{binary}
     }
     """
   end
