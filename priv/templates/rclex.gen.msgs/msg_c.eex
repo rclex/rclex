@@ -25,7 +25,7 @@ ERL_NIF_TERM <%= function_prefix %>_type_support(ErlNifEnv *env, int argc, const
 
   if (argc != 0) return enif_make_badarg(env);
 
-  const rosidl_message_type_support_t *ts_p = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt32MultiArray);
+  const rosidl_message_type_support_t *ts_p = <%= rosidl_get_msg_type_support %>;
   rosidl_message_type_support_t *obj = enif_alloc_resource(rt_rosidl_message_type_support_t, sizeof(rosidl_message_type_support_t));
   *obj = *ts_p;
   ERL_NIF_TERM term = enif_make_resource(env, obj);

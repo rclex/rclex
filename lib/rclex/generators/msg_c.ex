@@ -10,6 +10,7 @@ defmodule Rclex.Generators.MsgC do
       deps_header_prefix_list: to_deps_header_prefix_list(type, ros2_message_type_map),
       header_prefix: to_header_prefix(type),
       function_prefix: "nif_" <> Util.type_down_snake(type),
+      rosidl_get_msg_type_support: rosidl_get_msg_type_support(type),
       c_type: to_c_type(type),
       set_fun_fragments: set_fun_fragments(type, ros2_message_type_map),
       get_fun_fragments: get_fun_fragments(type, ros2_message_type_map)
@@ -32,6 +33,11 @@ defmodule Rclex.Generators.MsgC do
   def to_header_prefix(ros2_message_type) do
     [interfaces, "msg", type] = ros2_message_type |> String.split("/")
     [interfaces, "msg", "detail", Util.to_down_snake(type)] |> Path.join()
+  end
+
+  def rosidl_get_msg_type_support(ros2_message_type) do
+    [interfaces, "msg", type] = ros2_message_type |> String.split("/")
+    "ROSIDL_GET_MSG_TYPE_SUPPORT(#{interfaces}, msg, #{type})"
   end
 
   @doc """
