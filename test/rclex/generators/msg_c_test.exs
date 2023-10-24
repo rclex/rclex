@@ -23,6 +23,27 @@ defmodule Rclex.Generators.MsgCTest do
         "geometry_msgs/msg/Vector3",
         "geometry_msgs/msg/Twist"
       ] do
+    test "generate/2 #{ros2_message_type}" do
+      ros2_message_type = unquote(ros2_message_type)
+      ros2_message_type_map = Msgs.get_ros2_message_type_map(ros2_message_type, @ros_share_path)
+
+      [interfaces, msg, type] = String.split(ros2_message_type, "/")
+      type_path = Enum.join([interfaces, msg, Util.to_down_snake(type)], "/")
+
+      assert MsgC.generate(ros2_message_type, ros2_message_type_map) ==
+               File.read!(Path.join(File.cwd!(), "test/expected_files/#{type_path}.c"))
+    end
+  end
+
+  for ros2_message_type <- [
+        "sensor_msgs/msg/PointCloud",
+        "std_msgs/msg/String",
+        "std_msgs/msg/MultiArrayDimension",
+        "std_msgs/msg/MultiArrayLayout",
+        "std_msgs/msg/UInt32MultiArray",
+        "geometry_msgs/msg/Vector3",
+        "geometry_msgs/msg/Twist"
+      ] do
     test "get_fun_fragments/2 #{ros2_message_type}" do
       ros2_message_type = unquote(ros2_message_type)
       ros2_message_type_map = Msgs.get_ros2_message_type_map(ros2_message_type, @ros_share_path)
