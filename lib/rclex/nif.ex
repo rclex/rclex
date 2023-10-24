@@ -71,6 +71,46 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def builtin_interfaces_msg_time_type_support!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def builtin_interfaces_msg_time_create!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def builtin_interfaces_msg_time_destroy!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def builtin_interfaces_msg_time_set!(_message, _data) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def builtin_interfaces_msg_time_get!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def sensor_msgs_msg_channel_float32_type_support!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def sensor_msgs_msg_channel_float32_create!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def sensor_msgs_msg_channel_float32_destroy!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def sensor_msgs_msg_channel_float32_set!(_message, _data) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def sensor_msgs_msg_channel_float32_get!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def sensor_msgs_msg_point_cloud_type_support!() do
     :erlang.nif_error(:nif_not_loaded)
   end
@@ -88,6 +128,26 @@ defmodule Rclex.Nif do
   end
 
   def sensor_msgs_msg_point_cloud_get!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_header_type_support!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_header_create!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_header_destroy!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_header_set!(_message, _data) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def std_msgs_msg_header_get!(_message) do
     :erlang.nif_error(:nif_not_loaded)
   end
 
@@ -168,6 +228,26 @@ defmodule Rclex.Nif do
   end
 
   def std_msgs_msg_u_int32_multi_array_get!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_point32_type_support!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_point32_create!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_point32_destroy!(_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_point32_set!(_message, _data) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def geometry_msgs_msg_point32_get!(_message) do
     :erlang.nif_error(:nif_not_loaded)
   end
 
