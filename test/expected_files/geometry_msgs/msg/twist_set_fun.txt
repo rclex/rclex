@@ -4,17 +4,17 @@ if (!enif_get_tuple(env, tuple[0], &linear_arity, &linear_tuple))
   return enif_make_badarg(env);
 
 double linear_x;
-if (!enif_get_double(env, linear_tuple[0], &linear_x)
+if (!enif_get_double(env, linear_tuple[0], &linear_x))
   return enif_make_badarg(env);
 message_p->linear.x = linear_x;
 
 double linear_y;
-if (!enif_get_double(env, linear_tuple[1], &linear_y)
+if (!enif_get_double(env, linear_tuple[1], &linear_y))
   return enif_make_badarg(env);
 message_p->linear.y = linear_y;
 
 double linear_z;
-if (!enif_get_double(env, linear_tuple[2], &linear_z)
+if (!enif_get_double(env, linear_tuple[2], &linear_z))
   return enif_make_badarg(env);
 message_p->linear.z = linear_z;
 
@@ -25,17 +25,17 @@ if (!enif_get_tuple(env, tuple[1], &angular_arity, &angular_tuple))
   return enif_make_badarg(env);
 
 double angular_x;
-if (!enif_get_double(env, angular_tuple[0], &angular_x)
+if (!enif_get_double(env, angular_tuple[0], &angular_x))
   return enif_make_badarg(env);
 message_p->angular.x = angular_x;
 
 double angular_y;
-if (!enif_get_double(env, angular_tuple[1], &angular_y)
+if (!enif_get_double(env, angular_tuple[1], &angular_y))
   return enif_make_badarg(env);
 message_p->angular.y = angular_y;
 
 double angular_z;
-if (!enif_get_double(env, angular_tuple[2], &angular_z)
+if (!enif_get_double(env, angular_tuple[2], &angular_z))
   return enif_make_badarg(env);
 message_p->angular.z = angular_z;
 
