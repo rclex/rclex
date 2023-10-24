@@ -4,24 +4,6 @@ defmodule Rclex.Generators.MsgC do
   alias Rclex.Generators.Util
   alias Rclex.Parsers.TypeParser
 
-  @ros2_builtin_types [
-    "bool",
-    "byte",
-    "char",
-    "float32",
-    "float64",
-    "int8",
-    "uint8",
-    "int16",
-    "uint16",
-    "int32",
-    "uint32",
-    "int64",
-    "uint64",
-    "string",
-    "wstring"
-  ]
-
   def generate(type, ros2_message_type_map) do
     EEx.eval_file(Path.join(Util.templates_dir_path(), "msg_c.eex"),
       header_name: to_header_name(type),
