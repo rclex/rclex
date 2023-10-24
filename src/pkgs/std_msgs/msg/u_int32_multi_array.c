@@ -10,6 +10,7 @@
 #include <rosidl_runtime_c/string_functions.h>
 #include <std_msgs/msg/detail/multi_array_dimension__functions.h>
 #include <std_msgs/msg/detail/multi_array_dimension__struct.h>
+#include <std_msgs/msg/detail/multi_array_layout__functions.h>
 #include <std_msgs/msg/detail/multi_array_layout__struct.h>
 #include <std_msgs/msg/detail/u_int32_multi_array__functions.h>
 #include <std_msgs/msg/detail/u_int32_multi_array__struct.h>
@@ -98,54 +99,61 @@ ERL_NIF_TERM nif_std_msgs_msg_u_int32_multi_array_set(ErlNifEnv *env, int argc,
     if (!enif_get_list_cell(env, layout_dim_left, &layout_dim_head, &layout_dim_tail))
       return enif_make_badarg(env);
 
-    int layout_dim_arity;
-    const ERL_NIF_TERM *layout_dim_tuple;
-    if (!enif_get_tuple(env, layout_dim_head, &layout_dim_arity, &layout_dim_tuple))
+    int layout_dim_i_arity;
+    const ERL_NIF_TERM *layout_dim_i_tuple;
+    if (!enif_get_tuple(env, layout_dim_head, &layout_dim_i_arity, &layout_dim_i_tuple))
       return enif_make_badarg(env);
 
-    unsigned layout_dim_label_length;
+    unsigned int layout_dim_i_label_length;
 #if (ERL_NIF_MAJOR_VERSION == 2 && ERL_NIF_MINOR_VERSION >= 17) // OTP-26 and later
-    if (!enif_get_string_length(env, layout_dim_tuple[0], &layout_dim_label_length, ERL_NIF_LATIN1))
+    if (!enif_get_string_length(env, layout_dim_i_tuple[0], &layout_dim_i_label_length,
+                                ERL_NIF_LATIN1))
       return enif_make_badarg(env);
 #else
-    if (!enif_get_list_length(env, layout_dim_tuple[0], &layout_dim_label_length))
+    if (!enif_get_list_length(env, layout_dim_i_tuple[0], &layout_dim_i_label_length))
       return enif_make_badarg(env);
 #endif
 
-    char layout_dim_label[layout_dim_label_length + 1];
-    if (!enif_get_string(env, layout_dim_tuple[0], layout_dim_label, layout_dim_label_length + 1,
-                         ERL_NIF_LATIN1))
+    char layout_dim_i_label[layout_dim_i_label_length + 1];
+    if (enif_get_string(env, layout_dim_i_tuple[0], layout_dim_i_label,
+                        layout_dim_i_label_length + 1, ERL_NIF_LATIN1) <= 0)
       return enif_make_badarg(env);
 
     if (!rosidl_runtime_c__String__assign(&(message_p->layout.dim.data[layout_dim_i].label),
-                                          layout_dim_label))
+                                          layout_dim_i_label))
       return raise(env, __FILE__, __LINE__);
 
-    if (!enif_get_uint(env, layout_dim_tuple[1], &(message_p->layout.dim.data[layout_dim_i].size)))
+    unsigned int layout_dim_i_size;
+    if (!enif_get_uint(env, layout_dim_i_tuple[1], &layout_dim_i_size))
       return enif_make_badarg(env);
+    message_p->layout.dim.data[layout_dim_i].size = layout_dim_i_size;
 
-    if (!enif_get_uint(env, layout_dim_tuple[2],
-                       &(message_p->layout.dim.data[layout_dim_i].stride)))
+    unsigned int layout_dim_i_stride;
+    if (!enif_get_uint(env, layout_dim_i_tuple[2], &layout_dim_i_stride))
       return enif_make_badarg(env);
+    message_p->layout.dim.data[layout_dim_i].stride = layout_dim_i_stride;
   }
 
-  if (!enif_get_uint(env, layout_tuple[1], &(message_p->layout.data_offset)))
-    return enif_make_badarg(env);
+  unsigned int layout_data_offset;
+  if (!enif_get_uint(env, layout_tuple[1], &layout_data_offset)) return enif_make_badarg(env);
+  message_p->layout.data_offset = layout_data_offset;
 
   unsigned int data_length;
   if (!enif_get_list_length(env, tuple[1], &data_length)) return enif_make_badarg(env);
 
   rosidl_runtime_c__uint32__Sequence data;
   if (!rosidl_runtime_c__uint32__Sequence__init(&data, data_length)) return enif_make_badarg(env);
+  message_p->data = data;
 
   unsigned int data_i;
   ERL_NIF_TERM data_left, data_head, data_tail;
   for (data_i = 0, data_left = tuple[1]; data_i < data_length; ++data_i, data_left = data_tail) {
     if (!enif_get_list_cell(env, data_left, &data_head, &data_tail)) return enif_make_badarg(env);
-    if (!enif_get_uint(env, data_head, &(data.data[data_i]))) return enif_make_badarg(env);
-  }
 
-  message_p->data = data;
+    unsigned int data_uint32;
+    if (!enif_get_uint(env, data_head, &data_uint32)) return enif_make_badarg(env);
+    message_p->data.data[data_i] = data_uint32;
+  }
 
   return atom_ok;
 }
@@ -161,16 +169,17 @@ ERL_NIF_TERM nif_std_msgs_msg_u_int32_multi_array_get(ErlNifEnv *env, int argc,
   std_msgs__msg__UInt32MultiArray *message_p = (std_msgs__msg__UInt32MultiArray *)*ros_message_pp;
 
   ERL_NIF_TERM layout_dim[message_p->layout.dim.size];
-  for (size_t i = 0; i < message_p->layout.dim.size; ++i) {
-    layout_dim[i] = enif_make_tuple(
-        env, 3, enif_make_string(env, message_p->layout.dim.data[i].label.data, ERL_NIF_LATIN1),
-        enif_make_uint(env, message_p->layout.dim.data[i].size),
-        enif_make_uint(env, message_p->layout.dim.data[i].stride));
+  for (size_t layout_dim_i = 0; layout_dim_i < message_p->layout.dim.size; ++layout_dim_i) {
+    layout_dim[layout_dim_i] = enif_make_tuple(
+        env, 3,
+        enif_make_string(env, message_p->layout.dim.data[layout_dim_i].label.data, ERL_NIF_LATIN1),
+        enif_make_uint(env, message_p->layout.dim.data[layout_dim_i].size),
+        enif_make_uint(env, message_p->layout.dim.data[layout_dim_i].stride));
   }
 
   ERL_NIF_TERM data[message_p->data.size];
-  for (size_t i = 0; i < message_p->data.size; ++i) {
-    data[i] = enif_make_uint(env, message_p->data.data[i]);
+  for (size_t data_i = 0; data_i < message_p->data.size; ++data_i) {
+    data[data_i] = enif_make_uint(env, message_p->data.data[data_i]);
   }
 
   return enif_make_tuple(
