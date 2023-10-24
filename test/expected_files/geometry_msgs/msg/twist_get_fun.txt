@@ -1,15 +1,12 @@
-return enif_make_tuple(env, 2,
-enif_make_tuple(env, 3,
-enif_make_double(env, message_p->linear.x),
-enif_make_double(env, message_p->linear.y),
-enif_make_double(env, message_p->linear.z)
-)
-,
-enif_make_tuple(env, 3,
-enif_make_double(env, message_p->angular.x),
-enif_make_double(env, message_p->angular.y),
-enif_make_double(env, message_p->angular.z)
-)
-
-)
-;
+  return enif_make_tuple(env, 2,
+    enif_make_tuple(env, 3,
+      enif_make_double(env, message_p->linear.x),
+      enif_make_double(env, message_p->linear.y),
+      enif_make_double(env, message_p->linear.z)
+    ),
+    enif_make_tuple(env, 3,
+      enif_make_double(env, message_p->angular.x),
+      enif_make_double(env, message_p->angular.y),
+      enif_make_double(env, message_p->angular.z)
+    )
+  );
