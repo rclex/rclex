@@ -2,12 +2,12 @@
   if (!enif_get_double(env, tuple[0], &x))
     return enif_make_badarg(env);
   message_p->x = x;
-  
+
   double y;
   if (!enif_get_double(env, tuple[1], &y))
     return enif_make_badarg(env);
   message_p->y = y;
-  
+
   double z;
   if (!enif_get_double(env, tuple[2], &z))
     return enif_make_badarg(env);

@@ -59,9 +59,7 @@ defmodule Rclex.Generators.MsgC do
 
   def set_fun_fragments(ros2_message_type, ros2_message_type_map) do
     enif_get({:msg_type, ros2_message_type}, %Acc{}, ros2_message_type_map)
-    |> String.replace_suffix("\n", "")
-    |> String.split("\n")
-    |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
+    |> format
   end
 
   def enif_get({:msg_type, ros2_message_type}, acc, ros2_message_type_map) do
@@ -128,9 +126,7 @@ defmodule Rclex.Generators.MsgC do
          acc = %Acc{acc | vars: acc.vars ++ ["i"], mbrs: acc.mbrs ++ ["data[#{var}_i]"]}
          enif_get({:msg_type, get_array_type(type)}, acc, ros2_message_type_map)
        end).()
-      |> String.replace_suffix("\n", "")
-      |> String.split("\n")
-      |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
+      |> format()
 
     """
     unsigned int #{var}_length;
@@ -176,9 +172,7 @@ defmodule Rclex.Generators.MsgC do
 
          enif_get({:built_in_type, get_array_type(type)}, acc, ros2_message_type_map)
        end).()
-      |> String.replace_suffix("\n", "")
-      |> String.split("\n")
-      |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
+      |> format()
 
     """
     unsigned int #{var}_length;
@@ -292,9 +286,7 @@ defmodule Rclex.Generators.MsgC do
 
   def get_fun_fragments(ros2_message_type, ros2_message_type_map) do
     build_get_fun_fragments(%Acc{type: {:msg_type, ros2_message_type}}, ros2_message_type_map)
-    |> String.replace_suffix("\n", "")
-    |> String.split("\n")
-    |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
+    |> format()
   end
 
   def build_get_fun_fragments(acc, lhs \\ "return", ros2_message_type_map) do
@@ -318,9 +310,7 @@ defmodule Rclex.Generators.MsgC do
           "#{var}[#{var}_i] =",
           ros2_message_type_map
         )
-        |> String.replace_suffix("\n", "")
-        |> String.split("\n")
-        |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
+        |> format()
 
       """
       ERL_NIF_TERM #{var}[message_p->#{mbr}.size];
@@ -360,10 +350,7 @@ defmodule Rclex.Generators.MsgC do
         {binary, accs ++ accs_}
       end)
 
-    binary =
-      Enum.join(binaries, ",\n")
-      |> String.split("\n")
-      |> Enum.map_join("\n", &Kernel.<>(String.duplicate(" ", 2), &1))
+    binary = Enum.join(binaries, ",\n") |> format()
 
     binary =
       """
@@ -417,6 +404,19 @@ defmodule Rclex.Generators.MsgC do
 
   defp enif_make_builtin("string", mbr) do
     "enif_make_string(env, message_p->#{mbr}.data, ERL_NIF_LATIN1)"
+  end
+
+  defp format(binary) do
+    indent = String.duplicate(" ", 2)
+
+    binary
+    |> String.replace_suffix("\n", "")
+    |> String.split("\n")
+    |> Enum.map_join("\n", fn
+      "" -> ""
+      line = "#" <> _ -> line
+      line -> indent <> line
+    end)
   end
 
   defp get_deps_types(ros2_message_type, types \\ MapSet.new([]), ros2_message_type_map) do
