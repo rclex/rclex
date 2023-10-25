@@ -70,9 +70,9 @@ defmodule Rclex.MixProject do
   end
 
   defp c_src_paths() do
-    [bin | args] = ~w"find src -name *.c"
-    {return, 0} = System.cmd(bin, args)
-    String.split(return, "\n") |> Enum.reject(&(&1 == ""))
+    File.ls!("src")
+    |> Enum.map(&Path.join("src", &1))
+    |> Enum.filter(&String.ends_with?(&1, ".c"))
   end
 
   defp dialyzer() do

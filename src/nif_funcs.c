@@ -1,5 +1,5 @@
 #include "macros.h"
-#include "msg_funcs.h"
+#include "msg_funcs.h" // IWYU pragma: keep
 #include "rcl_init.h"
 #include "rcl_node.h"
 #include "rcl_publisher.h"
@@ -33,7 +33,7 @@ static ErlNifFunc nif_funcs[] = {
     {"rcl_wait_set_init_subscription!", 1, nif_rcl_wait_set_init_subscription, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"rcl_wait_set_fini!", 1, nif_rcl_wait_set_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"rcl_wait_subscription!", 3, nif_rcl_wait_subscription, ERL_NIF_DIRTY_JOB_IO_BOUND},
-#include "msg_funcs.ec"
+#include "msg_funcs.ec" // IWYU pragma: keep
     // clang-format on
 };
 
