@@ -11,13 +11,7 @@ defmodule Rclex.MixProject do
       make_clean: ["clean"],
       compilers: [:elixir_make] ++ Mix.compilers(),
       aliases: [format: [&format_c/1, "format"], iwyu: [&iwyu/1]],
-      test_coverage: [
-        ignore_modules: [
-          Rclex.Nif,
-          Rclex.Generators.MsgC.Acc,
-          ~r/Rclex\.Pkgs.+/
-        ]
-      ],
+      test_coverage: test_coverage(),
       dialyzer: dialyzer()
     ]
   end
@@ -86,6 +80,17 @@ defmodule Rclex.MixProject do
       plt_local_path: "priv/plts/rclex.plt",
       plt_core_path: "priv/plts/core.plt",
       plt_add_apps: [:mix, :eex]
+    ]
+  end
+
+  defp test_coverage() do
+    [
+      ignore_modules: [
+        Rclex.Nif,
+        Rclex.Generators.MsgC.Acc,
+        ~r/Rclex\.Pkgs.+/,
+        Mix.Tasks.Rclex.Gen.Msgs
+      ]
     ]
   end
 end
