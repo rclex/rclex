@@ -9,9 +9,9 @@ defmodule Rclex.Parsers.Helpers do
   def parse_type(combinator \\ empty()) do
     combinator
     |> choice([
-      built_in_type_array(),
+      builtin_type_array(),
       msg_type_array(),
-      built_in_type(),
+      builtin_type(),
       msg_type()
     ])
   end
@@ -72,9 +72,9 @@ defmodule Rclex.Parsers.Helpers do
   defp field_type(combinator) do
     combinator
     |> choice([
-      built_in_type_array() |> reduce({Enum, :join, []}) |> unwrap_and_tag(:built_in_type_array),
+      builtin_type_array() |> reduce({Enum, :join, []}) |> unwrap_and_tag(:builtin_type_array),
       msg_type_array() |> reduce({Enum, :join, []}) |> unwrap_and_tag(:msg_type_array),
-      built_in_type() |> unwrap_and_tag(:built_in_type),
+      builtin_type() |> unwrap_and_tag(:builtin_type),
       msg_type() |> unwrap_and_tag(:msg_type)
     ])
   end
@@ -100,7 +100,7 @@ defmodule Rclex.Parsers.Helpers do
     |> reduce({Enum, :join, []})
   end
 
-  defp built_in_type(combinator \\ empty()) do
+  defp builtin_type(combinator \\ empty()) do
     combinator
     |> choice([
       bounded_string(),
@@ -127,9 +127,9 @@ defmodule Rclex.Parsers.Helpers do
     |> ascii_string([?a..?z, ?A..?Z, ?0..?9, ?_, ?/], min: 1)
   end
 
-  defp built_in_type_array(combinator \\ empty()) do
+  defp builtin_type_array(combinator \\ empty()) do
     combinator
-    |> built_in_type()
+    |> builtin_type()
     |> choice([
       static_array(),
       unbounded_dynamic_array(),

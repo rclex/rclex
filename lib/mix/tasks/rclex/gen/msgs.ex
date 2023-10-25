@@ -19,10 +19,10 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
     Enum.reduce(fields, type_map, fn [head | _], acc ->
       case head do
-        {:built_in_type, _type} ->
+        {:builtin_type, _type} ->
           acc
 
-        {:built_in_type_array, _type} ->
+        {:builtin_type_array, _type} ->
           acc
 
         {:msg_type, type} ->

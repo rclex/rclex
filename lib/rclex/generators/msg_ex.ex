@@ -41,16 +41,16 @@ defmodule Rclex.Generators.MsgEx do
     get_fields(ros2_message_type, ros2_message_type_map)
     |> Enum.map_join(",\n", fn field ->
       case field do
-        [{:built_in_type, _type}, name] ->
+        [{:builtin_type, _type}, name] ->
           "#{name}: nil"
 
-        [{:built_in_type, _type}, name, default] ->
+        [{:builtin_type, _type}, name, default] ->
           "#{name}: #{inspect(default)}"
 
-        [{:built_in_type_array, _type}, name] ->
+        [{:builtin_type_array, _type}, name] ->
           "#{name}: []"
 
-        [{:built_in_type_array, _type}, name, default] ->
+        [{:builtin_type_array, _type}, name, default] ->
           "#{name}: #{inspect(default)}"
 
         [{:msg_type, type}, name] ->
@@ -73,10 +73,10 @@ defmodule Rclex.Generators.MsgEx do
       [type_tuple, name | _] = field
 
       case [type_tuple, name] do
-        [{:built_in_type, type}, name] ->
+        [{:builtin_type, type}, name] ->
           "#{name}: #{@ros2_elixir_type_map[type]}"
 
-        [{:built_in_type_array, type}, name] ->
+        [{:builtin_type_array, type}, name] ->
           "#{name}: list(#{@ros2_elixir_type_map[get_array_type(type)]})"
 
         [{:msg_type, type}, name] ->
@@ -116,13 +116,13 @@ defmodule Rclex.Generators.MsgEx do
       [type_tuple, name | _] = field
 
       case [type_tuple, name] do
-        [{:built_in_type, "string" <> _}, name] ->
+        [{:builtin_type, "string" <> _}, name] ->
           ~s/~c"\#{#{name}}"/
 
-        [{:built_in_type, _type}, name] ->
+        [{:builtin_type, _type}, name] ->
           "#{name}"
 
-        [{:built_in_type_array, _type}, name] ->
+        [{:builtin_type_array, _type}, name] ->
           "#{name}"
 
         [{:msg_type, type}, name] ->
@@ -152,13 +152,13 @@ defmodule Rclex.Generators.MsgEx do
       [type_tuple, name | _] = field
 
       case [type_tuple, name] do
-        [{:built_in_type, "string" <> _}, name] ->
+        [{:builtin_type, "string" <> _}, name] ->
           ~s/#{name}: "\#{#{name}}"/
 
-        [{:built_in_type, _type}, name] ->
+        [{:builtin_type, _type}, name] ->
           "#{name}: #{name}"
 
-        [{:built_in_type_array, _type}, name] ->
+        [{:builtin_type_array, _type}, name] ->
           "#{name}: #{name}"
 
         [{:msg_type, type}, name] ->
