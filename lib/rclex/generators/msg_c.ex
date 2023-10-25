@@ -67,14 +67,13 @@ defmodule Rclex.Generators.MsgC do
 
     Enum.with_index(fields)
     |> Enum.map_join("\n", fn {[_, name | _] = field, index} ->
-      acc =
-        %Acc{
-          acc
-          | vars: acc.vars ++ [name],
-            mbrs: acc.mbrs ++ [name],
-            terms: acc.vars ++ ["tuple[#{index}]"],
-            type: hd(field)
-        }
+      acc = %Acc{
+        acc
+        | vars: acc.vars ++ [name],
+          mbrs: acc.mbrs ++ [name],
+          terms: acc.vars ++ ["tuple[#{index}]"],
+          type: hd(field)
+      }
 
       case acc.type do
         {:msg_type, _type} ->
