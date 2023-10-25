@@ -71,23 +71,5 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
-  def rosidl_get_std_msgs_msg_string_type_support!() do
-    :erlang.nif_error(:nif_not_loaded)
-  end
-
-  def std_msgs_msg_string_create!() do
-    :erlang.nif_error(:nif_not_loaded)
-  end
-
-  def std_msgs_msg_string_destroy!(_message) do
-    :erlang.nif_error(:nif_not_loaded)
-  end
-
-  def std_msgs_msg_string_set!(_message, _data) do
-    :erlang.nif_error(:nif_not_loaded)
-  end
-
-  def std_msgs_msg_string_get!(_message) do
-    :erlang.nif_error(:nif_not_loaded)
-  end
+  @before_compile Rclex.MsgFuncs
 end

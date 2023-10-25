@@ -1,5 +1,5 @@
 #include "macros.h"
-#include "pkgs/std_msgs/msg/string.h"
+#include "msg_funcs.h" // IWYU pragma: keep
 #include "rcl_init.h"
 #include "rcl_node.h"
 #include "rcl_publisher.h"
@@ -33,11 +33,7 @@ static ErlNifFunc nif_funcs[] = {
     {"rcl_wait_set_init_subscription!", 1, nif_rcl_wait_set_init_subscription, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"rcl_wait_set_fini!", 1, nif_rcl_wait_set_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"rcl_wait_subscription!", 3, nif_rcl_wait_subscription, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rosidl_get_std_msgs_msg_string_type_support!", 0, nif_rosidl_get_std_msgs_msg_string_type_support, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"std_msgs_msg_string_create!", 0, nif_std_msgs_msg_string_create, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"std_msgs_msg_string_destroy!", 1, nif_std_msgs_msg_string_destroy, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"std_msgs_msg_string_set!", 2, nif_std_msgs_msg_string_set, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"std_msgs_msg_string_get!", 1, nif_std_msgs_msg_string_get, ERL_NIF_DIRTY_JOB_IO_BOUND},
+#include "msg_funcs.ec" // IWYU pragma: keep
     // clang-format on
 };
 

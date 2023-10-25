@@ -63,4 +63,5 @@ jobs:
           source /opt/ros/${ROS_DISTRO}/setup.bash
           cd rclex
           mix local.hex --force
+          mix rclex.gen.msgs
           mix test

@@ -71,9 +71,37 @@ defmodule Rclex.NifTest do
     end
   end
 
-  describe "std_msgs_msgs_string" do
-    test "rosidl_get_std_msgs_msg_string_type_support!/0" do
-      assert is_reference(Nif.rosidl_get_std_msgs_msg_string_type_support!())
+  describe "sensor_msgs_msg_point_cloud" do
+    test "sensor_msgs_msg_point_cloud_type_support!/0" do
+      assert is_reference(Nif.sensor_msgs_msg_point_cloud_type_support!())
+    end
+
+    test "sensor_msgs_msg_point_cloud_create!/1, sensor_msgs_msg_point_cloud_destroy!/1" do
+      message = Nif.sensor_msgs_msg_point_cloud_create!()
+      assert is_reference(message)
+      assert Nif.sensor_msgs_msg_point_cloud_destroy!(message) == :ok
+    end
+
+    test "sensor_msgs_msg_point_cloud_set!/1, sensor_msgs_msg_point_cloud_get!/1" do
+      message = Nif.sensor_msgs_msg_point_cloud_create!()
+
+      assert Nif.sensor_msgs_msg_point_cloud_set!(
+               message,
+               {{{-9, 8}, ~c"test"}, [{0.1, 0.2, 0.3}, {0.4, 0.5, 0.6}, {0.7, 0.8, 0.9}],
+                [{~c"channels_name", [0.0]}]}
+             ) == :ok
+
+      # assert Nif.sensor_msgs_msg_point_cloud_get!(message) ==
+      #          {{{-9, 8}, ~c"test"}, [{0.1, 0.2, 0.3}, {0.4, 0.5, 0.6}, {0.7, 0.8, 0.9}],
+      #           [{~c"channels_name", [0.0]}]}
+
+      :ok = Nif.sensor_msgs_msg_point_cloud_destroy!(message)
+    end
+  end
+
+  describe "std_msgs_msg_string" do
+    test "std_msgs_msg_string_type_support!/0" do
+      assert is_reference(Nif.std_msgs_msg_string_type_support!())
     end
 
     test "std_msgs_msg_string_create!/1, std_msgs_msg_string_destroy!/1" do
@@ -84,9 +112,118 @@ defmodule Rclex.NifTest do
 
     test "std_msgs_msg_string_set!/1, std_msgs_msg_string_get!/1" do
       message = Nif.std_msgs_msg_string_create!()
-      assert Nif.std_msgs_msg_string_set!(message, ~c"test") == :ok
-      assert Nif.std_msgs_msg_string_get!(message) == ~c"test"
+      assert Nif.std_msgs_msg_string_set!(message, {~c"test"}) == :ok
+      assert Nif.std_msgs_msg_string_get!(message) == {~c"test"}
       :ok = Nif.std_msgs_msg_string_destroy!(message)
+    end
+  end
+
+  describe "std_msgs_msg_mutli_array_dimension" do
+    test "std_msgs_msg_multi_array_dimension_type_support!/0" do
+      assert is_reference(Nif.std_msgs_msg_multi_array_dimension_type_support!())
+    end
+
+    test "std_msgs_msg_multi_array_dimension_create!/1, std_msgs_msg_multi_array_dimension_destroy!/1" do
+      message = Nif.std_msgs_msg_multi_array_dimension_create!()
+      assert is_reference(message)
+      assert Nif.std_msgs_msg_multi_array_dimension_destroy!(message) == :ok
+    end
+
+    test "std_msgs_msg_multi_array_dimension_set!/1, std_msgs_msg_multi_array_dimension_get!/1" do
+      message = Nif.std_msgs_msg_multi_array_dimension_create!()
+      assert Nif.std_msgs_msg_multi_array_dimension_set!(message, {~c"1", 2, 3}) == :ok
+      assert Nif.std_msgs_msg_multi_array_dimension_get!(message) == {~c"1", 2, 3}
+      :ok = Nif.std_msgs_msg_multi_array_dimension_destroy!(message)
+    end
+  end
+
+  describe "std_msgs_msg_mutli_array_layout" do
+    test "std_msgs_msg_multi_array_layout_type_support!/0" do
+      assert is_reference(Nif.std_msgs_msg_multi_array_layout_type_support!())
+    end
+
+    test "std_msgs_msg_multi_array_layout_create!/1, std_msgs_msg_multi_array_layout_destroy!/1" do
+      message = Nif.std_msgs_msg_multi_array_layout_create!()
+      assert is_reference(message)
+      assert Nif.std_msgs_msg_multi_array_layout_destroy!(message) == :ok
+    end
+
+    test "std_msgs_msg_multi_array_layout_set!/1, std_msgs_msg_multi_array_layout_get!/1" do
+      message = Nif.std_msgs_msg_multi_array_layout_create!()
+
+      assert Nif.std_msgs_msg_multi_array_layout_set!(
+               message,
+               {[{~c"1", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}
+             ) == :ok
+
+      assert Nif.std_msgs_msg_multi_array_layout_get!(message) ==
+               {[{~c"1", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}
+
+      :ok = Nif.std_msgs_msg_multi_array_layout_destroy!(message)
+    end
+  end
+
+  describe "std_msgs_msg_u_int32_multi_array" do
+    test "std_msgs_msg_u_int32_multi_array_type_support!/0" do
+      assert is_reference(Nif.std_msgs_msg_u_int32_multi_array_type_support!())
+    end
+
+    test "std_msgs_msg_u_int32_multi_array_create!/1, std_msgs_msg_u_int32_multi_array_destroy!/1" do
+      message = Nif.std_msgs_msg_u_int32_multi_array_create!()
+      assert is_reference(message)
+      assert Nif.std_msgs_msg_u_int32_multi_array_destroy!(message) == :ok
+    end
+
+    test "std_msgs_msg_u_int32_multi_array_set!/1, std_msgs_msg_u_int32_multi_array_get!/1" do
+      message = Nif.std_msgs_msg_u_int32_multi_array_create!()
+
+      assert Nif.std_msgs_msg_u_int32_multi_array_set!(
+               message,
+               {{[{~c"test", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}, [1, 2, 3]}
+             ) == :ok
+
+      assert Nif.std_msgs_msg_u_int32_multi_array_get!(message) ==
+               {{[{~c"test", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}, [1, 2, 3]}
+
+      :ok = Nif.std_msgs_msg_u_int32_multi_array_destroy!(message)
+    end
+  end
+
+  describe "geometry_msgs_msg_vector3" do
+    test "geometry_msgs_msg_vector3_type_support!/0" do
+      assert is_reference(Nif.geometry_msgs_msg_vector3_type_support!())
+    end
+
+    test "geometry_msgs_msg_vector3_create!/1, geometry_msgs_msg_vector3_destroy!/1" do
+      message = Nif.geometry_msgs_msg_vector3_create!()
+      assert is_reference(message)
+      assert Nif.geometry_msgs_msg_vector3_destroy!(message) == :ok
+    end
+
+    test "geometry_msgs_msg_vector3_set!/1, geometry_msgs_msg_vector3_get!/1" do
+      message = Nif.geometry_msgs_msg_vector3_create!()
+      assert Nif.geometry_msgs_msg_vector3_set!(message, {1.0, 2.0, 3.0}) == :ok
+      assert Nif.geometry_msgs_msg_vector3_get!(message) == {1.0, 2.0, 3.0}
+      :ok = Nif.geometry_msgs_msg_vector3_destroy!(message)
+    end
+  end
+
+  describe "geometry_msgs_msg_twist" do
+    test "geometry_msgs_msg_twist_type_support!/0" do
+      assert is_reference(Nif.geometry_msgs_msg_twist_type_support!())
+    end
+
+    test "geometry_msgs_msg_twist_create!/1, geometry_msgs_msg_twist_destroy!/1" do
+      message = Nif.geometry_msgs_msg_twist_create!()
+      assert is_reference(message)
+      assert Nif.geometry_msgs_msg_twist_destroy!(message) == :ok
+    end
+
+    test "geometry_msgs_msg_twist_set!/1, geometry_msgs_msg_twist_get!/1" do
+      message = Nif.geometry_msgs_msg_twist_create!()
+      assert Nif.geometry_msgs_msg_twist_set!(message, {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}}) == :ok
+      assert Nif.geometry_msgs_msg_twist_get!(message) == {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}}
+      :ok = Nif.geometry_msgs_msg_twist_destroy!(message)
     end
   end
 
@@ -94,7 +231,7 @@ defmodule Rclex.NifTest do
     setup do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
-      type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
+      type_support = Nif.std_msgs_msg_string_type_support!()
 
       on_exit(fn ->
         Nif.rcl_node_fini!(node)
@@ -124,12 +261,12 @@ defmodule Rclex.NifTest do
     setup do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
-      type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
+      type_support = Nif.std_msgs_msg_string_type_support!()
       publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter")
       subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/chatter")
       wait_set = Nif.rcl_wait_set_init_subscription!(context)
       message = Nif.std_msgs_msg_string_create!()
-      :ok = Nif.std_msgs_msg_string_set!(message, ~c"Hello from Rclex")
+      :ok = Nif.std_msgs_msg_string_set!(message, {~c"Hello from Rclex"})
 
       on_exit(fn ->
         Nif.std_msgs_msg_string_destroy!(message)
@@ -160,7 +297,7 @@ defmodule Rclex.NifTest do
       :ok = Nif.rcl_publish!(publisher, message)
       :ok = Nif.rcl_wait_subscription!(wait_set, 1000, subscription)
       assert Nif.rcl_take!(subscription, message) == :ok
-      assert Nif.std_msgs_msg_string_get!(message) == ~c"Hello from Rclex"
+      assert Nif.std_msgs_msg_string_get!(message) == {~c"Hello from Rclex"}
     end
   end
 
@@ -168,7 +305,7 @@ defmodule Rclex.NifTest do
     setup do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
-      type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
+      type_support = Nif.std_msgs_msg_string_type_support!()
 
       on_exit(fn ->
         Nif.rcl_node_fini!(node)
@@ -201,7 +338,7 @@ defmodule Rclex.NifTest do
     setup do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
-      type_support = Nif.rosidl_get_std_msgs_msg_string_type_support!()
+      type_support = Nif.std_msgs_msg_string_type_support!()
       subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic")
 
       on_exit(fn ->

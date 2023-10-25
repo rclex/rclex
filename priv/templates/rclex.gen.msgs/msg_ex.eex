@@ -1,0 +1,44 @@
+defmodule Rclex.Pkgs.<%= module_name %> do
+  @moduledoc false
+  @behaviour Rclex.MessageBehaviour
+
+  defstruct <%= defstruct_fields %>
+
+  @type t :: %__MODULE__{
+<%= type_fields %>
+        }
+
+  alias Rclex.Nif
+
+  def type_support!() do
+    Nif.<%= function_prefix %>_type_support!()
+  end
+
+  def create!() do
+    Nif.<%= function_prefix %>_create!()
+  end
+
+  def destroy!(message) do
+    Nif.<%= function_prefix %>_destroy!(message)
+  end
+
+  def set!(message, %__MODULE__{} = struct) do
+    Nif.<%= function_prefix %>_set!(message, to_tuple(struct))
+  end
+
+  def get!(message) do
+    Nif.<%= function_prefix %>_get!(message) |> to_struct()
+  end
+
+  def to_tuple(%__MODULE__{<%= to_tuple_args_fields %>}) do
+    {
+<%= to_tuple_return_fields %>
+    }
+  end
+
+  def to_struct({<%= to_struct_args_fields %>}) do
+    %__MODULE__{
+<%= to_struct_return_fields %>
+    }
+  end
+end

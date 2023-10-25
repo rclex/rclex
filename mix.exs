@@ -8,9 +8,10 @@ defmodule Rclex.MixProject do
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      make_clean: ["clean"],
       compilers: [:elixir_make] ++ Mix.compilers(),
       aliases: [format: [&format_c/1, "format"], iwyu: [&iwyu/1]],
-      test_coverage: [ignore_modules: [Rclex.Nif]],
+      test_coverage: test_coverage(),
       dialyzer: dialyzer()
     ]
   end
@@ -29,7 +30,9 @@ defmodule Rclex.MixProject do
       {:elixir_make, "~> 0.7", runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false},
-      {:benchee, "~> 1.0", only: :dev}
+      {:benchee, "~> 1.0", only: :dev},
+      {:nimble_parsec, "~> 1.0"},
+      {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -67,15 +70,27 @@ defmodule Rclex.MixProject do
   end
 
   defp c_src_paths() do
-    [bin | args] = ~w"find src -name *.c"
-    {return, 0} = System.cmd(bin, args)
-    String.split(return, "\n") |> Enum.reject(&(&1 == ""))
+    File.ls!("src")
+    |> Enum.map(&Path.join("src", &1))
+    |> Enum.filter(&String.ends_with?(&1, ".c"))
   end
 
   defp dialyzer() do
     [
       plt_local_path: "priv/plts/rclex.plt",
-      plt_core_path: "priv/plts/core.plt"
+      plt_core_path: "priv/plts/core.plt",
+      plt_add_apps: [:mix, :eex]
+    ]
+  end
+
+  defp test_coverage() do
+    [
+      ignore_modules: [
+        Rclex.Nif,
+        Rclex.Generators.MsgC.Acc,
+        ~r/Rclex\.Pkgs.+/,
+        Mix.Tasks.Rclex.Gen.Msgs
+      ]
     ]
   end
 end
