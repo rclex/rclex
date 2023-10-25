@@ -54,7 +54,7 @@ defmodule Rclex.Generators.MsgC do
 
   defmodule Acc do
     @moduledoc false
-    defstruct vars: [], mbrs: [], depth: 0, type: nil, terms: []
+    defstruct vars: [], mbrs: [], type: nil, terms: []
   end
 
   def set_fun_fragments(ros2_message_type, ros2_message_type_map) do
@@ -80,7 +80,7 @@ defmodule Rclex.Generators.MsgC do
           [_] ->
             acc
         end
-        |> then(&%Acc{&1 | depth: acc.depth + 1, type: hd(field)})
+        |> then(&%Acc{&1 | type: hd(field)})
 
       case acc.type do
         {:msg_type, _type} ->
@@ -329,9 +329,7 @@ defmodule Rclex.Generators.MsgC do
       {:msg_type_array, type} -> %Acc{acc | type: {:msg_type, get_array_type(type)}}
       {:built_in_type_array, type} -> %Acc{acc | type: {:built_in_type, get_array_type(type)}}
     end
-    |> then(
-      &%Acc{&1 | mbrs: acc.mbrs ++ ["data[#{Enum.join(acc.vars, "_")}_i]"], depth: acc.depth + 1}
-    )
+    |> then(&%Acc{&1 | mbrs: acc.mbrs ++ ["data[#{Enum.join(acc.vars, "_")}_i]"]})
   end
 
   def enif_make({:msg_type, ros2_message_type}, acc, ros2_message_type_map) do
@@ -344,7 +342,7 @@ defmodule Rclex.Generators.MsgC do
             [_, name | _] -> %Acc{acc | vars: acc.vars ++ [name], mbrs: acc.mbrs ++ [name]}
             [_] -> acc
           end
-          |> then(&%Acc{&1 | depth: acc.depth + 1, type: hd(field)})
+          |> then(&%Acc{&1 | type: hd(field)})
 
         {binary, accs_} = enif_make(acc.type, acc, ros2_message_type_map)
         {binary, accs ++ accs_}
