@@ -100,7 +100,7 @@ defmodule Rclex.Generators.MsgC do
     end)
   end
 
-  def enif_get({:built_in_type, type}, acc, _ros2_message_type_map) do
+  def enif_get({:builtin_type, type}, acc, _ros2_message_type_map) do
     var = Enum.join(acc.vars, "_")
     mbr = Enum.join(acc.mbrs, ".")
     term = Enum.join(acc.terms, "_")
@@ -148,7 +148,7 @@ defmodule Rclex.Generators.MsgC do
     """
   end
 
-  def enif_get({:built_in_type_array, type}, acc, ros2_message_type_map) do
+  def enif_get({:builtin_type_array, type}, acc, ros2_message_type_map) do
     var = Enum.join(acc.vars, "_")
     mbr = Enum.join(acc.mbrs, ".")
     term = Enum.join(acc.terms, "_")
@@ -164,7 +164,7 @@ defmodule Rclex.Generators.MsgC do
              terms: acc.vars ++ ["head"]
          }
 
-         enif_get({:built_in_type, get_array_type(type)}, acc, ros2_message_type_map)
+         enif_get({:builtin_type, get_array_type(type)}, acc, ros2_message_type_map)
        end).()
       |> format()
 
@@ -289,7 +289,7 @@ defmodule Rclex.Generators.MsgC do
     array_accs =
       Enum.filter(accs, fn acc ->
         {type_atom, _} = acc.type
-        type_atom in [:msg_type_array, :built_in_type_array]
+        type_atom in [:msg_type_array, :builtin_type_array]
       end)
 
     rhs = binary |> String.replace_suffix("\n", "")
@@ -321,7 +321,7 @@ defmodule Rclex.Generators.MsgC do
   defp to_not_array_acc(acc) do
     case acc.type do
       {:msg_type_array, type} -> %Acc{acc | type: {:msg_type, get_array_type(type)}}
-      {:built_in_type_array, type} -> %Acc{acc | type: {:built_in_type, get_array_type(type)}}
+      {:builtin_type_array, type} -> %Acc{acc | type: {:builtin_type, get_array_type(type)}}
     end
     |> then(&%Acc{&1 | mbrs: acc.mbrs ++ ["data[#{Enum.join(acc.vars, "_")}_i]"]})
   end
@@ -353,11 +353,11 @@ defmodule Rclex.Generators.MsgC do
     {enif_make_array(type, acc, ros2_message_type_map), [acc]}
   end
 
-  def enif_make({:built_in_type_array, type}, acc, ros2_message_type_map) do
+  def enif_make({:builtin_type_array, type}, acc, ros2_message_type_map) do
     {enif_make_array(type, acc, ros2_message_type_map), [acc]}
   end
 
-  def enif_make({:built_in_type, type}, acc, _ros2_message_type_map) do
+  def enif_make({:builtin_type, type}, acc, _ros2_message_type_map) do
     mbr = Enum.join(acc.mbrs, ".")
     {enif_make_builtin(type, mbr), [acc]}
   end
