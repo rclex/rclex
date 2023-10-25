@@ -60,3 +60,4 @@ $(TEMPLATES):
 clean:
 	$(RM) $(NIF_SO) $(OBJ)
 	$(RM) $(TEMPLATES)
+	$(RM) -r lib/rclex/pkgs src/pkgs
