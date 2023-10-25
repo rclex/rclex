@@ -66,21 +66,15 @@ defmodule Rclex.Generators.MsgC do
     fields = get_fields(ros2_message_type, ros2_message_type_map)
 
     Enum.with_index(fields)
-    |> Enum.map_join("\n", fn {field, index} ->
+    |> Enum.map_join("\n", fn {[_, name | _] = field, index} ->
       acc =
-        case field do
-          [_, name | _] ->
-            %Acc{
-              acc
-              | vars: acc.vars ++ [name],
-                mbrs: acc.mbrs ++ [name],
-                terms: acc.vars ++ ["tuple[#{index}]"]
-            }
-
-          [_] ->
-            acc
-        end
-        |> then(&%Acc{&1 | type: hd(field)})
+        %Acc{
+          acc
+          | vars: acc.vars ++ [name],
+            mbrs: acc.mbrs ++ [name],
+            terms: acc.vars ++ ["tuple[#{index}]"],
+            type: hd(field)
+        }
 
       case acc.type do
         {:msg_type, _type} ->
@@ -336,14 +330,8 @@ defmodule Rclex.Generators.MsgC do
     fields = get_fields(ros2_message_type, ros2_message_type_map)
 
     {binaries, accs} =
-      Enum.map_reduce(fields, [], fn field, accs ->
-        acc =
-          case field do
-            [_, name | _] -> %Acc{acc | vars: acc.vars ++ [name], mbrs: acc.mbrs ++ [name]}
-            [_] -> acc
-          end
-          |> then(&%Acc{&1 | type: hd(field)})
-
+      Enum.map_reduce(fields, [], fn [_, name | _] = field, accs ->
+        acc = %Acc{acc | vars: acc.vars ++ [name], mbrs: acc.mbrs ++ [name], type: hd(field)}
         {binary, accs_} = enif_make(acc.type, acc, ros2_message_type_map)
         {binary, accs ++ accs_}
       end)
