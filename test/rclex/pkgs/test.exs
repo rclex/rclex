@@ -47,4 +47,24 @@ defmodule Rclex.Pkgs.Test do
     end)
     |> tap(&Rclex.Pkgs.StdMsgs.Msg.UInt32MultiArray.destroy!(&1))
   end
+
+  test "sensor_msgs/msg/PointCloud" do
+    struct = %Rclex.Pkgs.SensorMsgs.Msg.PointCloud{
+      header: %Rclex.Pkgs.StdMsgs.Msg.Header{
+        stamp: %Rclex.Pkgs.BuiltinInterfaces.Msg.Time{sec: -1, nanosec: 1},
+        frame_id: "frame_id"
+      },
+      points: [%Rclex.Pkgs.GeometryMsgs.Msg.Point32{x: 0.0, y: 0.0, z: 0.0}],
+      channels: [
+        %Rclex.Pkgs.SensorMsgs.Msg.ChannelFloat32{name: "name", values: [0.0, 0.0, 0.0]}
+      ]
+    }
+
+    Rclex.Pkgs.SensorMsgs.Msg.PointCloud.create!()
+    |> tap(&Rclex.Pkgs.SensorMsgs.Msg.PointCloud.set!(&1, struct))
+    |> tap(fn message ->
+      assert ^struct = Rclex.Pkgs.SensorMsgs.Msg.PointCloud.get!(message)
+    end)
+    |> tap(&Rclex.Pkgs.SensorMsgs.Msg.PointCloud.destroy!(&1))
+  end
 end
