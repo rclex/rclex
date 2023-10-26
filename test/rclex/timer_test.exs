@@ -9,6 +9,10 @@ defmodule Rclex.TimerTest do
   setup do
     capture_log(fn -> Application.stop(:rclex) end)
 
+    start_supervised!(
+      {PartitionSupervisor, child_spec: Task.Supervisor, name: Rclex.TaskSupervisors}
+    )
+
     name = "name"
     namespace = "/namespace"
 
@@ -24,6 +28,8 @@ defmodule Rclex.TimerTest do
   test "start_link/1", %{context: context, name: name, namespace: namespace} do
     Process.flag(:trap_exit, true)
 
+    me = self()
+
     assert {:ok, pid} =
              Timer.start_link(
                context: context,
@@ -31,11 +37,11 @@ defmodule Rclex.TimerTest do
                timer_name: "timer",
                name: name,
                namespace: namespace,
-               callback: fn -> nil end
+               callback: fn -> send(me, "hello") end
              )
 
-    assert capture_log(fn -> :ok = GenServer.stop(pid, :shutdown) end) =~
-             "Timer: :shutdown"
+    assert_receive("hello")
+    assert capture_log(fn -> :ok = GenServer.stop(pid, :shutdown) end) =~ "Timer: :shutdown"
   end
 
   test "start_link/1 failed in init/1 callback", %{
