@@ -38,17 +38,17 @@ defmodule RclexTest do
     end
 
     test "stop_node/1, confirm shutdown order" do
-      callback = fn _message -> nil end
       :ok = Rclex.start_node("name")
       :ok = Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "name")
-      :ok = Rclex.start_subscription(callback, StdMsgs.Msg.String, "/chatter", "name")
+      :ok = Rclex.start_subscription(fn _msg -> nil end, StdMsgs.Msg.String, "/chatter", "name")
+      :ok = Rclex.start_timer(10, fn -> nil end, "timer", "name")
 
       logs =
         capture_log(fn -> :ok = Rclex.stop_node("name") end)
         |> String.split("\n")
         |> Enum.filter(&String.contains?(&1, ":shutdown"))
 
-      assert Enum.count(logs) == 3
+      assert Enum.count(logs) == 4
       assert List.last(logs) =~ "Node: :shutdown"
     end
   end
