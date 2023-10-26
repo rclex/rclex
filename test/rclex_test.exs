@@ -167,4 +167,37 @@ defmodule RclexTest do
       end
     end
   end
+
+  describe "timer" do
+    setup do
+      :ok = Rclex.start_node("name")
+      on_exit(fn -> capture_log(fn -> Rclex.stop_node("name") end) end)
+
+      %{callback: fn -> nil end}
+    end
+
+    test "start_timer/4", %{callback: callback} do
+      assert :ok = Rclex.start_timer(10, callback, "timer", "name")
+      assert {:error, :already_started} = Rclex.start_timer(10, callback, "timer", "name")
+    end
+
+    test "start_timer/4, node doesn't exist", %{callback: callback} do
+      assert {:noproc, _} = catch_exit(Rclex.start_timer(10, callback, "timer", "notexists"))
+    end
+
+    test "start_timer/4, wrong callback" do
+      assert {:error, _} = Rclex.start_timer(10, fn _wrong_args -> nil end, "timer", "name")
+    end
+
+    test "stop_timer/3", %{callback: callback} do
+      :ok = Rclex.start_timer(10, callback, "timer", "name")
+
+      assert capture_log(fn -> :ok = Rclex.stop_timer("timer", "name") end) =~ "Timer: :shutdown"
+      assert {:error, :not_found} = Rclex.stop_timer("timer", "name")
+    end
+
+    test "stop_timer/3, node doesn't exist", %{callback: _callback} do
+      assert {:noproc, _} = catch_exit(Rclex.stop_timer("timer", "notexists"))
+    end
+  end
 end

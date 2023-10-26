@@ -39,6 +39,16 @@ defmodule Rclex.Node do
     GenServer.call(server, {:stop_subscription, message_type, topic_name})
   end
 
+  def start_timer(period_ms, callback, timer_name, name, namespace \\ "/") do
+    server = name(name, namespace)
+    GenServer.call(server, {:start_timer, period_ms, callback, timer_name})
+  end
+
+  def stop_timer(timer_name, name, namespace \\ "/") do
+    server = name(name, namespace)
+    GenServer.call(server, {:stop_timer, timer_name})
+  end
+
   # callbacks
 
   def init(args) do
@@ -88,6 +98,19 @@ defmodule Rclex.Node do
 
   def handle_call({:stop_subscription, message_type, topic_name}, _from, state) do
     return = ES.stop_subscription(message_type, topic_name, state.name, state.namespace)
+
+    {:reply, return, state}
+  end
+
+  def handle_call({:start_timer, period_ms, callback, timer_name}, _from, state) do
+    return =
+      ES.start_timer(state.context, period_ms, callback, timer_name, state.name, state.namespace)
+
+    {:reply, return, state}
+  end
+
+  def handle_call({:stop_timer, timer_name}, _from, state) do
+    return = ES.stop_timer(timer_name, state.name, state.namespace)
 
     {:reply, return, state}
   end
