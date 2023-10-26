@@ -18,8 +18,6 @@ ERL_NIF_TERM nif_rcl_clock_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM arg
   rc = rcl_clock_init(RCL_STEADY_TIME, &clock, &allocator);
   if (rc != RCL_RET_OK) return enif_make_badarg(env);
 
-  if (!rcl_clock_time_started(&clock)) return raise(env, __FILE__, __LINE__);
-
   rcl_clock_t *obj  = enif_alloc_resource(rt_rcl_clock_t, sizeof(rcl_clock_t));
   *obj              = clock;
   ERL_NIF_TERM term = enif_make_resource(env, obj);
