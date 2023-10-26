@@ -1,5 +1,7 @@
 # credo:disable-for-this-file
 defmodule Rclex.MsgFuncs do
+  @moduledoc false
+
   defmacro __before_compile__(_env) do
     quote do
 <%= msg_funcs %>

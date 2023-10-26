@@ -1,10 +1,18 @@
 defmodule Rclex.MixProject do
   use Mix.Project
 
+  @description """
+  ROS 2 Client Library for Elixir.
+  """
+
+  @app :rclex
+  @version "0.10.0"
+  @source_url "https://github.com/rclex/rclex"
+
   def project do
     [
-      app: :rclex,
-      version: "0.1.0",
+      app: @app,
+      version: @version,
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -12,7 +20,13 @@ defmodule Rclex.MixProject do
       compilers: [:elixir_make] ++ Mix.compilers(),
       aliases: [format: [&format_c/1, "format"], iwyu: [&iwyu/1]],
       test_coverage: test_coverage(),
-      dialyzer: dialyzer()
+      dialyzer: dialyzer(),
+      # for hex
+      description: @description,
+      package: package(),
+      # for ex_doc
+      name: "Rclex",
+      docs: docs()
     ]
   end
 
@@ -32,7 +46,36 @@ defmodule Rclex.MixProject do
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false},
       {:benchee, "~> 1.0", only: :dev},
       {:nimble_parsec, "~> 1.0"},
-      {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false}
+      {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.27", only: :dev, runtime: false}
+    ]
+  end
+
+  defp package() do
+    %{
+      name: "#{@app}",
+      files: [
+        "lib",
+        "priv",
+        "src",
+        "mix.exs",
+        "README.md",
+        "README_ja.md",
+        "LICENSE",
+        "CHANGELOG.md",
+        "Makefile"
+      ],
+      licenses: ["Apache-2.0"],
+      links: %{"Github" => @source_url}
+    }
+  end
+
+  defp docs() do
+    [
+      extras: ["README.md", "README_ja.md", "USE_ON_NERVES.md", "CHANGELOG.md"],
+      main: "readme",
+      source_ref: "v#{@version}",
+      source_url: @source_url
     ]
   end
 

@@ -1,8 +1,8 @@
 defmodule Rclex.Parsers.Helpers do
-  @moduledoc """
-  The ROS 2 .msg specification URL is as follows,
-  https://docs.ros.org/en/humble/Concepts/Basic/About-Interfaces.html
-  """
+  @moduledoc false
+
+  # The ROS 2 .msg specification URL is as follows,
+  # https://docs.ros.org/en/humble/Concepts/Basic/About-Interfaces.html
 
   import NimbleParsec
 
