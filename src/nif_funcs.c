@@ -1,9 +1,11 @@
 #include "macros.h"
 #include "msg_funcs.h" // IWYU pragma: keep
+#include "rcl_clock.h"
 #include "rcl_init.h"
 #include "rcl_node.h"
 #include "rcl_publisher.h"
 #include "rcl_subscription.h"
+#include "rcl_timer.h"
 #include "rcl_wait.h"
 #include "resource_types.h"
 #include "terms.h"
@@ -29,10 +31,18 @@ static ErlNifFunc nif_funcs[] = {
     {"rcl_publish!", 2, nif_rcl_publish, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"rcl_subscription_init!", 3, nif_rcl_subscription_init, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"rcl_subscription_fini!", 2, nif_rcl_subscription_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"rcl_clock_init!", 0, nif_rcl_clock_init, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"rcl_clock_fini!", 1, nif_rcl_clock_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"rcl_timer_init!", 3, nif_rcl_timer_init, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"rcl_timer_fini!", 1, nif_rcl_timer_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"rcl_timer_is_ready!", 1, nif_rcl_timer_is_ready, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"rcl_timer_call!", 1, nif_rcl_timer_call, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"rcl_take!", 2, nif_rcl_take, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"rcl_wait_set_init_subscription!", 1, nif_rcl_wait_set_init_subscription, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"rcl_wait_set_init_timer!", 1, nif_rcl_wait_set_init_timer, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"rcl_wait_set_fini!", 1, nif_rcl_wait_set_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
     {"rcl_wait_subscription!", 3, nif_rcl_wait_subscription, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    {"rcl_wait_timer!", 3, nif_rcl_wait_timer, ERL_NIF_DIRTY_JOB_IO_BOUND},
 #include "msg_funcs.ec" // IWYU pragma: keep
     // clang-format on
 };

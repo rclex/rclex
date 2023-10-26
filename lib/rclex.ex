@@ -95,4 +95,33 @@ defmodule Rclex do
              is_binary(namespace) do
     Rclex.Node.stop_subscription(message_type, topic_name, name, namespace)
   end
+
+  @spec start_timer(
+          period_ms :: non_neg_integer(),
+          callback :: function(),
+          timer_name :: String.t(),
+          name :: String.t(),
+          namespace :: String.t()
+        ) ::
+          :ok | {:error, :already_started} | {:error, term()}
+  def start_timer(period_ms, callback, timer_name, name, namespace \\ "/")
+      when is_integer(period_ms) and is_function(callback) and is_binary(timer_name) and
+             is_binary(name) and is_binary(namespace) do
+    case Rclex.Node.start_timer(period_ms, callback, timer_name, name, namespace) do
+      {:ok, _pid} -> :ok
+      {:error, {:already_started, _pid}} -> {:error, :already_started}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  @spec stop_timer(
+          timer_name :: String.t(),
+          name :: String.t(),
+          namespace :: String.t()
+        ) ::
+          :ok | {:error, :not_found}
+  def stop_timer(timer_name, name, namespace \\ "/")
+      when is_binary(timer_name) and is_binary(name) and is_binary(namespace) do
+    Rclex.Node.stop_timer(timer_name, name, namespace)
+  end
 end

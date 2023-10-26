@@ -55,6 +55,30 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def rcl_clock_init!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_clock_fini!(_clock) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_timer_init!(_context, _clock, _period_ms) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_timer_fini!(_timer) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_timer_is_ready!(_timer) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_timer_call!(_timer) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def rcl_take!(_subscription, _message) do
     :erlang.nif_error(:nif_not_loaded)
   end
@@ -63,11 +87,19 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def rcl_wait_set_init_timer!(_context) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def rcl_wait_set_fini!(_wait_set) do
     :erlang.nif_error(:nif_not_loaded)
   end
 
   def rcl_wait_subscription!(_wait_set, _timeout_us, _subscription) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_wait_timer!(_wait_set, _timeout_us, _timer) do
     :erlang.nif_error(:nif_not_loaded)
   end
 
