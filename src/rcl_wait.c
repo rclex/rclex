@@ -9,7 +9,6 @@
 #include <rcl/types.h>
 #include <rcl/wait.h>
 #include <stddef.h>
-#include <stdint.h>
 
 ERL_NIF_TERM nif_rcl_wait_set_init_subscription(ErlNifEnv *env, int argc,
                                                 const ERL_NIF_TERM argv[]) {
@@ -58,8 +57,8 @@ ERL_NIF_TERM nif_rcl_wait_subscription(ErlNifEnv *env, int argc, const ERL_NIF_T
     return enif_make_badarg(env);
   if (!rcl_wait_set_is_valid(wait_set_p)) return raise(env, __FILE__, __LINE__);
 
-  int64_t timeout_us;
-  if (!enif_get_int64(env, argv[1], &timeout_us)) return enif_make_badarg(env);
+  int timeout_us;
+  if (!enif_get_int(env, argv[1], &timeout_us)) return enif_make_badarg(env);
   if (timeout_us > 1000)
     return raise_with_message(env, __FILE__, __LINE__, "1000us over is too long for nif.");
 
