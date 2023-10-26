@@ -1,6 +1,6 @@
 defmodule Rclex do
   @moduledoc """
-  Documentation for `Rclex`.
+  User API of `Rclex`.
   """
 
   @spec start_node(name :: String.t(), namespace :: String.t()) ::
