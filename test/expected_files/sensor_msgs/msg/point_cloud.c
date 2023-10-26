@@ -30,6 +30,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 ERL_NIF_TERM nif_sensor_msgs_msg_point_cloud_type_support(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   ignore_unused(argv);

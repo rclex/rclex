@@ -199,7 +199,7 @@ defmodule Rclex.Generators.MsgC do
     if (enif_get_atom(env, #{term}, #{var}, #{var}_length + 1, ERL_NIF_LATIN1) <= 0)
       return enif_make_badarg(env);
 
-    strcmp(#{var}, "true") == 0 ? message_p->#{mbr} = true : message_p->#{mbr} = false;
+    message_p->#{mbr} = (strncmp(#{var}, "true", 4) == 0);
     """
   end
 
