@@ -52,6 +52,21 @@ defmodule Rclex.EntitiesSupervisor do
     )
   end
 
+  def start_timer(context, period_ms, callback, timer_name, name, namespace \\ "/") do
+    DynamicSupervisor.start_child(
+      name(name, namespace),
+      {Rclex.Timer,
+       [
+         context: context,
+         period_ms: period_ms,
+         callback: callback,
+         timer_name: timer_name,
+         name: name,
+         namespace: namespace
+       ]}
+    )
+  end
+
   def stop_publisher(message_type, topic_name, name, namespace) do
     entity_name = Rclex.Publisher.name(message_type, topic_name, name, namespace)
     stop_entity(entity_name, name, namespace)
@@ -59,6 +74,11 @@ defmodule Rclex.EntitiesSupervisor do
 
   def stop_subscription(message_type, topic_name, name, namespace) do
     entity_name = Rclex.Subscription.name(message_type, topic_name, name, namespace)
+    stop_entity(entity_name, name, namespace)
+  end
+
+  def stop_timer(timer_name, name, namespace) do
+    entity_name = Rclex.Timer.name(timer_name, name, namespace)
     stop_entity(entity_name, name, namespace)
   end
 

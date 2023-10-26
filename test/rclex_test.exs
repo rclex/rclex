@@ -38,17 +38,17 @@ defmodule RclexTest do
     end
 
     test "stop_node/1, confirm shutdown order" do
-      callback = fn _message -> nil end
       :ok = Rclex.start_node("name")
       :ok = Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "name")
-      :ok = Rclex.start_subscription(callback, StdMsgs.Msg.String, "/chatter", "name")
+      :ok = Rclex.start_subscription(fn _msg -> nil end, StdMsgs.Msg.String, "/chatter", "name")
+      :ok = Rclex.start_timer(10, fn -> nil end, "timer", "name")
 
       logs =
         capture_log(fn -> :ok = Rclex.stop_node("name") end)
         |> String.split("\n")
         |> Enum.filter(&String.contains?(&1, ":shutdown"))
 
-      assert Enum.count(logs) == 3
+      assert Enum.count(logs) == 4
       assert List.last(logs) =~ "Node: :shutdown"
     end
   end
@@ -165,6 +165,39 @@ defmodule RclexTest do
         assert Rclex.publish(message, topic_name, name) == :ok
         assert_receive ^message
       end
+    end
+  end
+
+  describe "timer" do
+    setup do
+      :ok = Rclex.start_node("name")
+      on_exit(fn -> capture_log(fn -> Rclex.stop_node("name") end) end)
+
+      %{callback: fn -> nil end}
+    end
+
+    test "start_timer/4", %{callback: callback} do
+      assert :ok = Rclex.start_timer(10, callback, "timer", "name")
+      assert {:error, :already_started} = Rclex.start_timer(10, callback, "timer", "name")
+    end
+
+    test "start_timer/4, node doesn't exist", %{callback: callback} do
+      assert {:noproc, _} = catch_exit(Rclex.start_timer(10, callback, "timer", "notexists"))
+    end
+
+    test "start_timer/4, wrong callback" do
+      assert {:error, _} = Rclex.start_timer(10, fn _wrong_args -> nil end, "timer", "name")
+    end
+
+    test "stop_timer/3", %{callback: callback} do
+      :ok = Rclex.start_timer(10, callback, "timer", "name")
+
+      assert capture_log(fn -> :ok = Rclex.stop_timer("timer", "name") end) =~ "Timer: :shutdown"
+      assert {:error, :not_found} = Rclex.stop_timer("timer", "name")
+    end
+
+    test "stop_timer/3, node doesn't exist", %{callback: _callback} do
+      assert {:noproc, _} = catch_exit(Rclex.stop_timer("timer", "notexists"))
     end
   end
 end
