@@ -367,6 +367,10 @@ defmodule Rclex.Generators.MsgC do
     "enif_make_list_from_array(env, #{var}, message_p->#{mbr}.size)"
   end
 
+  defp enif_make_builtin("bool", mbr) do
+    "enif_make_atom(env, message_p->#{mbr} ? \"true\" : \"false\")"
+  end
+
   defp enif_make_builtin("int64", mbr) do
     "enif_make_int64(env, message_p->#{mbr})"
   end
