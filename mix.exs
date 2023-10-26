@@ -89,7 +89,7 @@ defmodule Rclex.MixProject do
         Rclex.Nif,
         Rclex.Generators.MsgC.Acc,
         ~r/Rclex\.Pkgs.+/,
-        Mix.Tasks.Rclex.Gen.Msgs
+        ~r/Mix\.Tasks\.Rclex.+/
       ]
     ]
   end
