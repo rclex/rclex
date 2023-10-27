@@ -18,31 +18,34 @@
  ERL_NIF_DIRTY_JOB_IO_BOUND ref.
  https://www.erlang.org/doc/man/erl_nif.html#ErlNifFunc
 */
+#define nif_rcl_func(name, arity)                                                                  \
+  { #name "!", arity, nif_##name, ERL_NIF_DIRTY_JOB_IO_BOUND }
+
 static ErlNifFunc nif_funcs[] = {
     // clang-format off
     {"raise!", 0, nif_raise_for_test, REGULAR_NIF},
     {"raise_with_message!", 0, nif_raise_with_message_for_test, REGULAR_NIF},
-    {"rcl_init!", 0, nif_rcl_init, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_fini!", 1, nif_rcl_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_node_init!", 3, nif_rcl_node_init, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_node_fini!", 1, nif_rcl_node_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_publisher_init!", 3, nif_rcl_publisher_init, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_publisher_fini!", 2, nif_rcl_publisher_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_publish!", 2, nif_rcl_publish, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_subscription_init!", 3, nif_rcl_subscription_init, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_subscription_fini!", 2, nif_rcl_subscription_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_clock_init!", 0, nif_rcl_clock_init, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_clock_fini!", 1, nif_rcl_clock_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_timer_init!", 3, nif_rcl_timer_init, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_timer_fini!", 1, nif_rcl_timer_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_timer_is_ready!", 1, nif_rcl_timer_is_ready, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_timer_call!", 1, nif_rcl_timer_call, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_take!", 2, nif_rcl_take, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_wait_set_init_subscription!", 1, nif_rcl_wait_set_init_subscription, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_wait_set_init_timer!", 1, nif_rcl_wait_set_init_timer, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_wait_set_fini!", 1, nif_rcl_wait_set_fini, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_wait_subscription!", 3, nif_rcl_wait_subscription, ERL_NIF_DIRTY_JOB_IO_BOUND},
-    {"rcl_wait_timer!", 3, nif_rcl_wait_timer, ERL_NIF_DIRTY_JOB_IO_BOUND},
+    nif_rcl_func(rcl_init, 0),
+    nif_rcl_func(rcl_fini, 1),
+    nif_rcl_func(rcl_node_init, 3),
+    nif_rcl_func(rcl_node_fini, 1),
+    nif_rcl_func(rcl_publisher_init, 3),
+    nif_rcl_func(rcl_publisher_fini, 2),
+    nif_rcl_func(rcl_publish, 2),
+    nif_rcl_func(rcl_subscription_init, 3),
+    nif_rcl_func(rcl_subscription_fini, 2),
+    nif_rcl_func(rcl_take, 2),
+    nif_rcl_func(rcl_clock_init, 0),
+    nif_rcl_func(rcl_clock_fini, 1),
+    nif_rcl_func(rcl_timer_init, 3),
+    nif_rcl_func(rcl_timer_fini, 1),
+    nif_rcl_func(rcl_timer_is_ready, 1),
+    nif_rcl_func(rcl_timer_call, 1),
+    nif_rcl_func(rcl_wait_set_init_subscription, 1),
+    nif_rcl_func(rcl_wait_set_init_timer, 1),
+    nif_rcl_func(rcl_wait_set_fini, 1),
+    nif_rcl_func(rcl_wait_subscription, 3),
+    nif_rcl_func(rcl_wait_timer, 3),
 #include "msg_funcs.ec" // IWYU pragma: keep
     // clang-format on
 };
