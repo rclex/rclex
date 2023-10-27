@@ -33,7 +33,12 @@ defmodule Rclex.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :runtime_tools, :wx, :observer],
+      extra_applications:
+        [:logger] ++
+          case Mix.target() do
+            :host -> [:runtime_tools, :wx, :observer]
+            _ -> []
+          end,
       mod: {Rclex.Application, []}
     ]
   end
