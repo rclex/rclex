@@ -67,14 +67,19 @@ defmodule Rclex.Subscription do
         message = apply(state.message_type, :create!, [])
 
         try do
-          :ok = Nif.rcl_take!(state.subscription, message)
-          message_struct = apply(state.message_type, :get!, [message])
+          case Nif.rcl_take!(state.subscription, message) do
+            :ok ->
+              message_struct = apply(state.message_type, :get!, [message])
 
-          {:ok, _pid} =
-            Task.Supervisor.start_child(
-              {:via, PartitionSupervisor, {Rclex.TaskSupervisors, self()}},
-              fn -> state.callback.(message_struct) end
-            )
+              {:ok, _pid} =
+                Task.Supervisor.start_child(
+                  {:via, PartitionSupervisor, {Rclex.TaskSupervisors, self()}},
+                  fn -> state.callback.(message_struct) end
+                )
+
+            :error ->
+              Logger.error("#{__MODULE__}: take failed but no error occurred in the middleware")
+          end
         after
           :ok = apply(state.message_type, :destroy!, [message])
         end
