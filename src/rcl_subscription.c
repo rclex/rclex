@@ -85,7 +85,7 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
     return enif_make_badarg(env);
 
   rc = rcl_take(subscription_p, *ros_message_pp, NULL, NULL);
-  if (rc != RCL_RET_OK) return raise(env, __FILE__, __LINE__);
-
-  return atom_ok;
+  if (rc == RCL_RET_OK) return atom_ok;
+  if (rc == RCL_RET_SUBSCRIPTION_TAKE_FAILED) return atom_error;
+  return raise(env, __FILE__, __LINE__);
 }
