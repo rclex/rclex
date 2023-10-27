@@ -13,7 +13,7 @@ ErlNifResourceType *rt_rosidl_message_type_support_t;
 ErlNifResourceType *rt_ros_message;
 
 int open_resource_types(ErlNifEnv *env, const char *module) {
-  ErlNifResourceFlags flags = ERL_NIF_RT_CREATE;
+  ErlNifResourceFlags flags = ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER;
 
   rt_rcl_context_t = enif_open_resource_type(env, module, "rcl_context_t", NULL, flags, NULL);
   if (rt_rcl_context_t == NULL) return 1;
