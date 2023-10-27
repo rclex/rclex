@@ -284,8 +284,8 @@ defmodule Rclex.NifTest do
       assert Nif.rcl_publish!(publisher, message) == :ok
     end
 
-    test "take!/2 raise", %{subscription: subscription, message: message} do
-      assert_raise ErlangError, fn -> Nif.rcl_take!(subscription, message) end
+    test "take!/2 return :error", %{subscription: subscription, message: message} do
+      assert Nif.rcl_take!(subscription, message) == :error
     end
 
     test "take!/2", %{

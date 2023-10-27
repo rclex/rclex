@@ -99,8 +99,8 @@ ERL_NIF_TERM nif_rcl_wait_subscription(ErlNifEnv *env, int argc, const ERL_NIF_T
   if (rc != RCL_RET_OK) return raise(env, __FILE__, __LINE__);
 
   rc = rcl_wait(wait_set_p, RCL_US_TO_NS(timeout_us));
-  if (rc == RCL_RET_TIMEOUT) return enif_make_atom(env, "timeout");
   if (rc == RCL_RET_OK) return atom_ok;
+  if (rc == RCL_RET_TIMEOUT) return enif_make_atom(env, "timeout");
   return raise(env, __FILE__, __LINE__);
 }
 
@@ -130,7 +130,7 @@ ERL_NIF_TERM nif_rcl_wait_timer(ErlNifEnv *env, int argc, const ERL_NIF_TERM arg
   if (rc != RCL_RET_OK) return raise(env, __FILE__, __LINE__);
 
   rc = rcl_wait(wait_set_p, RCL_US_TO_NS(timeout_us));
-  if (rc == RCL_RET_TIMEOUT) return enif_make_atom(env, "timeout");
   if (rc == RCL_RET_OK) return atom_ok;
+  if (rc == RCL_RET_TIMEOUT) return enif_make_atom(env, "timeout");
   return raise(env, __FILE__, __LINE__);
 }
