@@ -63,16 +63,22 @@ defmodule Rclex.NifBenchmarkTest do
       %{node: node, type_support: type_support}
     end
 
-    test "rcl_publisher_init!/3", %{node: node, type_support: type_support} do
+    test "rcl_publisher_init!/4", %{node: node, type_support: type_support} do
       {time_us, publisher} =
-        :timer.tc(&Nif.rcl_publisher_init!/3, [node, type_support, ~c"/topic"])
+      :timer.tc(&Nif.rcl_publisher_init!/4, [node, type_support, ~c"/topic", []])
 
       :ok = Nif.rcl_publisher_fini!(publisher, node)
       assert time_us <= @nif_limit_time_us
     end
 
+    test "rcl_publisher_get_options!/1", %{node: node, type_support: type_support} do
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic", [])
+      {time_us, _qos_opts} = :timer.tc(&Nif.rcl_publisher_get_options!/1, [publisher])
+      assert time_us <= @nif_limit_time_us
+    end
+
     test "rcl_publisher_fini!/2", %{node: node, type_support: type_support} do
-      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic")
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic", [])
       {time_us, :ok} = :timer.tc(&Nif.rcl_publisher_fini!/2, [publisher, node])
       assert time_us <= @nif_limit_time_us
     end
@@ -94,14 +100,20 @@ defmodule Rclex.NifBenchmarkTest do
 
     test "rcl_subscription_init!/3", %{node: node, type_support: type_support} do
       {time_us, subscription} =
-        :timer.tc(&Nif.rcl_subscription_init!/3, [node, type_support, ~c"/topic"])
+        :timer.tc(&Nif.rcl_subscription_init!/4, [node, type_support, ~c"/topic", []])
 
       :ok = Nif.rcl_subscription_fini!(subscription, node)
       assert time_us <= @nif_limit_time_us
     end
 
+    test "rcl_subscription_get_options!/1", %{node: node, type_support: type_support} do
+      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", [])
+      {time_us, _qos_opts} = :timer.tc(&Nif.rcl_subscription_get_options!/1, [subscription])
+      assert time_us <= @nif_limit_time_us
+    end
+
     test "rcl_subscription_fini!/2", %{node: node, type_support: type_support} do
-      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic")
+      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", [])
       {time_us, :ok} = :timer.tc(&Nif.rcl_subscription_fini!/2, [subscription, node])
       assert time_us <= @nif_limit_time_us
     end
@@ -112,7 +124,7 @@ defmodule Rclex.NifBenchmarkTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
-      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic")
+      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", [])
 
       on_exit(fn ->
         :ok = Nif.rcl_subscription_fini!(subscription, node)

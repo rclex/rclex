@@ -10,7 +10,7 @@ defmodule Rclex.NifTest do
       rescue
         ex in [ErlangError] ->
           %ErlangError{original: charlist, reason: nil} = ex
-          assert "at src/terms.c:21" <> _ = to_string(charlist)
+          assert "at src/terms.c:62" <> _ = to_string(charlist)
       end
     end
 
@@ -20,7 +20,7 @@ defmodule Rclex.NifTest do
       rescue
         ex in [ErlangError] ->
           %ErlangError{original: charlist, reason: nil} = ex
-          assert "at src/terms.c:28" <> _ = to_string(charlist)
+          assert "at src/terms.c:69" <> _ = to_string(charlist)
           assert String.ends_with?(to_string(charlist), "test")
       end
     end
@@ -241,20 +241,39 @@ defmodule Rclex.NifTest do
       %{node: node, type_support: type_support}
     end
 
-    test "rcl_publisher_init!/3, rcl_publisher_fini!/2", %{node: node, type_support: type_support} do
-      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic")
+    test "rcl_publisher_init!/4, rcl_publisher_fini!/2", %{node: node, type_support: type_support} do
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic", [])
       assert is_reference(publisher)
       assert Nif.rcl_publisher_fini!(publisher, node) == :ok
     end
 
-    test "rcl_publisher_init!/3 raise due to wrong topic name", %{
+    test "rcl_publisher_init!/4 raise due to wrong topic name", %{
       node: node,
       type_support: type_support
     } do
       assert_raise ErlangError, fn ->
-        Nif.rcl_publisher_init!(node, type_support, ~c"topic")
+        Nif.rcl_publisher_init!(node, type_support, ~c"topic", [])
       end
     end
+
+    test "rcl_publisher_get_options!/1 for default publisher", %{
+      node: node,
+      type_support: type_support
+    } do
+        default_opts = [history: :keep_last, depth: 10, reliability: :reliable, durability: :volatile, deadline: 0, lifespan: 0, liveliness: :system_default, liveliness_lease_duration: 0, avoid_ros_namespace_conventions: false]
+        publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic", [])
+        assert default_opts == Nif.rcl_publisher_get_options!(publisher)
+      end
+
+    
+    test "rcl_publisher_get_options!/1 for custom subscription", %{
+      node: node,
+      type_support: type_support
+    } do
+        opts = [history: :keep_all, depth: 123, reliability: :best_effort, durability: :transient_local, deadline: 123, lifespan: 123, liveliness: :manual_by_topic, liveliness_lease_duration: 123, avoid_ros_namespace_conventions: true]
+        publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic", opts)
+        assert opts == Nif.rcl_publisher_get_options!(publisher)
+      end   
   end
 
   describe "publish/take" do
@@ -262,8 +281,8 @@ defmodule Rclex.NifTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
-      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter")
-      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/chatter")
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", [])
+      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", [])
       wait_set = Nif.rcl_wait_set_init_subscription!(context)
       message = Nif.std_msgs_msg_string_create!()
       :ok = Nif.std_msgs_msg_string_set!(message, {~c"Hello from Rclex"})
@@ -319,7 +338,7 @@ defmodule Rclex.NifTest do
       node: node,
       type_support: type_support
     } do
-      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic")
+      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", [])
       assert is_reference(subscription)
       assert Nif.rcl_subscription_fini!(subscription, node) == :ok
     end
@@ -329,9 +348,27 @@ defmodule Rclex.NifTest do
       type_support: type_support
     } do
       assert_raise ErlangError, fn ->
-        Nif.rcl_subscription_init!(node, type_support, ~c"topic")
+        Nif.rcl_subscription_init!(node, type_support, ~c"topic", [])
       end
     end
+    
+    test "rcl_subscription_get_options!/1 for default subscription", %{
+      node: node,
+      type_support: type_support
+    } do
+        default_opts = [history: :keep_last, depth: 10, reliability: :reliable, durability: :volatile, deadline: 0, lifespan: 0, liveliness: :system_default, liveliness_lease_duration: 0, avoid_ros_namespace_conventions: false]
+        subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", [])
+        assert default_opts == Nif.rcl_subscription_get_options!(subscription)
+      end
+
+    test "rcl_subscription_get_options!/1 for custom subscription", %{
+      node: node,
+      type_support: type_support
+    } do
+        opts = [history: :keep_all, depth: 123, reliability: :best_effort, durability: :transient_local, deadline: 123, lifespan: 123, liveliness: :manual_by_topic, liveliness_lease_duration: 123, avoid_ros_namespace_conventions: true]
+        subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", opts)
+        assert opts == Nif.rcl_subscription_get_options!(subscription)
+      end 
   end
 
   describe "wait_set" do
@@ -339,7 +376,7 @@ defmodule Rclex.NifTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
-      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic")
+      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", [])
 
       on_exit(fn ->
         Nif.rcl_subscription_fini!(subscription, node)

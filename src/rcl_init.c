@@ -2,6 +2,7 @@
 #include "macros.h"
 #include "resource_types.h"
 #include "terms.h"
+#include "allocator.h"
 #include <erl_nif.h>
 #include <rcl/allocator.h>
 #include <rcl/context.h>
@@ -17,7 +18,7 @@ ERL_NIF_TERM nif_rcl_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
 
   rcl_ret_t rc;
   rcl_init_options_t init_options = rcl_get_zero_initialized_init_options();
-  rcl_allocator_t allocator       = rcl_get_default_allocator();
+  rcl_allocator_t allocator       = get_nif_allocator();
   rcl_context_t context           = rcl_get_zero_initialized_context();
 
   rc = rcl_init_options_init(&init_options, allocator);
