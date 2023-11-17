@@ -65,7 +65,7 @@ defmodule Rclex.NifBenchmarkTest do
 
     test "rcl_publisher_init!/4", %{node: node, type_support: type_support} do
       {time_us, publisher} =
-      :timer.tc(&Nif.rcl_publisher_init!/4, [node, type_support, ~c"/topic", []])
+        :timer.tc(&Nif.rcl_publisher_init!/4, [node, type_support, ~c"/topic", []])
 
       :ok = Nif.rcl_publisher_fini!(publisher, node)
       assert time_us <= @nif_limit_time_us

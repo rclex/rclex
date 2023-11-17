@@ -1,8 +1,8 @@
 #include "rcl_subscription.h"
-#include "resource_types.h"
-#include "terms.h"
 #include "allocator.h"
 #include "rcl_nif_converter.h"
+#include "resource_types.h"
+#include "terms.h"
 #include <erl_nif.h>
 #include <rcl/node.h>
 #include <rcl/subscription.h>
@@ -40,11 +40,10 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv *env, int argc, const ERL_NIF_T
   rcl_ret_t rc;
   rcl_subscription_t subscription                 = rcl_get_zero_initialized_subscription();
   rcl_subscription_options_t subscription_options = rcl_subscription_get_default_options();
-  subscription_options.allocator = get_nif_allocator();
-  if (!fill_qos_profile_from_opts(env, argv[3], &subscription_options.qos)){
+  subscription_options.allocator                  = get_nif_allocator();
+  if (!fill_qos_profile_from_opts(env, argv[3], &subscription_options.qos)) {
     return enif_make_badarg(env);
   }
-
 
   rc = rcl_subscription_init(&subscription, node_p, ts_p, topic_name, &subscription_options);
   if (rc != RCL_RET_OK) return raise(env, __FILE__, __LINE__);
@@ -57,19 +56,19 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv *env, int argc, const ERL_NIF_T
   return term;
 }
 
-ERL_NIF_TERM nif_rcl_subscription_get_options(ErlNifEnv* env,int argc,const ERL_NIF_TERM argv[])
-{
-  if(argc != 1) {
+ERL_NIF_TERM nif_rcl_subscription_get_options(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  if (argc != 1) {
     return enif_make_badarg(env);
   }
 
   rcl_subscription_t *subscription_p;
-  if(!enif_get_resource(env, argv[0], rt_rcl_subscription_t, (void**)&subscription_p)) {
+  if (!enif_get_resource(env, argv[0], rt_rcl_subscription_t, (void **)&subscription_p)) {
     return enif_make_badarg(env);
   }
   if (!rcl_subscription_is_valid(subscription_p)) return raise(env, __FILE__, __LINE__);
 
-  const rcl_subscription_options_t* subscription_options = rcl_subscription_get_options(subscription_p);
+  const rcl_subscription_options_t *subscription_options =
+      rcl_subscription_get_options(subscription_p);
   ERL_NIF_TERM qos_list_term = qos_profile_to_keywordlist(env, subscription_options->qos);
 
   return qos_list_term;

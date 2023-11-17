@@ -1,7 +1,7 @@
 #include "rcl_timer.h"
+#include "allocator.h"
 #include "resource_types.h"
 #include "terms.h"
-#include "allocator.h"
 #include <erl_nif.h>
 #include <rcl/allocator.h>
 #include <rcl/context.h>

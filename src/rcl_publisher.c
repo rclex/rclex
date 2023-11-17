@@ -1,8 +1,8 @@
 #include "rcl_publisher.h"
-#include "resource_types.h"
-#include "terms.h"
 #include "allocator.h"
 #include "rcl_nif_converter.h"
+#include "resource_types.h"
+#include "terms.h"
 #include <erl_nif.h>
 #include <rcl/node.h>
 #include <rcl/publisher.h>
@@ -40,8 +40,8 @@ ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM
   rcl_ret_t rc;
   rcl_publisher_t publisher                 = rcl_get_zero_initialized_publisher();
   rcl_publisher_options_t publisher_options = rcl_publisher_get_default_options();
-  publisher_options.allocator = get_nif_allocator();
-  if (!fill_qos_profile_from_opts(env, argv[3], &publisher_options.qos)){
+  publisher_options.allocator               = get_nif_allocator();
+  if (!fill_qos_profile_from_opts(env, argv[3], &publisher_options.qos)) {
     return enif_make_badarg(env);
   }
 
@@ -56,19 +56,18 @@ ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM
   return term;
 }
 
-ERL_NIF_TERM nif_rcl_publisher_get_options(ErlNifEnv* env,int argc,const ERL_NIF_TERM argv[])
-{
-  if(argc != 1) {
+ERL_NIF_TERM nif_rcl_publisher_get_options(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  if (argc != 1) {
     return enif_make_badarg(env);
   }
 
   rcl_publisher_t *publisher_p;
-  if(!enif_get_resource(env, argv[0], rt_rcl_publisher_t, (void**)&publisher_p)) {
+  if (!enif_get_resource(env, argv[0], rt_rcl_publisher_t, (void **)&publisher_p)) {
     return enif_make_badarg(env);
   }
   if (!rcl_publisher_is_valid(publisher_p)) return raise(env, __FILE__, __LINE__);
 
-  const rcl_publisher_options_t* publisher_options = rcl_publisher_get_options(publisher_p);
+  const rcl_publisher_options_t *publisher_options = rcl_publisher_get_options(publisher_p);
   ERL_NIF_TERM qos_list_term = qos_profile_to_keywordlist(env, publisher_options->qos);
 
   return qos_list_term;

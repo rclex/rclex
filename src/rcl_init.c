@@ -1,8 +1,8 @@
 #include "rcl_init.h"
+#include "allocator.h"
 #include "macros.h"
 #include "resource_types.h"
 #include "terms.h"
-#include "allocator.h"
 #include <erl_nif.h>
 #include <rcl/allocator.h>
 #include <rcl/context.h>

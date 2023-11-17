@@ -1,8 +1,8 @@
 #include "rcl_clock.h"
+#include "allocator.h"
 #include "macros.h"
 #include "resource_types.h"
 #include "terms.h"
-#include "allocator.h"
 #include <erl_nif.h>
 #include <rcl/allocator.h>
 #include <rcl/time.h>

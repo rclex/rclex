@@ -10,7 +10,7 @@ defmodule Rclex.NifTest do
       rescue
         ex in [ErlangError] ->
           %ErlangError{original: charlist, reason: nil} = ex
-          assert "at src/terms.c:62" <> _ = to_string(charlist)
+          assert "at src/terms.c:69" <> _ = to_string(charlist)
       end
     end
 
@@ -20,7 +20,7 @@ defmodule Rclex.NifTest do
       rescue
         ex in [ErlangError] ->
           %ErlangError{original: charlist, reason: nil} = ex
-          assert "at src/terms.c:69" <> _ = to_string(charlist)
+          assert "at src/terms.c:76" <> _ = to_string(charlist)
           assert String.ends_with?(to_string(charlist), "test")
       end
     end
@@ -260,20 +260,41 @@ defmodule Rclex.NifTest do
       node: node,
       type_support: type_support
     } do
-        default_opts = [history: :keep_last, depth: 10, reliability: :reliable, durability: :volatile, deadline: 0, lifespan: 0, liveliness: :system_default, liveliness_lease_duration: 0, avoid_ros_namespace_conventions: false]
-        publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic", [])
-        assert default_opts == Nif.rcl_publisher_get_options!(publisher)
-      end
+      default_opts = [
+        history: :keep_last,
+        depth: 10,
+        reliability: :reliable,
+        durability: :volatile,
+        deadline: 0,
+        lifespan: 0,
+        liveliness: :system_default,
+        liveliness_lease_duration: 0,
+        avoid_ros_namespace_conventions: false
+      ]
 
-    
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic", [])
+      assert default_opts == Nif.rcl_publisher_get_options!(publisher)
+    end
+
     test "rcl_publisher_get_options!/1 for custom subscription", %{
       node: node,
       type_support: type_support
     } do
-        opts = [history: :keep_all, depth: 123, reliability: :best_effort, durability: :transient_local, deadline: 123, lifespan: 123, liveliness: :manual_by_topic, liveliness_lease_duration: 123, avoid_ros_namespace_conventions: true]
-        publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic", opts)
-        assert opts == Nif.rcl_publisher_get_options!(publisher)
-      end   
+      opts = [
+        history: :keep_all,
+        depth: 123,
+        reliability: :best_effort,
+        durability: :transient_local,
+        deadline: 123,
+        lifespan: 123,
+        liveliness: :manual_by_topic,
+        liveliness_lease_duration: 123,
+        avoid_ros_namespace_conventions: true
+      ]
+
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic", opts)
+      assert opts == Nif.rcl_publisher_get_options!(publisher)
+    end
   end
 
   describe "publish/take" do
@@ -351,24 +372,46 @@ defmodule Rclex.NifTest do
         Nif.rcl_subscription_init!(node, type_support, ~c"topic", [])
       end
     end
-    
+
     test "rcl_subscription_get_options!/1 for default subscription", %{
       node: node,
       type_support: type_support
     } do
-        default_opts = [history: :keep_last, depth: 10, reliability: :reliable, durability: :volatile, deadline: 0, lifespan: 0, liveliness: :system_default, liveliness_lease_duration: 0, avoid_ros_namespace_conventions: false]
-        subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", [])
-        assert default_opts == Nif.rcl_subscription_get_options!(subscription)
-      end
+      default_opts = [
+        history: :keep_last,
+        depth: 10,
+        reliability: :reliable,
+        durability: :volatile,
+        deadline: 0,
+        lifespan: 0,
+        liveliness: :system_default,
+        liveliness_lease_duration: 0,
+        avoid_ros_namespace_conventions: false
+      ]
+
+      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", [])
+      assert default_opts == Nif.rcl_subscription_get_options!(subscription)
+    end
 
     test "rcl_subscription_get_options!/1 for custom subscription", %{
       node: node,
       type_support: type_support
     } do
-        opts = [history: :keep_all, depth: 123, reliability: :best_effort, durability: :transient_local, deadline: 123, lifespan: 123, liveliness: :manual_by_topic, liveliness_lease_duration: 123, avoid_ros_namespace_conventions: true]
-        subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", opts)
-        assert opts == Nif.rcl_subscription_get_options!(subscription)
-      end 
+      opts = [
+        history: :keep_all,
+        depth: 123,
+        reliability: :best_effort,
+        durability: :transient_local,
+        deadline: 123,
+        lifespan: 123,
+        liveliness: :manual_by_topic,
+        liveliness_lease_duration: 123,
+        avoid_ros_namespace_conventions: true
+      ]
+
+      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", opts)
+      assert opts == Nif.rcl_subscription_get_options!(subscription)
+    end
   end
 
   describe "wait_set" do

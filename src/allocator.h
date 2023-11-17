@@ -1,8 +1,7 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 #include "rmw/types.h"
 
