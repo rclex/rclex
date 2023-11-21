@@ -277,9 +277,9 @@ defmodule RclexTest do
     } do
       for i <- 1..50 do
         message_working = %StdMsgs.Msg.String{data: "publish #{i} (reliable)"}
-        message_not_working = %StdMsgs.Msg.String{data: "publish #{i} (best effort)"}
+        message_not_received = %StdMsgs.Msg.String{data: "publish #{i} (best effort)"}
         assert Rclex.publish(message_working, topic_name, working) == :ok
-        assert Rclex.publish(message_not_working, topic_name, not_working) == :ok
+        assert Rclex.publish(message_not_received, topic_name, not_working) == :ok
         assert_receive ^message_working
       end
     end
