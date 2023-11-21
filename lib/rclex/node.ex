@@ -19,9 +19,9 @@ defmodule Rclex.Node do
     {:global, {name, namespace}}
   end
 
-  def start_publisher(message_type, topic_name, name, namespace \\ "/") do
+  def start_publisher(message_type, topic_name, name, namespace \\ "/", qos \\ []) do
     server = name(name, namespace)
-    GenServer.call(server, {:start_publisher, message_type, topic_name})
+    GenServer.call(server, {:start_publisher, message_type, topic_name, qos})
   end
 
   def stop_publisher(message_type, topic_name, name, namespace \\ "/") do
@@ -29,9 +29,9 @@ defmodule Rclex.Node do
     GenServer.call(server, {:stop_publisher, message_type, topic_name})
   end
 
-  def start_subscription(callback, message_type, topic_name, name, namespace \\ "/") do
+  def start_subscription(callback, message_type, topic_name, name, namespace \\ "/", qos \\ []) do
     server = name(name, namespace)
-    GenServer.call(server, {:start_subscription, callback, message_type, topic_name})
+    GenServer.call(server, {:start_subscription, callback, message_type, topic_name, qos})
   end
 
   def stop_subscription(message_type, topic_name, name, namespace \\ "/") do
@@ -69,8 +69,9 @@ defmodule Rclex.Node do
     Logger.debug("#{__MODULE__}: #{inspect(reason)} #{Path.join(state.namespace, state.name)}")
   end
 
-  def handle_call({:start_publisher, message_type, topic_name}, _from, state) do
-    return = ES.start_publisher(state.node, message_type, topic_name, state.name, state.namespace)
+  def handle_call({:start_publisher, message_type, topic_name, qos}, _from, state) do
+    return =
+      ES.start_publisher(state.node, message_type, topic_name, state.name, state.namespace, qos)
 
     {:reply, return, state}
   end
@@ -81,7 +82,7 @@ defmodule Rclex.Node do
     {:reply, return, state}
   end
 
-  def handle_call({:start_subscription, callback, message_type, topic_name}, _from, state) do
+  def handle_call({:start_subscription, callback, message_type, topic_name, qos}, _from, state) do
     return =
       ES.start_subscription(
         state.context,
@@ -90,7 +91,8 @@ defmodule Rclex.Node do
         message_type,
         topic_name,
         state.name,
-        state.namespace
+        state.namespace,
+        qos
       )
 
     {:reply, return, state}

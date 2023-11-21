@@ -28,7 +28,7 @@ ERL_NIF_TERM atom_reliable;    // Guarantee that samples are delivered, may retr
 ERL_NIF_TERM atom_best_effort; // Attempt to deliver samples, but some may be lost if the network is
                                // not robust.
 ERL_NIF_TERM
-    atom_automatic; // The signal that establishes a Topic is alive comes from the ROS rmw layer.
+atom_automatic; // The signal that establishes a Topic is alive comes from the ROS rmw layer.
 ERL_NIF_TERM atom_manual_by_topic; // The signal that establishes a Topic is alive is at the Topic
                                    // level. Only publishing a message on the Topic or an explicit
                                    // signal from the application to assert liveliness on the Topic

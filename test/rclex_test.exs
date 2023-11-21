@@ -75,6 +75,22 @@ defmodule RclexTest do
       assert {:error, _} = Rclex.start_publisher(StdMsgs.Msg.String, "chatter", "name")
     end
 
+    test "start_publisher/5, set qos mode" do
+      qos = [
+        history: :keep_all,
+        depth: 123,
+        reliability: :best_effort,
+        durability: :transient_local,
+        deadline: 123,
+        lifespan: 123,
+        liveliness: :manual_by_topic,
+        liveliness_lease_duration: 123,
+        avoid_ros_namespace_conventions: true
+      ]
+
+      assert :ok = Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "name", "/", qos)
+    end
+
     test "stop_publisher/3" do
       :ok = Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "name")
 
@@ -110,6 +126,30 @@ defmodule RclexTest do
       assert {:noproc, _} =
                catch_exit(
                  Rclex.start_subscription(callback, StdMsgs.Msg.String, "/chatter", "notexists")
+               )
+    end
+
+    test "start_subscription/6, set qos params", %{callback: callback} do
+      qos = [
+        history: :keep_all,
+        depth: 123,
+        reliability: :best_effort,
+        durability: :transient_local,
+        deadline: 123,
+        lifespan: 123,
+        liveliness: :manual_by_topic,
+        liveliness_lease_duration: 123,
+        avoid_ros_namespace_conventions: true
+      ]
+
+      assert :ok =
+               Rclex.start_subscription(
+                 callback,
+                 StdMsgs.Msg.String,
+                 "/chatter",
+                 "name",
+                 "/",
+                 qos
                )
     end
 
@@ -164,6 +204,83 @@ defmodule RclexTest do
         message = %StdMsgs.Msg.String{data: "publish #{i}"}
         assert Rclex.publish(message, topic_name, name) == :ok
         assert_receive ^message
+      end
+    end
+  end
+
+  describe "incompatible pub/sub" do
+    setup do
+      name_working = "working"
+      name_not_working = "not_working"
+      topic_name = "/chatter"
+      namespace = "/"
+
+      :ok = Rclex.start_node(name_working)
+      :ok = Rclex.start_node(name_not_working)
+
+      test_pid = self()
+      callback = fn message -> send(test_pid, message) end
+
+      qos_best_effort = [
+        reliability: :best_effort
+      ]
+
+      qos_reliable = [
+        reliability: :reliable
+      ]
+
+      :ok =
+        Rclex.start_subscription(
+          callback,
+          StdMsgs.Msg.String,
+          topic_name,
+          name_working,
+          namespace,
+          qos_reliable
+        )
+
+      :ok =
+        Rclex.start_publisher(
+          StdMsgs.Msg.String,
+          topic_name,
+          name_working,
+          namespace,
+          qos_reliable
+        )
+
+      :ok =
+        Rclex.start_publisher(
+          StdMsgs.Msg.String,
+          topic_name,
+          name_not_working,
+          namespace,
+          qos_best_effort
+        )
+
+      on_exit(fn ->
+        capture_log(fn ->
+          Rclex.stop_subscription(StdMsgs.Msg.String, topic_name, name_working)
+          Rclex.stop_publisher(StdMsgs.Msg.String, topic_name, name_not_working)
+          Rclex.stop_publisher(StdMsgs.Msg.String, topic_name, name_working)
+          Rclex.stop_node(name_working)
+          Rclex.stop_node(name_not_working)
+        end)
+      end)
+
+      %{topic_name: topic_name, name_working: name_working, name_not_working: name_not_working}
+    end
+
+    test "publish/3", %{
+      topic_name: topic_name,
+      name_working: working,
+      name_not_working: not_working
+    } do
+      for i <- 1..50 do
+        message_working = %StdMsgs.Msg.String{data: "publish #{i} (reliable)"}
+        message_not_working = %StdMsgs.Msg.String{data: "publish #{i} (best effort)"}
+        assert Rclex.publish(message_working, topic_name, working) == :ok
+        assert Rclex.publish(message_not_working, topic_name, not_working) == :ok
+        assert_receive ^message_working
       end
     end
   end

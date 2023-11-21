@@ -25,13 +25,14 @@ defmodule Rclex do
           message_type :: module(),
           topic_name :: String.t(),
           name :: String.t(),
-          namespace :: String.t()
+          namespace :: String.t(),
+          qos :: list()
         ) ::
           :ok | {:error, :already_started} | {:error, term()}
-  def start_publisher(message_type, topic_name, name, namespace \\ "/")
+  def start_publisher(message_type, topic_name, name, namespace \\ "/", qos \\ [])
       when is_atom(message_type) and is_binary(topic_name) and is_binary(name) and
-             is_binary(namespace) do
-    case Rclex.Node.start_publisher(message_type, topic_name, name, namespace) do
+             is_binary(namespace) and is_list(qos) do
+    case Rclex.Node.start_publisher(message_type, topic_name, name, namespace, qos) do
       {:ok, _pid} -> :ok
       {:error, {:already_started, _pid}} -> {:error, :already_started}
       {:error, reason} -> {:error, reason}
@@ -69,14 +70,15 @@ defmodule Rclex do
           message_type :: module(),
           topic_name :: String.t(),
           name :: String.t(),
-          namespace :: String.t()
+          namespace :: String.t(),
+          qos :: list()
         ) ::
           :ok | {:error, :already_started} | {:error, term()}
-  def start_subscription(callback, message_type, topic_name, name, namespace \\ "/")
+  def start_subscription(callback, message_type, topic_name, name, namespace \\ "/", qos \\ [])
       when is_function(callback) and is_atom(message_type) and is_binary(topic_name) and
              is_binary(name) and
-             is_binary(namespace) do
-    case Rclex.Node.start_subscription(callback, message_type, topic_name, name, namespace) do
+             is_binary(namespace) and is_list(qos) do
+    case Rclex.Node.start_subscription(callback, message_type, topic_name, name, namespace, qos) do
       {:ok, _pid} -> :ok
       {:error, {:already_started, _pid}} -> {:error, :already_started}
       {:error, reason} -> {:error, reason}
