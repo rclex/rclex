@@ -31,6 +31,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   ```
   mix rclex.gen.msgs --clean
+  ```
   """
 
   use Mix.Task
