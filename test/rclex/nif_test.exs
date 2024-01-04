@@ -2,6 +2,7 @@ defmodule Rclex.NifTest do
   use ExUnit.Case
 
   alias Rclex.Nif
+  alias Rclex.Qos
 
   describe "raise" do
     test "raise!/0" do
@@ -232,27 +233,33 @@ defmodule Rclex.NifTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
+      qos = Qos.profile_default()
 
       on_exit(fn ->
         Nif.rcl_node_fini!(node)
         Nif.rcl_fini!(context)
       end)
 
-      %{node: node, type_support: type_support}
+      %{node: node, type_support: type_support, qos: qos}
     end
 
-    test "rcl_publisher_init!/3, rcl_publisher_fini!/2", %{node: node, type_support: type_support} do
-      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic")
+    test "rcl_publisher_init!/4, rcl_publisher_fini!/2", %{
+      node: node,
+      type_support: type_support,
+      qos: qos
+    } do
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic", qos)
       assert is_reference(publisher)
       assert Nif.rcl_publisher_fini!(publisher, node) == :ok
     end
 
-    test "rcl_publisher_init!/3 raise due to wrong topic name", %{
+    test "rcl_publisher_init!/4 raise due to wrong topic name", %{
       node: node,
-      type_support: type_support
+      type_support: type_support,
+      qos: qos
     } do
       assert_raise ErlangError, fn ->
-        Nif.rcl_publisher_init!(node, type_support, ~c"topic")
+        Nif.rcl_publisher_init!(node, type_support, ~c"topic", qos)
       end
     end
   end
@@ -262,7 +269,7 @@ defmodule Rclex.NifTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
-      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter")
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", Qos.profile_default())
       subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/chatter")
       wait_set = Nif.rcl_wait_set_init_subscription!(context)
       message = Nif.std_msgs_msg_string_create!()

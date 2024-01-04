@@ -19,9 +19,9 @@ defmodule Rclex.Node do
     {:global, {name, namespace}}
   end
 
-  def start_publisher(message_type, topic_name, name, namespace \\ "/") do
+  def start_publisher(message_type, topic_name, name, namespace, qos) do
     server = name(name, namespace)
-    GenServer.call(server, {:start_publisher, message_type, topic_name})
+    GenServer.call(server, {:start_publisher, message_type, topic_name, qos})
   end
 
   def stop_publisher(message_type, topic_name, name, namespace \\ "/") do
@@ -69,8 +69,9 @@ defmodule Rclex.Node do
     Logger.debug("#{__MODULE__}: #{inspect(reason)} #{Path.join(state.namespace, state.name)}")
   end
 
-  def handle_call({:start_publisher, message_type, topic_name}, _from, state) do
-    return = ES.start_publisher(state.node, message_type, topic_name, state.name, state.namespace)
+  def handle_call({:start_publisher, message_type, topic_name, qos}, _from, state) do
+    return =
+      ES.start_publisher(state.node, message_type, topic_name, state.name, state.namespace, qos)
 
     {:reply, return, state}
   end
