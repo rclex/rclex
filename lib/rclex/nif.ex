@@ -51,7 +51,7 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
-  def rcl_subscription_init!(_node, _type_support, _topic_name) do
+  def rcl_subscription_init!(_node, _type_support, _topic_name, _qos) do
     :erlang.nif_error(:nif_not_loaded)
   end
 
