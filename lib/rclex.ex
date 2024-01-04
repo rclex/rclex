@@ -71,14 +71,16 @@ defmodule Rclex do
           message_type :: module(),
           topic_name :: String.t(),
           name :: String.t(),
-          namespace :: String.t()
+          opts :: list()
         ) ::
           :ok | {:error, :already_started} | {:error, term()}
-  def start_subscription(callback, message_type, topic_name, name, namespace \\ "/")
+  def start_subscription(callback, message_type, topic_name, name, opts \\ [])
       when is_function(callback) and is_atom(message_type) and is_binary(topic_name) and
-             is_binary(name) and
-             is_binary(namespace) do
-    case Rclex.Node.start_subscription(callback, message_type, topic_name, name, namespace) do
+             is_binary(name) and is_list(opts) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    qos = Keyword.get(opts, :qos, Rclex.Qos.profile_default())
+
+    case Rclex.Node.start_subscription(callback, message_type, topic_name, name, namespace, qos) do
       {:ok, _pid} -> :ok
       {:error, {:already_started, _pid}} -> {:error, :already_started}
       {:error, reason} -> {:error, reason}
@@ -89,12 +91,12 @@ defmodule Rclex do
           message_type :: module(),
           topic_name :: String.t(),
           name :: String.t(),
-          namespace :: String.t()
+          opts :: list()
         ) ::
           :ok | {:error, :not_found}
-  def stop_subscription(message_type, topic_name, name, namespace \\ "/")
-      when is_atom(message_type) and is_binary(topic_name) and is_binary(name) and
-             is_binary(namespace) do
+  def stop_subscription(message_type, topic_name, name, opts \\ [])
+      when is_atom(message_type) and is_binary(topic_name) and is_binary(name) and is_list(opts) do
+    namespace = Keyword.get(opts, :namespace, "/")
     Rclex.Node.stop_subscription(message_type, topic_name, name, namespace)
   end
 

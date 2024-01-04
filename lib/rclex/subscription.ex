@@ -32,11 +32,12 @@ defmodule Rclex.Subscription do
     callback = Keyword.fetch!(args, :callback)
     name = Keyword.fetch!(args, :name)
     namespace = Keyword.fetch!(args, :namespace)
+    qos = Keyword.get(args, :qos, Rclex.Qos.profile_default())
 
     1 = :erlang.fun_info(callback)[:arity]
 
     type_support = apply(message_type, :type_support!, [])
-    subscription = Nif.rcl_subscription_init!(node, type_support, ~c"#{topic_name}")
+    subscription = Nif.rcl_subscription_init!(node, type_support, ~c"#{topic_name}", qos)
     wait_set = Nif.rcl_wait_set_init_subscription!(context)
 
     send(self(), :take)

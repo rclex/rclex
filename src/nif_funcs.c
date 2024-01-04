@@ -34,7 +34,7 @@ static ErlNifFunc nif_funcs[] = {
     nif_rcl_func(rcl_publisher_init, 4),
     nif_rcl_func(rcl_publisher_fini, 2),
     nif_rcl_func(rcl_publish, 2),
-    nif_rcl_func(rcl_subscription_init, 3),
+    nif_rcl_func(rcl_subscription_init, 4),
     nif_rcl_func(rcl_subscription_fini, 2),
     nif_rcl_func(rcl_take, 2),
     nif_rcl_func(rcl_clock_init, 0),

@@ -36,7 +36,8 @@ defmodule Rclex.EntitiesSupervisor do
         message_type,
         topic_name,
         name,
-        namespace \\ "/"
+        namespace,
+        qos
       ) do
     DynamicSupervisor.start_child(
       name(name, namespace),
@@ -48,7 +49,8 @@ defmodule Rclex.EntitiesSupervisor do
          message_type: message_type,
          topic_name: topic_name,
          name: name,
-         namespace: namespace
+         namespace: namespace,
+         qos: qos
        ]}
     )
   end

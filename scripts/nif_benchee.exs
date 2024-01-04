@@ -105,9 +105,11 @@ Benchee.run(
          :ok = Nif.rcl_node_fini!(node)
          :ok = Nif.rcl_fini!(context)
        end},
-    "rcl_subscription_init!/3" =>
+    "rcl_subscription_init!/4" =>
       {fn {type_support, node, _context} ->
-         subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/chatter")
+         subscription =
+           Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+
          {subscription, node}
        end,
        before_scenario: fn _ ->
@@ -134,7 +136,9 @@ Benchee.run(
          {type_support, node, context}
        end,
        before_each: fn {type_support, node, _context} ->
-         subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/chatter")
+         subscription =
+           Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+
          {subscription, node}
        end,
        after_scenario: fn {_, node, context} ->
@@ -153,7 +157,9 @@ Benchee.run(
          publisher =
            Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", Qos.profile_default())
 
-         subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/chatter")
+         subscription =
+           Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+
          wait_set = Nif.rcl_wait_set_init_subscription!(context)
          message = Nif.std_msgs_msg_string_create!()
          :ok = Nif.std_msgs_msg_string_set!(message, {~c"hello"})
