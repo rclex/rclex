@@ -366,4 +366,25 @@ defmodule Rclex.NifTest do
       :ok = Nif.rcl_wait_set_fini!(wait_set)
     end
   end
+
+  describe "qos" do
+    test "get_qos_profile!/1" do
+      qos = Rclex.Qos.profile_default()
+      assert Nif.get_qos_profile!(Map.from_struct(qos)) == Map.from_struct(qos)
+
+      qos = %Rclex.Qos{
+        history: :keep_all,
+        depth: 20,
+        reliability: :best_effort,
+        durability: :transient_local,
+        deadline: 0.00390625,
+        lifespan: 0.001953125,
+        liveliness: :automatic,
+        liveliness_lease_duration: 0.000976562,
+        avoid_ros_namespace_conventions: true
+      }
+
+      assert Nif.get_qos_profile!(Map.from_struct(qos)) == Map.from_struct(qos)
+    end
+  end
 end
