@@ -3,10 +3,11 @@ defmodule Rclex do
   User API of `Rclex`.
   """
 
-  @spec start_node(name :: String.t(), namespace :: String.t()) ::
+  @spec start_node(name :: String.t(), opts :: list()) ::
           :ok | {:error, :already_started} | {:error, term()}
-  def start_node(name, namespace \\ "/") when is_binary(name) and is_binary(namespace) do
+  def start_node(name, opts \\ []) when is_binary(name) and is_list(opts) do
     context = Rclex.Context.get()
+    namespace = Keyword.get(opts, :namespace, "/")
 
     case Rclex.NodesSupervisor.start_child(context, name, namespace) do
       {:ok, _pid} -> :ok
@@ -15,9 +16,10 @@ defmodule Rclex do
     end
   end
 
-  @spec stop_node(name :: String.t(), namespace :: String.t()) ::
+  @spec stop_node(name :: String.t(), opts :: list()) ::
           :ok | {:error, :not_found}
-  def stop_node(name, namespace \\ "/") when is_binary(name) and is_binary(namespace) do
+  def stop_node(name, opts \\ []) when is_binary(name) and is_list(opts) do
+    namespace = Keyword.get(opts, :namespace, "/")
     Rclex.NodesSupervisor.terminate_child(name, namespace)
   end
 
@@ -57,12 +59,12 @@ defmodule Rclex do
           message :: struct(),
           topic_name :: String.t(),
           name :: String.t(),
-          namespace :: String.t()
+          opts :: list()
         ) ::
           :ok
-  def publish(message, topic_name, name, namespace \\ "/")
-      when is_struct(message) and is_binary(topic_name) and is_binary(name) and
-             is_binary(namespace) do
+  def publish(message, topic_name, name, opts \\ [])
+      when is_struct(message) and is_binary(topic_name) and is_binary(name) and is_list(opts) do
+    namespace = Keyword.get(opts, :namespace, "/")
     Rclex.Publisher.publish(message, topic_name, name, namespace)
   end
 
@@ -105,12 +107,14 @@ defmodule Rclex do
           callback :: function(),
           timer_name :: String.t(),
           name :: String.t(),
-          namespace :: String.t()
+          opts :: list()
         ) ::
           :ok | {:error, :already_started} | {:error, term()}
-  def start_timer(period_ms, callback, timer_name, name, namespace \\ "/")
+  def start_timer(period_ms, callback, timer_name, name, opts \\ [])
       when is_integer(period_ms) and is_function(callback) and is_binary(timer_name) and
-             is_binary(name) and is_binary(namespace) do
+             is_binary(name) and is_list(opts) do
+    namespace = Keyword.get(opts, :namespace, "/")
+
     case Rclex.Node.start_timer(period_ms, callback, timer_name, name, namespace) do
       {:ok, _pid} -> :ok
       {:error, {:already_started, _pid}} -> {:error, :already_started}
@@ -121,11 +125,12 @@ defmodule Rclex do
   @spec stop_timer(
           timer_name :: String.t(),
           name :: String.t(),
-          namespace :: String.t()
+          opts :: list()
         ) ::
           :ok | {:error, :not_found}
-  def stop_timer(timer_name, name, namespace \\ "/")
-      when is_binary(timer_name) and is_binary(name) and is_binary(namespace) do
+  def stop_timer(timer_name, name, opts \\ [])
+      when is_binary(timer_name) and is_binary(name) and is_list(opts) do
+    namespace = Keyword.get(opts, :namespace, "/")
     Rclex.Node.stop_timer(timer_name, name, namespace)
   end
 end
