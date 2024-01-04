@@ -56,7 +56,7 @@ static int load(ErlNifEnv *env, void **priv_data, ERL_NIF_TERM load_info) {
   ignore_unused(priv_data);
   ignore_unused(load_info);
 
-  make_atoms(env);
+  make_common_atoms(env);
   if (open_resource_types(env, "Elixir.Rclex.Nif") != 0) return 1;
 
   return 0;

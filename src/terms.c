@@ -7,7 +7,7 @@ ERL_NIF_TERM atom_error;
 ERL_NIF_TERM atom_true;
 ERL_NIF_TERM atom_false;
 
-void make_atoms(ErlNifEnv *env) {
+void make_common_atoms(ErlNifEnv *env) {
   atom_ok    = enif_make_atom(env, "ok");
   atom_error = enif_make_atom(env, "error");
   atom_true  = enif_make_atom(env, "true");
