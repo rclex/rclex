@@ -51,8 +51,8 @@ void make_qos_atoms(ErlNifEnv *env) {
   atom_unknown                         = enif_make_atom(env, "unknown");
 }
 
-ERL_NIF_TERM get_qos_profile_c(ErlNifEnv *env, ERL_NIF_TERM map, rmw_qos_profile_t *qos_p) {
-  const size_t kv_pair_counts = 9;
+ERL_NIF_TERM get_c_qos_profile(ErlNifEnv *env, ERL_NIF_TERM map, rmw_qos_profile_t *qos_p) {
+  const size_t kv_pair_counts = 10; // 9 + __struct__
   size_t size;
   if (!enif_get_map_size(env, map, &size)) return enif_make_badarg(env);
   if (size != kv_pair_counts) return enif_make_badarg(env);
@@ -171,7 +171,7 @@ ERL_NIF_TERM get_qos_profile_c(ErlNifEnv *env, ERL_NIF_TERM map, rmw_qos_profile
   return atom_ok;
 }
 
-ERL_NIF_TERM get_qos_profile_ex(ErlNifEnv *env, rmw_qos_profile_t qos) {
+ERL_NIF_TERM get_ex_qos_profile(ErlNifEnv *env, rmw_qos_profile_t qos) {
   ERL_NIF_TERM map = enif_make_new_map(env);
   ERL_NIF_TERM k, v;
 
@@ -269,7 +269,7 @@ ERL_NIF_TERM nif_get_qos_profile_for_test(ErlNifEnv *env, int argc, const ERL_NI
   if (argc != 1) return enif_make_badarg(env);
 
   rmw_qos_profile_t qos;
-  ERL_NIF_TERM ret = get_qos_profile_c(env, argv[0], &qos);
+  ERL_NIF_TERM ret = get_c_qos_profile(env, argv[0], &qos);
   if (enif_is_exception(env, ret)) return ret;
-  return get_qos_profile_ex(env, qos);
+  return get_ex_qos_profile(env, qos);
 }
