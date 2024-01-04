@@ -19,6 +19,10 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def get_qos_profile!(_qos) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def rcl_init!() do
     :erlang.nif_error(:nif_not_loaded)
   end

@@ -1,5 +1,6 @@
 #include "macros.h"
 #include "msg_funcs.h" // IWYU pragma: keep
+#include "qos.h"
 #include "rcl_clock.h"
 #include "rcl_init.h"
 #include "rcl_node.h"
@@ -25,6 +26,7 @@ static ErlNifFunc nif_funcs[] = {
     // clang-format off
     {"raise!", 0, nif_raise_for_test, REGULAR_NIF},
     {"raise_with_message!", 0, nif_raise_with_message_for_test, REGULAR_NIF},
+    {"get_qos_profile!", 1, nif_get_qos_profile_for_test, REGULAR_NIF},
     nif_rcl_func(rcl_init, 0),
     nif_rcl_func(rcl_fini, 1),
     nif_rcl_func(rcl_node_init, 3),
