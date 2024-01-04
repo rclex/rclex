@@ -1,7 +1,7 @@
 #include "terms.h"
 #include <erl_nif.h>
 #include <math.h>
-#include <rmw/time.h>
+// IWYU pragma: no_include "rmw/time.h" for foxy
 #include <rmw/types.h>
 #include <stdbool.h>
 #include <stddef.h>
