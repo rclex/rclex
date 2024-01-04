@@ -8,12 +8,7 @@ defmodule Rclex.Qos do
           durability: :system_default | :transient_local | :volatile | :unknown,
           deadline: float(),
           lifespan: float(),
-          liveliness:
-            :system_default
-            | :automatic
-            | :deprecated
-            | :manual_by_topic
-            | :unknown,
+          liveliness: :system_default | :automatic | :manual_by_topic | :unknown,
           liveliness_lease_duration: float(),
           avoid_ros_namespace_conventions: boolean()
         }
