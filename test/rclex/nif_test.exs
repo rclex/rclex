@@ -370,7 +370,7 @@ defmodule Rclex.NifTest do
   describe "qos" do
     test "get_qos_profile!/1" do
       qos = Rclex.Qos.profile_default()
-      assert Nif.get_qos_profile!(Map.from_struct(qos)) == Map.from_struct(qos)
+      assert Nif.get_qos_profile!(qos) == Map.from_struct(qos)
 
       qos = %Rclex.Qos{
         history: :keep_all,
@@ -384,7 +384,7 @@ defmodule Rclex.NifTest do
         avoid_ros_namespace_conventions: true
       }
 
-      assert Nif.get_qos_profile!(Map.from_struct(qos)) == Map.from_struct(qos)
+      assert Nif.get_qos_profile!(qos) == Map.from_struct(qos)
     end
   end
 end
