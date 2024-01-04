@@ -1,4 +1,6 @@
 defmodule Rclex.Qos do
+  @moduledoc false
+
   @type t() :: %__MODULE__{
           history: :system_default | :keep_last | :keep_all | :unknown,
           depth: non_neg_integer(),
