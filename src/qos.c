@@ -51,11 +51,6 @@ void make_qos_atoms(ErlNifEnv *env) {
   atom_unknown                         = enif_make_atom(env, "unknown");
 }
 
-static inline bool eq_enif_compare(ERL_NIF_TERM lhs, ERL_NIF_TERM rhs) {
-  if (enif_compare(lhs, rhs) == 0) return true;
-  return false;
-}
-
 ERL_NIF_TERM get_qos_profile_c(ErlNifEnv *env, ERL_NIF_TERM map, rmw_qos_profile_t *qos_p) {
   const size_t kv_pair_counts = 9;
   size_t size;
@@ -67,13 +62,13 @@ ERL_NIF_TERM get_qos_profile_c(ErlNifEnv *env, ERL_NIF_TERM map, rmw_qos_profile
   k = atom_history;
   if (!enif_get_map_value(env, map, k, &v)) return enif_make_badarg(env);
 
-  if (eq_enif_compare(v, atom_system_default)) {
+  if (enif_is_identical(v, atom_system_default)) {
     qos_p->history = RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT;
-  } else if (eq_enif_compare(v, atom_keep_last)) {
+  } else if (enif_is_identical(v, atom_keep_last)) {
     qos_p->history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-  } else if (eq_enif_compare(v, atom_keep_all)) {
+  } else if (enif_is_identical(v, atom_keep_all)) {
     qos_p->history = RMW_QOS_POLICY_HISTORY_KEEP_ALL;
-  } else if (eq_enif_compare(v, atom_unknown)) {
+  } else if (enif_is_identical(v, atom_unknown)) {
     qos_p->history = RMW_QOS_POLICY_HISTORY_UNKNOWN;
   } else {
     return raise(env, __FILE__, __LINE__);
@@ -88,13 +83,13 @@ ERL_NIF_TERM get_qos_profile_c(ErlNifEnv *env, ERL_NIF_TERM map, rmw_qos_profile
   k = atom_reliability;
   if (!enif_get_map_value(env, map, k, &v)) return enif_make_badarg(env);
 
-  if (eq_enif_compare(v, atom_system_default)) {
+  if (enif_is_identical(v, atom_system_default)) {
     qos_p->reliability = RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
-  } else if (eq_enif_compare(v, atom_reliable)) {
+  } else if (enif_is_identical(v, atom_reliable)) {
     qos_p->reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
-  } else if (eq_enif_compare(v, atom_best_effort)) {
+  } else if (enif_is_identical(v, atom_best_effort)) {
     qos_p->reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
-  } else if (eq_enif_compare(v, atom_unknown)) {
+  } else if (enif_is_identical(v, atom_unknown)) {
     qos_p->reliability = RMW_QOS_POLICY_RELIABILITY_UNKNOWN;
   } else {
     return raise(env, __FILE__, __LINE__);
@@ -103,13 +98,13 @@ ERL_NIF_TERM get_qos_profile_c(ErlNifEnv *env, ERL_NIF_TERM map, rmw_qos_profile
   k = atom_durability;
   if (!enif_get_map_value(env, map, k, &v)) return enif_make_badarg(env);
 
-  if (eq_enif_compare(v, atom_system_default)) {
+  if (enif_is_identical(v, atom_system_default)) {
     qos_p->durability = RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT;
-  } else if (eq_enif_compare(v, atom_transient_local)) {
+  } else if (enif_is_identical(v, atom_transient_local)) {
     qos_p->durability = RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL;
-  } else if (eq_enif_compare(v, atom_volatile)) {
+  } else if (enif_is_identical(v, atom_volatile)) {
     qos_p->durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
-  } else if (eq_enif_compare(v, atom_unknown)) {
+  } else if (enif_is_identical(v, atom_unknown)) {
     qos_p->durability = RMW_QOS_POLICY_DURABILITY_UNKNOWN;
   } else {
     return raise(env, __FILE__, __LINE__);
@@ -136,15 +131,15 @@ ERL_NIF_TERM get_qos_profile_c(ErlNifEnv *env, ERL_NIF_TERM map, rmw_qos_profile
   k = atom_liveliness;
   if (!enif_get_map_value(env, map, k, &v)) return enif_make_badarg(env);
 
-  if (eq_enif_compare(v, atom_system_default)) {
+  if (enif_is_identical(v, atom_system_default)) {
     qos_p->liveliness = RMW_QOS_POLICY_LIVELINESS_SYSTEM_DEFAULT;
-  } else if (eq_enif_compare(v, atom_automatic)) {
+  } else if (enif_is_identical(v, atom_automatic)) {
     qos_p->liveliness = RMW_QOS_POLICY_LIVELINESS_AUTOMATIC;
-  } else if (eq_enif_compare(v, atom_deprecated)) {
+  } else if (enif_is_identical(v, atom_deprecated)) {
     return raise_with_message(env, __FILE__, __LINE__, "this option is deprecated");
-  } else if (eq_enif_compare(v, atom_manual_by_topic)) {
+  } else if (enif_is_identical(v, atom_manual_by_topic)) {
     qos_p->liveliness = RMW_QOS_POLICY_LIVELINESS_MANUAL_BY_TOPIC;
-  } else if (eq_enif_compare(v, atom_unknown)) {
+  } else if (enif_is_identical(v, atom_unknown)) {
     qos_p->liveliness = RMW_QOS_POLICY_LIVELINESS_UNKNOWN;
   } else {
     return raise(env, __FILE__, __LINE__);
@@ -165,9 +160,9 @@ ERL_NIF_TERM get_qos_profile_c(ErlNifEnv *env, ERL_NIF_TERM map, rmw_qos_profile
   k = atom_avoid_ros_namespace_conventions;
   if (!enif_get_map_value(env, map, k, &v)) return enif_make_badarg(env);
 
-  if (eq_enif_compare(v, atom_true)) {
+  if (enif_is_identical(v, atom_true)) {
     qos_p->avoid_ros_namespace_conventions = true;
-  } else if (eq_enif_compare(v, atom_false)) {
+  } else if (enif_is_identical(v, atom_false)) {
     qos_p->avoid_ros_namespace_conventions = false;
   } else {
     return raise(env, __FILE__, __LINE__);
@@ -275,6 +270,6 @@ ERL_NIF_TERM nif_get_qos_profile_for_test(ErlNifEnv *env, int argc, const ERL_NI
 
   rmw_qos_profile_t qos;
   ERL_NIF_TERM ret = get_qos_profile_c(env, argv[0], &qos);
-  if (!eq_enif_compare(ret, atom_ok)) return ret;
+  if (enif_is_exception(env, ret)) return ret;
   return get_qos_profile_ex(env, qos);
 }
