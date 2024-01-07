@@ -22,11 +22,14 @@
 #define nif_rcl_func(name, arity)                                                                  \
   { #name "!", arity, nif_##name, ERL_NIF_DIRTY_JOB_IO_BOUND }
 
+#define nif_regular_func(name, arity)                                                              \
+  { #name "!", arity, nif_##name, REGULAR_NIF }
+
 static ErlNifFunc nif_funcs[] = {
     // clang-format off
     {"raise!", 0, nif_raise_for_test, REGULAR_NIF},
     {"raise_with_message!", 0, nif_raise_with_message_for_test, REGULAR_NIF},
-    {"get_qos_profile!", 1, nif_get_qos_profile_for_test, REGULAR_NIF},
+    {"test_qos_profile!", 1, nif_test_qos_profile, REGULAR_NIF},
     nif_rcl_func(rcl_init, 0),
     nif_rcl_func(rcl_fini, 1),
     nif_rcl_func(rcl_node_init, 3),
@@ -48,6 +51,12 @@ static ErlNifFunc nif_funcs[] = {
     nif_rcl_func(rcl_wait_set_fini, 1),
     nif_rcl_func(rcl_wait_subscription, 3),
     nif_rcl_func(rcl_wait_timer, 3),
+    nif_regular_func(rmw_qos_profile_sensor_data, 0),
+    nif_regular_func(rmw_qos_profile_parameters, 0),
+    nif_regular_func(rmw_qos_profile_default, 0),
+    nif_regular_func(rmw_qos_profile_services_default, 0),
+    nif_regular_func(rmw_qos_profile_parameter_events, 0),
+    nif_regular_func(rmw_qos_profile_system_default, 0),
 #include "msg_funcs.ec" // IWYU pragma: keep
     // clang-format on
 };

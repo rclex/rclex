@@ -1,7 +1,9 @@
+#include "macros.h"
 #include "terms.h"
 #include <erl_nif.h>
 #include <math.h>
 // IWYU pragma: no_include "rmw/time.h" for foxy
+#include <rmw/qos_profiles.h>
 #include <rmw/types.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -27,6 +29,8 @@ ERL_NIF_TERM atom_manual_by_topic;
 ERL_NIF_TERM atom_liveliness_lease_duration;
 ERL_NIF_TERM atom_avoid_ros_namespace_conventions;
 ERL_NIF_TERM atom_unknown;
+ERL_NIF_TERM atom_qos_struct_k;
+ERL_NIF_TERM atom_qos_struct_v;
 
 void make_qos_atoms(ErlNifEnv *env) {
   atom_history                         = enif_make_atom(env, "history");
@@ -49,6 +53,8 @@ void make_qos_atoms(ErlNifEnv *env) {
   atom_liveliness_lease_duration       = enif_make_atom(env, "liveliness_lease_duration");
   atom_avoid_ros_namespace_conventions = enif_make_atom(env, "avoid_ros_namespace_conventions");
   atom_unknown                         = enif_make_atom(env, "unknown");
+  atom_qos_struct_k                    = enif_make_atom(env, "__struct__");
+  atom_qos_struct_v                    = enif_make_atom(env, "Elixir.Rclex.Qos");
 }
 
 ERL_NIF_TERM get_c_qos_profile(ErlNifEnv *env, ERL_NIF_TERM map, rmw_qos_profile_t *qos_p) {
@@ -262,10 +268,57 @@ ERL_NIF_TERM get_ex_qos_profile(ErlNifEnv *env, rmw_qos_profile_t qos) {
   }
   enif_make_map_put(env, map, k, v, &map);
 
+  enif_make_map_put(env, map, atom_qos_struct_k, atom_qos_struct_v, &map);
+
   return map;
 }
 
-ERL_NIF_TERM nif_get_qos_profile_for_test(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+ERL_NIF_TERM nif_rmw_qos_profile_sensor_data(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  if (argc != 0) return enif_make_badarg(env);
+  ignore_unused(argv);
+
+  return get_ex_qos_profile(env, rmw_qos_profile_sensor_data);
+}
+
+ERL_NIF_TERM nif_rmw_qos_profile_parameters(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  if (argc != 0) return enif_make_badarg(env);
+  ignore_unused(argv);
+
+  return get_ex_qos_profile(env, rmw_qos_profile_parameters);
+}
+
+ERL_NIF_TERM nif_rmw_qos_profile_default(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  if (argc != 0) return enif_make_badarg(env);
+  ignore_unused(argv);
+
+  return get_ex_qos_profile(env, rmw_qos_profile_default);
+}
+
+ERL_NIF_TERM nif_rmw_qos_profile_services_default(ErlNifEnv *env, int argc,
+                                                  const ERL_NIF_TERM argv[]) {
+  if (argc != 0) return enif_make_badarg(env);
+  ignore_unused(argv);
+
+  return get_ex_qos_profile(env, rmw_qos_profile_services_default);
+}
+
+ERL_NIF_TERM nif_rmw_qos_profile_parameter_events(ErlNifEnv *env, int argc,
+                                                  const ERL_NIF_TERM argv[]) {
+  if (argc != 0) return enif_make_badarg(env);
+  ignore_unused(argv);
+
+  return get_ex_qos_profile(env, rmw_qos_profile_parameter_events);
+}
+
+ERL_NIF_TERM nif_rmw_qos_profile_system_default(ErlNifEnv *env, int argc,
+                                                const ERL_NIF_TERM argv[]) {
+  if (argc != 0) return enif_make_badarg(env);
+  ignore_unused(argv);
+
+  return get_ex_qos_profile(env, rmw_qos_profile_system_default);
+}
+
+ERL_NIF_TERM nif_test_qos_profile(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   if (argc != 1) return enif_make_badarg(env);
 
   rmw_qos_profile_t qos;
