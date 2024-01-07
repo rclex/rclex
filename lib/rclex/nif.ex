@@ -19,7 +19,7 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
-  def get_qos_profile!(_qos) do
+  def test_qos_profile!(_qos) do
     :erlang.nif_error(:nif_not_loaded)
   end
 
@@ -104,6 +104,30 @@ defmodule Rclex.Nif do
   end
 
   def rcl_wait_timer!(_wait_set, _timeout_us, _timer) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_sensor_data!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_parameters!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_default!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_services_default!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_parameter_events!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_system_default!() do
     :erlang.nif_error(:nif_not_loaded)
   end
 
