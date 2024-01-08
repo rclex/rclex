@@ -13,17 +13,15 @@ defmodule Rclex.Qos do
           avoid_ros_namespace_conventions: boolean()
         }
 
-  defstruct [
-    :history,
-    :depth,
-    :reliability,
-    :durability,
-    :deadline,
-    :lifespan,
-    :liveliness,
-    :liveliness_lease_duration,
-    avoid_ros_namespace_conventions: false
-  ]
+  defstruct history: :keep_last,
+            depth: 10,
+            reliability: :reliable,
+            durability: :volatile,
+            deadline: 0.0,
+            lifespan: 0.0,
+            liveliness: :system_default,
+            liveliness_lease_duration: 0.0,
+            avoid_ros_namespace_conventions: false
 
   defdelegate profile_sensor_data(), to: Rclex.Nif, as: :rmw_qos_profile_sensor_data!
   defdelegate profile_parameters(), to: Rclex.Nif, as: :rmw_qos_profile_parameters!

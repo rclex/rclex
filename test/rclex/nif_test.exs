@@ -383,7 +383,11 @@ defmodule Rclex.NifTest do
   end
 
   describe "qos" do
-    test "qos profiles" do
+    test "struct should be profile default" do
+      assert %Rclex.Qos{} == Rclex.Qos.profile_default()
+    end
+
+    test "profiles, ex to c to ex is equal" do
       for qos <- [
             Rclex.Qos.profile_sensor_data(),
             Rclex.Qos.profile_parameters(),
@@ -394,16 +398,18 @@ defmodule Rclex.NifTest do
           ] do
         assert Nif.test_qos_profile!(qos) == qos
       end
+    end
 
+    test "custom profile" do
       qos = %Rclex.Qos{
         history: :keep_all,
         depth: 20,
         reliability: :best_effort,
         durability: :transient_local,
-        deadline: 0.00390625,
-        lifespan: 0.001953125,
+        deadline: 123_456_789.00390625,
+        lifespan: 123_456_789.001953125,
         liveliness: :automatic,
-        liveliness_lease_duration: 0.000976562,
+        liveliness_lease_duration: 123_456_789.000976562,
         avoid_ros_namespace_conventions: true
       }
 
