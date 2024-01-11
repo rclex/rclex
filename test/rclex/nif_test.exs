@@ -2,7 +2,7 @@ defmodule Rclex.NifTest do
   use ExUnit.Case
 
   alias Rclex.Nif
-  alias Rclex.Qos
+  alias Rclex.QoS
 
   describe "raise" do
     test "test_raise!/0" do
@@ -233,7 +233,7 @@ defmodule Rclex.NifTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
-      qos = Qos.profile_default()
+      qos = QoS.profile_default()
 
       on_exit(fn ->
         Nif.rcl_node_fini!(node)
@@ -269,10 +269,10 @@ defmodule Rclex.NifTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
-      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", QoS.profile_default())
 
       subscription =
-        Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+        Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", QoS.profile_default())
 
       wait_set = Nif.rcl_wait_set_init_subscription!(context)
       message = Nif.std_msgs_msg_string_create!()
@@ -316,7 +316,7 @@ defmodule Rclex.NifTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
-      qos = Qos.profile_default()
+      qos = QoS.profile_default()
 
       on_exit(fn ->
         Nif.rcl_node_fini!(node)
@@ -354,7 +354,7 @@ defmodule Rclex.NifTest do
       type_support = Nif.std_msgs_msg_string_type_support!()
 
       subscription =
-        Nif.rcl_subscription_init!(node, type_support, ~c"/topic", Qos.profile_default())
+        Nif.rcl_subscription_init!(node, type_support, ~c"/topic", QoS.profile_default())
 
       on_exit(fn ->
         Nif.rcl_subscription_fini!(subscription, node)
@@ -384,24 +384,24 @@ defmodule Rclex.NifTest do
 
   describe "qos" do
     test "struct should be profile default" do
-      assert %Rclex.Qos{} == Rclex.Qos.profile_default()
+      assert %Rclex.QoS{} == Rclex.QoS.profile_default()
     end
 
     test "profiles, ex to c to ex is equal" do
       for qos <- [
-            Rclex.Qos.profile_sensor_data(),
-            Rclex.Qos.profile_parameters(),
-            Rclex.Qos.profile_default(),
-            Rclex.Qos.profile_services_default(),
-            Rclex.Qos.profile_parameter_events(),
-            Rclex.Qos.profile_system_default()
+            Rclex.QoS.profile_sensor_data(),
+            Rclex.QoS.profile_parameters(),
+            Rclex.QoS.profile_default(),
+            Rclex.QoS.profile_services_default(),
+            Rclex.QoS.profile_parameter_events(),
+            Rclex.QoS.profile_system_default()
           ] do
         assert Nif.test_qos_profile!(qos) == qos
       end
     end
 
     test "custom profile" do
-      qos = %Rclex.Qos{
+      qos = %Rclex.QoS{
         history: :keep_all,
         depth: 20,
         reliability: :best_effort,

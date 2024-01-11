@@ -33,7 +33,7 @@ defmodule Rclex do
   def start_publisher(message_type, topic_name, name, opts \\ [])
       when is_atom(message_type) and is_binary(topic_name) and is_binary(name) and is_list(opts) do
     namespace = Keyword.get(opts, :namespace, "/")
-    qos = Keyword.get(opts, :qos, Rclex.Qos.profile_default())
+    qos = Keyword.get(opts, :qos, Rclex.QoS.profile_default())
 
     case Rclex.Node.start_publisher(message_type, topic_name, name, namespace, qos) do
       {:ok, _pid} -> :ok
@@ -80,7 +80,7 @@ defmodule Rclex do
       when is_function(callback) and is_atom(message_type) and is_binary(topic_name) and
              is_binary(name) and is_list(opts) do
     namespace = Keyword.get(opts, :namespace, "/")
-    qos = Keyword.get(opts, :qos, Rclex.Qos.profile_default())
+    qos = Keyword.get(opts, :qos, Rclex.QoS.profile_default())
 
     case Rclex.Node.start_subscription(callback, message_type, topic_name, name, namespace, qos) do
       {:ok, _pid} -> :ok

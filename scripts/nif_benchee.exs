@@ -1,5 +1,5 @@
 alias Rclex.Nif
-alias Rclex.Qos
+alias Rclex.QoS
 
 Benchee.run(
   %{
@@ -46,7 +46,7 @@ Benchee.run(
     "rcl_publisher_init!/4" =>
       {fn {type_support, node, _context} ->
          publisher =
-           Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+           Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", QoS.profile_default())
 
          {publisher, node}
        end,
@@ -75,7 +75,7 @@ Benchee.run(
        end,
        before_each: fn {type_support, node, _context} ->
          publisher =
-           Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+           Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", QoS.profile_default())
 
          {publisher, node}
        end,
@@ -93,7 +93,7 @@ Benchee.run(
          type_support = Nif.std_msgs_msg_string_type_support!()
 
          publisher =
-           Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+           Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", QoS.profile_default())
 
          message = Nif.std_msgs_msg_string_create!()
          :ok = Nif.std_msgs_msg_string_set!(message, {~c"hello"})
@@ -108,7 +108,7 @@ Benchee.run(
     "rcl_subscription_init!/4" =>
       {fn {type_support, node, _context} ->
          subscription =
-           Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+           Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", QoS.profile_default())
 
          {subscription, node}
        end,
@@ -137,7 +137,7 @@ Benchee.run(
        end,
        before_each: fn {type_support, node, _context} ->
          subscription =
-           Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+           Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", QoS.profile_default())
 
          {subscription, node}
        end,
@@ -155,10 +155,10 @@ Benchee.run(
          type_support = Nif.std_msgs_msg_string_type_support!()
 
          publisher =
-           Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+           Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", QoS.profile_default())
 
          subscription =
-           Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", Qos.profile_default())
+           Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", QoS.profile_default())
 
          wait_set = Nif.rcl_wait_set_init_subscription!(context)
          message = Nif.std_msgs_msg_string_create!()

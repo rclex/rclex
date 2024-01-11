@@ -35,7 +35,7 @@ defmodule Rclex.Publisher do
     topic_name = Keyword.fetch!(args, :topic_name)
     name = Keyword.fetch!(args, :name)
     namespace = Keyword.fetch!(args, :namespace)
-    qos = Keyword.get(args, :qos, Rclex.Qos.profile_default())
+    qos = Keyword.get(args, :qos, Rclex.QoS.profile_default())
 
     type_support = apply(message_type, :type_support!, [])
     publisher = Nif.rcl_publisher_init!(node, type_support, ~c"#{topic_name}", qos)
