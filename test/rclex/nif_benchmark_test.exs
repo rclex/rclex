@@ -6,7 +6,7 @@ defmodule Rclex.NifBenchmarkTest do
   import ExUnit.CaptureLog
 
   alias Rclex.Nif
-  alias Rclex.Qos
+  alias Rclex.QoS
 
   @moduletag :skip
   @nif_limit_time_us 1000
@@ -55,7 +55,7 @@ defmodule Rclex.NifBenchmarkTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
-      qos = Qos.profile_default()
+      qos = QoS.profile_default()
 
       on_exit(fn ->
         :ok = Nif.rcl_node_fini!(node)
@@ -85,7 +85,7 @@ defmodule Rclex.NifBenchmarkTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
-      qos = Qos.profile_default()
+      qos = QoS.profile_default()
 
       on_exit(fn ->
         :ok = Nif.rcl_node_fini!(node)
@@ -117,7 +117,7 @@ defmodule Rclex.NifBenchmarkTest do
       type_support = Nif.std_msgs_msg_string_type_support!()
 
       subscription =
-        Nif.rcl_subscription_init!(node, type_support, ~c"/topic", Qos.profile_default())
+        Nif.rcl_subscription_init!(node, type_support, ~c"/topic", QoS.profile_default())
 
       on_exit(fn ->
         :ok = Nif.rcl_subscription_fini!(subscription, node)

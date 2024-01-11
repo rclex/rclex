@@ -1,4 +1,4 @@
-defmodule Rclex.Qos do
+defmodule Rclex.QoS do
   @moduledoc false
 
   @type t() :: %__MODULE__{

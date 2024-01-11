@@ -32,7 +32,7 @@ defmodule Rclex.Subscription do
     callback = Keyword.fetch!(args, :callback)
     name = Keyword.fetch!(args, :name)
     namespace = Keyword.fetch!(args, :namespace)
-    qos = Keyword.get(args, :qos, Rclex.Qos.profile_default())
+    qos = Keyword.get(args, :qos, Rclex.QoS.profile_default())
 
     1 = :erlang.fun_info(callback)[:arity]
 

@@ -54,7 +54,7 @@ void make_qos_atoms(ErlNifEnv *env) {
   atom_avoid_ros_namespace_conventions = enif_make_atom(env, "avoid_ros_namespace_conventions");
   atom_unknown                         = enif_make_atom(env, "unknown");
   atom_qos_struct_k                    = enif_make_atom(env, "__struct__");
-  atom_qos_struct_v                    = enif_make_atom(env, "Elixir.Rclex.Qos");
+  atom_qos_struct_v                    = enif_make_atom(env, "Elixir.Rclex.QoS");
 }
 
 ERL_NIF_TERM get_c_qos_profile(ErlNifEnv *env, ERL_NIF_TERM map, rmw_qos_profile_t *qos_p) {
