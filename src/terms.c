@@ -14,14 +14,14 @@ void make_common_atoms(ErlNifEnv *env) {
   atom_false = enif_make_atom(env, "false");
 }
 
-ERL_NIF_TERM nif_raise_for_test(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+ERL_NIF_TERM nif_test_raise(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   ignore_unused(argc);
   ignore_unused(argv);
 
   return raise(env, __FILE__, __LINE__);
 }
 
-ERL_NIF_TERM nif_raise_with_message_for_test(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+ERL_NIF_TERM nif_test_raise_with_message(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   ignore_unused(argc);
   ignore_unused(argv);
 

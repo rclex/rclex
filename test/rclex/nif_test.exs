@@ -5,9 +5,9 @@ defmodule Rclex.NifTest do
   alias Rclex.Qos
 
   describe "raise" do
-    test "raise!/0" do
+    test "test_raise!/0" do
       try do
-        Nif.raise!()
+        Nif.test_raise!()
       rescue
         ex in [ErlangError] ->
           %ErlangError{original: charlist, reason: nil} = ex
@@ -15,9 +15,9 @@ defmodule Rclex.NifTest do
       end
     end
 
-    test "raise_with_message!/0" do
+    test "test_raise_with_message!/0" do
       try do
-        Nif.raise_with_message!()
+        Nif.test_raise_with_message!()
       rescue
         ex in [ErlangError] ->
           %ErlangError{original: charlist, reason: nil} = ex

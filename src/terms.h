@@ -7,9 +7,9 @@ extern ERL_NIF_TERM atom_true;
 extern ERL_NIF_TERM atom_false;
 
 extern void make_common_atoms(ErlNifEnv *env);
-extern ERL_NIF_TERM nif_raise_for_test(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
-extern ERL_NIF_TERM nif_raise_with_message_for_test(ErlNifEnv *env, int argc,
-                                                    const ERL_NIF_TERM argv[]);
+extern ERL_NIF_TERM nif_test_raise(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
+extern ERL_NIF_TERM nif_test_raise_with_message(ErlNifEnv *env, int argc,
+                                                const ERL_NIF_TERM argv[]);
 
 static inline ERL_NIF_TERM raise(ErlNifEnv *env, const char *file, int line) {
   char str[1024];

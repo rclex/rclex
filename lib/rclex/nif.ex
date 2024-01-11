@@ -11,11 +11,11 @@ defmodule Rclex.Nif do
     |> :erlang.load_nif(_load_info = :any_term)
   end
 
-  def raise!() do
+  def test_raise!() do
     :erlang.nif_error(:nif_not_loaded)
   end
 
-  def raise_with_message!() do
+  def test_raise_with_message!() do
     :erlang.nif_error(:nif_not_loaded)
   end
 
