@@ -11,11 +11,15 @@ defmodule Rclex.Nif do
     |> :erlang.load_nif(_load_info = :any_term)
   end
 
-  def raise!() do
+  def test_raise!() do
     :erlang.nif_error(:nif_not_loaded)
   end
 
-  def raise_with_message!() do
+  def test_raise_with_message!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def test_qos_profile!(_qos) do
     :erlang.nif_error(:nif_not_loaded)
   end
 
@@ -35,7 +39,7 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
-  def rcl_publisher_init!(_node, _type_support, _topic_name) do
+  def rcl_publisher_init!(_node, _type_support, _topic_name, _qos) do
     :erlang.nif_error(:nif_not_loaded)
   end
 
@@ -47,7 +51,7 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
-  def rcl_subscription_init!(_node, _type_support, _topic_name) do
+  def rcl_subscription_init!(_node, _type_support, _topic_name, _qos) do
     :erlang.nif_error(:nif_not_loaded)
   end
 
@@ -100,6 +104,30 @@ defmodule Rclex.Nif do
   end
 
   def rcl_wait_timer!(_wait_set, _timeout_us, _timer) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_sensor_data!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_parameters!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_default!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_services_default!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_parameter_events!() do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rmw_qos_profile_system_default!() do
     :erlang.nif_error(:nif_not_loaded)
   end
 

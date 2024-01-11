@@ -14,7 +14,7 @@ defmodule Rclex.EntitiesSupervisor do
     {:global, {:entities_supervisor, name, namespace}}
   end
 
-  def start_publisher(node, message_type, topic_name, name, namespace \\ "/") do
+  def start_publisher(node, message_type, topic_name, name, namespace, qos) do
     DynamicSupervisor.start_child(
       name(name, namespace),
       {Rclex.Publisher,
@@ -23,7 +23,8 @@ defmodule Rclex.EntitiesSupervisor do
          message_type: message_type,
          topic_name: topic_name,
          name: name,
-         namespace: namespace
+         namespace: namespace,
+         qos: qos
        ]}
     )
   end
@@ -35,7 +36,8 @@ defmodule Rclex.EntitiesSupervisor do
         message_type,
         topic_name,
         name,
-        namespace \\ "/"
+        namespace,
+        qos
       ) do
     DynamicSupervisor.start_child(
       name(name, namespace),
@@ -47,7 +49,8 @@ defmodule Rclex.EntitiesSupervisor do
          message_type: message_type,
          topic_name: topic_name,
          name: name,
-         namespace: namespace
+         namespace: namespace,
+         qos: qos
        ]}
     )
   end

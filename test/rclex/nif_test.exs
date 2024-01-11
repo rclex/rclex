@@ -2,11 +2,12 @@ defmodule Rclex.NifTest do
   use ExUnit.Case
 
   alias Rclex.Nif
+  alias Rclex.QoS
 
   describe "raise" do
-    test "raise!/0" do
+    test "test_raise!/0" do
       try do
-        Nif.raise!()
+        Nif.test_raise!()
       rescue
         ex in [ErlangError] ->
           %ErlangError{original: charlist, reason: nil} = ex
@@ -14,9 +15,9 @@ defmodule Rclex.NifTest do
       end
     end
 
-    test "raise_with_message!/0" do
+    test "test_raise_with_message!/0" do
       try do
-        Nif.raise_with_message!()
+        Nif.test_raise_with_message!()
       rescue
         ex in [ErlangError] ->
           %ErlangError{original: charlist, reason: nil} = ex
@@ -232,27 +233,33 @@ defmodule Rclex.NifTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
+      qos = QoS.profile_default()
 
       on_exit(fn ->
         Nif.rcl_node_fini!(node)
         Nif.rcl_fini!(context)
       end)
 
-      %{node: node, type_support: type_support}
+      %{node: node, type_support: type_support, qos: qos}
     end
 
-    test "rcl_publisher_init!/3, rcl_publisher_fini!/2", %{node: node, type_support: type_support} do
-      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic")
+    test "rcl_publisher_init!/4, rcl_publisher_fini!/2", %{
+      node: node,
+      type_support: type_support,
+      qos: qos
+    } do
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/topic", qos)
       assert is_reference(publisher)
       assert Nif.rcl_publisher_fini!(publisher, node) == :ok
     end
 
-    test "rcl_publisher_init!/3 raise due to wrong topic name", %{
+    test "rcl_publisher_init!/4 raise due to wrong topic name", %{
       node: node,
-      type_support: type_support
+      type_support: type_support,
+      qos: qos
     } do
       assert_raise ErlangError, fn ->
-        Nif.rcl_publisher_init!(node, type_support, ~c"topic")
+        Nif.rcl_publisher_init!(node, type_support, ~c"topic", qos)
       end
     end
   end
@@ -262,8 +269,11 @@ defmodule Rclex.NifTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
-      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter")
-      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/chatter")
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", QoS.profile_default())
+
+      subscription =
+        Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", QoS.profile_default())
+
       wait_set = Nif.rcl_wait_set_init_subscription!(context)
       message = Nif.std_msgs_msg_string_create!()
       :ok = Nif.std_msgs_msg_string_set!(message, {~c"Hello from Rclex"})
@@ -306,30 +316,33 @@ defmodule Rclex.NifTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
+      qos = QoS.profile_default()
 
       on_exit(fn ->
         Nif.rcl_node_fini!(node)
         Nif.rcl_fini!(context)
       end)
 
-      %{node: node, type_support: type_support}
+      %{node: node, type_support: type_support, qos: qos}
     end
 
-    test "rcl_subscription_init!/3, rcl_subscription_fini!/2", %{
+    test "rcl_subscription_init!/4, rcl_subscription_fini!/2", %{
       node: node,
-      type_support: type_support
+      type_support: type_support,
+      qos: qos
     } do
-      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic")
+      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", qos)
       assert is_reference(subscription)
       assert Nif.rcl_subscription_fini!(subscription, node) == :ok
     end
 
-    test "rcl_subscription_init!/3 raise due to wrong topic name", %{
+    test "rcl_subscription_init!/4 raise due to wrong topic name", %{
       node: node,
-      type_support: type_support
+      type_support: type_support,
+      qos: qos
     } do
       assert_raise ErlangError, fn ->
-        Nif.rcl_subscription_init!(node, type_support, ~c"topic")
+        Nif.rcl_subscription_init!(node, type_support, ~c"topic", qos)
       end
     end
   end
@@ -339,7 +352,9 @@ defmodule Rclex.NifTest do
       context = Nif.rcl_init!()
       node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
       type_support = Nif.std_msgs_msg_string_type_support!()
-      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic")
+
+      subscription =
+        Nif.rcl_subscription_init!(node, type_support, ~c"/topic", QoS.profile_default())
 
       on_exit(fn ->
         Nif.rcl_subscription_fini!(subscription, node)
@@ -356,7 +371,7 @@ defmodule Rclex.NifTest do
       assert Nif.rcl_wait_set_fini!(wait_set) == :ok
     end
 
-    test "rcl_wait_subscription!/3 timeout", %{
+    test "rcl_wait_subscription!/4 timeout", %{
       context: context,
       subscription: subscription
     } do
@@ -364,6 +379,41 @@ defmodule Rclex.NifTest do
       timeout_us = 1000
       assert Nif.rcl_wait_subscription!(wait_set, timeout_us, subscription) == :timeout
       :ok = Nif.rcl_wait_set_fini!(wait_set)
+    end
+  end
+
+  describe "qos" do
+    test "struct should be profile default" do
+      assert %Rclex.QoS{} == Rclex.QoS.profile_default()
+    end
+
+    test "profiles, ex to c to ex is equal" do
+      for qos <- [
+            Rclex.QoS.profile_sensor_data(),
+            Rclex.QoS.profile_parameters(),
+            Rclex.QoS.profile_default(),
+            Rclex.QoS.profile_services_default(),
+            Rclex.QoS.profile_parameter_events(),
+            Rclex.QoS.profile_system_default()
+          ] do
+        assert Nif.test_qos_profile!(qos) == qos
+      end
+    end
+
+    test "custom profile" do
+      qos = %Rclex.QoS{
+        history: :keep_all,
+        depth: 20,
+        reliability: :best_effort,
+        durability: :transient_local,
+        deadline: 123_456_789.00390625,
+        lifespan: 123_456_789.001953125,
+        liveliness: :automatic,
+        liveliness_lease_duration: 123_456_789.000976562,
+        avoid_ros_namespace_conventions: true
+      }
+
+      assert Nif.test_qos_profile!(qos) == qos
     end
   end
 end
