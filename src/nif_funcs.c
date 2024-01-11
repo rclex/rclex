@@ -27,9 +27,9 @@
 
 static ErlNifFunc nif_funcs[] = {
     // clang-format off
-    {"raise!", 0, nif_raise_for_test, REGULAR_NIF},
-    {"raise_with_message!", 0, nif_raise_with_message_for_test, REGULAR_NIF},
-    {"test_qos_profile!", 1, nif_test_qos_profile, REGULAR_NIF},
+    nif_regular_func(test_raise, 0),
+    nif_regular_func(test_raise_with_message, 0),
+    nif_regular_func(test_qos_profile, 1),
     nif_io_bound_func(rcl_init, 0),
     nif_io_bound_func(rcl_fini, 1),
     nif_io_bound_func(rcl_node_init, 3),
