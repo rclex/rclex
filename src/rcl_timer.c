@@ -1,8 +1,8 @@
 #include "rcl_timer.h"
+#include "allocator.h"
 #include "resource_types.h"
 #include "terms.h"
 #include <erl_nif.h>
-#include <rcl/allocator.h>
 #include <rcl/context.h>
 #include <rcl/time.h>
 #include <rcl/timer.h>
@@ -30,7 +30,7 @@ ERL_NIF_TERM nif_rcl_timer_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM arg
   rcl_timer_t timer = rcl_get_zero_initialized_timer();
 
   rc = rcl_timer_init(&timer, clock_p, context_p, RCL_MS_TO_NS(period_ms), NULL,
-                      rcl_get_default_allocator());
+                      get_nif_allocator());
   if (rc != RCL_RET_OK) return enif_make_badarg(env);
 
   rcl_timer_t *obj  = enif_alloc_resource(rt_rcl_timer_t, sizeof(rcl_timer_t));
