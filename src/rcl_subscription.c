@@ -1,4 +1,5 @@
 #include "rcl_subscription.h"
+#include "allocator.h"
 #include "qos.h"
 #include "resource_types.h"
 #include "terms.h"
@@ -45,6 +46,7 @@ ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv *env, int argc, const ERL_NIF_T
   rcl_ret_t rc;
   rcl_subscription_t subscription                 = rcl_get_zero_initialized_subscription();
   rcl_subscription_options_t subscription_options = rcl_subscription_get_default_options();
+  subscription_options.allocator                  = get_nif_allocator();
   subscription_options.qos                        = qos;
 
   rc = rcl_subscription_init(&subscription, node_p, ts_p, topic_name, &subscription_options);

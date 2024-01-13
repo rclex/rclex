@@ -1,4 +1,5 @@
 #include "rcl_publisher.h"
+#include "allocator.h"
 #include "qos.h"
 #include "resource_types.h"
 #include "terms.h"
@@ -45,6 +46,7 @@ ERL_NIF_TERM nif_rcl_publisher_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM
   rcl_ret_t rc;
   rcl_publisher_t publisher                 = rcl_get_zero_initialized_publisher();
   rcl_publisher_options_t publisher_options = rcl_publisher_get_default_options();
+  publisher_options.allocator               = get_nif_allocator();
   publisher_options.qos                     = qos;
 
   rc = rcl_publisher_init(&publisher, node_p, ts_p, topic_name, &publisher_options);
