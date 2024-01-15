@@ -4,6 +4,8 @@
 #include <rcutils/macros.h>
 #include <string.h>
 
+// ref. https://github.com/ros2/rcutils/blob/rolling/src/allocator.c
+
 static void *__nif_allocate(size_t size, void *state) {
   RCUTILS_CAN_RETURN_WITH_ERROR_OF(NULL);
 
