@@ -1,4 +1,5 @@
 #include "rcl_node.h"
+#include "allocator.h"
 #include "resource_types.h"
 #include "terms.h"
 #include <erl_nif.h>

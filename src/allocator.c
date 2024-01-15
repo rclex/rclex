@@ -1,6 +1,8 @@
 #include "allocator.h"
 #include <erl_nif.h>
-#include <rcl/allocator.h>
+#include <rcutils/allocator.h>
+#include <rcutils/macros.h>
+#include <string.h>
 
 static void *__nif_allocate(size_t size, void *state) {
   RCUTILS_CAN_RETURN_WITH_ERROR_OF(NULL);

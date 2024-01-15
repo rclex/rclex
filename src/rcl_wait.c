@@ -3,6 +3,7 @@
 #include "resource_types.h"
 #include "terms.h"
 #include <erl_nif.h>
+#include <rcl/allocator.h>
 #include <rcl/context.h>
 #include <rcl/subscription.h>
 #include <rcl/time.h>
