@@ -4,6 +4,7 @@
 #include "resource_types.h"
 #include "terms.h"
 #include <erl_nif.h>
+#include <rcl/allocator.h>
 #include <rcl/time.h>
 #include <rcl/types.h>
 
