@@ -26,7 +26,7 @@ static void *__nif_zero_allocate(size_t number_of_elements, size_t size_of_eleme
 
   RCUTILS_UNUSED(state);
   void *mem = enif_alloc(number_of_elements * size_of_element);
-  memset((char *)mem, 0, number_of_elements * size_of_element);
+  if (mem != NULL) memset(mem, 0, number_of_elements * size_of_element);
   return mem;
 }
 
