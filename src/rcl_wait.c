@@ -1,8 +1,8 @@
 #include "rcl_wait.h"
+#include "allocator.h"
 #include "resource_types.h"
 #include "terms.h"
 #include <erl_nif.h>
-#include <rcl/allocator.h>
 #include <rcl/context.h>
 #include <rcl/subscription.h>
 #include <rcl/time.h>
@@ -45,7 +45,7 @@ ERL_NIF_TERM nif_rcl_wait_set_init_timer(ErlNifEnv *env, int argc, const ERL_NIF
   rcl_ret_t rc;
 
   rcl_wait_set_t wait_set = rcl_get_zero_initialized_wait_set();
-  rc = rcl_wait_set_init(&wait_set, 0, 0, 1, 0, 0, 0, context_p, rcl_get_default_allocator());
+  rc = rcl_wait_set_init(&wait_set, 0, 0, 1, 0, 0, 0, context_p, get_nif_allocator());
   if (rc != RCL_RET_OK) return raise(env, __FILE__, __LINE__);
 
   rcl_wait_set_t *obj = enif_alloc_resource(rt_rcl_wait_set_t, sizeof(rcl_wait_set_t));
