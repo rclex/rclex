@@ -2,6 +2,7 @@ defmodule Rclex.Nif do
   @moduledoc false
 
   @on_load :load
+  @compile {:autoload, false}
 
   def load() do
     Application.app_dir(:rclex)
