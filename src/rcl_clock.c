@@ -4,6 +4,7 @@
 #include "resource_types.h"
 #include "terms.h"
 #include <erl_nif.h>
+#include <rcl/allocator.h>
 #include <rcl/time.h>
 #include <rcl/types.h>
 
@@ -13,7 +14,7 @@ ERL_NIF_TERM nif_rcl_clock_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM arg
 
   rcl_ret_t rc;
   rcl_clock_t clock;
-  rcl_allocator_t allocator = rcl_get_default_allocator();
+  rcl_allocator_t allocator = get_nif_allocator();
 
   rc = rcl_clock_init(RCL_STEADY_TIME, &clock, &allocator);
   if (rc != RCL_RET_OK) return enif_make_badarg(env);

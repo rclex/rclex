@@ -1,6 +1,10 @@
 #include "allocator.h"
 #include <erl_nif.h>
-#include <rcl/allocator.h>
+#include <rcutils/allocator.h>
+#include <rcutils/macros.h>
+#include <string.h>
+
+// ref. https://github.com/ros2/rcutils/blob/rolling/src/allocator.c
 
 static void *__nif_allocate(size_t size, void *state) {
   RCUTILS_CAN_RETURN_WITH_ERROR_OF(NULL);
@@ -26,7 +30,7 @@ static void *__nif_zero_allocate(size_t number_of_elements, size_t size_of_eleme
 
   RCUTILS_UNUSED(state);
   void *mem = enif_alloc(number_of_elements * size_of_element);
-  memset((char *)mem, 0, number_of_elements * size_of_element);
+  if (mem != NULL) memset(mem, 0, number_of_elements * size_of_element);
   return mem;
 }
 

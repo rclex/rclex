@@ -1,4 +1,5 @@
 #include "rcl_node.h"
+#include "allocator.h"
 #include "resource_types.h"
 #include "terms.h"
 #include <erl_nif.h>
@@ -45,6 +46,7 @@ ERL_NIF_TERM nif_rcl_node_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv
   rcl_ret_t rc;
   rcl_node_t node                 = rcl_get_zero_initialized_node();
   rcl_node_options_t node_options = rcl_node_get_default_options();
+  node_options.allocator          = get_nif_allocator();
 
   rc = rcl_node_init(&node, name, namespace, context_p, &node_options);
   if (rc != RCL_RET_OK) return raise(env, __FILE__, __LINE__);
