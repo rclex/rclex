@@ -9,13 +9,13 @@ defmodule Rclex.QoS do
   - `deadline`, `lifespan`, `liveliness_lease_duration` should be specified by float seconds.
   """
   @type t() :: %__MODULE__{
-          history: :system_default | :keep_last | :keep_all | :unknown,
+          history: :system_default | :keep_last | :keep_all,
           depth: non_neg_integer(),
-          reliability: :system_default | :reliable | :best_effort | :unknown,
-          durability: :system_default | :transient_local | :volatile | :unknown,
+          reliability: :system_default | :reliable | :best_effort,
+          durability: :system_default | :transient_local | :volatile,
           deadline: float(),
           lifespan: float(),
-          liveliness: :system_default | :automatic | :manual_by_topic | :unknown,
+          liveliness: :system_default | :automatic | :manual_by_topic,
           liveliness_lease_duration: float(),
           avoid_ros_namespace_conventions: boolean()
         }
