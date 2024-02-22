@@ -91,6 +91,7 @@ defmodule Rclex.Parsers.MessageParserTest do
     end
 
     for {text, expected} <- [
+          {"byte STALE=3", [{:builtin_type, "byte"}, "STALE", "=", 3]},
           {"int32 X=123", [{:builtin_type, "int32"}, "X", "=", 123]},
           {"int32 Y=-123", [{:builtin_type, "int32"}, "Y", "=", -123]},
           {"string FOO=\"foo\"", [{:builtin_type, "string"}, "FOO", "=", "foo"]},

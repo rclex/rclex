@@ -67,4 +67,21 @@ defmodule Rclex.Pkgs.Test do
     end)
     |> tap(&Rclex.Pkgs.SensorMsgs.Msg.PointCloud.destroy!(&1))
   end
+
+  test "diagnostic_msgs/msg/DiagnosticStatus" do
+    struct = %Rclex.Pkgs.DiagnosticMsgs.Msg.DiagnosticStatus{
+      level: 3,
+      name: "test",
+      message: "test message",
+      hardware_id: "test sensor",
+      values: [%Rclex.Pkgs.DiagnosticMsgs.Msg.KeyValue{key: "key1", value: "value1"}, %Rclex.Pkgs.DiagnosticMsgs.Msg.KeyValue{key: "key2", value: "value2"}]
+    }
+
+    Rclex.Pkgs.DiagnosticMsgs.Msg.DiagnosticStatus.create!()
+    |> tap(&Rclex.Pkgs.DiagnosticMsgs.Msg.DiagnosticStatus.set!(&1, struct))
+    |> tap(fn message ->
+      assert ^struct = Rclex.Pkgs.DiagnosticMsgs.Msg.DiagnosticStatus.get!(message)
+    end)
+    |> tap(&Rclex.Pkgs.DiagnosticMsgs.Msg.DiagnosticStatus.destroy!(&1))
+  end
 end
