@@ -145,25 +145,17 @@ Here is the simplest implementation example `lib/rclex_usage.ex` that will publi
 
 ```elixir
 defmodule RclexUsage do
+  alias Rclex.Pkgs.StdMsgs
+
   def publish_message do
-    context = Rclex.rclexinit()
-    {:ok, node} = Rclex.ResourceServer.create_node(context, 'talker')
-    {:ok, publisher} = Rclex.Node.create_publisher(node, 'StdMsgs.Msg.String', 'chatter')
+    Rclex.start_node("talker")
+    Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "talker")
 
-    msg = Rclex.Msg.initialize('StdMsgs.Msg.String')
     data = "Hello World from Rclex!"
-    msg_struct = %Rclex.StdMsgs.Msg.String{data: String.to_charlist(data)}
-    Rclex.Msg.set(msg, msg_struct, 'StdMsgs.Msg.String')
-
-    # This sleep is essential for now, see Issue #212
-    Process.sleep(100)
+    msg = struct(StdMsgs.Msg.String, %{data: data})
 
     IO.puts("Rclex: Publishing: #{data}")
-    Rclex.Publisher.publish([publisher], [msg])
-
-    Rclex.Node.finish_job(publisher)
-    Rclex.ResourceServer.finish_node(node)
-    Rclex.shutdown(context)
+    Rclex.publish(msg, "/chatter", "talker")
   end
 end
 ```
@@ -182,18 +174,8 @@ Operate the following command on IEx.
 
 ```
 iex()> RclexUsage.publish_message
-
-00:04:40.701 [debug] JobExecutor start
- 
-00:04:40.705 [debug] talker0/chatter/pub
 Rclex: Publishing: Hello World from Rclex!
-
-00:04:40.706 [debug] publish ok
- 
-00:04:40.706 [debug] publisher finished: talker0/chatter/pub
- 
-00:04:40.710 [debug] finish node: talker0
-{:ok, #Reference<0.2970499651.1284374532.3555>}
+:ok
 ```
 
 You can confirm the above operation by subscribing with `ros2 topic echo` from the other terminal.
