@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## v0.9.3 on 23 Feb 2024
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.9.2...v0.9.3
+
+* New features: none
+* Code Improvements/Fixes:
+  * add section of presentations (Code BEAM America 2021 and 2022) by @takasehideki in https://github.com/rclex/rclex/pull/262
+* Bumps:
+  * Bump dialyxir from 1.4.1 to 1.4.3 by @dependabot in https://github.com/rclex/rclex/pull/279
+  * Bump ex_doc from 0.30.6 to 0.31.1 by @dependabot in https://github.com/rclex/rclex/pull/283
+  * Bump elixir_make from 0.7.7 to 0.7.8 by @dependabot in https://github.com/rclex/rclex/pull/287
+  * Bump credo from 1.7.1 to 1.7.3 by @dependabot in https://github.com/rclex/rclex/pull/282
+  * Bump mix_test_watch from 1.1.1 to 1.1.2 by @dependabot in https://github.com/rclex/rclex/pull/288
+  * Bump credo from 1.7.3 to 1.7.5 by @dependabot in https://github.com/rclex/rclex/pull/289
+* Known issues to be addressed in the near future:
+  * Lock `git_hooks` to 0.6.5 due to its issue in https://github.com/rclex/rclex/issues/138
+  * Release rcl nif resources when GerServer terminates in https://github.com/rclex/rclex/issues/160
+  * `publish/2` sometimes failed just after `create_publisher/3` in https://github.com/rclex/rclex/issues/212
+  * CI fails randomly at mix test in https://github.com/rclex/rclex/issues/246
+  * Bump to Iron Irwini, for Docker and Nerves environments in https://github.com/rclex/rclex/issues/228
+* Note in this release:
+  * This release is mainly as a record just prior to v0.10.0, which is scheduled to involve major changes
+  * We found there is a credo error in "code-analysis", but we decide to ignore it for now because we are soon going to v0.10.0! (if this is still an issue then, consider it at that time,,,
+
 ## v0.9.2 on 03 Oct 2023
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.9.1...v0.9.2
