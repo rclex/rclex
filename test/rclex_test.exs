@@ -142,26 +142,18 @@ defmodule RclexTest do
 
       :ok = Rclex.start_node(name)
 
-      test_pid = self()
-      callback = fn message -> send(test_pid, message) end
-
-      :ok = Rclex.start_subscription(callback, StdMsgs.Msg.String, topic_name, name)
+      me = self()
+      :ok = Rclex.start_subscription(&send(me, &1), StdMsgs.Msg.String, topic_name, name)
       :ok = Rclex.start_publisher(StdMsgs.Msg.String, topic_name, name)
 
-      on_exit(fn ->
-        capture_log(fn ->
-          Rclex.stop_subscription(StdMsgs.Msg.String, topic_name, name)
-          Rclex.stop_publisher(StdMsgs.Msg.String, topic_name, name)
-          Rclex.stop_node(name)
-        end)
-      end)
+      on_exit(fn -> capture_log(fn -> Rclex.stop_node(name) end) end)
 
       %{topic_name: topic_name, name: name}
     end
 
     test "publish/3", %{topic_name: topic_name, name: name} do
       for i <- 1..100 do
-        message = %StdMsgs.Msg.String{data: "publish #{i}"}
+        message = struct(StdMsgs.Msg.String, %{data: "publish #{i}"})
         assert Rclex.publish(message, topic_name, name) == :ok
         assert_receive ^message
       end
