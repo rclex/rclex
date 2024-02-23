@@ -212,12 +212,12 @@ defmodule Rclex.Generators.MsgC do
     """
   end
 
-  defp enif_get_builtin("byte" <> _, var, mbr, term) do
+  defp enif_get_builtin("byte", var, mbr, term) do
     """
-    int #{var};
-    if (!enif_get_int(env, #{term}, &#{var}))
+    uint8_t #{var};
+    if (!enif_get_uint(env, #{term}, (unsigned int *)&#{var}))
       return enif_make_badarg(env);
-    message_p->#{mbr} = (uint8_t)#{var};
+    message_p->#{mbr} = #{var};
     """
   end
 
@@ -384,8 +384,8 @@ defmodule Rclex.Generators.MsgC do
     "enif_make_int64(env, message_p->#{mbr})"
   end
 
-  defp enif_make_builtin("byte" <> _, mbr) do
-    "enif_make_int(env, message_p->#{mbr})"
+  defp enif_make_builtin("byte", mbr) do
+    "enif_make_uint(env, message_p->#{mbr})"
   end
 
   defp enif_make_builtin("int" <> _, mbr) do

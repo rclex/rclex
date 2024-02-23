@@ -6,6 +6,5 @@ config :rclex,
     "std_msgs/msg/UInt32MultiArray",
     "geometry_msgs/msg/Twist",
     "sensor_msgs/msg/PointCloud",
-    "diagnostic_msgs/msg/KeyValue",
     "diagnostic_msgs/msg/DiagnosticStatus"
   ]
