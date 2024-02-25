@@ -214,10 +214,10 @@ defmodule Rclex.Generators.MsgC do
 
   defp enif_get_builtin("byte", var, mbr, term) do
     """
-    uint8_t #{var};
-    if (!enif_get_uint(env, #{term}, (unsigned int *)&#{var}))
+    unsigned int #{var};
+    if (!enif_get_uint(env, #{term}, &#{var}))
       return enif_make_badarg(env);
-    message_p->#{mbr} = #{var};
+    message_p->#{mbr} = (uint8_t)#{var};
     """
   end
 
