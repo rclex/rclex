@@ -20,13 +20,13 @@ jobs:
 
     steps:
       - name: Checkout rclex repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: rclex/rclex
           path: rclex
 
       - name: Retrieve cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: mix-cache
         with:
           path: |
@@ -55,13 +55,13 @@ jobs:
 
     steps:
       - name: Checkout rclex repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: rclex/rclex
           path: rclex
 
       - name: Retrieve cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: mix-cache
         with:
           path: |
@@ -86,7 +86,7 @@ jobs:
 
       - name: Restore PLT cache
         id: plt-cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           key: |
             plt-${{ runner.os }}-${{ matrix.dockertags }}-mix-${{ hashFiles('**/mix.lock') }}
@@ -104,7 +104,7 @@ jobs:
 
       - name: Save PLT cache
         id: plt_cache_save
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         if: steps.plt-cache.outputs.cache-hit != 'true'
         with:
           key: |
@@ -129,13 +129,13 @@ jobs:
 
     steps:
       - name: Checkout rclex repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: rclex/rclex
           path: rclex
 
       - name: Retrieve cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: mix-cache
         with:
           path: |

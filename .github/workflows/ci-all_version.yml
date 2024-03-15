@@ -27,13 +27,13 @@ jobs:
 
     steps:
       - name: Checkout rclex repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: rclex/rclex
           path: rclex
 
       - name: Retrieve cached dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: mix-cache
         with:
           path: |
