@@ -1,0 +1,33 @@
+name: publish2hex
+
+on:
+  push:
+    tags: ['v*']
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  publish2hex:
+    runs-on: ubuntu-latest
+    container:
+      image: rclex/rclex_docker:latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: mix compile
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          mix local.hex --force
+          mix deps.get
+          mix compile
+
+      - name: publish to Hex.pm
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          mix hex.publish --yes
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
