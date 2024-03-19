@@ -1,8 +1,8 @@
 [![Hex version](https://img.shields.io/hexpm/v/rclex.svg "Hex version")](https://hex.pm/packages/rclex)
 [![API docs](https://img.shields.io/hexpm/v/rclex.svg?label=hexdocs "API docs")](https://hexdocs.pm/rclex/readme.html)
 [![License](https://img.shields.io/hexpm/l/rclex.svg)](https://github.com/rclex/rclex/blob/main/LICENSE)
-[![ci-latest_push](https://github.com/rclex/rclex/actions/workflows/ci_latest.yml/badge.svg)](https://github.com/rclex/rclex/actions/workflows/ci_latest.yml)
-[![ci-allver_PR](https://github.com/rclex/rclex/actions/workflows/ci_allver.yml/badge.svg)](https://github.com/rclex/rclex/actions/workflows/ci_allver.yml)
+[![ci-latest](https://github.com/rclex/rclex/actions/workflows/ci-latest.yml/badge.svg)](https://github.com/rclex/rclex/actions/workflows/ci-latest.yml)
+[![ci-all_version](https://github.com/rclex/rclex/actions/workflows/ci-all_version.yml/badge.svg)](https://github.com/rclex/rclex/actions/workflows/ci-all_version.yml)
 
 注：READMEは[英語版](README.md)が常に最新かつ確実です．
 
