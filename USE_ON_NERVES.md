@@ -67,7 +67,7 @@ by adding `rclex` to your list of dependencies in `mix.exs`:
   defp deps do
     [
       ...
-      {:rclex, "~> 0.9.3"},
+      {:rclex, "~> 0.10.0"},
       ...
     ]
   end
