@@ -217,20 +217,6 @@ $ mix test.watch
 $ docker compose run --rm -w /root/rclex rclex_docker mix test.watch
 ```
 
-### 動作確認
-
-動作確認として，[rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests)を用いてRclcppで実装されたノードとの通信に関するテストを実施しています．
-
-```
-cd /path/to/yours
-git clone https://github.com/rclex/rclex
-git clone https://github.com/rclex/rclex_connection_tests
-cd /path/to/yours/rclex_connection_tests
-./run-all.sh
-```
-
-[GitHub Actions](https://github.com/rclex/rclex/actions)では，複数の環境でのCIを実行しています．ただし，これら全ての環境での動作保証には対応できません．
-
 ## 主な管理者と開発者（過去分も含む）
 
 - [@takasehideki](https://github.com/takasehideki)

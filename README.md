@@ -223,20 +223,6 @@ $ mix test.watch
 $ docker compose run --rm -w /root/rclex rclex_docker mix test.watch
 ```
 
-### Confirmation of operation
-
-To check the operation of this library, we prepare [rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests) to test the communication with the nodes implemented with Rclcpp.
-
-```
-cd /path/to/yours
-git clone https://github.com/rclex/rclex
-git clone https://github.com/rclex/rclex_connection_tests
-cd /path/to/yours/rclex_connection_tests
-./run-all.sh
-```
-
-In [GitHub Actions](https://github.com/rclex/rclex/actions), we perform CI on multiple environments at Pull Requests. HOwever, we cannot guarantee operation in all of these environments.
-
 ## Presentations
 
 - Rclex on Nerves: a bare minimum runtime platform for ROS 2 nodes in Elixir
