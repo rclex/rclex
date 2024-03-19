@@ -1,9 +1,6 @@
 name: ci-latest
 
-on:
-  pull_request:
-    branches:
-      - '0.10.0-dev'
+on: [push]
 
 defaults:
   run:

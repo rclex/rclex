@@ -1,9 +1,6 @@
 name: ci-all_version
 
-on:
-  pull_request:
-    branches:
-      - '0.10.0-dev'
+on: [pull_request]
 
 defaults:
   run:
