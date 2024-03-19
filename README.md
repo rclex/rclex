@@ -8,31 +8,33 @@
 
 # Rclex
 
-Rclex is a ROS 2 client library for Elixir.
+Rclex is a ROS 2 client library for the functional language [Elixir](https://elixir-lang.org/).
 
 This library lets you perform basic ROS 2 behaviors by calling out from Elixir code into the RCL (ROS Client Library) API, which
 uses the ROS 2 common hierarchy.
 
-Additionally, publisher-subscriber (PubSub) communication between nodes and associated callback functions are executed by *tasks*,
-which are part of a lightweight process model. This enables generation of and communication between a large number of fault-tolerant
+Additionally, publisher-subscriber (PubSub) communication between nodes and associated callback functions are executed as Erlang lightweight processes.
+This enables the creation of and communication between a large number of fault-tolerant
 nodes while suppressing memory load.
 
 ## What is ROS 2
 
-ROS (Robot Operating System) is a next-generation Robot development platform. In both ROS and ROS 2, each functional
+ROS 2 (Robot Operating System 2) is a state-of-the-art Robot development platform. In ROS 2, each functional
 unit is exposed as a node, and by combining these nodes you can create different robot applications. Additionally,
-communication between nodes uses a PubSub model where publisher and subscriber exchange information by specifying a
+communication between nodes uses a PubSub model where publishers and subscribers exchange information by specifying a
 common topic name.
 
-The biggest difference between ROS and ROS 2 is that the DDS (Data Distribution Service) protocol was adopted for
-communication, and the library was divided in a hierarchical structure, allowing for the creation of ROS 2 client
-libraries in various languages. This has allowed for the creation of a robot application library in Elixir.
+The main benefits of ROS 2 are that the DDS (Data Distribution Service) protocol was adopted for
+communication, and the library was divided into a hierarchical structure.
+This allows us to develop  ROS 2 client libraries in various languages and, of course, to build robot applications in Elixir.
 
-For details on ROS 2, see the official [ROS 2 documentation](https://index.ros.org/doc/ros2/).
+For details on ROS 2, see [the official ROS 2 Documentation](https://docs.ros.org/en/rolling/index.html).
 
 ## Recommended environment
 
-### The environment where host (development) and target (operation) are the same
+### Native environment
+
+The basic and recommended environment is where the host (development) and the target (operation) are the same.
 
 Currently, we use the following environment as the main development target:
 
@@ -65,16 +67,15 @@ Currently, the Rclex API allows for the following:
 
 1. The ability to create a large number of publishers sending to the same topic.
 2. The ability to create large numbers of each combination of publishers, topics, and subscribers.
+3. The ability to configure custom messages for topic communication.
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm).  
-You can find the docs at [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex).
+You can find the API documentation at [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex).
 
 Please refer [rclex/rclex_examples](https://github.com/rclex/rclex_examples) for the examples of usage along with the sample code.
 
 ## How to use
 
-This section explains the quickstart for `rclex` onto the environment where ROS 2 and Elixir have been installed.
+This section explains the quickstart for `rclex` in the native environment where ROS 2 and Elixir have been installed.
 
 ### Create the project
 
@@ -116,7 +117,7 @@ source /opt/ros/humble/setup.bash
 
 ## Configure ROS 2 message types you want to use
 
-Rclex provides pub/sub based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/humble/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
+Rclex provides pub/sub-based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/humble/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
 
 The message types you want to use in your project can be specified in `ros2_message_types` in `config/config.exs`. 
 Multiple message types can be specified separated by comma `,`.
@@ -135,7 +136,7 @@ Then, execute the following Mix task to generate required definitions and files 
 mix rclex.gen.msgs
 ```
 
-If you want to change the message types in config, do `mix rclex.gen.msgs` again.
+When editing `config/config.exs` to change the message types, do `mix rclex.gen.msgs` again.
 
 ### Write Rclex code
 
@@ -161,9 +162,12 @@ end
 ```
 
 Please also check the examples for Rclex.
+
 - [rclex/rclex_examples](https://github.com/rclex/rclex_examples)
 
 ### Build and Execute
+
+Build your application as follows.
 
 ```
 mix compile
