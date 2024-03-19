@@ -239,6 +239,9 @@ In [GitHub Actions](https://github.com/rclex/rclex/actions), we perform CI on mu
 
 ## Presentations
 
+- Rclex on Nerves: a bare minimum runtime platform for ROS 2 nodes in Elixir
+  - [ROSCon 2023](https://roscon.ros.org/2023/)
+  - [Video](https://vimeo.com/879001529/b23eaacae8) | [SpeakerDeck](https://speakerdeck.com/takasehideki/rclex-on-nerves-a-bare-minimum-runtime-platform-for-ros-2-nodes-in-elixir)
 - On the way to achieve autonomous node communication in the Elixir ecosystem
   - [Code BEAM America 2022](https://codebeamamerica.com/archives/CBA_2023/index.html) at 2022/11/03
   - [Video](https://www.youtube.com/watch?v=Y4IASAU4Bjo) | [SpeakerDeck](https://speakerdeck.com/takasehideki/on-the-way-to-achieve-autonomous-node-communication-in-the-elixir-ecosystem)
@@ -254,4 +257,3 @@ In [GitHub Actions](https://github.com/rclex/rclex/actions), we perform CI on mu
 - [@HiroiImanishi](https://github.com/HiroiImanishi)
 - [@kebus426](https://github.com/kebus426)
 - [@shiroro466](https://github.com/shiroro466)
-
