@@ -1,2 +1,0 @@
-enif_make_tuple(env,1,
-  enif_make_string(env,res->data.data,ERL_NIF_LATIN1))

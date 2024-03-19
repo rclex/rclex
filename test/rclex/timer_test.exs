@@ -3,57 +3,62 @@ defmodule Rclex.TimerTest do
 
   import ExUnit.CaptureLog
 
-  setup do
-    require Logger
-    callback = fn message -> Logger.info(message) end
-    args = "test"
-    time = 1000
-    timer_name = ~c"timer"
-    limit = 0
-    queue_length = 1
-    change_order = fn l when is_list(l) -> l end
+  alias Rclex.Timer
+  alias Rclex.Nif
 
-    # only to suppress log
-    capture_log(fn ->
-      start_supervised!(
-        {Rclex.Timer, {callback, args, time, timer_name, limit, {queue_length, change_order}}}
-      )
+  setup do
+    capture_log(fn -> Application.stop(:rclex) end)
+
+    start_supervised!(
+      {PartitionSupervisor, child_spec: Task.Supervisor, name: Rclex.TaskSupervisors}
+    )
+
+    name = "name"
+    namespace = "/namespace"
+
+    context = Nif.rcl_init!()
+
+    on_exit(fn ->
+      :ok = Nif.rcl_fini!(context)
     end)
 
-    %{name: {:global, "#{timer_name}/Timer"}, callback_args: args}
+    %{context: context, name: name, namespace: namespace}
   end
 
-  describe "handle_cast({:execute, _}, _)" do
-    test "return :ok, confirm callback.(args) invoke Logger.info(\"test\")", %{
-      name: name,
-      callback_args: callback_args
-    } do
-      assert capture_log(fn ->
-               :ok = GenServer.cast(name, {:execute, nil})
-               # wait execution of callback
-               Process.sleep(10)
-             end) =~ callback_args
-    end
+  test "start_link/1", %{context: context, name: name, namespace: namespace} do
+    Process.flag(:trap_exit, true)
+
+    me = self()
+
+    assert {:ok, pid} =
+             Timer.start_link(
+               context: context,
+               period_ms: 10,
+               timer_name: "timer",
+               name: name,
+               namespace: namespace,
+               callback: fn -> send(me, "hello") end
+             )
+
+    assert_receive("hello")
+    assert capture_log(fn -> :ok = GenServer.stop(pid, :shutdown) end) =~ "Timer: :shutdown"
   end
 
-  describe "handle_cast({:stop, _},  _)" do
-    test "return :ok, confirm terminate is invoked", %{name: name} do
-      log =
-        capture_log(fn ->
-          :ok = GenServer.cast(name, {:stop, nil})
+  test "start_link/1 failed in init/1 callback", %{
+    context: context,
+    name: name,
+    namespace: namespace
+  } do
+    Process.flag(:trap_exit, true)
 
-          # wait terminate(:normal, _)
-          Process.sleep(10)
-        end)
-
-      assert log =~ "the number of timer loop reaches limit"
-      assert log =~ "terminate timer"
-    end
-  end
-
-  describe "handle_call(:stop, _, _)" do
-    test "return :ok", %{name: name} do
-      assert capture_log(fn -> assert :ok = GenServer.call(name, :stop) end) =~ "stop timer"
-    end
+    assert {:error, _} =
+             Timer.start_link(
+               context: context,
+               period_ms: 10,
+               timer_name: "timer",
+               name: name,
+               namespace: namespace,
+               callback: fn _bad_args -> nil end
+             )
   end
 end

@@ -3,104 +3,60 @@ defmodule Rclex.PublisherTest do
 
   import ExUnit.CaptureLog
 
-  import Rclex.TestUtils,
-    only: [
-      get_initialized_context: 0,
-      get_initialized_no_namespace_node: 2,
-      get_initialized_publisher: 3
-    ]
-
   alias Rclex.Publisher
-  alias Rclex.Nifs
+  alias Rclex.Nif
+  alias Rclex.Pkgs.StdMsgs
 
   setup do
-    msg_type = ~c"StdMsgs.Msg.String"
-    node_id = ~c"node"
-    topic = ~c"topic"
+    capture_log(fn -> Application.stop(:rclex) end)
 
-    context = get_initialized_context()
-    node = get_initialized_no_namespace_node(context, node_id)
-    publisher = get_initialized_publisher(node, topic, msg_type)
+    name = "name"
+    namespace = "/namespace"
+
+    context = Nif.rcl_init!()
+    node = Nif.rcl_node_init!(context, ~c"#{name}", ~c"#{namespace}")
 
     on_exit(fn ->
-      Nifs.rcl_node_fini(node)
-      Nifs.rcl_shutdown(context)
+      :ok = Nif.rcl_node_fini!(node)
+      :ok = Nif.rcl_fini!(context)
     end)
 
-    publisher_id = "#{node_id}/#{topic}/pub"
-    pid = start_supervised!({Rclex.Publisher, {publisher, publisher_id}})
-
-    %{publisher: publisher, id_tuple: {node_id, topic, :pub}, pid: pid, node: node}
+    %{context: context, node: node, name: name, namespace: namespace}
   end
 
-  describe "publish_once/3" do
-    test "capture_log", %{publisher: publisher, node: node} do
-      publisher_allocation = Nifs.create_pub_alloc()
+  test "start_link/1", %{context: context, node: node, name: name, namespace: namespace} do
+    Process.flag(:trap_exit, true)
 
-      message = Rclex.Msg.initialize(~c"StdMsgs.Msg.String")
+    assert {:ok, pid} =
+             Publisher.start_link(
+               context: context,
+               node: node,
+               message_type: StdMsgs.Msg.String,
+               topic_name: "/chatter",
+               name: name,
+               namespace: namespace
+             )
 
-      :ok =
-        Rclex.Msg.set(
-          message,
-          %Rclex.StdMsgs.Msg.String{data: ~c"data"},
-          ~c"StdMsgs.Msg.String"
-        )
-
-      try do
-        assert capture_log(fn ->
-                 Publisher.publish_once(publisher, message, publisher_allocation)
-               end) =~ "publish ok"
-      after
-        Nifs.rcl_publisher_fini(publisher, node)
-      end
-    end
+    assert capture_log(fn -> :ok = GenServer.stop(pid, :shutdown) end) =~
+             "Publisher: :shutdown"
   end
 
-  describe "publish/2" do
-    @tag capture_log: true
-    test "return :ok", %{id_tuple: id_tuple, publisher: publisher, node: node} do
-      message = Rclex.Msg.initialize(~c"StdMsgs.Msg.String")
+  test "start_link/1 failed in init/1 callback", %{
+    context: context,
+    node: node,
+    name: name,
+    namespace: namespace
+  } do
+    Process.flag(:trap_exit, true)
 
-      :ok =
-        Rclex.Msg.set(
-          message,
-          %Rclex.StdMsgs.Msg.String{data: ~c"data"},
-          ~c"StdMsgs.Msg.String"
-        )
-
-      try do
-        assert :ok = Publisher.publish([id_tuple], [message])
-      after
-        Nifs.rcl_publisher_fini(publisher, node)
-      end
-    end
-  end
-
-  describe "handle_cast({:publish, msg}, pub)" do
-    test "capture_log", %{pid: pid, publisher: publisher, node: node} do
-      message = Rclex.Msg.initialize(~c"StdMsgs.Msg.String")
-
-      :ok =
-        Rclex.Msg.set(
-          message,
-          %Rclex.StdMsgs.Msg.String{data: ~c"data"},
-          ~c"StdMsgs.Msg.String"
-        )
-
-      try do
-        assert capture_log(fn ->
-                 GenServer.cast(pid, {:publish, message})
-                 Process.sleep(10)
-               end) =~ "publish ok"
-      after
-        Nifs.rcl_publisher_fini(publisher, node)
-      end
-    end
-  end
-
-  describe "handle_call({:finish, node}, ...)" do
-    test "return", %{pid: pid, node: node} do
-      assert {:ok, ~c"publisher finished: "} = GenServer.call(pid, {:finish, node})
-    end
+    assert {:error, _} =
+             Publisher.start_link(
+               context: context,
+               node: node,
+               message_type: StdMsgs.Msg.String,
+               topic_name: "no_leading_slash",
+               name: name,
+               namespace: namespace
+             )
   end
 end

@@ -3,7 +3,8 @@ import Config
 config :rclex,
   ros2_message_types: [
     "std_msgs/msg/String",
-    "geometry_msgs/msg/Twist"
+    "std_msgs/msg/UInt32MultiArray",
+    "geometry_msgs/msg/Twist",
+    "sensor_msgs/msg/PointCloud",
+    "diagnostic_msgs/msg/DiagnosticStatus"
   ]
-
-import_config "#{config_env()}.exs"

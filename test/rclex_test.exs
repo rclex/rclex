@@ -1,120 +1,195 @@
 defmodule RclexTest do
   use ExUnit.Case
-  @moduletag capture_log: true
 
-  doctest Rclex
+  import ExUnit.CaptureLog
 
-  describe "rclexinit/0" do
-    test "return reference" do
-      assert is_reference(Rclex.rclexinit())
+  alias Rclex.Pkgs.StdMsgs
+  alias Rclex.NodeSupervisor
+
+  setup do
+    :ok = Application.ensure_started(:rclex)
+    on_exit(fn -> capture_log(fn -> Application.stop(:rclex) end) end)
+  end
+
+  describe "node" do
+    test "start_node/1" do
+      assert :ok = Rclex.start_node("name")
+      assert {:error, :already_started} = Rclex.start_node("name")
+
+      assert is_pid(GenServer.whereis(NodeSupervisor.name("name"))) == true
     end
 
-    test "start_link Rclex.ResourceServer" do
-      Rclex.rclexinit()
-      assert is_pid(GenServer.whereis(:resource_server))
+    test "start_node/1, wrong node name" do
+      assert {:error, _} = Rclex.start_node("/name")
+    end
+
+    test "stop_node/1" do
+      :ok = Rclex.start_node("name")
+      true = is_pid(GenServer.whereis(NodeSupervisor.name("name")))
+
+      assert capture_log(fn -> :ok = Rclex.stop_node("name") end) =~ "Node: :shutdown"
+      assert {:error, :not_found} = Rclex.stop_node("name")
+
+      assert is_nil(GenServer.whereis(NodeSupervisor.name("name")))
+    end
+
+    test "stop_node/1, node doesn't exist" do
+      assert {:error, :not_found} = Rclex.stop_node("notexists")
+    end
+
+    test "stop_node/1, confirm shutdown order" do
+      :ok = Rclex.start_node("name")
+      :ok = Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "name")
+      :ok = Rclex.start_subscription(fn _msg -> nil end, StdMsgs.Msg.String, "/chatter", "name")
+      :ok = Rclex.start_timer(10, fn -> nil end, "timer", "name")
+
+      logs =
+        capture_log(fn -> :ok = Rclex.stop_node("name") end)
+        |> String.split("\n")
+        |> Enum.filter(&String.contains?(&1, ":shutdown"))
+
+      assert Enum.count(logs) == 4
+      assert List.last(logs) =~ "Node: :shutdown"
     end
   end
 
-  # -----------------------node_nif.c--------------------------
-  test "rcl_node_get_name" do
-    context = Rclex.rclexinit()
+  describe "publisher" do
+    setup do
+      :ok = Rclex.start_node("name")
+      on_exit(fn -> capture_log(fn -> Rclex.stop_node("name") end) end)
+    end
 
-    node_name = ~c"test_node"
-    {:ok, node_list} = Rclex.ResourceServer.create_nodes(context, node_name, 2)
-    [node_0, node_1] = node_list
+    test "start_publisher/3" do
+      assert :ok = Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "name")
 
-    assert Rclex.Node.node_get_name(node_0) == ~c"test_node0"
-    assert Rclex.Node.node_get_name(node_1) == ~c"test_node1"
+      assert {:error, :already_started} =
+               Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "name")
+    end
 
-    Rclex.ResourceServer.finish_nodes(node_list)
-    Rclex.shutdown(context)
+    test "start_publisher/3, node doesn't exist" do
+      assert {:noproc, _} =
+               catch_exit(Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "notexists"))
+    end
+
+    test "start_publisher/3, wrong topic name" do
+      assert {:error, _} = Rclex.start_publisher(StdMsgs.Msg.String, "chatter", "name")
+    end
+
+    test "stop_publisher/3" do
+      :ok = Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "name")
+
+      assert capture_log(fn ->
+               :ok = Rclex.stop_publisher(StdMsgs.Msg.String, "/chatter", "name")
+             end) =~ "Publisher: :shutdown"
+
+      assert {:error, :not_found} = Rclex.stop_publisher(StdMsgs.Msg.String, "/chatter", "name")
+    end
+
+    test "stop_publisher/3, node doesn't exist" do
+      assert {:noproc, _} =
+               catch_exit(Rclex.stop_publisher(StdMsgs.Msg.String, "/chatter", "notexists"))
+    end
   end
 
-  test "single_pub_sub" do
-    context = Rclex.rclexinit()
-    str_data = "data"
-    pid = self()
+  describe "subscription" do
+    setup do
+      :ok = Rclex.start_node("name")
+      on_exit(fn -> capture_log(fn -> Rclex.stop_node("name") end) end)
 
-    {:ok, sub_node} = Rclex.ResourceServer.create_node(context, ~c"listener")
+      %{callback: fn _message -> nil end}
+    end
 
-    {:ok, subscriber} =
-      Rclex.Node.create_subscriber(sub_node, ~c"StdMsgs.Msg.String", ~c"chatter")
+    test "start_subscription/4", %{callback: callback} do
+      assert :ok = Rclex.start_subscription(callback, StdMsgs.Msg.String, "/chatter", "name")
 
-    Rclex.Subscriber.start_subscribing([subscriber], context, fn msg ->
-      recv_msg = Rclex.Msg.read(msg, ~c"StdMsgs.Msg.String")
-      assert List.to_string(recv_msg.data) == str_data, "received data is correct."
-      _msg_data = List.to_string(recv_msg.data)
-      send(pid, :message_received)
-    end)
+      assert {:error, :already_started} =
+               Rclex.start_subscription(callback, StdMsgs.Msg.String, "/chatter", "name")
+    end
 
-    {:ok, pub_node} = Rclex.ResourceServer.create_node(context, ~c"talker")
+    test "start_subscription/4, node doesn't exist", %{callback: callback} do
+      assert {:noproc, _} =
+               catch_exit(
+                 Rclex.start_subscription(callback, StdMsgs.Msg.String, "/chatter", "notexists")
+               )
+    end
 
-    {:ok, publisher} = Rclex.Node.create_publisher(pub_node, ~c"StdMsgs.Msg.String", ~c"chatter")
+    test "start_subscription/4, wrong topic name", %{callback: callback} do
+      assert {:error, _} =
+               Rclex.start_subscription(callback, StdMsgs.Msg.String, "chatter", "name")
+    end
 
-    {:ok, timer} =
-      Rclex.ResourceServer.create_timer_with_limit(
-        fn publisher ->
-          msg = Rclex.Msg.initialize(~c"StdMsgs.Msg.String")
+    test "stop_subscription/3", %{callback: callback} do
+      :ok = Rclex.start_subscription(callback, StdMsgs.Msg.String, "/chatter", "name")
 
-          Rclex.Msg.set(
-            msg,
-            %Rclex.StdMsgs.Msg.String{data: String.to_charlist(str_data)},
-            ~c"StdMsgs.Msg.String"
-          )
+      assert capture_log(fn ->
+               :ok = Rclex.stop_subscription(StdMsgs.Msg.String, "/chatter", "name")
+             end) =~ "Subscription: :shutdown"
 
-          Rclex.Publisher.publish([publisher], [msg])
-        end,
-        publisher,
-        100,
-        ~c"continuous_timer",
-        1
-      )
+      assert {:error, :not_found} =
+               Rclex.stop_subscription(StdMsgs.Msg.String, "/chatter", "name")
+    end
 
-    assert_receive :message_received, 500
-
-    Rclex.ResourceServer.stop_timer(timer)
-    Rclex.Subscriber.stop_subscribing([subscriber])
-    Rclex.Node.finish_jobs([publisher, subscriber])
-    Rclex.ResourceServer.finish_nodes([pub_node, sub_node])
-    Rclex.shutdown(context)
+    test "stop_subscription/3, node doesn't exist", %{callback: _callback} do
+      assert {:noproc, _} =
+               catch_exit(Rclex.stop_subscription(StdMsgs.Msg.String, "/chatter", "notexists"))
+    end
   end
 
-  # -----------------------graph_nif.c--------------------------
-  test "rcl_get_topic_names_and_types" do
-    context = Rclex.rclexinit()
+  describe "pub/sub" do
+    setup do
+      name = "name"
+      topic_name = "/chatter"
 
-    {:ok, node_list} = Rclex.ResourceServer.create_nodes(context, ~c"test_pub_node", 1)
+      :ok = Rclex.start_node(name)
 
-    {:ok, publisher_list} =
-      Rclex.Node.create_publishers(node_list, ~c"StdMsgs.Msg.String", ~c"testtopic", :single)
+      me = self()
+      :ok = Rclex.start_subscription(&send(me, &1), StdMsgs.Msg.String, topic_name, name)
+      :ok = Rclex.start_publisher(StdMsgs.Msg.String, topic_name, name)
 
-    {:ok, node_list_2} = Rclex.ResourceServer.create_nodes(context, ~c"test_sub_node", 1)
+      on_exit(fn -> capture_log(fn -> Rclex.stop_node(name) end) end)
 
-    {:ok, subscriber_list} =
-      Rclex.Node.create_subscribers(node_list_2, ~c"StdMsgs.Msg.String", ~c"testtopic", :single)
+      %{topic_name: topic_name, name: name}
+    end
 
-    node = hd(node_list)
+    test "publish/3", %{topic_name: topic_name, name: name} do
+      for i <- 1..100 do
+        message = struct(StdMsgs.Msg.String, %{data: "publish #{i}"})
+        assert Rclex.publish(message, topic_name, name) == :ok
+        assert_receive ^message
+      end
+    end
+  end
 
-    names_and_types_tuple_list =
-      Rclex.Node.get_topic_names_and_types(
-        node,
-        Rclex.get_default_allocator(),
-        false
-      )
+  describe "timer" do
+    setup do
+      :ok = Rclex.start_node("name")
+      on_exit(fn -> capture_log(fn -> Rclex.stop_node("name") end) end)
 
-    name_and_types_tuple = List.last(names_and_types_tuple_list)
+      %{callback: fn -> nil end}
+    end
 
-    name = elem(name_and_types_tuple, 0)
-    types_list = elem(name_and_types_tuple, 1)
+    test "start_timer/4", %{callback: callback} do
+      assert :ok = Rclex.start_timer(10, callback, "timer", "name")
+      assert {:error, :already_started} = Rclex.start_timer(10, callback, "timer", "name")
+    end
 
-    assert name == ~c"/testtopic"
-    type = hd(types_list)
-    assert type == ~c"std_msgs/msg/String"
+    test "start_timer/4, node doesn't exist", %{callback: callback} do
+      assert {:noproc, _} = catch_exit(Rclex.start_timer(10, callback, "timer", "notexists"))
+    end
 
-    Rclex.Node.finish_jobs(publisher_list)
-    Rclex.Node.finish_jobs(subscriber_list)
-    Rclex.ResourceServer.finish_nodes(node_list)
-    Rclex.ResourceServer.finish_nodes(node_list_2)
-    Rclex.shutdown(context)
+    test "start_timer/4, wrong callback" do
+      assert {:error, _} = Rclex.start_timer(10, fn _wrong_args -> nil end, "timer", "name")
+    end
+
+    test "stop_timer/3", %{callback: callback} do
+      :ok = Rclex.start_timer(10, callback, "timer", "name")
+
+      assert capture_log(fn -> :ok = Rclex.stop_timer("timer", "name") end) =~ "Timer: :shutdown"
+      assert {:error, :not_found} = Rclex.stop_timer("timer", "name")
+    end
+
+    test "stop_timer/3, node doesn't exist", %{callback: _callback} do
+      assert {:noproc, _} = catch_exit(Rclex.stop_timer("timer", "notexists"))
+    end
   end
 end
