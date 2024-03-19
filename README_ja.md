@@ -1,29 +1,36 @@
 [![Hex version](https://img.shields.io/hexpm/v/rclex.svg "Hex version")](https://hex.pm/packages/rclex)
 [![API docs](https://img.shields.io/hexpm/v/rclex.svg?label=hexdocs "API docs")](https://hexdocs.pm/rclex/readme.html)
 [![License](https://img.shields.io/hexpm/l/rclex.svg)](https://github.com/rclex/rclex/blob/main/LICENSE)
-[![ci-all_version](https://github.com/rclex/rclex/actions/workflows/ci.yml/badge.svg)](https://github.com/rclex/rclex/actions/workflows/ci.yml)
+[![ci-latest_push](https://github.com/rclex/rclex/actions/workflows/ci_latest.yml/badge.svg)](https://github.com/rclex/rclex/actions/workflows/ci_latest.yml)
+[![ci-allver_PR](https://github.com/rclex/rclex/actions/workflows/ci_allver.yml/badge.svg)](https://github.com/rclex/rclex/actions/workflows/ci_allver.yml)
 
 注：READMEは[英語版](README.md)が常に最新かつ確実です．
 
 # Rclex [Ja]
-ElixirによるROS 2クライアントライブラリです．
-ROS 2共通階層であるRCL（ROS Client Library）APIをElixirコードから呼び出すことで基本的なROS 2の振る舞いをさせています．
-またノード間の出版購読通信およびそれに付随するコールバック関数をプロセスモデルの一つであるタスクに実行させることで軽量にしています．
+
+関数型言語[Elixir](https://elixir-lang.org/)によるROS 2クライアントライブラリです．
+
+ROS 2共通階層であるRCL（ROS Client Library）APIをElixirコードから呼び出すことでROS 2の基本的な振る舞いを実現しています．
+
+また，ノード間の出版購読通信およびそれに付随するコールバック関数をErlangの軽量プロセスに実行させるようにしています．
 これにより，メモリへの負荷を抑えつつ，また耐障害性を高めてノードを大量に生成，通信させることが可能になっています．
 
 ## ROS 2とは
 
 ROS（Robot Operating System）というロボット開発を支援するプラットフォームの次世代版です．
-ROS，ROS 2ともに，機能単位をノードと表現し，ノードを複数組み合わせて所望のさまざまなロボットアプリケーションが作成できます．
+ROS 2では，機能単位はノードとして表現され，ノードを複数組み合わせてさまざまな所望のロボットアプリケーションが作成できます．
 またノード間通信には出版購読通信が主に用いられ，パブリッシャとサブスクライバがトピックという名前でデータを識別してやりとりしています．
 
-ROSからの大きな違いとして，通信にDDS（Data Distribution Service）プロトコルが採用されたこと，そしてライブラリが階層構造に分けられ，様々な言語でROS 2クライアントライブラリを開発できるようになったことです．これにより，Elixirでもロボットアプリケーションを開発できるようになりました．
+ROS 2の主な貢献として，通信にDDS（Data Distribution Service）プロトコルが採用されたこと，そしてライブラリが階層構造に分けられたことです．
+これによって，様々な言語でROS 2クライアントライブラリを開発できるようになり，もちろんElixirでもロボットアプリケーションを開発できるようになりました．
 
-詳しくはROS 2の[公式ドキュメント](https://index.ros.org/doc/ros2/)を参照ください．
+詳しくは[ROS 2の公式ドキュメント](https://docs.ros.org/en/rolling/index.html)を参照ください．
 
 ## 対象とする環境
 
-### ホスト（開発環境）とターゲット（実行環境）が同一の場合
+### ネイティブ環境
+
+基本的で推奨される環境は，ホスト（開発環境）とターゲット（実行環境）が同一のものです．
 
 現在，下記の環境を主な対象として開発を進めています．
 
@@ -32,7 +39,8 @@ ROSからの大きな違いとして，通信にDDS（Data Distribution Service�
 - Elixir 1.15.5-otp-26
 - Erlang/OTP 26.0.2
 
-ROS 2にはHumbleの利用を強く推奨します．
+ROS 2には長期サポート版（LTS）であるHumbleの利用を強く推奨します．
+短期サポート版（STS）のIronは，実験的なサポートでありネイティブ環境での基本的な動作のみを確認しています．対応状況の詳細は[Issue#228](https://github.com/rclex/rclex/issues/228#issuecomment-1715293177)を確認してください．
 FoxyとGalacticもCI対象としていますが，これらはすでにEOLとなっています．
 
 動作検証の対象としている環境は[こちら](https://github.com/rclex/rclex_docker#available-versions-docker-tags)を参照してください．
@@ -46,7 +54,7 @@ FoxyとGalacticもCI対象としていますが，これらはすでにEOLとな
 
 `rclex` はNerves上での実行も可能です．この場合，ホスト環境にはROS 2環境を導入する必要はありません．
 
-詳細は[Use on Nerves](USE_ON_NERVES.md)の章および[b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)のリポジトリによる例を参照してください．
+詳細は[Use on Nerves](USE_ON_NERVES.md)のセクションおよび[b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)のリポジトリによる例を参照してください．
 
 ## 機能
 
@@ -54,14 +62,13 @@ FoxyとGalacticもCI対象としていますが，これらはすでにEOLとな
 1. 同一トピックに対して，複数のパブリッシャおよびサブスクライバを大量に作成できる．
 2. パブリッシャ，トピック，サブスクライバが1つずつのペアを大量に作成できる．
 
-ドキュメントは[ExDoc](https://github.com/elixir-lang/ex_doc)で生成されて[HexDocs](https://hexdocs.pm)に公開されています．  
-[https://hexdocs.pm/rclex](https://hexdocs.pm/rclex)をご参照ください．
+APIドキュメントは[https://hexdocs.pm/rclex](https://hexdocs.pm/rclex)をご参照ください．
 
 使用例は[rclex/rclex_examples](https://github.com/rclex/rclex_examples)を参照してください．サンプルコードとともに使い方を記しています．
 
 ## 使用方法
 
-ここでは，ROS 2およびElixirの動作環境がインストール済みである計算機での`rclex`の使用方法を示します．
+ここでは，ROS 2およびElixirの動作環境がインストール済みであるネイティブ環境での`rclex`の使用方法を示します．
 
 ### プロジェクトの作成
 
@@ -120,6 +127,8 @@ config :rclex, ros2_message_types: ["std_msgs/msg/String"]
 mix rclex.gen.msgs
 ```
 
+`config/config.exs`を編集してメッセージの型を変更したときは, `mix rclex.gen.msgs`を再度実行してください．
+
 ### コードの実装
 
 これで Rclex を使用する準備が整いました！  
@@ -146,9 +155,12 @@ end
 ```
 
 この他の実装例は，下記も参照してください．
+
 - [rclex/rclex_examples](https://github.com/rclex/rclex_examples)
 
 ### ビルドと実行
+
+次のようにアプリケーションをビルドしてください．
 
 ```
 mix compile
@@ -204,24 +216,11 @@ $ mix test.watch
 $ docker compose run --rm -w /root/rclex rclex_docker mix test.watch
 ```
 
-### 動作確認
-
-動作確認として，[rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests)を用いてRclcppで実装されたノードとの通信に関するテストを実施しています．
-
-```
-cd /path/to/yours
-git clone https://github.com/rclex/rclex
-git clone https://github.com/rclex/rclex_connection_tests
-cd /path/to/yours/rclex_connection_tests
-./run-all.sh
-```
-
-[GitHub Actions](https://github.com/rclex/rclex/actions)では，複数の環境でのCIを実行しています．ただし，これら全ての環境での動作保証には対応できません．
-
 ## 主な管理者と開発者（過去分も含む）
 
 - [@takasehideki](https://github.com/takasehideki)
+- [@s-hosoai](https://github.com/s-hosoai)
+- [@pojiro](https://github.com/pojiro)
 - [@HiroiImanishi](https://github.com/HiroiImanishi)
 - [@kebus426](https://github.com/kebus426)
 - [@shiroro466](https://github.com/shiroro466)
-- [@s-hosoai](https://github.com/s-hosoai)
