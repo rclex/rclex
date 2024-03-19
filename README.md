@@ -247,6 +247,7 @@ In [GitHub Actions](https://github.com/rclex/rclex/actions), we perform CI on mu
 - [@takasehideki](https://github.com/takasehideki)
 - [@s-hosoai](https://github.com/s-hosoai)
 - [@pojiro](https://github.com/pojiro)
+- [@HiroiImanishi](https://github.com/HiroiImanishi)
 - [@kebus426](https://github.com/kebus426)
 - [@shiroro466](https://github.com/shiroro466)
 

@@ -1,7 +1,8 @@
 [![Hex version](https://img.shields.io/hexpm/v/rclex.svg "Hex version")](https://hex.pm/packages/rclex)
 [![API docs](https://img.shields.io/hexpm/v/rclex.svg?label=hexdocs "API docs")](https://hexdocs.pm/rclex/readme.html)
 [![License](https://img.shields.io/hexpm/l/rclex.svg)](https://github.com/rclex/rclex/blob/main/LICENSE)
-[![ci-all_version](https://github.com/rclex/rclex/actions/workflows/ci.yml/badge.svg)](https://github.com/rclex/rclex/actions/workflows/ci.yml)
+[![ci-latest_push](https://github.com/rclex/rclex/actions/workflows/ci_latest.yml/badge.svg)](https://github.com/rclex/rclex/actions/workflows/ci_latest.yml)
+[![ci-allver_PR](https://github.com/rclex/rclex/actions/workflows/ci_allver.yml/badge.svg)](https://github.com/rclex/rclex/actions/workflows/ci_allver.yml)
 
 注：READMEは[英語版](README.md)が常に最新かつ確実です．
 
@@ -221,7 +222,8 @@ cd /path/to/yours/rclex_connection_tests
 ## 主な管理者と開発者（過去分も含む）
 
 - [@takasehideki](https://github.com/takasehideki)
+- [@s-hosoai](https://github.com/s-hosoai)
+- [@pojiro](https://github.com/pojiro)
 - [@HiroiImanishi](https://github.com/HiroiImanishi)
 - [@kebus426](https://github.com/kebus426)
 - [@shiroro466](https://github.com/shiroro466)
-- [@s-hosoai](https://github.com/s-hosoai)
