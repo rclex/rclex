@@ -67,7 +67,6 @@ Currently, the Rclex API allows for the following:
 
 1. The ability to create a large number of publishers sending to the same topic.
 2. The ability to create large numbers of each combination of publishers, topics, and subscribers.
-3. The ability to configure custom messages for topic communication.
 
 You can find the API documentation at [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex).
 
