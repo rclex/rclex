@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v0.10.0 on 19 Mar 2024
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.9.3...v0.10.0
+
+**Almost Everything has been breaking changed!!**
+
+According to the knowledge acquired by our R&D experience to date, the internal structure and design of this library have been significantly revised.
+The API specification has also been completely redesigned.
+From these changes, it is appropriate to say that we have almost reimplemented this library scratch in https://github.com/rclex/rclex/pull/286, leading by the awesome alchemist @pojiro :D
+
+It should be noted that the API in this release is not compatible with v0.9 or earlier, so please be careful when updating this library used in your applications.
+
+We will investigate after this release whether existing [Issues](https://github.com/rclex/rclex/issues) have been resolved by this historical improvement.
+
 ## v0.9.3 on 23 Feb 2024
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.9.2...v0.9.3
@@ -416,4 +430,3 @@
 ## v0.1.0 on 24 Feb 2020
 
 First publication
-
