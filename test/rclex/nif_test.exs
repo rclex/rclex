@@ -311,6 +311,58 @@ defmodule Rclex.NifTest do
     end
   end
 
+  describe "graph" do
+    setup do
+      context = Nif.rcl_init!()
+      node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
+      type_support = Nif.std_msgs_msg_string_type_support!()
+      publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", QoS.profile_default())
+
+      subscription =
+        Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", QoS.profile_default())
+
+      on_exit(fn ->
+        Nif.rcl_publisher_fini!(publisher, node)
+        Nif.rcl_subscription_fini!(subscription, node)
+        Nif.rcl_node_fini!(node)
+        Nif.rcl_fini!(context)
+      end)
+
+      %{node: node, publisher: publisher, subscription: subscription, type_support: type_support}
+    end
+
+    test "wait_for_subscribers!/4", %{
+      node: node,
+      type_support: type_support
+    } do
+      :true = Nif.rcl_wait_for_subscribers!(node, ~c"/chatter", 1, 1_000)
+      :false = Nif.rcl_wait_for_subscribers!(node, ~c"/chatter", 2, 1_000)
+      Task.async(
+        fn -> Process.sleep(10)
+          subscription =
+            Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", QoS.profile_default())
+          Process.sleep(10)
+          Nif.rcl_subscription_fini!(subscription, node)
+        end)
+      :true = Nif.rcl_wait_for_subscribers!(node, ~c"/chatter", 2, 20_000_000)      
+    end
+
+    test "wait_for_publishers!/4", %{
+      node: node,
+      type_support: type_support
+    } do
+      :true = Nif.rcl_wait_for_publishers!(node, ~c"/chatter", 1, 1_000)
+      :false = Nif.rcl_wait_for_publishers!(node, ~c"/chatter", 2, 1_000)
+      Task.async(
+        fn -> Process.sleep(10)
+          publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", QoS.profile_default())
+          Process.sleep(10)
+          Nif.rcl_publisher_fini!(publisher, node)
+        end)
+      :true = Nif.rcl_wait_for_publishers!(node, ~c"/chatter", 2, 20_000_000)      
+    end
+  end
+
   describe "subscription" do
     setup do
       context = Nif.rcl_init!()
