@@ -37,14 +37,14 @@ make_topic_endpoint_info_list(ErlNifEnv *env,
   int info_length          = topic_endpoint_info->size;
   ERL_NIF_TERM *info_array = enif_alloc(sizeof(ERL_NIF_TERM) * info_length);
 
-  ERL_NIF_TERM atom_invalid = enif_make_atom(env, "invalid");
-  ERL_NIF_TERM atom_publisher = enif_make_atom(env, "publisher");
+  ERL_NIF_TERM atom_invalid      = enif_make_atom(env, "invalid");
+  ERL_NIF_TERM atom_publisher    = enif_make_atom(env, "publisher");
   ERL_NIF_TERM atom_subscription = enif_make_atom(env, "subscription");
 
-  ERL_NIF_TERM keys[6]     = {
-          enif_make_atom(env, "node_name"),    enif_make_atom(env, "node_namespace"),
-          enif_make_atom(env, "topic_type"),   enif_make_atom(env, "endpoint_type"),
-          enif_make_atom(env, "endpoint_gid"), enif_make_atom(env, "qos_profile")};
+  ERL_NIF_TERM keys[6] = {
+      enif_make_atom(env, "node_name"),    enif_make_atom(env, "node_namespace"),
+      enif_make_atom(env, "topic_type"),   enif_make_atom(env, "endpoint_type"),
+      enif_make_atom(env, "endpoint_gid"), enif_make_atom(env, "qos_profile")};
 
   for (int i = 0; i < info_length; i++) {
 
@@ -56,12 +56,12 @@ make_topic_endpoint_info_list(ErlNifEnv *env,
     bin_gid.size = RMW_GID_STORAGE_SIZE;
 
     ERL_NIF_TERM endpoint_type = atom_invalid;
-    if(topic_endpoint_info->info_array[i].endpoint_type == RMW_ENDPOINT_PUBLISHER){
+    if (topic_endpoint_info->info_array[i].endpoint_type == RMW_ENDPOINT_PUBLISHER) {
       endpoint_type = atom_publisher;
-    }else if(topic_endpoint_info->info_array[i].endpoint_type == RMW_ENDPOINT_SUBSCRIPTION){
+    } else if (topic_endpoint_info->info_array[i].endpoint_type == RMW_ENDPOINT_SUBSCRIPTION) {
       endpoint_type = atom_subscription;
     }
-    
+
     ERL_NIF_TERM values[6] = {
         enif_make_string(env, topic_endpoint_info->info_array[i].node_name, ERL_NIF_LATIN1),
         enif_make_string(env, topic_endpoint_info->info_array[i].node_namespace, ERL_NIF_LATIN1),
@@ -430,7 +430,7 @@ ERL_NIF_TERM nif_rcl_get_subscriber_names_and_types_by_node(ErlNifEnv *env, int 
 }
 
 ERL_NIF_TERM nif_rcl_get_subscribers_info_by_topic(ErlNifEnv *env, int argc,
-                                                  const ERL_NIF_TERM argv[]) {
+                                                   const ERL_NIF_TERM argv[]) {
   if (argc != 3) return enif_make_badarg(env);
 
   rcl_node_t *node_p;
@@ -456,8 +456,8 @@ ERL_NIF_TERM nif_rcl_get_subscribers_info_by_topic(ErlNifEnv *env, int argc,
   rcl_allocator_t allocator = get_nif_allocator();
   ERL_NIF_TERM term         = atom_error;
 
-  rc =
-      rcl_get_subscriptions_info_by_topic(node_p, &allocator, topic_name, no_mangle, &subscribers_info);
+  rc = rcl_get_subscriptions_info_by_topic(node_p, &allocator, topic_name, no_mangle,
+                                           &subscribers_info);
   if (rc == RCL_RET_OK) { // if the query was successful
     term = make_topic_endpoint_info_list(env, &subscribers_info);
   } else if (rc == RCL_RET_NODE_INVALID) { // if the node is invalid
@@ -540,20 +540,18 @@ ERL_NIF_TERM nif_rcl_wait_for_publishers(ErlNifEnv *env, int argc, const ERL_NIF
     return enif_make_badarg(env);
 
   size_t count = 0;
-  if (!enif_get_uint64(env, argv[2], &count))
-    return enif_make_badarg(env);
+  if (!enif_get_uint64(env, argv[2], &count)) return enif_make_badarg(env);
 
   rcutils_duration_value_t timeout = -1; // timeout in nanoseconds
-  if (!enif_get_int64(env, argv[3], &timeout))
-    return enif_make_badarg(env);
+  if (!enif_get_int64(env, argv[3], &timeout)) return enif_make_badarg(env);
 
   bool success;
   rcl_ret_t rc;
-  rcl_allocator_t allocator                   = get_nif_allocator();
-  ERL_NIF_TERM term                           = atom_false;
+  rcl_allocator_t allocator = get_nif_allocator();
+  ERL_NIF_TERM term         = atom_false;
   rc = rcl_wait_for_publishers(node_p, &allocator, topic_name, count, timeout, &success);
   if (rc == RCL_RET_OK) { // if the query was successful
-    if(success)
+    if (success)
       term = atom_true;
     else
       term = atom_false;
@@ -587,20 +585,18 @@ ERL_NIF_TERM nif_rcl_wait_for_subscribers(ErlNifEnv *env, int argc, const ERL_NI
     return enif_make_badarg(env);
 
   size_t count = 0;
-  if (!enif_get_uint64(env, argv[2], &count))
-    return enif_make_badarg(env);
+  if (!enif_get_uint64(env, argv[2], &count)) return enif_make_badarg(env);
 
   rcutils_duration_value_t timeout = -1; // timeout in nanoseconds
-  if (!enif_get_int64(env, argv[3], &timeout))
-    return enif_make_badarg(env);
+  if (!enif_get_int64(env, argv[3], &timeout)) return enif_make_badarg(env);
 
   bool success;
   rcl_ret_t rc;
-  rcl_allocator_t allocator                   = get_nif_allocator();
-  ERL_NIF_TERM term                           = atom_false;
+  rcl_allocator_t allocator = get_nif_allocator();
+  ERL_NIF_TERM term         = atom_false;
   rc = rcl_wait_for_subscribers(node_p, &allocator, topic_name, count, timeout, &success);
   if (rc == RCL_RET_OK) { // if the query was successful
-    if(success)
+    if (success)
       term = atom_true;
     else
       term = atom_false;

@@ -231,20 +231,20 @@ defmodule RclexTest do
 
     test "get_publishers_info_by_topic/3", %{} do
       [info] = Rclex.get_publishers_info_by_topic("name", "/chatter")
-      
+
       assert is_binary(info.endpoint_gid)
       %qos_type{} = info.qos_profile
       assert qos_type == Rclex.QoS
 
       assert %{
-                 node_name: "name",
-                 node_namespace: "/",
-                 topic_type: "std_msgs/msg/String",
-                 endpoint_type: :publisher,
-                 # endpoint_gid: <<_gid>>,
-                 # qos_profile: %Rclex.QoS{...}
-               }
-              = Map.drop(info, [:endpoint_gid, :qos_profile])
+               node_name: "name",
+               node_namespace: "/",
+               topic_type: "std_msgs/msg/String",
+               endpoint_type: :publisher
+               # endpoint_gid: <<_gid>>,
+               # qos_profile: %Rclex.QoS{...}
+             } =
+               Map.drop(info, [:endpoint_gid, :qos_profile])
     end
 
     test "get_subscriber_names_and_types_by_node/4", %{} do
@@ -257,22 +257,22 @@ defmodule RclexTest do
 
     test "get_subscribers_info_by_topic/3", %{} do
       [info] = Rclex.get_subscribers_info_by_topic("name", "/chatter")
-      
+
       assert is_binary(info.endpoint_gid)
       %qos_type{} = info.qos_profile
       assert qos_type == Rclex.QoS
 
       assert %{
-                 node_name: "name",
-                 node_namespace: "/",
-                 topic_type: "std_msgs/msg/String",
-                 endpoint_type: :subscription,
-                 # endpoint_gid: <<_gid>>,
-                 # qos_profile: %Rclex.QoS{...}
-               }
-              = Map.drop(info, [:endpoint_gid, :qos_profile])
+               node_name: "name",
+               node_namespace: "/",
+               topic_type: "std_msgs/msg/String",
+               endpoint_type: :subscription
+               # endpoint_gid: <<_gid>>,
+               # qos_profile: %Rclex.QoS{...}
+             } =
+               Map.drop(info, [:endpoint_gid, :qos_profile])
     end
-    
+
     test "get_topic_names_and_types/2", %{} do
       assert [{"/chatter", ["std_msgs/msg/String"]}] = Rclex.get_topic_names_and_types("name")
     end

@@ -139,6 +139,7 @@ defmodule Rclex.Nif do
   def rcl_get_subscribers_info_by_topic!(_node, _topic_name, _no_mangle) do
     :erlang.nif_error(:nif_not_loaded)
   end
+
   def rcl_get_topic_names_and_types!(_node, _no_demangle) do
     :erlang.nif_error(:nif_not_loaded)
   end

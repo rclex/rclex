@@ -127,6 +127,7 @@ defmodule Rclex.Node do
       {:get_subscribers_info_by_topic, topic_name, no_mangle}
     )
   end
+
   def get_topic_names_and_types(name, namespace, no_demangle \\ false) do
     server = name(name, namespace)
     GenServer.call(server, {:get_topic_names_and_types, no_demangle})
@@ -151,13 +152,13 @@ defmodule Rclex.Node do
   end
 
   defp topic_endpoint_info_charlist_to_string(%{
-    node_name: node_name,
-    node_namespace: node_namespace,
-    topic_type: topic_type,
-    endpoint_gid: gid,
-    endpoint_type: endpoint_type,
-    qos_profile: qos
-  }) do
+         node_name: node_name,
+         node_namespace: node_namespace,
+         topic_type: topic_type,
+         endpoint_gid: gid,
+         endpoint_type: endpoint_type,
+         qos_profile: qos
+       }) do
     %{
       node_name: "#{node_name}",
       node_namespace: "#{node_namespace}",
@@ -317,19 +318,19 @@ defmodule Rclex.Node do
   end
 
   def handle_call(
-      {:get_subscribers_info_by_topic, topic_name, no_mangle},
-      _from,
-      state
-    ) do
-  return =
-    Graph.get_subscribers_info_by_topic(
-      state.node,
-      ~c"#{topic_name}",
-      no_mangle
-    )
-    |> topic_endpoint_info_list_charlist_to_string()
+        {:get_subscribers_info_by_topic, topic_name, no_mangle},
+        _from,
+        state
+      ) do
+    return =
+      Graph.get_subscribers_info_by_topic(
+        state.node,
+        ~c"#{topic_name}",
+        no_mangle
+      )
+      |> topic_endpoint_info_list_charlist_to_string()
 
-  {:reply, return, state}
+    {:reply, return, state}
   end
 
   def handle_call({:get_topic_names_and_types, no_demangle}, _from, state) do

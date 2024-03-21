@@ -78,14 +78,18 @@ defmodule Rclex.GraphTest do
     topic_name: topic_name,
     node: node
   } do
-
     [info] = Graph.get_publishers_info_by_topic(node, topic_name, false)
 
     assert is_binary(info.endpoint_gid)
     %qos_type{} = info.qos_profile
     assert qos_type == Rclex.QoS
-    assert %{node_name: ~c"name", node_namespace: ~c"/namespace", topic_type: ~c"std_msgs/msg/String", endpoint_type: :publisher} == Map.drop(info, [:endpoint_gid, :qos_profile])
 
+    assert %{
+             node_name: ~c"name",
+             node_namespace: ~c"/namespace",
+             topic_type: ~c"std_msgs/msg/String",
+             endpoint_type: :publisher
+           } == Map.drop(info, [:endpoint_gid, :qos_profile])
 
     assert [] = Graph.get_publishers_info_by_topic(node, ~c"/does_not_exist", false)
 
@@ -93,8 +97,13 @@ defmodule Rclex.GraphTest do
     assert is_binary(info.endpoint_gid)
     %qos_type{} = info.qos_profile
     assert qos_type == Rclex.QoS
-    assert %{node_name: ~c"name", node_namespace: ~c"/namespace", topic_type: ~c"std_msgs::msg::dds_::String_", endpoint_type: :publisher} == Map.drop(info, [:endpoint_gid, :qos_profile])
 
+    assert %{
+             node_name: ~c"name",
+             node_namespace: ~c"/namespace",
+             topic_type: ~c"std_msgs::msg::dds_::String_",
+             endpoint_type: :publisher
+           } == Map.drop(info, [:endpoint_gid, :qos_profile])
   end
 
   test "get_subscriber_names_and_types_by_node/1", %{
@@ -118,13 +127,18 @@ defmodule Rclex.GraphTest do
     topic_name: topic_name,
     node: node
   } do
-
     [info] = Graph.get_subscribers_info_by_topic(node, topic_name, false)
 
     assert is_binary(info.endpoint_gid)
     %qos_type{} = info.qos_profile
     assert qos_type == Rclex.QoS
-    assert %{node_name: ~c"name", node_namespace: ~c"/namespace", topic_type: ~c"std_msgs/msg/String", endpoint_type: :subscription} == Map.drop(info, [:endpoint_gid, :qos_profile])
+
+    assert %{
+             node_name: ~c"name",
+             node_namespace: ~c"/namespace",
+             topic_type: ~c"std_msgs/msg/String",
+             endpoint_type: :subscription
+           } == Map.drop(info, [:endpoint_gid, :qos_profile])
 
     assert [] = Graph.get_subscribers_info_by_topic(node, ~c"/does_not_exist", false)
 
@@ -132,10 +146,14 @@ defmodule Rclex.GraphTest do
     assert is_binary(info.endpoint_gid)
     %qos_type{} = info.qos_profile
     assert qos_type == Rclex.QoS
-    assert %{node_name: ~c"name", node_namespace: ~c"/namespace", topic_type: ~c"std_msgs::msg::dds_::String_", endpoint_type: :subscription} == Map.drop(info, [:endpoint_gid, :qos_profile])
 
+    assert %{
+             node_name: ~c"name",
+             node_namespace: ~c"/namespace",
+             topic_type: ~c"std_msgs::msg::dds_::String_",
+             endpoint_type: :subscription
+           } == Map.drop(info, [:endpoint_gid, :qos_profile])
   end
-
 
   test "get_topic_names_and_types/1", %{topic_name: topic_name, node: node} do
     assert [{^topic_name, [~c"std_msgs/msg/String"]}] =

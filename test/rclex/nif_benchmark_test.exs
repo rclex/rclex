@@ -210,12 +210,11 @@ defmodule Rclex.NifBenchmarkTest do
       node: node,
       topic_name: topic_name
     } do
-      {time_us, [_info]} = :timer.tc(&Nif.rcl_get_publishers_info_by_topic!/3, [node, topic_name, false])
+      {time_us, [_info]} =
+        :timer.tc(&Nif.rcl_get_publishers_info_by_topic!/3, [node, topic_name, false])
 
       assert time_us <= @nif_limit_time_us
     end
-
-    
 
     test "rcl_get_subscriber_names_and_types_by_node!/4", %{
       node: node,
@@ -238,11 +237,12 @@ defmodule Rclex.NifBenchmarkTest do
       node: node,
       topic_name: topic_name
     } do
-      {time_us, [_info]} = :timer.tc(&Nif.rcl_get_subscribers_info_by_topic!/3, [node, topic_name, false])
+      {time_us, [_info]} =
+        :timer.tc(&Nif.rcl_get_subscribers_info_by_topic!/3, [node, topic_name, false])
 
       assert time_us <= @nif_limit_time_us
     end
-  
+
     test "rcl_get_topic_names_and_types!/2", %{topic_name: topic_name, node: node} do
       {time_us, [{^topic_name, [~c"std_msgs/msg/String"]}]} =
         :timer.tc(&Nif.rcl_get_topic_names_and_types!/2, [node, false])

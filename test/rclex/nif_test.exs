@@ -335,31 +335,40 @@ defmodule Rclex.NifTest do
       node: node,
       type_support: type_support
     } do
-      :true = Nif.rcl_wait_for_subscribers!(node, ~c"/chatter", 1, 1_000)
-      :false = Nif.rcl_wait_for_subscribers!(node, ~c"/chatter", 2, 1_000)
-      Task.async(
-        fn -> Process.sleep(10)
-          subscription =
-            Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", QoS.profile_default())
-          Process.sleep(10)
-          Nif.rcl_subscription_fini!(subscription, node)
-        end)
-      :true = Nif.rcl_wait_for_subscribers!(node, ~c"/chatter", 2, 20_000_000)      
+      true = Nif.rcl_wait_for_subscribers!(node, ~c"/chatter", 1, 1_000)
+      false = Nif.rcl_wait_for_subscribers!(node, ~c"/chatter", 2, 1_000)
+
+      Task.async(fn ->
+        Process.sleep(10)
+
+        subscription =
+          Nif.rcl_subscription_init!(node, type_support, ~c"/chatter", QoS.profile_default())
+
+        Process.sleep(10)
+        Nif.rcl_subscription_fini!(subscription, node)
+      end)
+
+      true = Nif.rcl_wait_for_subscribers!(node, ~c"/chatter", 2, 20_000_000)
     end
 
     test "wait_for_publishers!/4", %{
       node: node,
       type_support: type_support
     } do
-      :true = Nif.rcl_wait_for_publishers!(node, ~c"/chatter", 1, 1_000)
-      :false = Nif.rcl_wait_for_publishers!(node, ~c"/chatter", 2, 1_000)
-      Task.async(
-        fn -> Process.sleep(10)
-          publisher = Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", QoS.profile_default())
-          Process.sleep(10)
-          Nif.rcl_publisher_fini!(publisher, node)
-        end)
-      :true = Nif.rcl_wait_for_publishers!(node, ~c"/chatter", 2, 20_000_000)      
+      true = Nif.rcl_wait_for_publishers!(node, ~c"/chatter", 1, 1_000)
+      false = Nif.rcl_wait_for_publishers!(node, ~c"/chatter", 2, 1_000)
+
+      Task.async(fn ->
+        Process.sleep(10)
+
+        publisher =
+          Nif.rcl_publisher_init!(node, type_support, ~c"/chatter", QoS.profile_default())
+
+        Process.sleep(10)
+        Nif.rcl_publisher_fini!(publisher, node)
+      end)
+
+      true = Nif.rcl_wait_for_publishers!(node, ~c"/chatter", 2, 20_000_000)
     end
   end
 
