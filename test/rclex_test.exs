@@ -266,10 +266,11 @@ defmodule RclexTest do
                  node_name: "name",
                  node_namespace: "/",
                  topic_type: "std_msgs/msg/String",
+                 endpoint_type: :subscription,
                  # endpoint_gid: <<_gid>>,
                  # qos_profile: %Rclex.QoS{...}
                }
-              = Map.drop(info, [:endpoint_gid, :qos_profile, :endpoint_type])
+              = Map.drop(info, [:endpoint_gid, :qos_profile])
     end
     
     test "get_topic_names_and_types/2", %{} do

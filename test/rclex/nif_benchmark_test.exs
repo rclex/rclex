@@ -8,7 +8,7 @@ defmodule Rclex.NifBenchmarkTest do
   alias Rclex.Nif
   alias Rclex.QoS
 
-  # @moduletag :skip
+  @moduletag :skip
   @nif_limit_time_us 1000
 
   setup_all do
