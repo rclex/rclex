@@ -212,6 +212,8 @@ docker compose exec -w /root/rclex rclex_docker /bin/bash
 docker compose down
 ```
 
+In [GitHub Actions](https://github.com/rclex/rclex/actions), we perform CI on multiple tool versions at Pull Requests by using these Docker environments. However, we cannot guarantee operation in all of these environments.
+
 ### Automatic execution of mix test, etc.
 
 `mix test.watch` is introduced to automatically run unit test `mix test` and code formatting `mix format` every time the source code was edited.
@@ -220,6 +222,18 @@ docker compose down
 $ mix test.watch
 # or, run on docker by following
 $ docker compose run --rm -w /root/rclex rclex_docker mix test.watch
+```
+
+### Confirmation of communication operation
+
+To check the operation, especially for communication features of this library, we prepare [rclex/rclex_connection_tests](https://github.com/rclex/rclex_connection_tests) to test the communication with the nodes implemented with Rclcpp.
+
+```
+cd /path/to/yours
+git clone https://github.com/rclex/rclex
+git clone https://github.com/rclex/rclex_connection_tests
+cd /path/to/yours/rclex_connection_tests
+./run-all.sh
 ```
 
 ## Presentations
