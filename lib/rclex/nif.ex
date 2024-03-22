@@ -144,13 +144,13 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
-  def rcl_wait_for_publishers!(_node, _topic_name, _count, _timeout) do
-    :erlang.nif_error(:nif_not_loaded)
-  end
+  #  def rcl_wait_for_publishers!(_node, _topic_name, _count, _timeout) do
+  #    :erlang.nif_error(:nif_not_loaded)
+  #  end
 
-  def rcl_wait_for_subscribers!(_node, _topic_name, _count, _timeout) do
-    :erlang.nif_error(:nif_not_loaded)
-  end
+  #  def rcl_wait_for_subscribers!(_node, _topic_name, _count, _timeout) do
+  #    :erlang.nif_error(:nif_not_loaded)
+  #  end
 
   def rmw_qos_profile_sensor_data!() do
     :erlang.nif_error(:nif_not_loaded)

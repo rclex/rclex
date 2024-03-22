@@ -527,6 +527,7 @@ ERL_NIF_TERM nif_rcl_get_topic_names_and_types(ErlNifEnv *env, int argc,
   return term;
 }
 
+/*
 ERL_NIF_TERM nif_rcl_wait_for_publishers(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   if (argc != 4) return enif_make_badarg(env);
 
@@ -571,7 +572,9 @@ ERL_NIF_TERM nif_rcl_wait_for_publishers(ErlNifEnv *env, int argc, const ERL_NIF
 
   return term;
 }
+*/
 
+/*
 ERL_NIF_TERM nif_rcl_wait_for_subscribers(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   if (argc != 4) return enif_make_badarg(env);
 
@@ -616,3 +619,4 @@ ERL_NIF_TERM nif_rcl_wait_for_subscribers(ErlNifEnv *env, int argc, const ERL_NI
 
   return term;
 }
+*/
