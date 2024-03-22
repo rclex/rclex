@@ -29,6 +29,12 @@ jobs:
           repository: rclex/rclex
           path: rclex
 
+      - name: Checkout rclex_connection_tests repo
+        uses: actions/checkout@v4
+        with:
+          repository: rclex/rclex_connection_tests
+          path: rclex_connection_tests
+
       - name: Retrieve cached dependencies
         uses: actions/cache@v4
         id: mix-cache
@@ -62,3 +68,10 @@ jobs:
           mix local.hex --force
           mix rclex.gen.msgs
           mix test
+
+      - name: connection tests
+        run: |
+          source /opt/ros/${ROS_DISTRO}/setup.bash
+          cd rclex_connection_tests
+          mix local.hex --force
+          ./run-all.sh
