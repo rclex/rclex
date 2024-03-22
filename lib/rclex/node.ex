@@ -238,15 +238,13 @@ defmodule Rclex.Node do
   end
 
   def handle_call({:count_publishers, topic_name}, _from, state) do
-    return =
-      Graph.count_publishers(state.node, ~c"#{topic_name}")
+    return = Graph.count_publishers(state.node, ~c"#{topic_name}")
 
     {:reply, return, state}
   end
 
   def handle_call({:count_subscribers, topic_name}, _from, state) do
-    return =
-      Graph.count_subscribers(state.node, ~c"#{topic_name}")
+    return = Graph.count_subscribers(state.node, ~c"#{topic_name}")
 
     {:reply, return, state}
   end

@@ -243,8 +243,7 @@ defmodule RclexTest do
                endpoint_type: :publisher
                # endpoint_gid: <<_gid>>,
                # qos_profile: %Rclex.QoS{...}
-             } =
-               Map.drop(info, [:endpoint_gid, :qos_profile])
+             } = Map.drop(info, [:endpoint_gid, :qos_profile])
     end
 
     test "get_subscriber_names_and_types_by_node/4", %{} do
@@ -269,8 +268,7 @@ defmodule RclexTest do
                endpoint_type: :subscription
                # endpoint_gid: <<_gid>>,
                # qos_profile: %Rclex.QoS{...}
-             } =
-               Map.drop(info, [:endpoint_gid, :qos_profile])
+             } = Map.drop(info, [:endpoint_gid, :qos_profile])
     end
 
     test "get_topic_names_and_types/2", %{} do
