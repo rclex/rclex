@@ -136,8 +136,6 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     ros2_message_type_map =
       Enum.reduce(types, %{}, fn type, acc -> get_ros2_message_type_map(type, from, acc) end)
 
-    IO.inspect(ros2_message_type_map)
-
     types = Map.keys(ros2_message_type_map)
 
     for {:msg_type, type} <- types do
