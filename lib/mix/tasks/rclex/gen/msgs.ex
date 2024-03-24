@@ -12,6 +12,12 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   > #### Info {: .info }
   > Be careful, ros2 msg type is case sensitive.
 
+  ## How to show message types
+
+  ```
+  mix rclex.gen.msgs --show-types
+  ```
+
   ## How to generate
 
   ```
@@ -20,11 +26,18 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   This task assumes that the environment variable `ROS_DISTRO` is set
   and refers to the msg types from `/opt/ros/[ROS_DISTRO]/share`.
+  In addition `AMENT_PREFIX_PATH` is considered to find msg types.
 
   We can also specify explicitly as follows
 
   ```
-  mix rclex.gen.msgs --from /opt/ros/foxy/share
+  mix rclex.gen.msgs --from /opt/ros/humble/share --from /home/ros/workspace/install
+  ```
+
+  or via configuration
+
+  ```
+  config :rclex, ros2_directories: ["/home/ros/workspace/install/example_msgs"]
   ```
 
   ## How to clean
@@ -45,23 +58,25 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @doc false
   def run(args) do
     {valid_options, _, _} =
-      OptionParser.parse(args, strict: [from: :string, clean: :boolean, show_types: :boolean])
+      OptionParser.parse(args, strict: [from: :keep, clean: :boolean, show_types: :boolean])
+
+    {from, valid_options} = Keyword.pop_values(valid_options, :from)
 
     case valid_options do
+      [] when from != [] ->
+        clean()
+        generate(from, rclex_dir_path!())
+        recompile!()
+
       [] ->
         clean()
         generate(rclex_dir_path!())
         recompile!()
 
-      [from: from] ->
-        clean()
-        generate(from, rclex_dir_path!())
-        recompile!()
-
-      [clean: true] ->
+      [clean: true] when from == [] ->
         clean()
 
-      [show_types: true] ->
+      [show_types: true] when from == [] ->
         show_types()
 
       _ ->
@@ -77,22 +92,41 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       Mix.raise("Please set ROS_DISTRO.")
     end
 
-    ros_directory_path =
+    ament_directories =
+      Enum.map(String.split(System.get_env("AMENT_PREFIX_PATH", ""), [":", ";"]), fn d ->
+        Path.join(d, "share")
+      end)
+
+    configured_directories =
+      Enum.map(Application.get_env(:rclex, :ros2_directories, []), fn d ->
+        Path.join(d, "share")
+      end)
+
+    ros_directories =
       if Mix.target() == :host do
-        "/opt/ros/#{ros_distro}"
+        cond do
+          configured_directories == [] and ament_directories == [] ->
+            [Path.join("/opt/ros/#{ros_distro}", "share")]
+
+          configured_directories != [] ->
+            configured_directories ++ [Path.join("/opt/ros/#{ros_distro}", "share")]
+
+          ament_directories != [] ->
+            ament_directories
+        end
       else
-        Path.join(File.cwd!(), "rootfs_overlay/opt/ros/#{ros_distro}")
+        configured_directories ++ [Path.join(File.cwd!(), "rootfs_overlay/opt/ros/#{ros_distro}")]
       end
 
-    if not File.exists?(ros_directory_path) do
-      Mix.raise("#{ros_directory_path} does not exist.")
+    if Enum.any?(ros_directories, fn d -> not File.exists?(d) end) do
+      Mix.raise("#{inspect(ros_directories)} does not exist.")
     end
 
-    generate(Path.join(ros_directory_path, "share"), to)
+    generate(ros_directories, to)
   end
 
   @doc false
-  def generate(from, to) do
+  def generate(from, to) when is_list(from) and is_binary(to) do
     types = Application.get_env(:rclex, :ros2_message_types, [])
 
     if Enum.empty?(types) do
@@ -101,6 +135,8 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
     ros2_message_type_map =
       Enum.reduce(types, %{}, fn type, acc -> get_ros2_message_type_map(type, from, acc) end)
+
+    IO.inspect(ros2_message_type_map)
 
     types = Map.keys(ros2_message_type_map)
 
@@ -209,8 +245,14 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   @doc false
   def get_ros2_message_type_map(ros2_message_type, from, acc \\ %{}) do
+    dir = Enum.find(from, fn dir -> File.exists?(Path.join(dir, [ros2_message_type, ".msg"])) end)
+
+    unless dir do
+      raise "#{ros2_message_type}.msg not found"
+    end
+
     {:ok, fields, _rest, _context, _line, _column} =
-      Path.join(from, [ros2_message_type, ".msg"])
+      Path.join(dir, [ros2_message_type, ".msg"])
       |> File.read!()
       |> MessageParser.parse()
 
