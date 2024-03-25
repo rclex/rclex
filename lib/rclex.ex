@@ -6,6 +6,8 @@ defmodule Rclex do
   @namespace_doc "`:namespace` must lead with \"/\". if not specified, the default is \"/\""
   @qos_doc "`:qos` if not specified, applied the default which equals return of `Rclex.QoS.profile_default/0`"
   @topic_name_doc "`topic_name` must lead with \"/\""
+  @no_demangle_doc "`:no_demangle` if `true`, return all topics without any demangling. if not specified, the default is `false`"
+  @no_mangle_doc "`:no_mangle` if `true`, `topic_name` needs to be a valid middleware topic name, otherwise it should be a valid ROS topic name. if not specified, the default is `false`"
 
   @typedoc "#{@topic_name_doc}."
   @type topic_name :: String.t()
@@ -285,5 +287,268 @@ defmodule Rclex do
       when is_binary(timer_name) and is_binary(node_name) and is_list(opts) do
     namespace = Keyword.get(opts, :namespace, "/")
     Rclex.Node.stop_timer(timer_name, node_name, namespace)
+  end
+
+  @doc """
+  Return the number of publishers on a given topic.
+
+  - #{@topic_name_doc}
+
+  ### opts
+
+  - #{@namespace_doc}
+
+  ## Examples
+
+      iex> alias Rclex.Pkgs.StdMsgs
+      iex> Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "node", namespace: "/example")
+      :ok
+      iex> Rclex.count_publishers("node", "/chatter", namespace: "/example")
+      1
+  """
+  @spec count_publishers(
+          name :: String.t(),
+          topic_name :: topic_name(),
+          opts :: [namespace: String.t()]
+        ) :: non_neg_integer()
+  def count_publishers(name, topic_name, opts \\ [])
+      when is_binary(name) and is_binary(topic_name) and is_list(opts) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    Rclex.Node.count_publishers(name, namespace, topic_name)
+  end
+
+  @doc """
+  Return the number of subscriptions on a given topic.
+
+  - #{@topic_name_doc}
+
+  ### opts
+
+  - #{@namespace_doc}
+
+  ## Examples
+
+      iex> alias Rclex.Pkgs.StdMsgs
+      iex> Rclex.start_subscription(&IO.inspect/1, StdMsgs.Msg.String, "/chatter", "node", namespace: "/example")
+      :ok
+      iex> Rclex.count_subscribers("node", "/chatter", namespace: "/example")
+      1
+  """
+  @spec count_subscribers(
+          name :: String.t(),
+          topic_name :: topic_name(),
+          opts :: [namespace: String.t()]
+        ) :: non_neg_integer()
+  def count_subscribers(name, topic_name, opts \\ [])
+      when is_binary(name) and is_binary(topic_name) and is_list(opts) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    Rclex.Node.count_subscribers(name, namespace, topic_name)
+  end
+
+  @doc """
+  Return a list of available nodes in the ROS graph.
+
+  ### opts
+
+  - #{@namespace_doc}
+
+  ## Examples
+
+      iex> Rclex.get_node_names("node", namespace: "/example")
+      [{"node","/example"}]
+  """
+  @spec get_node_names(name :: String.t(), opts :: [namespace: String.t()]) :: [
+          {String.t(), String.t()}
+        ]
+  def get_node_names(name, opts \\ [])
+      when is_binary(name) and is_list(opts) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    Rclex.Node.get_node_names(name, namespace)
+  end
+
+  @doc """
+  Return a list of available nodes in the ROS graph, including their enclave names.
+
+  ### opts
+
+  - #{@namespace_doc}
+
+  ## Examples
+
+      iex> Rclex.get_node_names_with_enclaves("node", namespace: "/example")
+      [{"node", "/example", "/"}]
+  """
+  @spec get_node_names_with_enclaves(name :: String.t(), opts :: [namespace: String.t()]) :: [
+          {String.t(), String.t(), String.t()}
+        ]
+  def get_node_names_with_enclaves(name, opts \\ [])
+      when is_binary(name) and is_list(opts) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    Rclex.Node.get_node_names_with_enclaves(name, namespace)
+  end
+
+  @doc """
+  Return a list of topic names and types for publishers associated with a node.
+
+  ### opts
+
+  - #{@namespace_doc}
+  - #{@no_demangle_doc}
+
+  ## Examples
+
+      iex> Rclex.get_publisher_names_and_types_by_node("node", "node", "/example", namespace: "/example")
+      [{"/chatter", ["std_msgs/msg/String"]}]
+  """
+  @spec get_publisher_names_and_types_by_node(
+          name :: String.t(),
+          node_name :: String.t(),
+          node_namespace :: String.t(),
+          opts :: [namespace: String.t(), no_demangle: boolean()]
+        ) :: [{String.t(), [String.t()]}] | {:error, :not_found}
+  def get_publisher_names_and_types_by_node(name, node_name, node_namespace, opts \\ []) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    no_demangle = Keyword.get(opts, :no_demangle, false)
+
+    Rclex.Node.get_publisher_names_and_types_by_node(
+      name,
+      namespace,
+      node_name,
+      node_namespace,
+      no_demangle
+    )
+  end
+
+  @doc """
+  Return a list of all publishers to a topic.
+
+  ### opts
+
+  - #{@namespace_doc}
+  - #{@no_mangle_doc}
+
+  ## Examples
+
+      iex> Rclex.get_publishers_info_by_topic("node", "/chatter", "/example")
+      [
+              %{
+                node_name: "node",
+                node_namespace: "/example",
+                topic_type: "std_msgs/msg/String",
+                endpoint_type: 1,
+                endpoint_gid: ...,
+                qos_profile: ...
+              }
+      ]
+  """
+  @spec get_publishers_info_by_topic(
+          name :: String.t(),
+          topic_name :: topic_name(),
+          opts :: [namespace: String.t(), no_mangle: boolean()]
+        ) :: list()
+  def get_publishers_info_by_topic(name, topic_name, opts \\ []) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    no_mangle = Keyword.get(opts, :no_mangle, false)
+
+    Rclex.Node.get_publishers_info_by_topic(
+      name,
+      namespace,
+      topic_name,
+      no_mangle
+    )
+  end
+
+  @doc """
+  Return a list of topic names and types for subscriptions associated with a node.
+
+  ### opts
+
+  - #{@namespace_doc}
+  - #{@no_demangle_doc}
+
+  ## Examples
+
+      iex> Rclex.get_subscriber_names_and_types_by_node("node", "node", "/example", namespace: "/example")
+      [{"/chatter", ["std_msgs/msg/String"]}]
+  """
+  @spec get_subscriber_names_and_types_by_node(
+          name :: String.t(),
+          node_name :: String.t(),
+          node_namespace :: String.t(),
+          opts :: [namespace: String.t(), no_demangle: boolean()]
+        ) :: [{String.t(), [String.t()]}] | {:error, :not_found}
+  def get_subscriber_names_and_types_by_node(name, node_name, node_namespace, opts \\ []) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    no_demangle = Keyword.get(opts, :no_demangle, false)
+
+    Rclex.Node.get_subscriber_names_and_types_by_node(
+      name,
+      namespace,
+      node_name,
+      node_namespace,
+      no_demangle
+    )
+  end
+
+  @doc """
+  Return a list of all subscribers to a topic.
+
+  ### opts
+
+  - #{@namespace_doc}
+  - #{@no_mangle_doc}
+
+  ## Examples
+
+      iex> Rclex.get_subscribers_info_by_topic("node", "/chatter", "/example")
+      [
+              %{
+                node_name: "node",
+                node_namespace: "/example",
+                topic_type: "std_msgs/msg/String",
+                endpoint_type: 1,
+                endpoint_gid: ...,
+                qos_profile: ...
+              }
+      ]
+  """
+  @spec get_subscribers_info_by_topic(
+          name :: String.t(),
+          topic_name :: topic_name(),
+          opts :: [namespace: String.t(), no_mangle: boolean()]
+        ) :: list()
+  def get_subscribers_info_by_topic(name, topic_name, opts \\ []) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    no_mangle = Keyword.get(opts, :no_mangle, false)
+
+    Rclex.Node.get_subscribers_info_by_topic(
+      name,
+      namespace,
+      topic_name,
+      no_mangle
+    )
+  end
+
+  @doc """
+  Return a list of topic names and their types.
+
+  ### opts
+
+  - #{@namespace_doc}
+  - #{@no_demangle_doc}
+
+  ## Examples
+
+      iex> Rclex.get_subscriber_names_and_types_by_node("node", "node", "/example", namespace: "/example")
+      [{"/chatter", ["std_msgs/msg/String"]}]
+  """
+  @spec get_topic_names_and_types(
+          name :: String.t(),
+          opts :: [namespace: String.t(), no_demangle: boolean()]
+        ) :: [{String.t(), [String.t()]}]
+  def get_topic_names_and_types(name, opts \\ []) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    no_demangle = Keyword.get(opts, :no_demangle, false)
+    Rclex.Node.get_topic_names_and_types(name, namespace, no_demangle)
   end
 end
