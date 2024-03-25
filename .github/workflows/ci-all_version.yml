@@ -16,7 +16,8 @@ jobs:
           latest,
           # WHY commented out: see https://github.com/rclex/rclex/issues/228#issuecomment-1715288806
           #iron-ex1.15.5-otp26.0.2,
-          humble-ex1.15.5-otp26.0.2,
+          humble-ex1.16.2-otp26.2.2,
+          humble-ex1.15.7-otp26.2.2,
           humble-ex1.14.5-otp25.3.2.5,
           foxy-ex1.15.5-otp26.0.2,
         ]
