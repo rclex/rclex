@@ -7,4 +7,5 @@ config :rclex,
     "geometry_msgs/msg/Twist",
     "sensor_msgs/msg/PointCloud",
     "diagnostic_msgs/msg/DiagnosticStatus"
-  ]
+  ],
+  ros2_directories: []

@@ -3,7 +3,7 @@ defmodule Rclex.Generators.MsgHTest do
 
   with ros_distro <- System.get_env("ROS_DISTRO"),
        true <- File.exists?("/opt/ros/#{ros_distro}") do
-    @ros_share_path "/opt/ros/#{ros_distro}/share"
+    @ros_share_path ["/opt/ros/#{ros_distro}/share"]
   else
     _ ->
       @moduletag :skip
