@@ -38,10 +38,10 @@ The basic and recommended environment is where the host (development) and the ta
 
 Currently, we use the following environment as the main development target:
 
-- Ubuntu 22.04.3 LTS (Jammy Jellyfish)
+- Ubuntu 22.04.4 LTS (Jammy Jellyfish)
 - ROS 2 [Humble Hawksbill](https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html)
-- Elixir 1.15.5-otp-26
-- Erlang/OTP 26.0.2
+- Elixir 1.15.7-otp-26
+- Erlang/OTP 26.2.2
 
 We highly recommend using Humble for ROS 2 LTS distribution.
 Iron, the STS distribution, is experimentally supported and confirmed for the proper operation only in the native environment. See detail and status on [Issue#228](https://github.com/rclex/rclex/issues/228#issuecomment-1715293177).

@@ -34,10 +34,10 @@ ROS 2の主な貢献として，通信にDDS（Data Distribution Service）プ�
 
 現在，下記の環境を主な対象として開発を進めています．
 
-- Ubuntu 22.04.3 LTS (Jammy Jellyfish)
+- Ubuntu 22.04.4 LTS (Jammy Jellyfish)
 - ROS 2 [Humble Hawksbill](https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html)
-- Elixir 1.15.5-otp-26
-- Erlang/OTP 26.0.2
+- Elixir 1.15.7-otp-26
+- Erlang/OTP 26.2.2
 
 ROS 2には長期サポート版（LTS）であるHumbleの利用を強く推奨します．
 短期サポート版（STS）のIronは，実験的なサポートでありネイティブ環境での基本的な動作のみを確認しています．対応状況の詳細は[Issue#228](https://github.com/rclex/rclex/issues/228#issuecomment-1715293177)を確認してください．
