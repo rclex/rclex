@@ -85,8 +85,8 @@ ERL_NIF_TERM nif_rcl_wait_subscription(ErlNifEnv *env, int argc, const ERL_NIF_T
 
   int timeout_us;
   if (!enif_get_int(env, argv[1], &timeout_us)) return enif_make_badarg(env);
-  if (timeout_us > 1000)
-    return raise_with_message(env, __FILE__, __LINE__, "1000us over is too long for nif.");
+  if (timeout_us > 1024)
+    return raise_with_message(env, __FILE__, __LINE__, "1024us over is too long for nif.");
 
   rcl_subscription_t *subscription_p;
   if (!enif_get_resource(env, argv[2], rt_rcl_subscription_t, (void **)&subscription_p))
