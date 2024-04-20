@@ -9,5 +9,6 @@ extern ErlNifResourceType *rt_rcl_timer_t;
 extern ErlNifResourceType *rt_rcl_wait_set_t;
 extern ErlNifResourceType *rt_rosidl_message_type_support_t;
 extern ErlNifResourceType *rt_ros_message;
+extern ErlNifResourceType *rt_callback_resource;
 
 extern int open_resource_types(ErlNifEnv *env, const char *module);

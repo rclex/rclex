@@ -13,6 +13,10 @@
 #include <rosidl_runtime_c/message_type_support_struct.h>
 #include <stddef.h>
 
+ERL_NIF_TERM new_message;
+
+void make_subscription_atom(ErlNifEnv *env) { new_message = enif_make_atom(env, "new_message"); }
+
 ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   if (argc != 4) return enif_make_badarg(env);
 
@@ -99,3 +103,57 @@ ERL_NIF_TERM nif_rcl_take(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   if (rc == RCL_RET_SUBSCRIPTION_TAKE_FAILED) return atom_error;
   return raise(env, __FILE__, __LINE__);
 }
+
+#ifndef ROS_DISTRO_foxy
+static void new_message_callback(const void *user_data, size_t number_of_events) {
+  ErlNifPid *pid_p = (ErlNifPid *)user_data;
+
+  ErlNifEnv *env = enif_alloc_env();
+  enif_send(env, pid_p, env,
+            enif_make_tuple(env, 2, new_message, enif_make_int(env, number_of_events)));
+  enif_free_env(env);
+}
+
+ERL_NIF_TERM nif_rcl_subscription_set_on_new_message_callback(ErlNifEnv *env, int argc,
+                                                              const ERL_NIF_TERM argv[]) {
+  if (argc != 1) return enif_make_badarg(env);
+
+  rcl_subscription_t *subscription_p;
+  if (!enif_get_resource(env, argv[0], rt_rcl_subscription_t, (void **)&subscription_p))
+    return enif_make_badarg(env);
+  if (!rcl_subscription_is_valid(subscription_p)) return raise(env, __FILE__, __LINE__);
+
+  ErlNifPid *pid_p = (ErlNifPid *)enif_alloc_resource(rt_callback_resource, sizeof(ErlNifPid));
+  if (enif_self(env, pid_p) == NULL) return raise(env, __FILE__, __LINE__);
+  enif_keep_resource(pid_p);
+
+  rcl_ret_t rc;
+  rc = rcl_subscription_set_on_new_message_callback(subscription_p, new_message_callback,
+                                                    (const void *)pid_p);
+  if (rc != RCL_RET_OK) return raise(env, __FILE__, __LINE__);
+
+  return enif_make_resource(env, pid_p);
+}
+
+ERL_NIF_TERM nif_rcl_subscription_clear_message_callback(ErlNifEnv *env, int argc,
+                                                         const ERL_NIF_TERM argv[]) {
+  if (argc != 2) return enif_make_badarg(env);
+
+  rcl_subscription_t *subscription_p;
+  if (!enif_get_resource(env, argv[0], rt_rcl_subscription_t, (void **)&subscription_p))
+    return enif_make_badarg(env);
+  if (!rcl_subscription_is_valid(subscription_p)) return raise(env, __FILE__, __LINE__);
+
+  ErlNifPid *pid_p = NULL;
+  if (!enif_get_resource(env, argv[1], rt_callback_resource, (void **)&pid_p))
+    return enif_make_badarg(env);
+
+  rcl_ret_t rc;
+  rc = rcl_subscription_set_on_new_message_callback(subscription_p, NULL, NULL);
+  if (rc != RCL_RET_OK) return raise(env, __FILE__, __LINE__);
+
+  enif_release_resource(pid_p);
+
+  return atom_ok;
+}
+#endif

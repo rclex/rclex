@@ -66,7 +66,7 @@ $(NIF_SO): $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS) $(ERL_LDFLAGS) $(ROS_LDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c Makefile $(SRC_H)
-	$(CC) -o $@ -c $(CFLAGS) $(ERL_CFLAGS) $(ROS_CFLAGS) $<
+	$(CC) -DROS_DISTRO_$(ROS_DISTRO) -o $@ -c $(CFLAGS) $(ERL_CFLAGS) $(ROS_CFLAGS) $<
 
 $(OBJ_DIR) $(PRIV_DIR) $(MSG_OBJ_DIR):
 	@mkdir -p $@

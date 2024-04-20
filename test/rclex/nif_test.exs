@@ -345,6 +345,29 @@ defmodule Rclex.NifTest do
         Nif.rcl_subscription_init!(node, type_support, ~c"topic", qos)
       end
     end
+
+    if System.fetch_env!("ROS_DISTRO") != "foxy" do
+      test "rcl_subscription_set_on_new_message_callback!/1", %{
+        node: node,
+        type_support: type_support,
+        qos: qos
+      } do
+        subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", qos)
+        assert is_reference(Nif.rcl_subscription_set_on_new_message_callback!(subscription))
+      end
+
+      test "rcl_subscription_clear_message_callback!/2", %{
+        node: node,
+        type_support: type_support,
+        qos: qos
+      } do
+        subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", qos)
+        callback_resource = Nif.rcl_subscription_set_on_new_message_callback!(subscription)
+
+        assert Nif.rcl_subscription_clear_message_callback!(subscription, callback_resource) ==
+                 :ok
+      end
+    end
   end
 
   describe "wait_set" do
