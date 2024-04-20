@@ -3,8 +3,6 @@ defmodule Rclex.Subscription do
 
   use GenServer, restart: :temporary
 
-  import Bitwise
-
   require Logger
 
   alias Rclex.Nif
@@ -53,9 +51,7 @@ defmodule Rclex.Subscription do
        name: name,
        namespace: namespace,
        subscription: subscription,
-       wait_set: wait_set,
-       timeout_us: 1024,
-       timein: false
+       wait_set: wait_set
      }}
   end
 
@@ -67,41 +63,34 @@ defmodule Rclex.Subscription do
   end
 
   def handle_info(:take, state) do
-    {timeout_us, timein} =
-      case Nif.rcl_wait_subscription!(state.wait_set, state.timeout_us, state.subscription) do
-        :ok ->
-          message = apply(state.message_type, :create!, [])
+    case Nif.rcl_wait_subscription!(state.wait_set, 1000, state.subscription) do
+      :ok ->
+        message = apply(state.message_type, :create!, [])
 
-          try do
-            case Nif.rcl_take!(state.subscription, message) do
-              :ok ->
-                message_struct = apply(state.message_type, :get!, [message])
+        try do
+          case Nif.rcl_take!(state.subscription, message) do
+            :ok ->
+              message_struct = apply(state.message_type, :get!, [message])
 
-                {:ok, _pid} =
-                  Task.Supervisor.start_child(
-                    {:via, PartitionSupervisor, {Rclex.TaskSupervisors, self()}},
-                    fn -> state.callback.(message_struct) end
-                  )
+              {:ok, _pid} =
+                Task.Supervisor.start_child(
+                  {:via, PartitionSupervisor, {Rclex.TaskSupervisors, self()}},
+                  fn -> state.callback.(message_struct) end
+                )
 
-              :error ->
-                Logger.error("#{__MODULE__}: take failed but no error occurred in the middleware")
-            end
-          after
-            :ok = apply(state.message_type, :destroy!, [message])
+            :error ->
+              Logger.error("#{__MODULE__}: take failed but no error occurred in the middleware")
           end
+        after
+          :ok = apply(state.message_type, :destroy!, [message])
+        end
 
-          if state.timein do
-            {max(1, state.timeout_us >>> 1), false}
-          else
-            {state.timeout_us, true}
-          end
-
-        :timeout ->
-          {min(1024, state.timeout_us <<< 1), false}
-      end
+      :timeout ->
+        nil
+    end
 
     send(self(), :take)
 
-    {:noreply, %{state | timeout_us: timeout_us, timein: timein}}
+    {:noreply, state}
   end
 end
