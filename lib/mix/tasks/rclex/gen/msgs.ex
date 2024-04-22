@@ -26,9 +26,9 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   This task assumes that the environment variable `ROS_DISTRO` is set
   and refers to the msg types from `/opt/ros/[ROS_DISTRO]/share`.
-  In addition `AMENT_PREFIX_PATH` is considered to find msg types.
+  If the `AMENT_PREFIX_PATH` is set, it is exclusively considered to find msg types.
 
-  We can also specify explicitly as follows
+  Alternatively the path to look for msgs can be set explicitly using `--from` parameter as follows
 
   ```
   mix rclex.gen.msgs --from /opt/ros/humble/share --from /home/ros/workspace/install
