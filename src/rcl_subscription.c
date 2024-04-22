@@ -123,7 +123,8 @@ ERL_NIF_TERM nif_rcl_subscription_set_on_new_message_callback(ErlNifEnv *env, in
     return enif_make_badarg(env);
   if (!rcl_subscription_is_valid(subscription_p)) return raise(env, __FILE__, __LINE__);
 
-  ErlNifPid *pid_p = (ErlNifPid *)enif_alloc_resource(rt_callback_resource, sizeof(ErlNifPid));
+  ErlNifPid *pid_p =
+      (ErlNifPid *)enif_alloc_resource(rt_subscription_callback_resource, sizeof(ErlNifPid));
   if (enif_self(env, pid_p) == NULL) return raise(env, __FILE__, __LINE__);
   enif_keep_resource(pid_p);
 
@@ -145,7 +146,7 @@ ERL_NIF_TERM nif_rcl_subscription_clear_message_callback(ErlNifEnv *env, int arg
   if (!rcl_subscription_is_valid(subscription_p)) return raise(env, __FILE__, __LINE__);
 
   ErlNifPid *pid_p = NULL;
-  if (!enif_get_resource(env, argv[1], rt_callback_resource, (void **)&pid_p))
+  if (!enif_get_resource(env, argv[1], rt_subscription_callback_resource, (void **)&pid_p))
     return enif_make_badarg(env);
 
   rcl_ret_t rc;

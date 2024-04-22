@@ -11,7 +11,7 @@ ErlNifResourceType *rt_rcl_timer_t;
 ErlNifResourceType *rt_rcl_wait_set_t;
 ErlNifResourceType *rt_rosidl_message_type_support_t;
 ErlNifResourceType *rt_ros_message;
-ErlNifResourceType *rt_callback_resource;
+ErlNifResourceType *rt_subscription_callback_resource;
 
 #define open_rt_return_if_error(env, module, name, flags)                                          \
   rt_##name = enif_open_resource_type(env, module, #name, NULL, flags, NULL);                      \
@@ -29,7 +29,7 @@ int open_resource_types(ErlNifEnv *env, const char *module) {
   open_rt_return_if_error(env, module, rcl_wait_set_t, flags);
   open_rt_return_if_error(env, module, rosidl_message_type_support_t, flags);
   open_rt_return_if_error(env, module, ros_message, flags);
-  open_rt_return_if_error(env, module, callback_resource, flags);
+  open_rt_return_if_error(env, module, subscription_callback_resource, flags);
 
   return 0;
 }
