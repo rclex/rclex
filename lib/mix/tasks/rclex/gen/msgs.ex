@@ -28,13 +28,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   and refers to the msg types from `/opt/ros/[ROS_DISTRO]/share`.
   If the `AMENT_PREFIX_PATH` is set, it is exclusively considered to find msg types.
 
-  Alternatively the path to look for msgs can be set explicitly using `--from` parameter as follows
-
-  ```
-  mix rclex.gen.msgs --from /opt/ros/humble/share --from /home/ros/workspace/install
-  ```
-
-  or via configuration
+  Alternatively the path to look for msgs can be set explicitly via configuration
 
   ```
   config :rclex, ros2_directories: ["/home/ros/workspace/install/example_msgs"]
@@ -58,25 +52,18 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @doc false
   def run(args) do
     {valid_options, _, _} =
-      OptionParser.parse(args, strict: [from: :keep, clean: :boolean, show_types: :boolean])
-
-    {from, valid_options} = Keyword.pop_values(valid_options, :from)
+      OptionParser.parse(args, strict: [clean: :boolean, show_types: :boolean])
 
     case valid_options do
-      [] when from != [] ->
-        clean()
-        generate(from, rclex_dir_path!())
-        recompile!()
-
       [] ->
         clean()
         generate(rclex_dir_path!())
         recompile!()
 
-      [clean: true] when from == [] ->
+      [clean: true] ->
         clean()
 
-      [show_types: true] when from == [] ->
+      [show_types: true] ->
         show_types()
 
       _ ->
