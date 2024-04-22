@@ -43,6 +43,8 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   use Mix.Task
 
+  require Logger
+
   alias Rclex.Parsers.MessageParser
   alias Rclex.Generators.MsgEx
   alias Rclex.Generators.MsgH
@@ -86,7 +88,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
     configured_directories =
       Enum.map(Application.get_env(:rclex, :ros2_directories, []), fn d ->
-        Path.join(d, "share")
+        Path.join(Path.expand(d), "share")
       end)
 
     ros_directories =
@@ -105,8 +107,8 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
         configured_directories ++ [Path.join(File.cwd!(), "rootfs_overlay/opt/ros/#{ros_distro}")]
       end
 
-    if Enum.any?(ros_directories, fn d -> not File.exists?(d) end) do
-      Mix.raise("#{inspect(ros_directories)} does not exist.")
+    if d = Enum.find(ros_directories, fn d -> not File.exists?(d) end) do
+      Mix.raise("#{inspect(d)} does not exist.")
     end
 
     generate(ros_directories, to)
@@ -232,7 +234,9 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   def get_ros2_message_type_map(ros2_message_type, from, acc \\ %{}) do
     dir = Enum.find(from, fn dir -> File.exists?(Path.join(dir, [ros2_message_type, ".msg"])) end)
 
-    unless dir do
+    if dir do
+      Logger.debug("Generating code for #{Path.join(dir, [ros2_message_type, ".msg"])}")
+    else
       raise "#{ros2_message_type}.msg not found"
     end
 

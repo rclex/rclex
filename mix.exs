@@ -146,6 +146,7 @@ defmodule Rclex.MixProject do
   defp make_env() do
     rclex_config = Keyword.get(Config.Reader.read!("config/config.exs"), :rclex, [])
     ros2_directories = Keyword.get(rclex_config, :ros2_directories, [])
-    %{"ROS2_DIRECTORIES" => Enum.join(ros2_directories, ":")}
+    ros2_pathes = Enum.map(ros2_directories, fn d -> Path.expand(d) end)
+    %{"ROS2_DIRECTORIES" => Enum.join(ros2_pathes, ":")}
   end
 end
