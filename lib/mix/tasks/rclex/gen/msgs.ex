@@ -158,11 +158,11 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       function_prefix = Util.type_down_snake(type)
 
       """
-      {"#{function_prefix}_type_support!", 0, nif_#{function_prefix}_type_support, ERL_NIF_DIRTY_JOB_IO_BOUND},
-      {"#{function_prefix}_create!", 0, nif_#{function_prefix}_create, ERL_NIF_DIRTY_JOB_IO_BOUND},
-      {"#{function_prefix}_destroy!", 1, nif_#{function_prefix}_destroy, ERL_NIF_DIRTY_JOB_IO_BOUND},
-      {"#{function_prefix}_set!", 2, nif_#{function_prefix}_set, ERL_NIF_DIRTY_JOB_IO_BOUND},
-      {"#{function_prefix}_get!", 1, nif_#{function_prefix}_get, ERL_NIF_DIRTY_JOB_IO_BOUND},
+      {"#{function_prefix}_type_support!", 0, nif_#{function_prefix}_type_support, REGULAR_NIF},
+      {"#{function_prefix}_create!", 0, nif_#{function_prefix}_create, REGULAR_NIF},
+      {"#{function_prefix}_destroy!", 1, nif_#{function_prefix}_destroy, REGULAR_NIF},
+      {"#{function_prefix}_set!", 2, nif_#{function_prefix}_set, REGULAR_NIF},
+      {"#{function_prefix}_get!", 1, nif_#{function_prefix}_get, REGULAR_NIF},
       """
     end)
   end
