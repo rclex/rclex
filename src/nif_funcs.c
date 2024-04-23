@@ -72,7 +72,10 @@ static int load(ErlNifEnv *env, void **priv_data, ERL_NIF_TERM load_info) {
   make_common_atoms(env);
   make_qos_atoms(env);
   make_subscription_atom(env);
-  if (open_resource_types(env, "Elixir.Rclex.Nif") != 0) return 1;
+
+  // open_resource_types/2 the 2nd argument is module_str, but document says following.
+  // > Argument module_str is not (yet) used and must be NULL
+  if (open_resource_types(env, NULL) != 0) return 1;
 
   return 0;
 }
