@@ -60,6 +60,14 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def rcl_subscription_set_on_new_message_callback!(_subscription) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_subscription_clear_message_callback!(_subscription, _callback_resource) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def rcl_clock_init!() do
     :erlang.nif_error(:nif_not_loaded)
   end

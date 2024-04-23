@@ -39,6 +39,10 @@ static ErlNifFunc nif_funcs[] = {
     nif_io_bound_func(rcl_publish, 2),
     nif_io_bound_func(rcl_subscription_init, 4),
     nif_io_bound_func(rcl_subscription_fini, 2),
+#ifndef ROS_DISTRO_foxy
+    nif_regular_func(rcl_subscription_set_on_new_message_callback, 1),
+    nif_regular_func(rcl_subscription_clear_message_callback, 2),
+#endif
     nif_io_bound_func(rcl_take, 2),
     nif_io_bound_func(rcl_clock_init, 0),
     nif_io_bound_func(rcl_clock_fini, 1),
@@ -67,6 +71,7 @@ static int load(ErlNifEnv *env, void **priv_data, ERL_NIF_TERM load_info) {
 
   make_common_atoms(env);
   make_qos_atoms(env);
+  make_subscription_atom(env);
   if (open_resource_types(env, "Elixir.Rclex.Nif") != 0) return 1;
 
   return 0;
