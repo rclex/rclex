@@ -295,7 +295,7 @@ defmodule Rclex.NifTest do
     end
 
     test "take!/2 return :error", %{subscription: subscription, message: message} do
-      assert Nif.rcl_take!(subscription, message) == :error
+      assert Nif.rcl_take!(subscription, message) == :subscription_take_failed
     end
 
     test "take!/2", %{

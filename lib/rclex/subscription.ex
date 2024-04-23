@@ -86,8 +86,8 @@ defmodule Rclex.Subscription do
                       fn -> state.callback.(message_struct) end
                     )
 
-                :error ->
-                  Logger.error(
+                :subscription_take_failed ->
+                  Logger.debug(
                     "#{__MODULE__}: take failed but no error occurred in the middleware"
                   )
               end
@@ -134,8 +134,8 @@ defmodule Rclex.Subscription do
                     fn -> state.callback.(message_struct) end
                   )
 
-              :error ->
-                Logger.error("#{__MODULE__}: take failed but no error occurred in the middleware")
+              :subscription_take_failed ->
+                Logger.debug("#{__MODULE__}: take failed but no error occurred in the middleware")
             end
           after
             :ok = apply(state.message_type, :destroy!, [message])
