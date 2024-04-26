@@ -73,26 +73,16 @@ defmodule Rclex.Subscription do
       def handle_info(:take, state) do
         case Nif.rcl_wait_subscription!(state.callback_resource, 1000, state.subscription) do
           :ok ->
-            message = apply(state.message_type, :create!, [])
+            case apply(state.message_type, :take!, [state.subscription]) do
+              :subscription_take_failed ->
+                Logger.debug("#{__MODULE__}: take failed but no error occurred in the middleware")
 
-            try do
-              case Nif.rcl_take!(state.subscription, message) do
-                :ok ->
-                  message_struct = apply(state.message_type, :get!, [message])
-
-                  {:ok, _pid} =
-                    Task.Supervisor.start_child(
-                      {:via, PartitionSupervisor, {Rclex.TaskSupervisors, self()}},
-                      fn -> state.callback.(message_struct) end
-                    )
-
-                :subscription_take_failed ->
-                  Logger.debug(
-                    "#{__MODULE__}: take failed but no error occurred in the middleware"
+              message_struct ->
+                {:ok, _pid} =
+                  Task.Supervisor.start_child(
+                    {:via, PartitionSupervisor, {Rclex.TaskSupervisors, self()}},
+                    fn -> state.callback.(message_struct) end
                   )
-              end
-            after
-              :ok = apply(state.message_type, :destroy!, [message])
             end
 
           :timeout ->
@@ -121,24 +111,16 @@ defmodule Rclex.Subscription do
 
       def handle_info({:new_message, number_of_events}, state) when number_of_events > 0 do
         for _ <- 1..number_of_events do
-          message = apply(state.message_type, :create!, [])
+          case apply(state.message_type, :take!, [state.subscription]) do
+            :subscription_take_failed ->
+              Logger.debug("#{__MODULE__}: take failed but no error occurred in the middleware")
 
-          try do
-            case Nif.rcl_take!(state.subscription, message) do
-              :ok ->
-                message_struct = apply(state.message_type, :get!, [message])
-
-                {:ok, _pid} =
-                  Task.Supervisor.start_child(
-                    {:via, PartitionSupervisor, {Rclex.TaskSupervisors, self()}},
-                    fn -> state.callback.(message_struct) end
-                  )
-
-              :subscription_take_failed ->
-                Logger.debug("#{__MODULE__}: take failed but no error occurred in the middleware")
-            end
-          after
-            :ok = apply(state.message_type, :destroy!, [message])
+            message_struct ->
+              {:ok, _pid} =
+                Task.Supervisor.start_child(
+                  {:via, PartitionSupervisor, {Rclex.TaskSupervisors, self()}},
+                  fn -> state.callback.(message_struct) end
+                )
           end
         end
 
