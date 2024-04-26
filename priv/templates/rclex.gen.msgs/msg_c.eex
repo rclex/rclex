@@ -93,6 +93,9 @@ ERL_NIF_TERM <%= function_prefix %>_get(ErlNifEnv *env, int argc, const ERL_NIF_
 
   <%= c_type %> *message_p = (<%= c_type %> *)*ros_message_pp;
 
+  ERL_NIF_TERM term;
 <%= get_fun_fragments %>
+
+  return term;
 }
 // clang-format on

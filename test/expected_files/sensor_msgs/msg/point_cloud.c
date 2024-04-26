@@ -231,6 +231,7 @@ ERL_NIF_TERM nif_sensor_msgs_msg_point_cloud_get(ErlNifEnv *env, int argc, const
 
   sensor_msgs__msg__PointCloud *message_p = (sensor_msgs__msg__PointCloud *)*ros_message_pp;
 
+  ERL_NIF_TERM term;
   ERL_NIF_TERM points[message_p->points.size];
 
   for (size_t points_i = 0; points_i < message_p->points.size; ++points_i)
@@ -259,7 +260,7 @@ ERL_NIF_TERM nif_sensor_msgs_msg_point_cloud_get(ErlNifEnv *env, int argc, const
     );
   }
 
-  return enif_make_tuple(env, 3,
+  term = enif_make_tuple(env, 3,
     enif_make_tuple(env, 2,
       enif_make_tuple(env, 2,
         enif_make_int(env, message_p->header.stamp.sec),
@@ -270,5 +271,7 @@ ERL_NIF_TERM nif_sensor_msgs_msg_point_cloud_get(ErlNifEnv *env, int argc, const
     enif_make_list_from_array(env, points, message_p->points.size),
     enif_make_list_from_array(env, channels, message_p->channels.size)
   );
+
+  return term;
 }
 // clang-format on

@@ -104,8 +104,11 @@ ERL_NIF_TERM nif_std_msgs_msg_string_get(ErlNifEnv *env, int argc, const ERL_NIF
 
   std_msgs__msg__String *message_p = (std_msgs__msg__String *)*ros_message_pp;
 
-  return enif_make_tuple(env, 1,
+  ERL_NIF_TERM term;
+  term = enif_make_tuple(env, 1,
     enif_make_string(env, message_p->data.data, ERL_NIF_LATIN1)
   );
+
+  return term;
 }
 // clang-format on

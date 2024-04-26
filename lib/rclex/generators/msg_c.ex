@@ -291,7 +291,7 @@ defmodule Rclex.Generators.MsgC do
     |> format()
   end
 
-  def build_get_fun_fragments(acc, lhs \\ "return", ros2_message_type_map) do
+  def build_get_fun_fragments(acc, lhs \\ "term =", ros2_message_type_map) do
     {binary, accs} = enif_make(acc.type, acc, ros2_message_type_map)
 
     array_accs =

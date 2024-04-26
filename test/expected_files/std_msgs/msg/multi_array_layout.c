@@ -143,6 +143,7 @@ ERL_NIF_TERM nif_std_msgs_msg_multi_array_layout_get(ErlNifEnv *env, int argc, c
 
   std_msgs__msg__MultiArrayLayout *message_p = (std_msgs__msg__MultiArrayLayout *)*ros_message_pp;
 
+  ERL_NIF_TERM term;
   ERL_NIF_TERM dim[message_p->dim.size];
 
   for (size_t dim_i = 0; dim_i < message_p->dim.size; ++dim_i)
@@ -154,9 +155,11 @@ ERL_NIF_TERM nif_std_msgs_msg_multi_array_layout_get(ErlNifEnv *env, int argc, c
     );
   }
 
-  return enif_make_tuple(env, 2,
+  term = enif_make_tuple(env, 2,
     enif_make_list_from_array(env, dim, message_p->dim.size),
     enif_make_uint(env, message_p->data_offset)
   );
+
+  return term;
 }
 // clang-format on
