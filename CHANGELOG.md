@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## v0.10.1 on 23 May 2024
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.10.0...v0.10.1
+
+* New features:
+  * Use `rcl_subscription_set_on_new_message_callback` by @pojiro and @FelixPe in https://github.com/rclex/rclex/pull/317
+* Code Improvements/Fixes:
+  * restore rclex_connection_tests by @takasehideki in https://github.com/rclex/rclex/pull/305
+  * bump CI targets according to https://github.com/rclex/rclex_docker/pull/17 by @takasehideki in https://github.com/rclex/rclex/pull/308
+  * bump tool-versions to follow `latest` by @takasehideki in https://github.com/rclex/rclex/pull/310
+  * Minor fixes by @pojiro in https://github.com/rclex/rclex/pull/319
+* Bumps:
+  * Bump mix_test_watch from 1.1.2 to 1.2.0 by @dependabot in https://github.com/rclex/rclex/pull/295
+  * Bump elixir_make from 0.7.8 to 0.8.3 by @dependabot in https://github.com/rclex/rclex/pull/309
+  * Bump benchee from 1.1.0 to 1.3.0 by @dependabot in https://github.com/rclex/rclex/pull/304
+  * Bump ex_doc from 0.31.1 to 0.31.2 by @dependabot in https://github.com/rclex/rclex/pull/296
+  * Bump credo from 1.7.5 to 1.7.6 by @dependabot in https://github.com/rclex/rclex/pull/321
+  * Bump ex_doc from 0.31.2 to 0.33.0 by @dependabot in https://github.com/rclex/rclex/pull/323
+* Note in this release: none
+
 ## v0.10.0 on 19 Mar 2024
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.9.3...v0.10.0
