@@ -89,7 +89,7 @@ cd rclex_usage
   defp deps do
     [
       ...
-      {:rclex, "~> 0.10.0"},
+      {:rclex, "~> 0.10.1"},
       ...
     ]
   end
