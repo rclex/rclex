@@ -1,4 +1,4 @@
-defmodule Rclex.Pkgs.Test do
+defmodule Rclex.Pkgs.MsgsTest do
   use ExUnit.Case
 
   test "geometry_msgs/msg/Twist" do
