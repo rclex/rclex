@@ -6,11 +6,7 @@ defmodule Rclex.Pkgs.GeometryMsgs.Msg.Vector3 do
             y: nil,
             z: nil
 
-  @type t :: %__MODULE__{
-          x: float(),
-          y: float(),
-          z: float()
-        }
+  @type t :: %__MODULE__{x: float(), y: float(), z: float()}
 
   alias Rclex.Nif
 
@@ -35,18 +31,10 @@ defmodule Rclex.Pkgs.GeometryMsgs.Msg.Vector3 do
   end
 
   def to_tuple(%__MODULE__{x: x, y: y, z: z}) do
-    {
-      x,
-      y,
-      z
-    }
+    {x, y, z}
   end
 
   def to_struct({x, y, z}) do
-    %__MODULE__{
-      x: x,
-      y: y,
-      z: z
-    }
+    %__MODULE__{x: x, y: y, z: z}
   end
 end

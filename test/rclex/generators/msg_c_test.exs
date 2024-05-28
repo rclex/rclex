@@ -16,6 +16,7 @@ defmodule Rclex.Generators.MsgCTest do
 
   for ros2_message_type <- [
         "sensor_msgs/msg/PointCloud",
+        "std_msgs/msg/Empty",
         "std_msgs/msg/String",
         "std_msgs/msg/MultiArrayDimension",
         "std_msgs/msg/MultiArrayLayout",
@@ -37,6 +38,7 @@ defmodule Rclex.Generators.MsgCTest do
 
   for ros2_message_type <- [
         "sensor_msgs/msg/PointCloud",
+        "std_msgs/msg/Empty",
         "std_msgs/msg/String",
         "std_msgs/msg/MultiArrayDimension",
         "std_msgs/msg/MultiArrayLayout",
@@ -59,6 +61,7 @@ defmodule Rclex.Generators.MsgCTest do
 
   for ros2_message_type <- [
         "sensor_msgs/msg/PointCloud",
+        "std_msgs/msg/Empty",
         "std_msgs/msg/String",
         "std_msgs/msg/MultiArrayDimension",
         "std_msgs/msg/MultiArrayLayout",

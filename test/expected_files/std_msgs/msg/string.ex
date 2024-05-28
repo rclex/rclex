@@ -4,9 +4,7 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.String do
 
   defstruct data: nil
 
-  @type t :: %__MODULE__{
-          data: String.t()
-        }
+  @type t :: %__MODULE__{data: String.t()}
 
   alias Rclex.Nif
 
@@ -31,14 +29,10 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.String do
   end
 
   def to_tuple(%__MODULE__{data: data}) do
-    {
-      ~c"#{data}"
-    }
+    {~c"#{data}"}
   end
 
   def to_struct({data}) do
-    %__MODULE__{
-      data: "#{data}"
-    }
+    %__MODULE__{data: "#{data}"}
   end
 end

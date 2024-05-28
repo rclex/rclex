@@ -25,7 +25,7 @@ defmodule Rclex.Parsers.Helpers do
       ignore(empty_line())
     ])
     |> wrap()
-    |> times(min: 1)
+    |> times(min: 0)
   end
 
   def field_line(combinator \\ empty()) do

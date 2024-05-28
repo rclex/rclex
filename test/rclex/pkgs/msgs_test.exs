@@ -15,6 +15,17 @@ defmodule Rclex.Pkgs.MsgsTest do
     |> tap(&Rclex.Pkgs.GeometryMsgs.Msg.Twist.destroy!(&1))
   end
 
+  test "std_msgs/msg/Empty" do
+    struct = %Rclex.Pkgs.StdMsgs.Msg.Empty{}
+
+    Rclex.Pkgs.StdMsgs.Msg.Empty.create!()
+    |> tap(&Rclex.Pkgs.StdMsgs.Msg.Empty.set!(&1, struct))
+    |> tap(fn message ->
+      assert ^struct = Rclex.Pkgs.StdMsgs.Msg.Empty.get!(message)
+    end)
+    |> tap(&Rclex.Pkgs.StdMsgs.Msg.Empty.destroy!(&1))
+  end
+
   test "std_msgs/msg/UInt8MultiArray" do
     struct = %Rclex.Pkgs.StdMsgs.Msg.UInt8MultiArray{
       layout: %Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout{
