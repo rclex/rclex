@@ -15,6 +15,39 @@ defmodule Rclex.Pkgs.MsgsTest do
     |> tap(&Rclex.Pkgs.GeometryMsgs.Msg.Twist.destroy!(&1))
   end
 
+  test "std_msgs/msg/UInt8MultiArray" do
+    struct = %Rclex.Pkgs.StdMsgs.Msg.UInt8MultiArray{
+      layout: %Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout{
+        dim: [
+          %Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension{
+            label: "abc",
+            size: 123,
+            stride: 789
+          },
+          %Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension{
+            label: "def",
+            size: 456,
+            stride: 456
+          },
+          %Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension{
+            label: "ghi",
+            size: 789,
+            stride: 123
+          }
+        ],
+        data_offset: 123_456_789
+      },
+      data: <<1, 2, 3, 4, 5, 6, 7, 8, 9>>
+    }
+
+    Rclex.Pkgs.StdMsgs.Msg.UInt8MultiArray.create!()
+    |> tap(&Rclex.Pkgs.StdMsgs.Msg.UInt8MultiArray.set!(&1, struct))
+    |> tap(fn message ->
+      assert ^struct = Rclex.Pkgs.StdMsgs.Msg.UInt8MultiArray.get!(message)
+    end)
+    |> tap(&Rclex.Pkgs.StdMsgs.Msg.UInt8MultiArray.destroy!(&1))
+  end
+
   test "std_msgs/msg/UInt32MultiArray" do
     struct = %Rclex.Pkgs.StdMsgs.Msg.UInt32MultiArray{
       layout: %Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout{
