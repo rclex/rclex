@@ -152,11 +152,16 @@ defmodule RclexTest do
     end
 
     test "publish/3", %{topic_name: topic_name, name: name} do
+      time = System.monotonic_time(:microsecond)
+
       for i <- 1..100 do
         message = struct(StdMsgs.Msg.String, %{data: "publish #{i}"})
         assert Rclex.publish(message, topic_name, name) == :ok
         assert_receive ^message
       end
+
+      time = System.monotonic_time(:microsecond) - time
+      File.write!("test.csv", "#{time}\n", [:append])
     end
   end
 

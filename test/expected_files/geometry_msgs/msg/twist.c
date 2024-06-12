@@ -131,7 +131,8 @@ ERL_NIF_TERM nif_geometry_msgs_msg_twist_get(ErlNifEnv *env, int argc, const ERL
 
   geometry_msgs__msg__Twist *message_p = (geometry_msgs__msg__Twist *)*ros_message_pp;
 
-  return enif_make_tuple(env, 2,
+  ERL_NIF_TERM term;
+  term = enif_make_tuple(env, 2,
     enif_make_tuple(env, 3,
       enif_make_double(env, message_p->linear.x),
       enif_make_double(env, message_p->linear.y),
@@ -143,5 +144,7 @@ ERL_NIF_TERM nif_geometry_msgs_msg_twist_get(ErlNifEnv *env, int argc, const ERL
       enif_make_double(env, message_p->angular.z)
     )
   );
+
+  return term;
 }
 // clang-format on

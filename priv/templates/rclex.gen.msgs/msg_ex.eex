@@ -30,6 +30,17 @@ defmodule Rclex.Pkgs.<%= module_name %> do
     Nif.<%= function_prefix %>_get!(message) |> to_struct()
   end
 
+  def publish!(publisher, %__MODULE__{} = struct) do
+    Nif.<%= function_prefix %>_publish!(publisher, to_tuple(struct))
+  end
+
+  def take!(subscription) do
+    case Nif.<%= function_prefix %>_take!(subscription) do
+      :subscription_take_failed -> :subscription_take_failed
+      tuple -> to_struct(tuple)
+    end
+  end
+
   def to_tuple(%__MODULE__{<%= to_tuple_args_fields %>}) do
     {
 <%= to_tuple_return_fields %>

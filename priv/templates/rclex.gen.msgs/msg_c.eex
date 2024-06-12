@@ -6,6 +6,10 @@
 
 #include <erl_nif.h>
 
+#include <rcl/types.h>
+#include <rcl/publisher.h>
+#include <rcl/subscription.h>
+
 #include <rosidl_runtime_c/message_type_support_struct.h>
 #include <rosidl_runtime_c/primitives_sequence.h>
 #include <rosidl_runtime_c/primitives_sequence_functions.h>
@@ -79,9 +83,12 @@ ERL_NIF_TERM <%= function_prefix %>_set(ErlNifEnv *env, int argc, const ERL_NIF_
   const ERL_NIF_TERM *tuple;
   if (!enif_get_tuple(env, argv[1], &arity, &tuple)) return enif_make_badarg(env);
 
+  ERL_NIF_TERM term;
 <%= set_fun_fragments %>
 
-  return atom_ok;
+  term = atom_ok;
+after:
+  return term;
 }
 
 ERL_NIF_TERM <%= function_prefix %>_get(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
@@ -93,6 +100,67 @@ ERL_NIF_TERM <%= function_prefix %>_get(ErlNifEnv *env, int argc, const ERL_NIF_
 
   <%= c_type %> *message_p = (<%= c_type %> *)*ros_message_pp;
 
+  ERL_NIF_TERM term;
 <%= get_fun_fragments %>
+
+  return term;
+}
+
+ERL_NIF_TERM <%= function_prefix %>_publish(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  if (argc != 2) return enif_make_badarg(env);
+
+  rcl_publisher_t *publisher_p;
+  if (!enif_get_resource(env, argv[0], rt_rcl_publisher_t, (void **)&publisher_p))
+    return enif_make_badarg(env);
+  if (!rcl_publisher_is_valid(publisher_p)) return raise(env, __FILE__, __LINE__);
+
+  int arity;
+  const ERL_NIF_TERM *tuple;
+  if (!enif_get_tuple(env, argv[1], &arity, &tuple)) return enif_make_badarg(env);
+
+  <%= c_type %> *message_p = <%= c_type %>__create();
+  if (message_p == NULL) return raise(env, __FILE__, __LINE__);
+
+  ERL_NIF_TERM term;
+<%= set_fun_fragments %>
+
+  rcl_ret_t rc = rcl_publish(publisher_p, message_p, NULL);
+  if (rc != RCL_RET_OK) {
+    term = raise(env, __FILE__, __LINE__);
+    goto after;
+  }
+
+  term = atom_ok;
+after:
+  <%= c_type %>__destroy(message_p);
+  return term;
+}
+
+ERL_NIF_TERM <%= function_prefix %>_take(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  if (argc != 1) return enif_make_badarg(env);
+
+  rcl_subscription_t *subscription_p;
+  if (!enif_get_resource(env, argv[0], rt_rcl_subscription_t, (void **)&subscription_p))
+    return enif_make_badarg(env);
+  if (!rcl_subscription_is_valid(subscription_p)) return raise(env, __FILE__, __LINE__);
+
+  <%= c_type %> *message_p = <%= c_type %>__create();
+  if (message_p == NULL) return raise(env, __FILE__, __LINE__);
+
+  ERL_NIF_TERM term;
+  rcl_ret_t rc = rcl_take(subscription_p, message_p, NULL, NULL);
+  if (rc == RCL_RET_SUBSCRIPTION_TAKE_FAILED) {
+    term = subscription_take_failed;
+    goto after;
+  } else if (rc != RCL_RET_OK) {
+    term = raise(env, __FILE__, __LINE__);
+    goto after;
+  }
+
+<%= get_fun_fragments %>
+
+after:
+  <%= c_type %>__destroy(message_p);
+  return term;
 }
 // clang-format on

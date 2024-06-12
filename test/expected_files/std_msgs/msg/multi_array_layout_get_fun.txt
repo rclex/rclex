@@ -9,7 +9,7 @@
     );
   }
 
-  return enif_make_tuple(env, 2,
+  term = enif_make_tuple(env, 2,
     enif_make_list_from_array(env, dim, message_p->dim.size),
     enif_make_uint(env, message_p->data_offset)
   );

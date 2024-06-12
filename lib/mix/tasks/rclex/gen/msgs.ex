@@ -163,6 +163,8 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       {"#{function_prefix}_destroy!", 1, nif_#{function_prefix}_destroy, REGULAR_NIF},
       {"#{function_prefix}_set!", 2, nif_#{function_prefix}_set, REGULAR_NIF},
       {"#{function_prefix}_get!", 1, nif_#{function_prefix}_get, REGULAR_NIF},
+      {"#{function_prefix}_publish!", 2, nif_#{function_prefix}_publish, REGULAR_NIF},
+      {"#{function_prefix}_take!", 1, nif_#{function_prefix}_take, REGULAR_NIF},
       """
     end)
   end
@@ -186,7 +188,9 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       {"create!", ""},
       {"destroy!", "_msg"},
       {"set!", "_msg, _data"},
-      {"get!", "_msg"}
+      {"get!", "_msg"},
+      {"publish!", "_publisher, _data"},
+      {"take!", "_subscription"}
     ]
 
     msg_funcs =

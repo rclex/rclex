@@ -114,10 +114,13 @@ ERL_NIF_TERM nif_std_msgs_msg_multi_array_dimension_get(ErlNifEnv *env, int argc
 
   std_msgs__msg__MultiArrayDimension *message_p = (std_msgs__msg__MultiArrayDimension *)*ros_message_pp;
 
-  return enif_make_tuple(env, 3,
+  ERL_NIF_TERM term;
+  term = enif_make_tuple(env, 3,
     enif_make_string(env, message_p->label.data, ERL_NIF_LATIN1),
     enif_make_uint(env, message_p->size),
     enif_make_uint(env, message_p->stride)
   );
+
+  return term;
 }
 // clang-format on

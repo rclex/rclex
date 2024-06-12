@@ -103,10 +103,13 @@ ERL_NIF_TERM nif_geometry_msgs_msg_vector3_get(ErlNifEnv *env, int argc, const E
 
   geometry_msgs__msg__Vector3 *message_p = (geometry_msgs__msg__Vector3 *)*ros_message_pp;
 
-  return enif_make_tuple(env, 3,
+  ERL_NIF_TERM term;
+  term = enif_make_tuple(env, 3,
     enif_make_double(env, message_p->x),
     enif_make_double(env, message_p->y),
     enif_make_double(env, message_p->z)
   );
+
+  return term;
 }
 // clang-format on
