@@ -1,8 +1,12 @@
 defmodule Rclex.Generators.Util do
   @moduledoc false
 
-  def templates_dir_path() do
-    Path.join(Application.app_dir(:rclex), "priv/templates/rclex.gen.msgs")
+  def templates_dir_path(interface \\ :msg) do
+    case interface do
+      :msg -> Path.join(Application.app_dir(:rclex), "priv/templates/rclex.gen.msgs")
+      :srv -> Path.join(Application.app_dir(:rclex), "priv/templates/rclex.gen.srvs")
+      _ -> raise "ros2 interface type not supported"
+    end
   end
 
   @doc """
@@ -13,7 +17,7 @@ defmodule Rclex.Generators.Util do
   "std_msgs_msg_u_int32_multi_array"
   """
   def type_down_snake(ros2_message_type) do
-    [interfaces, "msg" = msg, type] = ros2_message_type |> String.split("/")
+    [interfaces, msg, type] = ros2_message_type |> String.split("/")
     [interfaces, msg, to_down_snake(type)] |> Enum.join("_")
   end
 
