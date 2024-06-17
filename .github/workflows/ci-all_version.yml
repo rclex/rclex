@@ -68,6 +68,7 @@ jobs:
           cd rclex
           mix local.hex --force
           mix rclex.gen.msgs
+          mix rclex.gen.srvs
           mix test
 
       - name: connection tests

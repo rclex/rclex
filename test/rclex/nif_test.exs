@@ -366,6 +366,78 @@ defmodule Rclex.NifTest do
     end
   end
 
+  describe "service" do
+    setup do
+      context = Nif.rcl_init!()
+      node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
+      type_support = Nif.std_srvs_srv_set_bool_type_support!()
+      qos = QoS.profile_services_default()
+
+      on_exit(fn ->
+        Nif.rcl_node_fini!(node)
+        Nif.rcl_fini!(context)
+      end)
+
+      %{node: node, type_support: type_support, qos: qos}
+    end
+
+    test "rcl_service_init!/4, rcl_service_fini!/2", %{
+      node: node,
+      type_support: type_support,
+      qos: qos
+    } do
+      service = Nif.rcl_service_init!(node, type_support, ~c"/set_test_bool", qos)
+      assert is_reference(service)
+      assert Nif.rcl_service_fini!(service, node) == :ok
+    end
+
+    test "rcl_subscription_init!/4 raise due to wrong service name", %{
+      node: node,
+      type_support: type_support,
+      qos: qos
+    } do
+      assert_raise ErlangError, fn ->
+        Nif.rcl_service_init!(node, type_support, ~c"set_test_bool", qos)
+      end
+    end
+  end
+
+  describe "client" do
+    setup do
+      context = Nif.rcl_init!()
+      node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
+      type_support = Nif.std_srvs_srv_set_bool_type_support!()
+      qos = QoS.profile_services_default()
+
+      on_exit(fn ->
+        Nif.rcl_node_fini!(node)
+        Nif.rcl_fini!(context)
+      end)
+
+      %{node: node, type_support: type_support, qos: qos}
+    end
+
+    test "rcl_client_init!/4, rcl_client_fini!/2", %{
+      node: node,
+      type_support: type_support,
+      qos: qos
+    } do
+      client = Nif.rcl_client_init!(node, type_support, ~c"/set_test_bool", qos)
+      assert is_reference(client)
+      assert Nif.rcl_client_fini!(client, node) == :ok
+    end
+
+    test "rcl_client_init!/4 raise due to wrong service name", %{
+      node: node,
+      type_support: type_support,
+      qos: qos
+    } do
+      assert_raise ErlangError, fn ->
+        Nif.rcl_client_init!(node, type_support, ~c"set_test_bool", qos)
+      end
+    end
+  end
+
   describe "wait_set" do
     setup do
       context = Nif.rcl_init!()

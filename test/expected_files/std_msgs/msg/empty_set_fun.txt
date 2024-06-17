@@ -1,0 +1,4 @@
+  unsigned int structure_needs_at_least_one_member;
+  if (!enif_get_uint(env, tuple[0], &structure_needs_at_least_one_member))
+    return enif_make_badarg(env);
+  message_p->structure_needs_at_least_one_member = structure_needs_at_least_one_member;
