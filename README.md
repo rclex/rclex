@@ -65,8 +65,9 @@ Please refer to [Use on Nerves](USE_ON_NERVES.md) section and [b5g-ex/rclex_on_n
 
 Currently, the Rclex API allows for the following:
 
-1. The ability to create a large number of publishers sending to the same topic.
-2. The ability to create large numbers of each combination of publishers, topics, and subscribers.
+1. Create a large number of publishers sending to the same topic.
+2. Create large numbers of each combination of publishers, topics, and subscribers.
+3. Create service servers and service clients
 
 You can find the API documentation at [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex).
 
@@ -116,12 +117,12 @@ source /opt/ros/humble/setup.bash
 
 ## Configure ROS 2 message types you want to use
 
-Rclex provides pub/sub-based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/humble/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
+Rclex provides pub/sub-based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/humble/Concepts/Basic/About-Interfaces.html) for more details about message types in ROS 2.
 
 The message types you want to use in your project can be specified in `ros2_message_types` in `config/config.exs`. 
 Multiple message types can be specified separated by comma `,`.
 
-The following `config/config.exs` example wants to use `String` type.
+The following `config/config.exs` example wants to use `String` message type.
 
 ```elixir
 import Config
@@ -136,6 +137,30 @@ mix rclex.gen.msgs
 ```
 
 When editing `config/config.exs` to change the message types, do `mix rclex.gen.msgs` again.
+
+## Configure ROS 2 service types you want to use
+
+Rclex supports remote procedure call using the service type defined in ROS 2. Please refer [here](https://docs.ros.org/en/humble/Concepts/Basic/About-Services.html) for more details about services in ROS 2.
+
+The service types you want to use in your project can be specified in `ros2_service_types` in `config/config.exs`. 
+Multiple service types can be specified separated by comma `,`.
+
+The following `config/config.exs` example wants to use `SetBool` service type.
+
+```elixir
+import Config
+
+config :rclex, ros2_service_types: ["std_srvs/srv/SetBool"]
+```
+
+Then, execute the following Mix task to generate required definitions and files for service types and the corresponding messages types for requests and responses.
+
+```
+mix rclex.gen.msgs
+mix rclex.gen.srvs
+```
+
+When editing `config/config.exs` to change the message types, do `mix rclex.gen.msgs` and `mix rclex.gen.srvs` again.
 
 ### Write Rclex code
 

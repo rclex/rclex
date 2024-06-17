@@ -9,8 +9,20 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   config :rclex, ros2_message_types: ["std_msgs/msg/String"]
   ```
 
+  The task also generates the code for the requests and responses required by the services defined in
+
+  ```
+  config :rclex, ros2_service_types: ["std_srvs/srv/SetBool"]
+  ```
+
   > #### Info {: .info }
   > Be careful, ros2 msg type is case sensitive.
+
+  ## How to show message types
+
+  ```
+  mix rclex.gen.msgs --show-types
+  ```
 
   ## How to generate
 
@@ -20,11 +32,18 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
 
   This task assumes that the environment variable `ROS_DISTRO` is set
   and refers to the msg types from `/opt/ros/[ROS_DISTRO]/share`.
+  In addition `AMENT_PREFIX_PATH` is considered to find msg types.
 
   We can also specify explicitly as follows
 
   ```
-  mix rclex.gen.msgs --from /opt/ros/foxy/share
+  mix rclex.gen.msgs --from /opt/ros/humble/share --from /home/ros/workspace/install
+  ```
+
+  or via configuration
+
+  ```
+  config :rclex, ros2_directories: ["/home/ros/workspace/install/example_msgs"]
   ```
 
   ## How to clean
@@ -45,23 +64,25 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @doc false
   def run(args) do
     {valid_options, _, _} =
-      OptionParser.parse(args, strict: [from: :string, clean: :boolean, show_types: :boolean])
+      OptionParser.parse(args, strict: [from: :keep, clean: :boolean, show_types: :boolean])
+
+    {from, valid_options} = Keyword.pop_values(valid_options, :from)
 
     case valid_options do
+      [] when from != [] ->
+        clean()
+        generate(from, rclex_dir_path!())
+        recompile!()
+
       [] ->
         clean()
         generate(rclex_dir_path!())
         recompile!()
 
-      [from: from] ->
-        clean()
-        generate(from, rclex_dir_path!())
-        recompile!()
-
-      [clean: true] ->
+      [clean: true] when from == [] ->
         clean()
 
-      [show_types: true] ->
+      [show_types: true] when from == [] ->
         show_types()
 
       _ ->
@@ -77,39 +98,70 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       Mix.raise("Please set ROS_DISTRO.")
     end
 
-    ros_directory_path =
+    ament_directories =
+      Enum.map(String.split(System.get_env("AMENT_PREFIX_PATH", ""), [":", ";"]), fn d ->
+        Path.join(d, "share")
+      end)
+
+    configured_directories =
+      Enum.map(Application.get_env(:rclex, :ros2_directories, []), fn d ->
+        Path.join(d, "share")
+      end)
+
+    ros_directories =
       if Mix.target() == :host do
-        "/opt/ros/#{ros_distro}"
+        cond do
+          configured_directories == [] and ament_directories == [] ->
+            [Path.join("/opt/ros/#{ros_distro}", "share")]
+
+          configured_directories != [] ->
+            configured_directories ++ [Path.join("/opt/ros/#{ros_distro}", "share")]
+
+          ament_directories != [] ->
+            ament_directories
+        end
       else
-        Path.join(File.cwd!(), "rootfs_overlay/opt/ros/#{ros_distro}")
+        configured_directories ++ [Path.join(File.cwd!(), "rootfs_overlay/opt/ros/#{ros_distro}")]
       end
 
-    if not File.exists?(ros_directory_path) do
-      Mix.raise("#{ros_directory_path} does not exist.")
+    if Enum.any?(ros_directories, fn d -> not File.exists?(d) end) do
+      Mix.raise("#{inspect(ros_directories)} does not exist.")
     end
 
-    generate(Path.join(ros_directory_path, "share"), to)
+    generate(ros_directories, to)
   end
 
   @doc false
-  def generate(from, to) do
-    types = Application.get_env(:rclex, :ros2_message_types, [])
+  def generate(from, to) when is_list(from) and is_binary(to) do
+    msg_types = Application.get_env(:rclex, :ros2_message_types, [])
+    srv_types = Application.get_env(:rclex, :ros2_service_types, [])
 
-    if Enum.empty?(types) do
+    if Enum.empty?(msg_types) do
       Mix.raise("ros2_message_types is not specified in config.")
     end
 
+    srv_msg_types =
+      Enum.map(srv_types, fn type -> String.replace_suffix(type, "", "_Request") end) ++
+        Enum.map(srv_types, fn type -> String.replace_suffix(type, "", "_Response") end)
+
     ros2_message_type_map =
-      Enum.reduce(types, %{}, fn type, acc -> get_ros2_message_type_map(type, from, acc) end)
+      Enum.reduce(msg_types ++ srv_msg_types, %{}, fn type, acc ->
+        get_ros2_message_type_map(type, from, acc)
+      end)
 
     types = Map.keys(ros2_message_type_map)
 
     for {:msg_type, type} <- types do
-      [interfaces, "msg", type_name] = String.split(type, "/")
+      [interfaces, interface_type, type_name] = String.split(type, "/")
+
+      if interface_type != "msg" and interface_type != "srv" do
+        raise "unknown interface type #{interface_type}"
+      end
+
       type_name = Util.to_down_snake(type_name)
 
-      dir_path_ex = Path.join(to, "lib/rclex/pkgs/#{interfaces}/msg")
-      dir_path_c = Path.join(to, "src/pkgs/#{interfaces}/msg")
+      dir_path_ex = Path.join(to, "lib/rclex/pkgs/#{interfaces}/#{interface_type}")
+      dir_path_c = Path.join(to, "src/pkgs/#{interfaces}/#{interface_type}")
 
       File.mkdir_p!(dir_path_ex)
       File.mkdir_p!(dir_path_c)
@@ -132,8 +184,14 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   def clean() do
     dir_path = rclex_dir_path!()
 
-    for file_path <- ["lib/rclex/pkgs", "src/pkgs"] do
-      File.rm_rf!(Path.join(dir_path, file_path))
+    for file_path <-
+          Path.wildcard(Path.join(dir_path, "lib/rclex/pkgs/*/msg/*.ex")) ++
+            Path.wildcard(Path.join(dir_path, "src/pkgs/*/msg/*.{h,c}")) ++
+            Path.wildcard(Path.join(dir_path, "src/pkgs/*/srv/*___request.{h,c}")) ++
+            Path.wildcard(Path.join(dir_path, "lib/rclex/pkgs/*/srv/*_request.ex")) ++
+            Path.wildcard(Path.join(dir_path, "src/pkgs/*/srv/*___response.{h,c}")) ++
+            Path.wildcard(Path.join(dir_path, "lib/rclex/pkgs/*/srv/*_response.ex")) do
+      File.rm!(file_path)
     end
 
     for file_path <- ["lib/rclex/msg_funcs.ex", "src/msg_funcs.h", "src/msg_funcs.ec"] do
@@ -170,8 +228,8 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   @doc false
   def generate_msg_funcs_h(types) do
     Enum.map_join(types, fn {:msg_type, type} ->
-      [interfaces, "msg", type] = String.split(type, "/")
-      file_path = Path.join([interfaces, "msg", Util.to_down_snake(type)]) <> ".h"
+      [interfaces, interface_type, type] = String.split(type, "/")
+      file_path = Path.join([interfaces, interface_type, Util.to_down_snake(type)]) <> ".h"
 
       """
       #include "pkgs/#{file_path}"
@@ -207,14 +265,78 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     EEx.eval_file(Path.join(Util.templates_dir_path(), "msg_funcs.eex"), msg_funcs: msg_funcs)
   end
 
+  defp get_msg_path(ros2_message_type, from) do
+    [package, _, type_name] = String.split(ros2_message_type, "/")
+
+    pathes =
+      Enum.reduce(from, [], fn dir, acc ->
+        Path.wildcard("#{dir}/#{package}/**/#{type_name}.msg") ++ acc
+      end)
+
+    if pathes == [] do
+      raise "#{ros2_message_type}.msg not found"
+    end
+
+    # The first match wins, so the order of the defined directories is relevant.
+    [ret | _] = pathes
+
+    ret
+  end
+
+  defp get_srv_path(ros2_message_type, from) do
+    [package, _, type_name] = String.split(ros2_message_type, "/")
+
+    pathes =
+      Enum.reduce(from, [], fn dir, acc ->
+        Path.wildcard("#{dir}/#{package}/**/#{type_name}.srv") ++ acc
+      end)
+
+    if pathes == [] do
+      raise "#{ros2_message_type}.srv not found"
+    end
+
+    # The first match wins, so the order of the defined directories is relevant.
+    [ret | _] = pathes
+
+    ret
+  end
+
+  defp service_response_message_type?(ros2_message_type) do
+    [_, interface_type, type] = String.split(ros2_message_type, "/")
+    interface_type == "srv" and String.ends_with?(type, "_Response")
+  end
+
+  defp service_request_message_type?(ros2_message_type) do
+    [_, interface_type, type] = String.split(ros2_message_type, "/")
+    interface_type == "srv" and String.ends_with?(type, "_Request")
+  end
+
+  defp get_msg_definition(ros2_message_type, from) do
+    cond do
+      service_response_message_type?(ros2_message_type) ->
+        path = get_srv_path(String.trim_trailing(ros2_message_type, "_Response"), from)
+        [_request_msg, response_msg] = Regex.split(~r/^---\n/m, File.read!(path))
+        response_msg
+
+      service_request_message_type?(ros2_message_type) ->
+        path = get_srv_path(String.trim_trailing(ros2_message_type, "_Request"), from)
+        [request_msg, _reponse_msg] = Regex.split(~r/^---\n/m, File.read!(path))
+        request_msg
+
+      true ->
+        path = get_msg_path(ros2_message_type, from)
+        path |> File.read!()
+    end
+  end
+
   @doc false
   def get_ros2_message_type_map(ros2_message_type, from, acc \\ %{}) do
     {:ok, fields, _rest, _context, _line, _column} =
-      Path.join(from, [ros2_message_type, ".msg"])
-      |> File.read!()
+      get_msg_definition(ros2_message_type, from)
       |> MessageParser.parse()
 
     fields = to_complete_fields(fields, ros2_message_type)
+
     type_map = Map.put(acc, {:msg_type, ros2_message_type}, fields)
 
     Enum.reduce(fields, type_map, fn [head | _], acc ->
@@ -250,6 +372,11 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
     end
   end
 
+  # The empty message type contains one hardcoded uint8 member
+  defp to_complete_fields([], _) do
+    [[{:builtin_type, "uint8"}, "structure_needs_at_least_one_member"]]
+  end
+
   defp to_complete_fields(fields, ros2_message_type) do
     Enum.map(fields, fn field ->
       [head | tail] = field
@@ -274,8 +401,14 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
       [interfaces, type] = String.split(type, "/")
       [interfaces, "msg", type]
     else
-      [interfaces, "msg", _] = String.split(ros2_message_type, "/")
-      [interfaces, "msg", type]
+      [interfaces, interface_type, _] = String.split(ros2_message_type, "/")
+
+      if interface_type == "srv" and
+           (String.ends_with?(type, "_Request") or String.ends_with?(type, "_Response")) do
+        [interfaces, "srv", type]
+      else
+        [interfaces, "msg", type]
+      end
     end
     |> Path.join()
   end

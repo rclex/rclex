@@ -31,7 +31,15 @@ ERL_NIF_TERM nif_rcl_timer_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM arg
   rcl_timer_t timer         = rcl_get_zero_initialized_timer();
   rcl_allocator_t allocator = get_nif_allocator();
 
+#ifdef ROS_DISTRO_iron
   rc = rcl_timer_init(&timer, clock_p, context_p, RCL_MS_TO_NS(period_ms), NULL, allocator);
+#elif ROS_DISTRO_humble
+  rc = rcl_timer_init(&timer, clock_p, context_p, RCL_MS_TO_NS(period_ms), NULL, allocator);
+#elif ROS_DISTRO_foxy
+  rc = rcl_timer_init(&timer, clock_p, context_p, RCL_MS_TO_NS(period_ms), NULL, allocator);
+#else
+  rc = rcl_timer_init2(&timer, clock_p, context_p, RCL_MS_TO_NS(period_ms), NULL, allocator, true);
+#endif
   if (rc != RCL_RET_OK) return enif_make_badarg(env);
 
   rcl_timer_t *obj  = enif_alloc_resource(rt_rcl_timer_t, sizeof(rcl_timer_t));

@@ -160,6 +160,7 @@ jobs:
           source /opt/ros/${ROS_DISTRO}/setup.bash
           cd rclex
           mix rclex.gen.msgs
+          mix rclex.gen.srvs
           mix test --warnings-as-errors --cover
 
       - name: connection tests

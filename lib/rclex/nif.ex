@@ -100,6 +100,14 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def rcl_wait_set_init_client!(_context) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_wait_set_init_service!(_context) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def rcl_wait_set_init_timer!(_context) do
     :erlang.nif_error(:nif_not_loaded)
   end
@@ -112,9 +120,125 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def rcl_wait_client!(_wait_set, _timeout_us, _client) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_wait_service!(_wait_set, _timeout_us, _service) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   def rcl_wait_timer!(_wait_set, _timeout_us, _timer) do
     :erlang.nif_error(:nif_not_loaded)
   end
+
+  def rcl_service_init!(_node, _type_support, _service_name, _qos) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_service_fini!(_service, _node) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_service_set_on_new_request_callback!(_service) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_service_clear_request_callback!(_service, _callback_resource) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_take_request_with_info!(_service, _ros_request_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_send_response!(_service, _response_header, _ros_response_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_client_init!(_node, _type_support, _service_name, _qos) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_client_fini!(_client, _node) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_client_set_on_new_response_callback!(_client) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_client_clear_response_callback!(_client, _callback_resource) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_send_request!(_client, _ros_request_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_take_response_with_info!(_client, _ros_respone_message) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_count_publishers!(_node, _topic_name) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_count_subscribers!(_node, _topic_name) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_get_client_names_and_types_by_node!(_node, _node_name, _namespace) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_get_node_names!(_node) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_get_node_names_with_enclaves!(_node) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_get_publisher_names_and_types_by_node!(_node, _node_name, _namespace, _no_demangle) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_get_publishers_info_by_topic!(_node, _topic_name, _no_mangle) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_get_service_names_and_types!(_node) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_get_service_names_and_types_by_node!(_node, _node_name, _namespace) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_get_subscriber_names_and_types_by_node!(_node, _node_name, _namespace, _no_demangle) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_get_subscribers_info_by_topic!(_node, _topic_name, _no_mangle) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_get_topic_names_and_types!(_node, _no_demangle) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_service_server_is_available!(_node, _client) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  #  def rcl_wait_for_publishers!(_node, _topic_name, _count, _timeout) do
+  #    :erlang.nif_error(:nif_not_loaded)
+  #  end
+
+  #  def rcl_wait_for_subscribers!(_node, _topic_name, _count, _timeout) do
+  #    :erlang.nif_error(:nif_not_loaded)
+  #  end
 
   def rmw_qos_profile_sensor_data!() do
     :erlang.nif_error(:nif_not_loaded)
@@ -141,4 +265,5 @@ defmodule Rclex.Nif do
   end
 
   @before_compile Rclex.MsgFuncs
+  @before_compile Rclex.SrvFuncs
 end
