@@ -352,4 +352,147 @@ defmodule RclexTest do
       assert {:noproc, _} = catch_exit(Rclex.stop_timer("timer", "notexists"))
     end
   end
+
+  describe "graph" do
+    setup do
+      name = "name"
+      topic_name = "/chatter"
+      service_name = "/get_test_params_types"
+      service_type = RclInterfaces.Srv.GetParameterTypes
+
+      :ok = Rclex.start_node("name")
+      :ok = Rclex.start_publisher(StdMsgs.Msg.String, topic_name, name)
+      :ok = Rclex.start_subscription(fn _msg -> nil end, StdMsgs.Msg.String, topic_name, name)
+
+      service_callback = fn %RclInterfaces.Srv.GetParameterTypesRequest{names: names} ->
+        %RclInterfaces.Srv.GetParameterTypesResponse{
+          types: Enum.map(names, fn n -> String.length(to_string(n)) end)
+        }
+      end
+
+      receive_callback = fn _request, _response ->
+        nil
+      end
+
+      :ok =
+        Rclex.start_service(
+          service_callback,
+          service_type,
+          service_name,
+          name
+        )
+
+      :ok = Rclex.start_client(receive_callback, service_type, service_name, name)
+
+      on_exit(fn -> capture_log(fn -> Rclex.stop_node("name") end) end)
+      :timer.sleep(50)
+
+      %{
+        name: name,
+        topic_name: topic_name,
+        service_type: service_type,
+        service_name: service_name
+      }
+    end
+
+    test "count_publishers/2", %{} do
+      assert 1 = Rclex.count_publishers("name", "/chatter")
+    end
+
+    test "count_subscribers/2", %{name: name, topic_name: topic_name} do
+      assert 1 = Rclex.count_subscribers(name, topic_name)
+    end
+
+    test "get_client_names_and_types_by_node/4", %{name: name, service_name: service_name} do
+      assert [{^service_name, ["rcl_interfaces/srv/GetParameterTypes"]}] =
+               Rclex.get_client_names_and_types_by_node(
+                 name,
+                 name,
+                 "/"
+               )
+    end
+
+    test "get_node_names/2", %{} do
+      assert [{"name", "/"}] = Rclex.get_node_names("name")
+    end
+
+    test "get_node_names_with_enclaves/2", %{} do
+      assert [{"name", "/", "/"}] = Rclex.get_node_names_with_enclaves("name")
+    end
+
+    test "get_publisher_names_and_types_by_node/4", %{topic_name: topic_name} do
+      assert [{^topic_name, ["std_msgs/msg/String"]}] =
+               Rclex.get_publisher_names_and_types_by_node("name", "name", "/")
+
+      assert {:error, :not_found} =
+               Rclex.get_publisher_names_and_types_by_node("name", "non_existent", "/")
+    end
+
+    test "get_publishers_info_by_topic/3", %{topic_name: topic_name} do
+      [info] = Rclex.get_publishers_info_by_topic("name", topic_name)
+
+      assert is_binary(info.endpoint_gid)
+      %qos_type{} = info.qos_profile
+      assert qos_type == Rclex.QoS
+
+      assert %{
+               node_name: "name",
+               node_namespace: "/",
+               topic_type: "std_msgs/msg/String",
+               endpoint_type: :publisher
+               # endpoint_gid: <<_gid>>,
+               # qos_profile: %Rclex.QoS{...}
+             } = Map.drop(info, [:endpoint_gid, :qos_profile])
+    end
+
+    test "get_service_names_and_types/2", %{name: name, service_name: service_name} do
+      assert [{^service_name, ["rcl_interfaces/srv/GetParameterTypes"]}] =
+               Rclex.get_service_names_and_types(name)
+    end
+
+    test "get_service_names_and_types_by_node/4", %{name: name, service_name: service_name} do
+      [{^service_name, ["rcl_interfaces/srv/GetParameterTypes"]}] =
+        Rclex.get_service_names_and_types_by_node(name, name, "/")
+    end
+
+    test "get_subscriber_names_and_types_by_node/4", %{topic_name: topic_name} do
+      assert [{^topic_name, ["std_msgs/msg/String"]}] =
+               Rclex.get_subscriber_names_and_types_by_node("name", "name", "/")
+
+      assert {:error, :not_found} =
+               Rclex.get_subscriber_names_and_types_by_node("name", "non_existent", "/")
+    end
+
+    test "get_subscribers_info_by_topic/3", %{topic_name: topic_name} do
+      [info] = Rclex.get_subscribers_info_by_topic("name", topic_name)
+
+      assert is_binary(info.endpoint_gid)
+      %qos_type{} = info.qos_profile
+      assert qos_type == Rclex.QoS
+
+      assert %{
+               node_name: "name",
+               node_namespace: "/",
+               topic_type: "std_msgs/msg/String",
+               endpoint_type: :subscription
+               # endpoint_gid: <<_gid>>,
+               # qos_profile: %Rclex.QoS{...}
+             } = Map.drop(info, [:endpoint_gid, :qos_profile])
+    end
+
+    test "get_topic_names_and_types/2", %{} do
+      assert [{"/chatter", ["std_msgs/msg/String"]}] = Rclex.get_topic_names_and_types("name")
+    end
+
+    test "service_server_available?/4", %{
+      name: name,
+      service_type: service_type,
+      service_name: service_name
+    } do
+      true = Rclex.service_server_available?(service_type, service_name, name)
+
+      {:error, :not_found} =
+        Rclex.service_server_available?(service_type, "/does_not_exist", name)
+    end
+  end
 end

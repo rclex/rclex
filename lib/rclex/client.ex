@@ -31,6 +31,14 @@ defmodule Rclex.Client do
     end
   end
 
+  def service_server_available?(service_type, service_name, name, namespace \\ "/") do
+    case GenServer.whereis(name(service_type, service_name, name, namespace)) do
+      nil -> {:error, :not_found}
+      {_atom, _node} -> raise("should not happen")
+      pid -> GenServer.call(pid, {:service_server_available})
+    end
+  end
+
   # callbacks
 
   def init(args) do
@@ -104,6 +112,18 @@ defmodule Rclex.Client do
 
         requests = Map.put_new(requests, sequence_number, request_struct)
         {:reply, :ok, Map.put(state, :requests, requests)}
+      end
+
+      def handle_call(
+            {:service_server_available},
+            _from,
+            %{
+              node: node,
+              client: client
+            } = state
+          ) do
+        is_available = Nif.rcl_service_server_is_available!(node, client)
+        {:reply, is_available, state}
       end
 
       def handle_info(
@@ -188,6 +208,18 @@ defmodule Rclex.Client do
 
         requests = Map.put_new(requests, sequence_number, request_struct)
         {:reply, :ok, Map.put(state, :requests, requests)}
+      end
+
+      def handle_call(
+            {:service_server_available},
+            _from,
+            %{
+              node: node,
+              client: client
+            } = state
+          ) do
+        is_available = Nif.rcl_service_server_is_available!(node, client)
+        {:reply, is_available, state}
       end
 
       def handle_info(

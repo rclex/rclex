@@ -105,7 +105,7 @@ ERL_NIF_TERM nif_rcl_take_response_with_info(ErlNifEnv *env, int argc, const ERL
   if (rc == RCL_RET_OK)
     return enif_make_tuple2(env, atom_ok, enif_make_int64(env, sequence_number));
   if (rc == RCL_RET_CLIENT_TAKE_FAILED) return atom_error;
-  return raise(env, __FILE__, __LINE__);
+    return raise(env, __FILE__, __LINE__);
 }
 
 ERL_NIF_TERM nif_rcl_send_request(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
