@@ -34,6 +34,7 @@ defmodule Rclex do
       iex> Rclex.start_node("node", namespace: "/example")
       {:error, :already_started}
   """
+  @doc section: :node
   @spec start_node(name :: String.t(), opts :: [namespace: String.t()]) ::
           :ok | {:error, :already_started} | {:error, term()}
   def start_node(name, opts \\ []) when is_binary(name) and is_list(opts) do
@@ -61,6 +62,7 @@ defmodule Rclex do
       iex> Rclex.stop_node("node", namespace: "/example")
       {:error, :not_found}
   """
+  @doc section: :node
   @spec stop_node(name :: String.t(), opts :: [namespace: String.t()]) ::
           :ok | {:error, :not_found}
   def stop_node(name, opts \\ []) when is_binary(name) and is_list(opts) do
@@ -81,6 +83,7 @@ defmodule Rclex do
       iex> Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "node", namespace: "/example")
       {:error, :already_started}
   """
+  @doc section: :publisher
   @spec start_publisher(
           message_type :: module(),
           topic_name :: topic_name(),
@@ -120,6 +123,7 @@ defmodule Rclex do
       iex> Rclex.stop_publisher(StdMsgs.Msg.String, "/chatter", "node", namespace: "/example")
       {:error, :not_found}
   """
+  @doc section: :publisher
   @spec stop_publisher(
           message_type :: module(),
           topic_name :: topic_name(),
@@ -150,6 +154,7 @@ defmodule Rclex do
       iex> Rclex.publish(struct(StdMsgs.Msg.String, %{data: "hello"}), "/chatter", "node")
       {:error, :not_found}
   """
+  @doc section: :publisher
   @spec publish(
           message :: struct(),
           topic_name :: topic_name(),
@@ -184,6 +189,7 @@ defmodule Rclex do
       iex> Rclex.start_subscription(&IO.inspect/1, StdMsgs.Msg.String, "/chatter", "node", namespace: "/example")
       {:error, :already_started}
   """
+  @doc section: :subscription
   @spec start_subscription(
           callback :: function(),
           message_type :: module(),
@@ -229,6 +235,7 @@ defmodule Rclex do
       iex> Rclex.stop_subscription(StdMsgs.Msg.String, "/chatter", "node", namespace: "/example")
       {:error, :not_found}
   """
+  @doc section: :subscription
   @spec stop_subscription(
           message_type :: module(),
           topic_name :: topic_name(),
@@ -268,6 +275,7 @@ defmodule Rclex do
     iex> Rclex.start_service(fn _ -> %StdSrvs.Srv.SetBoolResponse{success: true} end, StdMsgs.Srv.SetBool, "/set_bool", "node", namespace: "/example")
     {:error, :already_started}
   """
+  @doc section: :service
   @spec start_service(
           callback :: function(),
           service_type :: module(),
@@ -313,6 +321,7 @@ defmodule Rclex do
     iex> Rclex.stop_service(StdSrvs.Srvg.SetBool, "/does_not_exist", "node", namespace: "/example")
     {:error, :not_found}
   """
+  @doc section: :service
   @spec stop_service(
           service_type :: module(),
           service_name :: service_name(),
@@ -356,6 +365,7 @@ defmodule Rclex do
     iex> Rclex.call_async(%StdSrvs.Srv.SetBoolRequest{data: true}, "/set_bool", "node", namespace: "/example")
     :ok
   """
+  @doc section: :client
   @spec start_client(
           callback :: function(),
           service_type :: module(),
@@ -399,6 +409,7 @@ defmodule Rclex do
     iex> Rclex.call_async(%StdSrvs.Srv.SetBoolRequest{data: true}, "/set_bool", "node", namespace: "/example")
     :ok
   """
+  @doc section: :client
   @spec call_async(
           request :: struct(),
           service_name :: service_name(),
@@ -436,6 +447,7 @@ defmodule Rclex do
     iex> Rclex.stop_client(StdSrvs.Srvg.SetBool, "/does_not_exist", "node", namespace: "/example")
     {:error, :not_found}
   """
+  @doc section: :client
   @spec stop_client(
           service_type :: module(),
           service_name :: service_name(),
@@ -464,6 +476,7 @@ defmodule Rclex do
       iex> Rclex.start_timer(1000, fn -> IO.inspect("tick") end, "tick", "node", namespace: "/example")
       {:error, :already_started}
   """
+  @doc section: :time
   @spec start_timer(
           period_ms :: non_neg_integer(),
           callback :: function(),
@@ -498,6 +511,7 @@ defmodule Rclex do
       iex> Rclex.stop_timer("tick", "node", namespace: "/example")
       {:error, :not_found}
   """
+  @doc section: :time
   @spec stop_timer(
           timer_name :: String.t(),
           node_name :: String.t(),
@@ -527,6 +541,7 @@ defmodule Rclex do
       iex> Rclex.count_publishers("node", "/chatter", namespace: "/example")
       1
   """
+  @doc section: :graph
   @spec count_publishers(
           name :: String.t(),
           topic_name :: topic_name(),
@@ -555,6 +570,7 @@ defmodule Rclex do
       iex> Rclex.count_subscribers("node", "/chatter", namespace: "/example")
       1
   """
+  @doc section: :graph
   @spec count_subscribers(
           name :: String.t(),
           topic_name :: topic_name(),
@@ -578,6 +594,7 @@ defmodule Rclex do
       iex> Rclex.get_client_names_and_types_by_node("node", "example_node", namespace: "/example")
       [{"node","/example"}]
   """
+  @doc section: :graph
   @spec get_client_names_and_types_by_node(
           name :: String.t(),
           node_name :: String.t(),
@@ -608,6 +625,7 @@ defmodule Rclex do
       iex> Rclex.get_node_names("node", namespace: "/example")
       [{"node","/example"}]
   """
+  @doc section: :graph
   @spec get_node_names(name :: String.t(), opts :: [namespace: String.t()]) :: [
           {String.t(), String.t()}
         ]
@@ -629,6 +647,7 @@ defmodule Rclex do
       iex> Rclex.get_node_names_with_enclaves("node", namespace: "/example")
       [{"node", "/example", "/"}]
   """
+  @doc section: :graph
   @spec get_node_names_with_enclaves(name :: String.t(), opts :: [namespace: String.t()]) :: [
           {String.t(), String.t(), String.t()}
         ]
@@ -651,6 +670,7 @@ defmodule Rclex do
       iex> Rclex.get_publisher_names_and_types_by_node("node", "node", "/example", namespace: "/example")
       [{"/chatter", ["std_msgs/msg/String"]}]
   """
+  @doc section: :graph
   @spec get_publisher_names_and_types_by_node(
           name :: String.t(),
           node_name :: String.t(),
@@ -692,6 +712,7 @@ defmodule Rclex do
               }
       ]
   """
+  @doc section: :graph
   @spec get_publishers_info_by_topic(
           name :: String.t(),
           topic_name :: topic_name(),
@@ -721,6 +742,7 @@ defmodule Rclex do
       iex> Rclex.get_service_names_and_types("node", namespace: "/example")
       [{"/set_test_bool", ["std_srvs/srv/SetBool"]}]
   """
+  @doc section: :graph
   @spec get_service_names_and_types(
           name :: String.t(),
           opts :: [namespace: String.t()]
@@ -742,6 +764,7 @@ defmodule Rclex do
       iex> Rclex.get_service_names_and_types_by_node("node", "example_node", "/example", namespace: "/example")
       [{"/set_test_bool", ["std_srvs/srv/SetBool"]}]
   """
+  @doc section: :graph
   @spec get_service_names_and_types_by_node(
           name :: String.t(),
           node_name :: String.t(),
@@ -766,6 +789,7 @@ defmodule Rclex do
       iex> Rclex.get_subscriber_names_and_types_by_node("node", "node", "/example", namespace: "/example")
       [{"/chatter", ["std_msgs/msg/String"]}]
   """
+  @doc section: :graph
   @spec get_subscriber_names_and_types_by_node(
           name :: String.t(),
           node_name :: String.t(),
@@ -807,6 +831,7 @@ defmodule Rclex do
               }
       ]
   """
+  @doc section: :graph
   @spec get_subscribers_info_by_topic(
           name :: String.t(),
           topic_name :: topic_name(),
@@ -837,6 +862,7 @@ defmodule Rclex do
       iex> Rclex.get_subscriber_names_and_types_by_node("node", "node", "/example", namespace: "/example")
       [{"/chatter", ["std_msgs/msg/String"]}]
   """
+  @doc section: :graph
   @spec get_topic_names_and_types(
           name :: String.t(),
           opts :: [namespace: String.t(), no_demangle: boolean()]
@@ -862,6 +888,7 @@ defmodule Rclex do
     iex> Rclex.service_server_available?("node", "/set_bool", namespace: "/example")
     :false
   """
+  @doc section: :graph
   @spec service_server_available?(
           name :: String.t(),
           service_type :: module(),

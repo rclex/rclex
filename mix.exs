@@ -81,7 +81,16 @@ defmodule Rclex.MixProject do
       extras: ["README.md", "README_ja.md", "USE_ON_NERVES.md", "CHANGELOG.md"],
       main: "readme",
       source_ref: "v#{@version}",
-      source_url: @source_url
+      source_url: @source_url,
+      groups_for_docs: [
+        Client: &(&1[:section] == :client),
+        Graph: &(&1[:section] == :graph),
+        Node: &(&1[:section] == :node),
+        Publisher: &(&1[:section] == :publisher),
+        Service: &(&1[:section] == :service),
+        Subscription: &(&1[:section] == :subscription),
+        Timer: &(&1[:section] == :time)
+      ]
     ]
   end
 
