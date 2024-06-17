@@ -87,4 +87,17 @@ defmodule Rclex.Pkgs.Test do
     end)
     |> tap(&Rclex.Pkgs.DiagnosticMsgs.Msg.DiagnosticStatus.destroy!(&1))
   end
+
+  test "rcl_interfaces/srv/GetParameterTypes" do
+    struct = %Rclex.Pkgs.RclInterfaces.Srv.GetParameterTypesResponse{
+      types: <<1, 10, 100>>
+    }
+
+    Rclex.Pkgs.RclInterfaces.Srv.GetParameterTypesResponse.create!()
+    |> tap(&Rclex.Pkgs.RclInterfaces.Srv.GetParameterTypesResponse.set!(&1, struct))
+    |> tap(fn message ->
+      assert ^struct = Rclex.Pkgs.RclInterfaces.Srv.GetParameterTypesResponse.get!(message)
+    end)
+    |> tap(&Rclex.Pkgs.RclInterfaces.Srv.GetParameterTypesResponse.destroy!(&1))
+  end
 end

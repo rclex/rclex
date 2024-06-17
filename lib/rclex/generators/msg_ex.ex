@@ -47,6 +47,9 @@ defmodule Rclex.Generators.MsgEx do
         [{:builtin_type, _type}, name, default] ->
           "#{name}: #{inspect(default)}"
 
+        [{:builtin_type_array, "uint8[]"}, name] ->
+          "#{name}: nil"
+
         [{:builtin_type_array, _type}, name] ->
           "#{name}: []"
 
@@ -75,6 +78,9 @@ defmodule Rclex.Generators.MsgEx do
       case [type_tuple, name] do
         [{:builtin_type, type}, name] ->
           "#{name}: #{@ros2_elixir_type_map[type]}"
+
+        [{:builtin_type_array, "uint8[]"}, name] ->
+          "#{name}: binary()"
 
         [{:builtin_type_array, type}, name] ->
           "#{name}: list(#{@ros2_elixir_type_map[get_array_type(type)]})"

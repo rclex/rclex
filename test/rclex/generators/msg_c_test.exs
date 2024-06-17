@@ -24,7 +24,8 @@ defmodule Rclex.Generators.MsgCTest do
         "geometry_msgs/msg/Vector3",
         "geometry_msgs/msg/Twist",
         "std_srvs/srv/SetBool_Request",
-        "std_srvs/srv/SetBool_Response"
+        "std_srvs/srv/SetBool_Response",
+        "rcl_interfaces/srv/GetParameterTypes_Response"
       ] do
     test "generate/2 #{ros2_message_type}" do
       ros2_message_type = unquote(ros2_message_type)
