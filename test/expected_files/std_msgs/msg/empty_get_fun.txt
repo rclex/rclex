@@ -1,0 +1,3 @@
+  return enif_make_tuple(env, 1,
+    enif_make_uint(env, message_p->structure_needs_at_least_one_member)
+  );

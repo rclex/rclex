@@ -1,0 +1,24 @@
+// clang-format off
+#include "<%= header_name %>.h"
+#include "../../../macros.h"
+#include "../../../resource_types.h"
+#include "../../../terms.h"
+
+#include <erl_nif.h>
+
+#include <rosidl_runtime_c/service_type_support_struct.h>
+#include <<%= header_prefix %>.h>
+
+ERL_NIF_TERM <%= function_prefix %>_type_support(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+  ignore_unused(argv);
+
+  if (argc != 0) return enif_make_badarg(env);
+
+  const rosidl_service_type_support_t * ts_p = <%= rosidl_get_srv_type_support %>;
+  rosidl_service_type_support_t *obj = enif_alloc_resource(rt_rosidl_service_type_support_t, sizeof(rosidl_service_type_support_t));
+  *obj = *ts_p;
+  ERL_NIF_TERM term = enif_make_resource(env, obj);
+  enif_release_resource(obj);
+
+  return term;
+}
