@@ -112,16 +112,23 @@ defmodule Rclex.Generators.MsgC do
   end
 
   def enif_get({:msg_type_array, type}, acc, ros2_message_type_map) do
+    case get_array_type(type) do
+      %{type: type, kind: :unbounded_dynamic} ->
+        enif_get({:msg_type_array_unbounded, type}, acc, ros2_message_type_map)
+    end
+  end
+
+  def enif_get({:msg_type_array_unbounded, type}, acc, ros2_message_type_map) do
     var = Enum.join(acc.vars, "_")
     mbr = Enum.join(acc.mbrs, ".")
     term = Enum.join(acc.terms, "_")
 
-    sequence = "#{to_c_type(get_array_type(type))}__Sequence"
+    sequence = "#{to_c_type(type)}__Sequence"
 
     binary =
       (fn ->
          acc = %Acc{acc | vars: acc.vars ++ ["i"], mbrs: acc.mbrs ++ ["data[#{var}_i]"]}
-         enif_get({:msg_type, get_array_type(type)}, acc, ros2_message_type_map)
+         enif_get({:msg_type, type}, acc, ros2_message_type_map)
        end).()
       |> format()
 
@@ -152,22 +159,30 @@ defmodule Rclex.Generators.MsgC do
   end
 
   def enif_get({:builtin_type_array, type}, acc, ros2_message_type_map) do
+    case get_array_type(type) do
+      %{type: type, kind: :unbounded_dynamic} ->
+        enif_get({:builtin_type_array_unbounded, type}, acc, ros2_message_type_map)
+
+      %{type: type, kind: :static, size: size} ->
+        enif_get({:builtin_type_array_static, type, size}, acc, ros2_message_type_map)
+    end
+  end
+
+  def enif_get({:builtin_type_array_unbounded, type}, acc, ros2_message_type_map) do
     var = Enum.join(acc.vars, "_")
     mbr = Enum.join(acc.mbrs, ".")
     term = Enum.join(acc.terms, "_")
 
-    sequence = "rosidl_runtime_c__#{get_array_type(type)}__Sequence"
+    sequence = "rosidl_runtime_c__#{type}__Sequence"
+
+    vars = acc.vars ++ [type]
+    mbrs = acc.mbrs ++ ["data[#{var}_i]"]
+    terms = acc.vars ++ ["head"]
 
     binary =
       (fn ->
-         acc = %Acc{
-           acc
-           | vars: acc.vars ++ [get_array_type(type)],
-             mbrs: acc.mbrs ++ ["data[#{var}_i]"],
-             terms: acc.vars ++ ["head"]
-         }
-
-         enif_get({:builtin_type, get_array_type(type)}, acc, ros2_message_type_map)
+         acc = %Acc{acc | vars: vars, mbrs: mbrs, terms: terms}
+         enif_get({:builtin_type, type}, acc, ros2_message_type_map)
        end).()
       |> format()
 
@@ -184,6 +199,34 @@ defmodule Rclex.Generators.MsgC do
     unsigned int #{var}_i;
     ERL_NIF_TERM #{var}_left, #{var}_head, #{var}_tail;
     for (#{var}_i = 0, #{var}_left = #{term}; #{var}_i < #{var}_length; ++#{var}_i, #{var}_left = #{var}_tail)
+    {
+      if (!enif_get_list_cell(env, #{var}_left, &#{var}_head, &#{var}_tail))
+        return enif_make_badarg(env);
+
+    #{binary}
+    }
+    """
+  end
+
+  def enif_get({:builtin_type_array_static, type, size}, acc, ros2_message_type_map) do
+    var = Enum.join(acc.vars, "_")
+    term = Enum.join(acc.terms, "_")
+
+    vars = acc.vars ++ [type]
+    mbrs = List.pop_at(acc.mbrs, -1) |> then(fn {mbr, mbrs} -> mbrs ++ ["#{mbr}[#{var}_i]"] end)
+    terms = acc.vars ++ ["head"]
+
+    binary =
+      (fn ->
+         acc = %Acc{acc | vars: vars, mbrs: mbrs, terms: terms}
+         enif_get({:builtin_type, type}, acc, ros2_message_type_map)
+       end).()
+      |> format()
+
+    """
+    unsigned int #{var}_i;
+    ERL_NIF_TERM #{var}_left, #{var}_head, #{var}_tail;
+    for (#{var}_i = 0, #{var}_left = #{term}; #{var}_i < #{size}; ++#{var}_i, #{var}_left = #{var}_tail)
     {
       if (!enif_get_list_cell(env, #{var}_left, &#{var}_head, &#{var}_tail))
         return enif_make_badarg(env);
@@ -298,44 +341,91 @@ defmodule Rclex.Generators.MsgC do
   def build_get_fun_fragments(acc, lhs \\ "return", ros2_message_type_map) do
     {binary, accs} = enif_make(acc.type, acc, ros2_message_type_map)
 
+    rhs = binary |> String.replace_suffix("\n", "")
+
     array_accs =
       Enum.filter(accs, fn acc ->
         {type_atom, _} = acc.type
         type_atom in [:msg_type_array, :builtin_type_array]
       end)
 
-    rhs = binary |> String.replace_suffix("\n", "")
-
     Enum.map_join(array_accs, fn acc ->
-      var = Enum.join(acc.vars, "_")
-      mbr = Enum.join(acc.mbrs, ".")
-
-      binary =
-        build_get_fun_fragments(
-          to_not_array_acc(acc),
-          "#{var}[#{var}_i] =",
-          ros2_message_type_map
-        )
-        |> format()
-
-      """
-      ERL_NIF_TERM #{var}[message_p->#{mbr}.size];
-
-      for (size_t #{var}_i = 0; #{var}_i < message_p->#{mbr}.size; ++#{var}_i)
-      {
-      #{binary}
-      }
-
-      """
+      build_get_fun_fragments_array(acc.type, acc, ros2_message_type_map)
     end) <> "#{lhs} #{rhs};"
   end
 
-  defp to_not_array_acc(acc) do
-    case acc.type do
-      {:msg_type_array, type} -> %Acc{acc | type: {:msg_type, get_array_type(type)}}
-      {:builtin_type_array, type} -> %Acc{acc | type: {:builtin_type, get_array_type(type)}}
+  def build_get_fun_fragments_array({:msg_type_array, type}, acc, ros2_message_type_map) do
+    case get_array_type(type) do
+      %{type: type, kind: :unbounded_dynamic} ->
+        array_for(
+          {:unbounded, type},
+          %Acc{acc | type: {:msg_type, type}},
+          ros2_message_type_map
+        )
     end
-    |> then(&%Acc{&1 | mbrs: acc.mbrs ++ ["data[#{Enum.join(acc.vars, "_")}_i]"]})
+  end
+
+  def build_get_fun_fragments_array({:builtin_type_array, type}, acc, ros2_message_type_map) do
+    case get_array_type(type) do
+      %{type: type, kind: :unbounded_dynamic} ->
+        array_for(
+          {:unbounded, type},
+          %Acc{acc | type: {:builtin_type, type}},
+          ros2_message_type_map
+        )
+
+      %{type: type, kind: :static, size: size} ->
+        array_for(
+          {:static, type, size},
+          %Acc{acc | type: {:builtin_type, type}},
+          ros2_message_type_map
+        )
+    end
+  end
+
+  defp array_for({:unbounded, _type}, acc, ros2_message_type_map) do
+    var = Enum.join(acc.vars, "_")
+    mbr = Enum.join(acc.mbrs, ".")
+
+    mbrs = acc.mbrs ++ ["data[#{var}_i]"]
+
+    acc = %Acc{acc | mbrs: mbrs}
+
+    binary =
+      build_get_fun_fragments(acc, "#{var}[#{var}_i] =", ros2_message_type_map)
+      |> format()
+
+    """
+    ERL_NIF_TERM #{var}[message_p->#{mbr}.size];
+
+    for (size_t #{var}_i = 0; #{var}_i < message_p->#{mbr}.size; ++#{var}_i)
+    {
+    #{binary}
+    }
+
+    """
+  end
+
+  defp array_for({:static, _type, size}, acc, ros2_message_type_map) do
+    var = Enum.join(acc.vars, "_")
+
+    mbrs = List.pop_at(acc.mbrs, -1) |> then(fn {mbr, mbrs} -> mbrs ++ ["#{mbr}[#{var}_i]"] end)
+
+    acc = %Acc{acc | mbrs: mbrs}
+
+    binary =
+      build_get_fun_fragments(acc, "#{var}[#{var}_i] =", ros2_message_type_map)
+      |> format()
+
+    """
+    ERL_NIF_TERM #{var}[#{size}];
+
+    for (size_t #{var}_i = 0; #{var}_i < #{size}; ++#{var}_i)
+    {
+    #{binary}
+    }
+
+    """
   end
 
   def enif_make({:msg_type, ros2_message_type}, acc, ros2_message_type_map) do
@@ -369,12 +459,24 @@ defmodule Rclex.Generators.MsgC do
     {binary, accs}
   end
 
-  def enif_make({:msg_type_array, type}, acc, ros2_message_type_map) do
-    {enif_make_array(type, acc, ros2_message_type_map), [acc]}
+  def enif_make({:msg_type_array, type}, acc, _ros2_message_type_map) do
+    case get_array_type(type) do
+      %{type: type, kind: :unbounded_dynamic} ->
+        {enif_make_array({:unbounded, type}, acc), [acc]}
+
+      %{type: type, kind: :static, size: size} ->
+        {enif_make_array({:static, type, size}, acc), [acc]}
+    end
   end
 
-  def enif_make({:builtin_type_array, type}, acc, ros2_message_type_map) do
-    {enif_make_array(type, acc, ros2_message_type_map), [acc]}
+  def enif_make({:builtin_type_array, type}, acc, _ros2_message_type_map) do
+    case get_array_type(type) do
+      %{type: type, kind: :unbounded_dynamic} ->
+        {enif_make_array({:unbounded, type}, acc), [acc]}
+
+      %{type: type, kind: :static, size: size} ->
+        {enif_make_array({:static, type, size}, acc), [acc]}
+    end
   end
 
   def enif_make({:builtin_type, type}, acc, _ros2_message_type_map) do
@@ -382,10 +484,15 @@ defmodule Rclex.Generators.MsgC do
     {enif_make_builtin(type, mbr), [acc]}
   end
 
-  defp enif_make_array(_type, acc, _ros2_message_type_map) do
+  defp enif_make_array({:unbounded, _type}, acc) do
     var = Enum.join(acc.vars, "_")
     mbr = Enum.join(acc.mbrs, ".")
     "enif_make_list_from_array(env, #{var}, message_p->#{mbr}.size)"
+  end
+
+  defp enif_make_array({:static, _type, size}, acc) do
+    var = Enum.join(acc.vars, "_")
+    "enif_make_list_from_array(env, #{var}, #{size})"
   end
 
   defp enif_make_builtin("bool", mbr) do
@@ -443,7 +550,7 @@ defmodule Rclex.Generators.MsgC do
           get_deps_types(type, MapSet.put(acc, type), ros2_message_type_map)
 
         {:msg_type_array, type} ->
-          type = get_array_type(type)
+          %{type: type} = get_array_type(type)
           get_deps_types(type, MapSet.put(acc, type), ros2_message_type_map)
 
         _ ->
@@ -456,9 +563,13 @@ defmodule Rclex.Generators.MsgC do
     Map.get(ros2_message_type_map, {:msg_type, ros2_message_type})
   end
 
-  defp get_array_type(type) do
+  def get_array_type(type) do
     {:ok, acc, _rest, _context, _line, _column} = TypeParser.parse(type)
-    [type | _] = acc
-    type
+
+    case acc do
+      [type, "[]"] -> %{type: type, kind: :unbounded_dynamic, size: :undefined}
+      [type, "[", size, "]"] -> %{type: type, kind: :static, size: size}
+      [type, "[<=", size, "]"] -> %{type: type, kind: :bounded_dynamic, size: size}
+    end
   end
 end
