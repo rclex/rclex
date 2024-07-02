@@ -6,12 +6,12 @@ defmodule Rclex.Generators.MsgEx do
 
   @ros2_elixir_type_map %{
     "bool" => "boolean()",
-    "byte" => "0..255",
+    "byte" => "byte()",
     "char" => "-128..127",
     "float32" => "float()",
     "float64" => "float()",
     "int8" => "-128..127",
-    "uint8" => "0..255",
+    "uint8" => "byte()",
     "int16" => "integer()",
     "uint16" => "non_neg_integer()",
     "int32" => "integer()",
