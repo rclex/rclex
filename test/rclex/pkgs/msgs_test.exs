@@ -1,4 +1,4 @@
-defmodule Rclex.Pkgs.Test do
+defmodule Rclex.Pkgs.MsgsTest do
   use ExUnit.Case
 
   test "geometry_msgs/msg/Twist" do
@@ -13,6 +13,50 @@ defmodule Rclex.Pkgs.Test do
       assert ^struct = Rclex.Pkgs.GeometryMsgs.Msg.Twist.get!(message)
     end)
     |> tap(&Rclex.Pkgs.GeometryMsgs.Msg.Twist.destroy!(&1))
+  end
+
+  test "std_msgs/msg/Empty" do
+    struct = %Rclex.Pkgs.StdMsgs.Msg.Empty{}
+
+    Rclex.Pkgs.StdMsgs.Msg.Empty.create!()
+    |> tap(&Rclex.Pkgs.StdMsgs.Msg.Empty.set!(&1, struct))
+    |> tap(fn message ->
+      assert ^struct = Rclex.Pkgs.StdMsgs.Msg.Empty.get!(message)
+    end)
+    |> tap(&Rclex.Pkgs.StdMsgs.Msg.Empty.destroy!(&1))
+  end
+
+  test "std_msgs/msg/UInt8MultiArray" do
+    struct = %Rclex.Pkgs.StdMsgs.Msg.UInt8MultiArray{
+      layout: %Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout{
+        dim: [
+          %Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension{
+            label: "abc",
+            size: 123,
+            stride: 789
+          },
+          %Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension{
+            label: "def",
+            size: 456,
+            stride: 456
+          },
+          %Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension{
+            label: "ghi",
+            size: 789,
+            stride: 123
+          }
+        ],
+        data_offset: 123_456_789
+      },
+      data: <<1, 2, 3, 4, 5, 6, 7, 8, 9>>
+    }
+
+    Rclex.Pkgs.StdMsgs.Msg.UInt8MultiArray.create!()
+    |> tap(&Rclex.Pkgs.StdMsgs.Msg.UInt8MultiArray.set!(&1, struct))
+    |> tap(fn message ->
+      assert ^struct = Rclex.Pkgs.StdMsgs.Msg.UInt8MultiArray.get!(message)
+    end)
+    |> tap(&Rclex.Pkgs.StdMsgs.Msg.UInt8MultiArray.destroy!(&1))
   end
 
   test "std_msgs/msg/UInt32MultiArray" do
@@ -86,5 +130,21 @@ defmodule Rclex.Pkgs.Test do
       assert ^struct = Rclex.Pkgs.DiagnosticMsgs.Msg.DiagnosticStatus.get!(message)
     end)
     |> tap(&Rclex.Pkgs.DiagnosticMsgs.Msg.DiagnosticStatus.destroy!(&1))
+  end
+
+  test "action_msgs/msg/GoalInfo" do
+    struct = %Rclex.Pkgs.ActionMsgs.Msg.GoalInfo{
+      goal_id: %Rclex.Pkgs.UniqueIdentifierMsgs.Msg.UUID{
+        uuid: for(i <- 0..15, into: <<>>, do: <<i>>)
+      },
+      stamp: %Rclex.Pkgs.BuiltinInterfaces.Msg.Time{sec: -1, nanosec: 1}
+    }
+
+    Rclex.Pkgs.ActionMsgs.Msg.GoalInfo.create!()
+    |> tap(&Rclex.Pkgs.ActionMsgs.Msg.GoalInfo.set!(&1, struct))
+    |> tap(fn message ->
+      assert ^struct = Rclex.Pkgs.ActionMsgs.Msg.GoalInfo.get!(message)
+    end)
+    |> tap(&Rclex.Pkgs.ActionMsgs.Msg.GoalInfo.destroy!(&1))
   end
 end

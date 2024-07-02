@@ -1,5 +1,5 @@
 // clang-format off
-#include "<%= header_name %>.h"
+#include "empty.h"
 #include "../../../macros.h"
 #include "../../../resource_types.h"
 #include "../../../terms.h"
@@ -11,24 +11,21 @@
 #include <rosidl_runtime_c/primitives_sequence_functions.h>
 #include <rosidl_runtime_c/string.h>
 #include <rosidl_runtime_c/string_functions.h>
-<%= for deps_header_prefix <- deps_header_prefix_list do %>
-#include <<%= deps_header_prefix %>__functions.h>
-#include <<%= deps_header_prefix %>__struct.h>
-<% end %>
-#include <<%= header_prefix %>__functions.h>
-#include <<%= header_prefix %>__struct.h>
-#include <<%= header_prefix %>__type_support.h>
+
+#include <std_msgs/msg/detail/empty__functions.h>
+#include <std_msgs/msg/detail/empty__struct.h>
+#include <std_msgs/msg/detail/empty__type_support.h>
 
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
-ERL_NIF_TERM <%= function_prefix %>_type_support(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+ERL_NIF_TERM nif_std_msgs_msg_empty_type_support(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   ignore_unused(argv);
 
   if (argc != 0) return enif_make_badarg(env);
 
-  const rosidl_message_type_support_t *ts_p = <%= rosidl_get_msg_type_support %>;
+  const rosidl_message_type_support_t *ts_p = ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Empty);
   rosidl_message_type_support_t *obj = enif_alloc_resource(rt_rosidl_message_type_support_t, sizeof(rosidl_message_type_support_t));
   *obj = *ts_p;
   ERL_NIF_TERM term = enif_make_resource(env, obj);
@@ -37,12 +34,12 @@ ERL_NIF_TERM <%= function_prefix %>_type_support(ErlNifEnv *env, int argc, const
   return term;
 }
 
-ERL_NIF_TERM <%= function_prefix %>_create(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+ERL_NIF_TERM nif_std_msgs_msg_empty_create(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   ignore_unused(argv);
 
   if (argc != 0) return enif_make_badarg(env);
 
-  <%= c_type %> *message_p = <%= c_type %>__create();
+  std_msgs__msg__Empty *message_p = std_msgs__msg__Empty__create();
   if (message_p == NULL) return raise(env, __FILE__, __LINE__);
 
   void **obj = enif_alloc_resource(rt_ros_message, sizeof(void *));
@@ -53,46 +50,36 @@ ERL_NIF_TERM <%= function_prefix %>_create(ErlNifEnv *env, int argc, const ERL_N
   return term;
 }
 
-ERL_NIF_TERM <%= function_prefix %>_destroy(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+ERL_NIF_TERM nif_std_msgs_msg_empty_destroy(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   if (argc != 1) return enif_make_badarg(env);
 
   void **ros_message_pp;
   if (!enif_get_resource(env, argv[0], rt_ros_message, (void **)&ros_message_pp))
     return enif_make_badarg(env);
 
-  <%= c_type %> *message_p = (<%= c_type %> *)*ros_message_pp;
-  <%= c_type %>__destroy(message_p);
+  std_msgs__msg__Empty *message_p = (std_msgs__msg__Empty *)*ros_message_pp;
+  std_msgs__msg__Empty__destroy(message_p);
 
   return atom_ok;
 }
 
-ERL_NIF_TERM <%= function_prefix %>_set(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+ERL_NIF_TERM nif_std_msgs_msg_empty_set(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   if (argc != 2) return enif_make_badarg(env);
 
   void **ros_message_pp;
   if (!enif_get_resource(env, argv[0], rt_ros_message, (void **)&ros_message_pp))
     return enif_make_badarg(env);
-<%= if not is_empty_type? do %>
-  <%= c_type %> *message_p = (<%= c_type %> *)*ros_message_pp;
 
-  int arity;
-  const ERL_NIF_TERM *tuple;
-  if (!enif_get_tuple(env, argv[1], &arity, &tuple)) return enif_make_badarg(env);
-
-<%= set_fun_fragments %>
-<% end %>
   return atom_ok;
 }
 
-ERL_NIF_TERM <%= function_prefix %>_get(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
+ERL_NIF_TERM nif_std_msgs_msg_empty_get(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   if (argc != 1) return enif_make_badarg(env);
 
   void **ros_message_pp;
   if (!enif_get_resource(env, argv[0], rt_ros_message, (void **)&ros_message_pp))
     return enif_make_badarg(env);
-<%= if not is_empty_type? do %>
-  <%= c_type %> *message_p = (<%= c_type %> *)*ros_message_pp;
-<% end %>
-<%= get_fun_fragments %>
+
+  return enif_make_tuple(env, 0);
 }
 // clang-format on

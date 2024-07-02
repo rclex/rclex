@@ -33,10 +33,8 @@ defmodule Rclex.Pkgs.GeometryMsgs.Msg.Twist do
   end
 
   def to_tuple(%__MODULE__{linear: linear, angular: angular}) do
-    {
-      Rclex.Pkgs.GeometryMsgs.Msg.Vector3.to_tuple(linear),
-      Rclex.Pkgs.GeometryMsgs.Msg.Vector3.to_tuple(angular)
-    }
+    {Rclex.Pkgs.GeometryMsgs.Msg.Vector3.to_tuple(linear),
+     Rclex.Pkgs.GeometryMsgs.Msg.Vector3.to_tuple(angular)}
   end
 
   def to_struct({linear, angular}) do

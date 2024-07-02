@@ -33,16 +33,10 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.UInt32MultiArray do
   end
 
   def to_tuple(%__MODULE__{layout: layout, data: data}) do
-    {
-      Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout.to_tuple(layout),
-      data
-    }
+    {Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout.to_tuple(layout), data}
   end
 
   def to_struct({layout, data}) do
-    %__MODULE__{
-      layout: Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout.to_struct(layout),
-      data: data
-    }
+    %__MODULE__{layout: Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout.to_struct(layout), data: data}
   end
 end

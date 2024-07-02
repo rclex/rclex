@@ -35,15 +35,13 @@ defmodule Rclex.Pkgs.SensorMsgs.Msg.PointCloud do
   end
 
   def to_tuple(%__MODULE__{header: header, points: points, channels: channels}) do
-    {
-      Rclex.Pkgs.StdMsgs.Msg.Header.to_tuple(header),
-      for struct <- points do
-        Rclex.Pkgs.GeometryMsgs.Msg.Point32.to_tuple(struct)
-      end,
-      for struct <- channels do
-        Rclex.Pkgs.SensorMsgs.Msg.ChannelFloat32.to_tuple(struct)
-      end
-    }
+    {Rclex.Pkgs.StdMsgs.Msg.Header.to_tuple(header),
+     for struct <- points do
+       Rclex.Pkgs.GeometryMsgs.Msg.Point32.to_tuple(struct)
+     end,
+     for struct <- channels do
+       Rclex.Pkgs.SensorMsgs.Msg.ChannelFloat32.to_tuple(struct)
+     end}
   end
 
   def to_struct({header, points, channels}) do

@@ -2,11 +2,9 @@ defmodule Rclex.Pkgs.<%= module_name %> do
   @moduledoc false
   @behaviour Rclex.MessageBehaviour
 
-  defstruct <%= defstruct_fields %>
+  <%= defstruct_fields %>
 
-  @type t :: %__MODULE__{
-<%= type_fields %>
-        }
+  <%= type_fields %>
 
   alias Rclex.Nif
 
@@ -31,14 +29,10 @@ defmodule Rclex.Pkgs.<%= module_name %> do
   end
 
   def to_tuple(%__MODULE__{<%= to_tuple_args_fields %>}) do
-    {
-<%= to_tuple_return_fields %>
-    }
+    <%= to_tuple_return_fields %>
   end
 
   def to_struct({<%= to_struct_args_fields %>}) do
-    %__MODULE__{
-<%= to_struct_return_fields %>
-    }
+    <%= to_struct_return_fields %>
   end
 end
