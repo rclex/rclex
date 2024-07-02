@@ -26,9 +26,17 @@ defmodule Rclex.Generators.Util do
 
   iex> Rclex.Generators.Util.to_down_snake("UInt32MultiArray")
   "u_int32_multi_array"
+
+  iex> Rclex.Generators.Util.to_down_snake("TF2Error")
+  "tf2_error"
   """
   def to_down_snake(type_name) do
-    String.split(type_name, ~r/[A-Z][a-z0-9]+/, include_captures: true, trim: true)
-    |> Enum.map_join("_", &String.downcase(&1))
+    # NOTE: conversion rule is described followings,
+    # https://github.com/ros2/rosidl/blob/humble/rosidl_cmake/cmake/string_camel_case_to_lower_case_underscore.cmake#L23-L32
+    # We just described it as Elixir
+    type_name
+    |> String.replace(~r/(.)([A-Z][a-z]+)/, "\\1_\\2")
+    |> String.replace(~r/([a-z0-9])([A-Z])/, "\\1_\\2")
+    |> String.downcase()
   end
 end
