@@ -173,7 +173,7 @@ defmodule Rclex.Generators.MsgC do
     mbr = Enum.join(acc.mbrs, ".")
     term = Enum.join(acc.terms, "_")
 
-    sequence = "rosidl_runtime_c__#{type}__Sequence"
+    sequence = rosidl_runtime_c_type_sequence(type)
 
     vars = acc.vars ++ [type]
     mbrs = acc.mbrs ++ ["data[#{var}_i]"]
@@ -570,6 +570,14 @@ defmodule Rclex.Generators.MsgC do
       [type, "[]"] -> %{type: type, kind: :unbounded_dynamic, size: :undefined}
       [type, "[", size, "]"] -> %{type: type, kind: :static, size: size}
       [type, "[<=", size, "]"] -> %{type: type, kind: :bounded_dynamic, size: size}
+    end
+  end
+
+  defp rosidl_runtime_c_type_sequence(type) do
+    case type do
+      "string" -> "rosidl_runtime_c__String__Sequence"
+      "wstring" -> "rosidl_runtime_c__U16String__Sequence"
+      _ -> "rosidl_runtime_c__#{type}__Sequence"
     end
   end
 end
