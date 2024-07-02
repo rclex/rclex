@@ -134,7 +134,9 @@ defmodule Rclex.Pkgs.MsgsTest do
 
   test "action_msgs/msg/GoalInfo" do
     struct = %Rclex.Pkgs.ActionMsgs.Msg.GoalInfo{
-      goal_id: %Rclex.Pkgs.UniqueIdentifierMsgs.Msg.UUID{uuid: for(i <- 0..15, do: i)},
+      goal_id: %Rclex.Pkgs.UniqueIdentifierMsgs.Msg.UUID{
+        uuid: for(i <- 0..15, into: <<>>, do: <<i>>)
+      },
       stamp: %Rclex.Pkgs.BuiltinInterfaces.Msg.Time{sec: -1, nanosec: 1}
     }
 
