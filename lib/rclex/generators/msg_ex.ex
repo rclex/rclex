@@ -6,12 +6,12 @@ defmodule Rclex.Generators.MsgEx do
 
   @ros2_elixir_type_map %{
     "bool" => "boolean()",
-    "byte" => "0..255",
+    "byte" => "byte()",
     "char" => "-128..127",
     "float32" => "float()",
     "float64" => "float()",
     "int8" => "-128..127",
-    "uint8" => "0..255",
+    "uint8" => "byte()",
     "int16" => "integer()",
     "uint16" => "non_neg_integer()",
     "int32" => "integer()",
@@ -33,63 +33,80 @@ defmodule Rclex.Generators.MsgEx do
       to_tuple_return_fields: to_tuple_return_fields(type, ros2_message_type_map),
       to_struct_return_fields: to_struct_return_fields(type, ros2_message_type_map)
     )
+    |> Code.format_string!()
+    |> IO.iodata_to_binary()
+    |> then(&"#{&1}\n")
   end
 
   def defstruct_fields(ros2_message_type, ros2_message_type_map) do
-    indent = String.duplicate(" ", 12)
+    fields = get_fields(ros2_message_type, ros2_message_type_map)
 
-    get_fields(ros2_message_type, ros2_message_type_map)
-    |> Enum.map_join(",\n", fn field ->
-      case field do
-        [{:builtin_type, _type}, name] ->
-          "#{name}: nil"
+    if Enum.empty?(fields) do
+      "defstruct []"
+    else
+      fields
+      |> Enum.map_join(",\n", fn field ->
+        # credo:disable-for-next-line Credo.Check.Refactor.Nesting
+        case field do
+          [{:builtin_type, _type}, name] ->
+            "#{name}: nil"
 
-        [{:builtin_type, _type}, name, default] ->
-          "#{name}: #{inspect(default)}"
+          [{:builtin_type, _type}, name, default] ->
+            "#{name}: #{inspect(default)}"
 
-        [{:builtin_type_array, _type}, name] ->
-          "#{name}: []"
+          [{:builtin_type_array, "uint8[" <> _}, name] ->
+            "#{name}: <<>>"
 
-        [{:builtin_type_array, _type}, name, default] ->
-          "#{name}: #{inspect(default)}"
+          [{:builtin_type_array, _type}, name] ->
+            "#{name}: []"
 
-        [{:msg_type, type}, name] ->
-          module_name = module_name(type)
-          "#{name}: %Rclex.Pkgs.#{module_name}{}"
+          [{:builtin_type_array, _type}, name, default] ->
+            "#{name}: #{inspect(default)}"
 
-        [{:msg_type_array, _type}, name] ->
-          "#{name}: []"
-      end
-    end)
-    |> String.split("\n")
-    |> Enum.join("\n#{indent}")
+          [{:msg_type, type}, name] ->
+            module_name = module_name(type)
+            "#{name}: %Rclex.Pkgs.#{module_name}{}"
+
+          [{:msg_type_array, _type}, name] ->
+            "#{name}: []"
+        end
+      end)
+      |> then(&"defstruct #{&1}")
+    end
   end
 
   def type_fields(ros2_message_type, ros2_message_type_map) do
-    indent = String.duplicate(" ", 10)
+    fields = get_fields(ros2_message_type, ros2_message_type_map)
 
-    get_fields(ros2_message_type, ros2_message_type_map)
-    |> Enum.map_join(",\n", fn field ->
-      [type_tuple, name | _] = field
+    if Enum.empty?(fields) do
+      "@type t :: %__MODULE__{}"
+    else
+      fields
+      |> Enum.map_join(",\n", fn field ->
+        [type_tuple, name | _] = field
 
-      case [type_tuple, name] do
-        [{:builtin_type, type}, name] ->
-          "#{name}: #{@ros2_elixir_type_map[type]}"
+        # credo:disable-for-next-line Credo.Check.Refactor.Nesting
+        case [type_tuple, name] do
+          [{:builtin_type, type}, name] ->
+            "#{name}: #{@ros2_elixir_type_map[type]}"
 
-        [{:builtin_type_array, type}, name] ->
-          "#{name}: list(#{@ros2_elixir_type_map[get_array_type(type)]})"
+          [{:builtin_type_array, "uint8[" <> _}, name] ->
+            "#{name}: binary()"
 
-        [{:msg_type, type}, name] ->
-          module_name = module_name(type)
-          "#{name}: %Rclex.Pkgs.#{module_name}{}"
+          [{:builtin_type_array, type}, name] ->
+            "#{name}: list(#{@ros2_elixir_type_map[get_array_type(type)]})"
 
-        [{:msg_type_array, type}, name] ->
-          module_name = type |> get_array_type() |> module_name()
-          "#{name}: list(%Rclex.Pkgs.#{module_name}{})"
-      end
-    end)
-    |> String.split("\n")
-    |> Enum.map_join("\n", &Kernel.<>(indent, &1))
+          [{:msg_type, type}, name] ->
+            module_name = module_name(type)
+            "#{name}: %Rclex.Pkgs.#{module_name}{}"
+
+          [{:msg_type_array, type}, name] ->
+            module_name = type |> get_array_type() |> module_name()
+            "#{name}: list(%Rclex.Pkgs.#{module_name}{})"
+        end
+      end)
+      |> then(&"@type t :: %__MODULE__{#{&1}}")
+    end
   end
 
   def to_tuple_args_fields(ros2_message_type, ros2_message_type_map) do
@@ -109,76 +126,90 @@ defmodule Rclex.Generators.MsgEx do
   end
 
   def to_tuple_return_fields(ros2_message_type, ros2_message_type_map) do
-    indent = String.duplicate(" ", 6)
+    fields = get_fields(ros2_message_type, ros2_message_type_map)
 
-    get_fields(ros2_message_type, ros2_message_type_map)
-    |> Enum.map_join(",\n", fn field ->
-      [type_tuple, name | _] = field
+    if Enum.empty?(fields) do
+      "{}"
+    else
+      fields
+      |> Enum.map_join(",\n", fn field ->
+        [type_tuple, name | _] = field
 
-      case [type_tuple, name] do
-        [{:builtin_type, "string" <> _}, name] ->
-          ~s/~c"\#{#{name}}"/
+        # credo:disable-for-next-line Credo.Check.Refactor.Nesting
+        case [type_tuple, name] do
+          [{:builtin_type, "string" <> _}, name] ->
+            ~s/~c"\#{#{name}}"/
 
-        [{:builtin_type, _type}, name] ->
-          "#{name}"
+          [{:builtin_type, _type}, name] ->
+            "#{name}"
 
-        [{:builtin_type_array, _type}, name] ->
-          "#{name}"
+          [{:builtin_type_array, "uint8[" <> _}, name] ->
+            "#{name} |> to_charlist()"
 
-        [{:msg_type, type}, name] ->
-          module_name = module_name(type)
-          "Rclex.Pkgs.#{module_name}.to_tuple(#{name})"
+          [{:builtin_type_array, _type}, name] ->
+            "#{name}"
 
-        [{:msg_type_array, type}, name] ->
-          module_name = type |> get_array_type() |> module_name()
+          [{:msg_type, type}, name] ->
+            module_name = module_name(type)
+            "Rclex.Pkgs.#{module_name}.to_tuple(#{name})"
 
-          """
-          for struct <- #{name} do
-            Rclex.Pkgs.#{module_name}.to_tuple(struct)
-          end
-          """
-          |> String.replace_suffix("\n", "")
-      end
-    end)
-    |> String.split("\n")
-    |> Enum.map_join("\n", &Kernel.<>(indent, &1))
+          [{:msg_type_array, type}, name] ->
+            module_name = type |> get_array_type() |> module_name()
+
+            """
+            for struct <- #{name} do
+              Rclex.Pkgs.#{module_name}.to_tuple(struct)
+            end
+            """
+            |> String.replace_suffix("\n", "")
+        end
+      end)
+      |> then(&"{#{&1}}")
+    end
   end
 
   def to_struct_return_fields(ros2_message_type, ros2_message_type_map) do
-    indent = String.duplicate(" ", 6)
+    fields = get_fields(ros2_message_type, ros2_message_type_map)
 
-    get_fields(ros2_message_type, ros2_message_type_map)
-    |> Enum.map_join(",\n", fn field ->
-      [type_tuple, name | _] = field
+    if Enum.empty?(fields) do
+      "%__MODULE__{}"
+    else
+      fields
+      |> Enum.map_join(",\n", fn field ->
+        [type_tuple, name | _] = field
 
-      case [type_tuple, name] do
-        [{:builtin_type, "string" <> _}, name] ->
-          ~s/#{name}: "\#{#{name}}"/
+        # credo:disable-for-next-line Credo.Check.Refactor.Nesting
+        case [type_tuple, name] do
+          [{:builtin_type, "string" <> _}, name] ->
+            ~s/#{name}: "\#{#{name}}"/
 
-        [{:builtin_type, _type}, name] ->
-          "#{name}: #{name}"
+          [{:builtin_type, _type}, name] ->
+            "#{name}: #{name}"
 
-        [{:builtin_type_array, _type}, name] ->
-          "#{name}: #{name}"
+          [{:builtin_type_array, "uint8[" <> _}, name] ->
+            "#{name}: #{name} |> IO.iodata_to_binary()"
 
-        [{:msg_type, type}, name] ->
-          module_name = module_name(type)
-          "#{name}: Rclex.Pkgs.#{module_name}.to_struct(#{name})"
+          [{:builtin_type_array, _type}, name] ->
+            "#{name}: #{name}"
 
-        [{:msg_type_array, type}, name] ->
-          module_name = type |> get_array_type() |> module_name()
+          [{:msg_type, type}, name] ->
+            module_name = module_name(type)
+            "#{name}: Rclex.Pkgs.#{module_name}.to_struct(#{name})"
 
-          """
-          #{name}:
-            for tuple <- #{name} do
-              Rclex.Pkgs.#{module_name}.to_struct(tuple)
-            end
-          """
-          |> String.replace_suffix("\n", "")
-      end
-    end)
-    |> String.split("\n")
-    |> Enum.map_join("\n", &Kernel.<>(indent, &1))
+          [{:msg_type_array, type}, name] ->
+            module_name = type |> get_array_type() |> module_name()
+
+            """
+            #{name}:
+              for tuple <- #{name} do
+                Rclex.Pkgs.#{module_name}.to_struct(tuple)
+              end
+            """
+            |> String.replace_suffix("\n", "")
+        end
+      end)
+      |> then(&"%__MODULE__{#{&1}}")
+    end
   end
 
   @doc """

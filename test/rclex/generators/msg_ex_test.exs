@@ -16,6 +16,7 @@ defmodule Rclex.Generators.MsgExTest do
 
   for ros2_message_type <- [
         "sensor_msgs/msg/PointCloud",
+        "std_msgs/msg/Empty",
         "std_msgs/msg/String",
         "std_msgs/msg/MultiArrayLayout",
         "std_msgs/msg/UInt32MultiArray",
@@ -29,7 +30,9 @@ defmodule Rclex.Generators.MsgExTest do
       [interfaces, msg, type] = String.split(ros2_message_type, "/")
       type_path = Enum.join([interfaces, msg, Util.to_down_snake(type)], "/")
 
-      assert MsgEx.generate(ros2_message_type, ros2_message_type_map) ==
+      binary = MsgEx.generate(ros2_message_type, ros2_message_type_map)
+
+      assert "#{binary}" ==
                File.read!(Path.join(File.cwd!(), "test/expected_files/#{type_path}.ex"))
     end
   end
@@ -40,6 +43,7 @@ defmodule Rclex.Generators.MsgExTest do
         ros2_message_type_map:
           Enum.reduce(
             [
+              "std_msgs/msg/Empty",
               "std_msgs/msg/String",
               "std_msgs/msg/MultiArrayLayout",
               "std_msgs/msg/UInt32MultiArray",
@@ -55,6 +59,7 @@ defmodule Rclex.Generators.MsgExTest do
     end
 
     for {ros2_message_type, expected} <- [
+          {"std_msgs/msg/Empty", "[]"},
           {"std_msgs/msg/String", "data: nil"},
           {"std_msgs/msg/MultiArrayDimension", "label: nil,\nsize: nil,\nstride: nil"},
           {"std_msgs/msg/MultiArrayLayout", "dim: [],\ndata_offset: nil"},
@@ -67,14 +72,14 @@ defmodule Rclex.Generators.MsgExTest do
       test "defstruct_fields/2, #{ros2_message_type}", %{
         ros2_message_type_map: ros2_message_type_map
       } do
-        indent = String.duplicate(" ", 12)
-        remove_indent = fn fields -> String.replace(fields, indent, "") end
         fields = MsgEx.defstruct_fields(unquote(ros2_message_type), ros2_message_type_map)
-        assert remove_indent.(fields) == unquote(expected)
+
+        assert fields == "defstruct #{unquote(expected)}"
       end
     end
 
     for {ros2_message_type, expected} <- [
+          {"std_msgs/msg/Empty", ""},
           {"std_msgs/msg/String", "data: String.t()"},
           {"std_msgs/msg/MultiArrayDimension",
            "label: String.t(),\nsize: non_neg_integer(),\nstride: non_neg_integer()"},
@@ -87,15 +92,14 @@ defmodule Rclex.Generators.MsgExTest do
            "linear: %Rclex.Pkgs.GeometryMsgs.Msg.Vector3{},\nangular: %Rclex.Pkgs.GeometryMsgs.Msg.Vector3{}"}
         ] do
       test "type_fields/2, #{ros2_message_type}", %{ros2_message_type_map: ros2_message_type_map} do
-        fields =
-          MsgEx.type_fields(unquote(ros2_message_type), ros2_message_type_map)
-          |> remove_indent(10)
+        fields = MsgEx.type_fields(unquote(ros2_message_type), ros2_message_type_map)
 
-        assert fields == unquote(expected)
+        assert fields == "@type t :: %__MODULE__{#{unquote(expected)}}"
       end
     end
 
     for {ros2_message_type, expected} <- [
+          {"std_msgs/msg/Empty", ""},
           {"std_msgs/msg/String", "data: data"},
           {"std_msgs/msg/MultiArrayDimension", "label: label, size: size, stride: stride"},
           {"std_msgs/msg/MultiArrayLayout", "dim: dim, data_offset: data_offset"},
@@ -112,6 +116,7 @@ defmodule Rclex.Generators.MsgExTest do
     end
 
     for {ros2_message_type, expected} <- [
+          {"std_msgs/msg/Empty", ""},
           {"std_msgs/msg/String", "data"},
           {"std_msgs/msg/MultiArrayDimension", "label, size, stride"},
           {"std_msgs/msg/MultiArrayLayout", "dim, data_offset"},
@@ -128,6 +133,7 @@ defmodule Rclex.Generators.MsgExTest do
     end
 
     for {ros2_message_type, expected} <- [
+          {"std_msgs/msg/Empty", ""},
           {"std_msgs/msg/String", "~c\"\#{data}\""},
           {"std_msgs/msg/MultiArrayDimension", "~c\"\#{label}\",\nsize,\nstride"},
           {"std_msgs/msg/MultiArrayLayout",
@@ -141,15 +147,14 @@ defmodule Rclex.Generators.MsgExTest do
       test "to_tuple_return_fields/2, #{ros2_message_type}", %{
         ros2_message_type_map: ros2_message_type_map
       } do
-        fields =
-          MsgEx.to_tuple_return_fields(unquote(ros2_message_type), ros2_message_type_map)
-          |> remove_indent(6)
+        fields = MsgEx.to_tuple_return_fields(unquote(ros2_message_type), ros2_message_type_map)
 
-        assert fields == unquote(expected)
+        assert fields == "{#{unquote(expected)}}"
       end
     end
 
     for {ros2_message_type, expected} <- [
+          {"std_msgs/msg/Empty", ""},
           {"std_msgs/msg/String", "data: \"\#{data}\""},
           {"std_msgs/msg/MultiArrayDimension",
            "label: \"\#{label}\",\nsize: size,\nstride: stride"},
@@ -164,20 +169,10 @@ defmodule Rclex.Generators.MsgExTest do
       test "to_struct_return_fields/2, #{ros2_message_type}", %{
         ros2_message_type_map: ros2_message_type_map
       } do
-        fields =
-          MsgEx.to_struct_return_fields(unquote(ros2_message_type), ros2_message_type_map)
-          |> remove_indent(6)
+        fields = MsgEx.to_struct_return_fields(unquote(ros2_message_type), ros2_message_type_map)
 
-        assert fields == unquote(expected)
+        assert fields == "%__MODULE__{#{unquote(expected)}}"
       end
-    end
-
-    defp remove_indent(fields, size) do
-      indent = String.duplicate(" ", size)
-
-      fields
-      |> String.split("\n")
-      |> Enum.map_join("\n", &String.replace_prefix(&1, indent, ""))
     end
   end
 end

@@ -33,12 +33,9 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout do
   end
 
   def to_tuple(%__MODULE__{dim: dim, data_offset: data_offset}) do
-    {
-      for struct <- dim do
-        Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension.to_tuple(struct)
-      end,
-      data_offset
-    }
+    {for struct <- dim do
+       Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension.to_tuple(struct)
+     end, data_offset}
   end
 
   def to_struct({dim, data_offset}) do
