@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v0.11.0 on 07 Jul 2024
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.10.1...v0.11.0
+
+* New features: none
+* Code Improvements/Fixes:
+  * Enhance msgs by @pojiro and @FelixPe in https://github.com/rclex/rclex/pull/325
+    * Especially, Use binary type for uint8[] in msgs (originally suggested by @FelixPe in #316)
+* Bumps:
+  * Bump elixir_make from 0.8.3 to 0.8.4 by @dependabot in https://github.com/rclex/rclex/pull/327
+  * Bump benchee from 1.3.0 to 1.3.1 by @dependabot in https://github.com/rclex/rclex/pull/328
+  * Bump credo from 1.7.6 to 1.7.7 by @dependabot in https://github.com/rclex/rclex/pull/329
+  * Bump ex_doc from 0.33.0 to 0.34.1 by @dependabot in https://github.com/rclex/rclex/pull/331
+* Note in this release:
+  * As described above, this release includes the breaking change to handle uint8[] in msgs as binary type in Elixir, contributed by @pojiro and @FelixPe :raised_hands:
+
 ## v0.10.1 on 23 May 2024
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.10.0...v0.10.1
