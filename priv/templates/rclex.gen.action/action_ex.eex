@@ -1,0 +1,42 @@
+defmodule Rclex.Pkgs.<%= module_name %> do
+  @moduledoc false
+  @behaviour Rclex.ActionBehaviour
+
+  alias Rclex.Nif
+
+  def type_support!() do
+    Nif.<%= function_prefix %>_type_support!()
+  end
+
+  def feedback_message_type() do
+    Rclex.Pkgs.<%= module_name %>.FeedbackMessage
+  end
+
+  def feedback_type() do
+    Rclex.Pkgs.<%= module_name %>.Feedback
+  end
+
+  def goal_type() do
+    Rclex.Pkgs.<%= module_name %>.Goal
+  end
+
+  def result_type() do
+    Rclex.Pkgs.<%= module_name %>.Result
+  end
+
+  def get_result_request_type() do
+    Rclex.Pkgs.<%= module_name %>.GetResult.Request
+  end
+
+  def get_result_response_type() do
+    Rclex.Pkgs.<%= module_name %>.GetResult.Response
+  end
+
+  def send_goal_request_type() do
+    Rclex.Pkgs.<%= module_name %>.SendGoal.Request
+  end
+
+  def send_goal_response_type() do
+    Rclex.Pkgs.<%= module_name %>.SendGoal.Response
+  end
+end

@@ -2,9 +2,9 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension do
   @moduledoc false
   @behaviour Rclex.MessageBehaviour
 
-  defstruct label: nil,
-            size: nil,
-            stride: nil
+  defstruct label: "",
+            size: 0,
+            stride: 0
 
   @type t :: %__MODULE__{label: String.t(), size: non_neg_integer(), stride: non_neg_integer()}
 

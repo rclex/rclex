@@ -2,7 +2,7 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.String do
   @moduledoc false
   @behaviour Rclex.MessageBehaviour
 
-  defstruct data: nil
+  defstruct data: ""
 
   @type t :: %__MODULE__{data: String.t()}
 

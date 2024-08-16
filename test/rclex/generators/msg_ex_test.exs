@@ -4,7 +4,7 @@ defmodule Rclex.Generators.MsgExTest do
 
   with ros_distro <- System.get_env("ROS_DISTRO"),
        true <- File.exists?("/opt/ros/#{ros_distro}") do
-    @ros_share_path "/opt/ros/#{ros_distro}/share"
+    @ros_share_path ["/opt/ros/#{ros_distro}/share"]
   else
     _ ->
       @moduletag :skip
@@ -21,7 +21,9 @@ defmodule Rclex.Generators.MsgExTest do
         "std_msgs/msg/MultiArrayLayout",
         "std_msgs/msg/UInt32MultiArray",
         "geometry_msgs/msg/Vector3",
-        "geometry_msgs/msg/Twist"
+        "geometry_msgs/msg/Twist",
+        "std_srvs/srv/SetBool_Request",
+        "std_srvs/srv/SetBool_Response"
       ] do
     test "generate/2 #{ros2_message_type}" do
       ros2_message_type = unquote(ros2_message_type)
@@ -48,7 +50,9 @@ defmodule Rclex.Generators.MsgExTest do
               "std_msgs/msg/MultiArrayLayout",
               "std_msgs/msg/UInt32MultiArray",
               "geometry_msgs/msg/Vector3",
-              "geometry_msgs/msg/Twist"
+              "geometry_msgs/msg/Twist",
+              "std_srvs/srv/SetBool_Request",
+              "std_srvs/srv/SetBool_Response"
             ],
             %{},
             fn type, acc ->
@@ -60,12 +64,12 @@ defmodule Rclex.Generators.MsgExTest do
 
     for {ros2_message_type, expected} <- [
           {"std_msgs/msg/Empty", "[]"},
-          {"std_msgs/msg/String", "data: nil"},
-          {"std_msgs/msg/MultiArrayDimension", "label: nil,\nsize: nil,\nstride: nil"},
-          {"std_msgs/msg/MultiArrayLayout", "dim: [],\ndata_offset: nil"},
+          {"std_msgs/msg/String", "data: \"\""},
+          {"std_msgs/msg/MultiArrayDimension", "label: \"\",\nsize: 0,\nstride: 0"},
+          {"std_msgs/msg/MultiArrayLayout", "dim: [],\ndata_offset: 0"},
           {"std_msgs/msg/UInt32MultiArray",
            "layout: %Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout{},\ndata: []"},
-          {"geometry_msgs/msg/Vector3", "x: nil,\ny: nil,\nz: nil"},
+          {"geometry_msgs/msg/Vector3", "x: 0.0,\ny: 0.0,\nz: 0.0"},
           {"geometry_msgs/msg/Twist",
            "linear: %Rclex.Pkgs.GeometryMsgs.Msg.Vector3{},\nangular: %Rclex.Pkgs.GeometryMsgs.Msg.Vector3{}"}
         ] do

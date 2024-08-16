@@ -1,0 +1,10 @@
+# credo:disable-for-this-file
+defmodule Rclex.SrvFuncs do
+  @moduledoc false
+
+  defmacro __before_compile__(_env) do
+    quote do
+<%= srv_funcs %>
+    end
+  end
+end

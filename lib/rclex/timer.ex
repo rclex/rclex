@@ -28,10 +28,11 @@ defmodule Rclex.Timer do
     callback = Keyword.fetch!(args, :callback)
     name = Keyword.fetch!(args, :name)
     namespace = Keyword.fetch!(args, :namespace)
+    clock_type = Keyword.get(args, :clock_type, :steady_time)
 
     0 = :erlang.fun_info(callback)[:arity]
 
-    clock = Nif.rcl_clock_init!()
+    clock = Nif.rcl_clock_init!(clock_type)
     timer = Nif.rcl_timer_init!(context, clock, period_ms)
     wait_set = Nif.rcl_wait_set_init_timer!(context)
 

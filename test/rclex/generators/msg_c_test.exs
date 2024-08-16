@@ -4,7 +4,7 @@ defmodule Rclex.Generators.MsgCTest do
 
   with ros_distro <- System.get_env("ROS_DISTRO"),
        true <- File.exists?("/opt/ros/#{ros_distro}") do
-    @ros_share_path "/opt/ros/#{ros_distro}/share"
+    @ros_share_path ["/opt/ros/#{ros_distro}/share"]
   else
     _ ->
       @moduletag :skip
@@ -23,7 +23,9 @@ defmodule Rclex.Generators.MsgCTest do
         "std_msgs/msg/MultiArrayLayout",
         "std_msgs/msg/UInt32MultiArray",
         "geometry_msgs/msg/Vector3",
-        "geometry_msgs/msg/Twist"
+        "geometry_msgs/msg/Twist",
+        "std_srvs/srv/SetBool_Request",
+        "std_srvs/srv/SetBool_Response"
       ] do
     test "generate/2 #{ros2_message_type}" do
       ros2_message_type = unquote(ros2_message_type)

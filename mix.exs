@@ -17,6 +17,7 @@ defmodule Rclex.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       make_clean: ["clean"],
+      make_env: make_env(),
       compilers: [:elixir_make] ++ Mix.compilers(),
       aliases: [format: [&format_c/1, "format"], iwyu: [&iwyu/1]],
       test_coverage: test_coverage(),
@@ -46,7 +47,7 @@ defmodule Rclex.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:elixir_make, "~> 0.7", runtime: false},
+      {:elixir_make, "~> 0.8", runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false},
       {:benchee, "~> 1.0", only: :dev},
@@ -80,7 +81,18 @@ defmodule Rclex.MixProject do
       extras: ["README.md", "README_ja.md", "USE_ON_NERVES.md", "CHANGELOG.md"],
       main: "readme",
       source_ref: "v#{@version}",
-      source_url: @source_url
+      source_url: @source_url,
+      groups_for_docs: [
+        Client: &(&1[:section] == :client),
+        Graph: &(&1[:section] == :graph),
+        Node: &(&1[:section] == :node),
+        Publisher: &(&1[:section] == :publisher),
+        Service: &(&1[:section] == :service),
+        Subscription: &(&1[:section] == :subscription),
+        Timer: &(&1[:section] == :time),
+        Action_Server: &(&1[:section] == :action_server),
+        Action_Client: &(&1[:section] == :action_client)
+      ]
     ]
   end
 
@@ -140,5 +152,11 @@ defmodule Rclex.MixProject do
         ~r/Mix\.Tasks\.Rclex.+/
       ]
     ]
+  end
+
+  defp make_env() do
+    rclex_config = Keyword.get(Config.Reader.read!("config/config.exs"), :rclex, [])
+    ros2_directories = Keyword.get(rclex_config, :ros2_directories, [])
+    %{"ROS2_DIRECTORIES" => Enum.join(ros2_directories, ":")}
   end
 end

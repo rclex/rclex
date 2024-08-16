@@ -1,8 +1,13 @@
 defmodule Rclex.Generators.Util do
   @moduledoc false
 
-  def templates_dir_path() do
-    Path.join(Application.app_dir(:rclex), "priv/templates/rclex.gen.msgs")
+  def templates_dir_path(interface \\ :msg) do
+    case interface do
+      :msg -> Path.join(Application.app_dir(:rclex), "priv/templates/rclex.gen.msgs")
+      :srv -> Path.join(Application.app_dir(:rclex), "priv/templates/rclex.gen.srvs")
+      :action -> Path.join(Application.app_dir(:rclex), "priv/templates/rclex.gen.action")
+      _ -> raise "ros2 interface type not supported"
+    end
   end
 
   @doc """
@@ -13,8 +18,8 @@ defmodule Rclex.Generators.Util do
   "std_msgs_msg_u_int32_multi_array"
   """
   def type_down_snake(ros2_message_type) do
-    [interfaces, "msg" = msg, type] = ros2_message_type |> String.split("/")
-    [interfaces, msg, to_down_snake(type)] |> Enum.join("_")
+    [interfaces, interface_type, type] = ros2_message_type |> String.split("/")
+    [interfaces, interface_type, to_down_snake(type)] |> Enum.join("_")
   end
 
   @doc """
@@ -38,5 +43,34 @@ defmodule Rclex.Generators.Util do
     |> String.replace(~r/(.)([A-Z][a-z]+)/, "\\1_\\2")
     |> String.replace(~r/([a-z0-9])([A-Z])/, "\\1_\\2")
     |> String.downcase()
+  end
+
+  @doc """
+  iex> Rclex.Generators.Util.module_name("std_msgs/msg/String")
+  "StdMsgs.Msg.String"
+  """
+  def module_name(ros2_message_type) do
+    [pkg, msg, type] = String.split(ros2_message_type, "/")
+
+    pkg =
+      pkg
+      |> String.replace("/", "_")
+      |> String.split("_")
+      |> Enum.map_join(&String.capitalize(&1))
+
+    type =
+      type
+      |> String.replace_trailing("_Feedback", ".Feedback")
+      |> String.replace_trailing("_Goal", ".Goal")
+      |> String.replace_trailing("_Result", ".Result")
+      |> String.replace_trailing("_FeedbackMessage", ".FeedbackMessage")
+      |> String.replace_trailing("_SendGoal_Request", ".SendGoal.Request")
+      |> String.replace_trailing("_SendGoal_Response", ".SendGoal.Response")
+      |> String.replace_trailing("_GetResult_Request", ".GetResult.Request")
+      |> String.replace_trailing("_GetResult_Response", ".GetResult.Response")
+      |> String.replace_trailing("_Response", ".Response")
+      |> String.replace_trailing("_Request", ".Request")
+
+    Enum.join([pkg, String.capitalize(msg), type], ".")
   end
 end

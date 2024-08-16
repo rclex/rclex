@@ -3,7 +3,7 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.MultiArrayLayout do
   @behaviour Rclex.MessageBehaviour
 
   defstruct dim: [],
-            data_offset: nil
+            data_offset: 0
 
   @type t :: %__MODULE__{
           dim: list(%Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension{}),

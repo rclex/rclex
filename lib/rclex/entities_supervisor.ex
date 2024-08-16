@@ -55,6 +55,93 @@ defmodule Rclex.EntitiesSupervisor do
     )
   end
 
+  def start_service(context, callback, node, service_type, service_name, name, namespace, qos) do
+    DynamicSupervisor.start_child(
+      name(name, namespace),
+      {Rclex.Service,
+       [
+         context: context,
+         node: node,
+         callback: callback,
+         service_type: service_type,
+         service_name: service_name,
+         name: name,
+         namespace: namespace,
+         qos: qos
+       ]}
+    )
+  end
+
+  def start_client(context, callback, node, service_type, service_name, name, namespace, qos) do
+    DynamicSupervisor.start_child(
+      name(name, namespace),
+      {Rclex.Client,
+       [
+         context: context,
+         callback: callback,
+         node: node,
+         service_type: service_type,
+         service_name: service_name,
+         name: name,
+         namespace: namespace,
+         qos: qos
+       ]}
+    )
+  end
+
+  def start_action_server(
+        context,
+        {execute_callback, goal_callback, handle_accepted_callback, cancel_callback},
+        node,
+        action_type,
+        action_name,
+        name,
+        namespace,
+        options
+      ) do
+    DynamicSupervisor.start_child(
+      name(name, namespace),
+      {Rclex.ActionServer,
+       [
+         context: context,
+         node: node,
+         action_type: action_type,
+         action_name: action_name,
+         name: name,
+         namespace: namespace,
+         options: options,
+         execute_callback: execute_callback,
+         goal_callback: goal_callback,
+         handle_accepted_callback: handle_accepted_callback,
+         cancel_callback: cancel_callback
+       ]}
+    )
+  end
+
+  def start_action_client(
+        context,
+        node,
+        action_type,
+        action_name,
+        name,
+        namespace,
+        options
+      ) do
+    DynamicSupervisor.start_child(
+      name(name, namespace),
+      {Rclex.ActionClient,
+       [
+         context: context,
+         node: node,
+         action_type: action_type,
+         action_name: action_name,
+         name: name,
+         namespace: namespace,
+         options: options
+       ]}
+    )
+  end
+
   def start_timer(context, period_ms, callback, timer_name, name, namespace \\ "/") do
     DynamicSupervisor.start_child(
       name(name, namespace),
@@ -77,6 +164,26 @@ defmodule Rclex.EntitiesSupervisor do
 
   def stop_subscription(message_type, topic_name, name, namespace) do
     entity_name = Rclex.Subscription.name(message_type, topic_name, name, namespace)
+    stop_entity(entity_name, name, namespace)
+  end
+
+  def stop_service(service_type, service_name, name, namespace) do
+    entity_name = Rclex.Service.name(service_type, service_name, name, namespace)
+    stop_entity(entity_name, name, namespace)
+  end
+
+  def stop_client(service_type, service_name, name, namespace) do
+    entity_name = Rclex.Client.name(service_type, service_name, name, namespace)
+    stop_entity(entity_name, name, namespace)
+  end
+
+  def stop_action_server(action_type, action_name, name, namespace) do
+    entity_name = Rclex.ActionServer.name(action_type, action_name, name, namespace)
+    stop_entity(entity_name, name, namespace)
+  end
+
+  def stop_action_client(action_type, action_name, name, namespace) do
+    entity_name = Rclex.ActionClient.name(action_type, action_name, name, namespace)
     stop_entity(entity_name, name, namespace)
   end
 

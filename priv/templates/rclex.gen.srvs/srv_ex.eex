@@ -1,0 +1,18 @@
+defmodule Rclex.Pkgs.<%= module_name %> do
+  @moduledoc false
+  @behaviour Rclex.ServiceBehaviour
+
+  alias Rclex.Nif
+
+  def type_support!() do
+    Nif.<%= function_prefix %>_type_support!()
+  end
+
+  def request_type() do
+    Rclex.Pkgs.<%= module_name %>.Request
+  end
+
+  def response_type() do
+    Rclex.Pkgs.<%= module_name %>.Response
+  end
+end

@@ -36,5 +36,11 @@ rclex-*.tar
 /src/pkgs/*
 /lib/rclex/pkgs/*
 /lib/rclex/msg_funcs.ex
+/lib/rclex/srv_funcs.ex
+/lib/rclex/action_funcs.ex
 /src/msg_funcs.h
 /src/msg_funcs.ec
+/src/srv_funcs.h
+/src/srv_funcs.ec
+/src/action_funcs.h
+/src/action_funcs.ec

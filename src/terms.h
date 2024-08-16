@@ -19,7 +19,7 @@ static inline ERL_NIF_TERM raise(ErlNifEnv *env, const char *file, int line) {
 
 static inline ERL_NIF_TERM raise_with_message(ErlNifEnv *env, const char *file, int line,
                                               const char *message) {
-  char str[1024];
+  char str[2048];
   snprintf(str, sizeof(str), "at %s:%d %s", file, line, message);
   return enif_raise_exception(env, enif_make_string(env, str, ERL_NIF_LATIN1));
 }

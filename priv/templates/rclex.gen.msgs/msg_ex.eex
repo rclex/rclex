@@ -2,6 +2,8 @@ defmodule Rclex.Pkgs.<%= module_name %> do
   @moduledoc false
   @behaviour Rclex.MessageBehaviour
 
+  <%= constant_fields %>
+
   <%= defstruct_fields %>
 
   <%= type_fields %>

@@ -3,6 +3,7 @@
 #include <erl_nif.h>
 #include <math.h>
 // IWYU pragma: no_include "rmw/time.h" for foxy
+#include <rcl_action/default_qos.h>
 #include <rmw/qos_profiles.h>
 #include <rmw/types.h>
 #include <stdbool.h>
@@ -316,6 +317,14 @@ ERL_NIF_TERM nif_rmw_qos_profile_system_default(ErlNifEnv *env, int argc,
   ignore_unused(argv);
 
   return get_ex_qos_profile(env, rmw_qos_profile_system_default);
+}
+
+ERL_NIF_TERM nif_rcl_action_qos_profile_status_default(ErlNifEnv *env, int argc,
+                                                       const ERL_NIF_TERM argv[]) {
+  if (argc != 0) return enif_make_badarg(env);
+  ignore_unused(argv);
+
+  return get_ex_qos_profile(env, rcl_action_qos_profile_status_default);
 }
 
 ERL_NIF_TERM nif_test_qos_profile(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {

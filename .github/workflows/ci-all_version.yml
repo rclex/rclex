@@ -27,7 +27,7 @@ jobs:
       - name: Checkout rclex repo
         uses: actions/checkout@v4
         with:
-          repository: rclex/rclex
+          repository: FelixPe/rclex
           path: rclex
 
       - name: Checkout rclex_connection_tests repo
@@ -68,6 +68,7 @@ jobs:
           cd rclex
           mix local.hex --force
           mix rclex.gen.msgs
+          mix rclex.gen.srvs
           mix test
 
       - name: connection tests

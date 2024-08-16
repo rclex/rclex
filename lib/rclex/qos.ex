@@ -53,4 +53,8 @@ defmodule Rclex.QoS do
   @doc "This uses the RMW implementation’s default values for all of the policies. Different RMW implementations may have different defaults."
   @spec profile_system_default() :: t()
   defdelegate profile_system_default(), to: Rclex.Nif, as: :rmw_qos_profile_system_default!
+
+  @doc "This uses rcl_action default values for status service calls - reliable with a history depth of 1."
+  @spec profile_status_default() :: t()
+  defdelegate profile_status_default(), to: Rclex.Nif, as: :rcl_action_qos_profile_status_default!
 end

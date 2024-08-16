@@ -2,9 +2,9 @@ defmodule Rclex.Pkgs.GeometryMsgs.Msg.Vector3 do
   @moduledoc false
   @behaviour Rclex.MessageBehaviour
 
-  defstruct x: nil,
-            y: nil,
-            z: nil
+  defstruct x: 0.0,
+            y: 0.0,
+            z: 0.0
 
   @type t :: %__MODULE__{x: float(), y: float(), z: float()}
 
