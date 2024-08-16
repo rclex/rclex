@@ -68,6 +68,7 @@ Currently, the Rclex API allows for the following:
 1. Create a large number of publishers sending to the same topic.
 2. Create large numbers of each combination of publishers, topics, and subscribers.
 3. Create service servers and service clients
+4. Create action servers and action clients
 
 You can find the API documentation at [https://hexdocs.pm/rclex](https://hexdocs.pm/rclex).
 
