@@ -258,10 +258,15 @@ defmodule Rclex.Node do
 
     node = Nif.rcl_node_init!(context, ~c"#{name}", ~c"#{namespace}")
 
-    {:ok, %{context: context, node: node, name: name, namespace: namespace}}
+    graph_guard_condition = Nif.rcl_node_get_graph_guard_condition!(node)
+    wait_thread = Nif.node_start_waitset_thread!(context, graph_guard_condition)
+
+    {:ok,
+     %{context: context, node: node, name: name, namespace: namespace, wait_thread: wait_thread}}
   end
 
   def terminate(reason, state) do
+    Nif.node_stop_waitset_thread!(state.wait_thread)
     Nif.rcl_node_fini!(state.node)
 
     Logger.debug("#{__MODULE__}: #{inspect(reason)} #{Path.join(state.namespace, state.name)}")
@@ -550,5 +555,10 @@ defmodule Rclex.Node do
     return = Graph.service_server_is_available(state.node, client)
 
     {:reply, return, state}
+  end
+
+  def handle_info({:new_graph_event, index}, state) do
+    Logger.debug("new graph event (#{index})")
+    {:noreply, state}
   end
 end

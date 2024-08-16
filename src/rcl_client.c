@@ -15,7 +15,7 @@
 
 ERL_NIF_TERM new_response;
 
-void make_client_atom(ErlNifEnv *env) { new_response = enif_make_atom(env, "new_response"); }
+void make_client_atoms(ErlNifEnv *env) { new_response = enif_make_atom(env, "new_response"); }
 
 ERL_NIF_TERM nif_rcl_client_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   if (argc != 4) return enif_make_badarg(env);

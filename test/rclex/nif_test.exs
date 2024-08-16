@@ -70,6 +70,17 @@ defmodule Rclex.NifTest do
           assert "#{charlist}" =~ "namespace must be absolute, it must lead with a '/'"
       end
     end
+
+    test "rcl_node_get_graph_guard_condition!/1", %{context: context} do
+      node = Nif.rcl_node_init!(context, ~c"name", ~c"/namespace")
+      graph_guard_condition = Nif.rcl_node_get_graph_guard_condition!(node)
+      assert is_reference(graph_guard_condition)
+      assert is_reference(node)
+      graph_thread = Nif.node_set_condition_callback!(context, graph_guard_condition)
+      assert is_reference(graph_thread)
+      assert_receive :new_graph_event
+      assert Nif.rcl_node_fini!(node) == :ok
+    end
   end
 
   describe "sensor_msgs_msg_point_cloud" do

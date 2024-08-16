@@ -40,6 +40,9 @@ static ErlNifFunc nif_funcs[] = {
     nif_io_bound_func(rcl_init, 0),
     nif_io_bound_func(rcl_fini, 1),
     nif_io_bound_func(rcl_node_init, 3),
+    nif_regular_func(rcl_node_get_graph_guard_condition, 1),
+    nif_regular_func(node_start_waitset_thread, 2),
+    nif_regular_func(node_stop_waitset_thread, 1),
     nif_io_bound_func(rcl_node_fini, 1),
     nif_io_bound_func(rcl_publisher_init, 4),
     nif_io_bound_func(rcl_publisher_fini, 2),
@@ -175,13 +178,14 @@ static int load(ErlNifEnv *env, void **priv_data, ERL_NIF_TERM load_info) {
   ignore_unused(load_info);
 
   make_common_atoms(env);
+  make_node_atoms(env);
   make_qos_atoms(env);
-  make_subscription_atom(env);
-  make_service_atom(env);
-  make_client_atom(env);
-  make_action_client_atom(env);
-  make_action_server_atom(env);
-  make_clock_atom(env);
+  make_subscription_atoms(env);
+  make_service_atoms(env);
+  make_client_atoms(env);
+  make_action_client_atoms(env);
+  make_action_server_atoms(env);
+  make_clock_atoms(env);
 
   // open_resource_types/2 the 2nd argument is module_str, but document says following.
   // > Argument module_str is not (yet) used and must be NULL

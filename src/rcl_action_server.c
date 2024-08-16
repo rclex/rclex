@@ -24,7 +24,7 @@ ERL_NIF_TERM atom_goal_event_succeed;
 ERL_NIF_TERM atom_goal_event_abort;
 ERL_NIF_TERM atom_goal_event_canceled;
 
-void make_action_server_atom(ErlNifEnv *env) {
+void make_action_server_atoms(ErlNifEnv *env) {
   atom_new_cancel_request        = enif_make_atom(env, "new_cancel_request");
   atom_new_goal_request          = enif_make_atom(env, "new_goal_request");
   atom_new_result_request        = enif_make_atom(env, "new_result_request");

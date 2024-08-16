@@ -16,7 +16,7 @@
 ERL_NIF_TERM atom_new_request;
 ERL_NIF_TERM atom_service_take_failed;
 
-void make_service_atom(ErlNifEnv *env) {
+void make_service_atoms(ErlNifEnv *env) {
   atom_new_request         = enif_make_atom(env, "new_request");
   atom_service_take_failed = enif_make_atom(env, "service_take_failed");
 }

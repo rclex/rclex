@@ -13,7 +13,7 @@ ERL_NIF_TERM atom_system_time;
 ERL_NIF_TERM atom_steady_time;
 ERL_NIF_TERM atom_ros_time;
 
-void make_clock_atom(ErlNifEnv *env) {
+void make_clock_atoms(ErlNifEnv *env) {
   atom_clock_type  = enif_make_atom(env, "clock_type");
   atom_system_time = enif_make_atom(env, "system_time");
   atom_steady_time = enif_make_atom(env, "steady_time");

@@ -12,6 +12,7 @@ extern ErlNifResourceType *rt_rcl_clock_t;
 extern ErlNifResourceType *rt_rcl_timer_t;
 extern ErlNifResourceType *rt_rcl_wait_set_t;
 extern ErlNifResourceType *rt_rcl_guard_condition_t;
+extern ErlNifResourceType *rt_thread_ctx_t;
 extern ErlNifResourceType *rt_rcl_action_goal_handle_t;
 extern ErlNifResourceType *rt_rosidl_message_type_support_t;
 extern ErlNifResourceType *rt_rosidl_service_type_support_t;

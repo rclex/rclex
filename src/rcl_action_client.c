@@ -20,7 +20,7 @@ ERL_NIF_TERM atom_new_goal_response;
 ERL_NIF_TERM atom_new_result_response;
 ERL_NIF_TERM atom_new_status;
 
-void make_action_client_atom(ErlNifEnv *env) {
+void make_action_client_atoms(ErlNifEnv *env) {
   atom_new_cancel_response       = enif_make_atom(env, "new_cancel_response");
   atom_new_feedback              = enif_make_atom(env, "new_feedback");
   atom_new_goal_response         = enif_make_atom(env, "new_goal_response");

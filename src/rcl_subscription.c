@@ -16,7 +16,7 @@
 ERL_NIF_TERM subscription_take_failed;
 ERL_NIF_TERM new_message;
 
-void make_subscription_atom(ErlNifEnv *env) {
+void make_subscription_atoms(ErlNifEnv *env) {
   subscription_take_failed = enif_make_atom(env, "subscription_take_failed");
   new_message              = enif_make_atom(env, "new_message");
 }
