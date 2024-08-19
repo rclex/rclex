@@ -56,4 +56,16 @@ defmodule Rclex.Graph do
   def service_server_is_available(node, client) do
     Nif.rcl_service_server_is_available!(node, client)
   end
+
+  def action_get_client_names_and_types_by_node(node, node_name, namespace) do
+    Nif.rcl_action_get_client_names_and_types_by_node!(node, node_name, namespace)
+  end
+
+  def action_get_names_and_types(node) do
+    Nif.rcl_action_get_names_and_types!(node)
+  end
+
+  def action_get_server_names_and_types_by_node(node, node_name, namespace) do
+    Nif.rcl_action_get_server_names_and_types_by_node!(node, node_name, namespace)
+  end
 end

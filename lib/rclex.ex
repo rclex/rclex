@@ -59,7 +59,10 @@ defmodule Rclex do
       {:error, :already_started}
   """
   @doc section: :node
-  @spec start_node(name :: String.t(), opts :: [namespace: String.t(), graph_change_callback: function()]) ::
+  @spec start_node(
+          name :: String.t(),
+          opts :: [namespace: String.t(), graph_change_callback: function()]
+        ) ::
           :ok | {:error, :already_started} | {:error, term()}
   def start_node(name, opts \\ []) when is_binary(name) and is_list(opts) do
     context = Rclex.Context.get()
@@ -1317,7 +1320,7 @@ defmodule Rclex do
 
   ### Examples
 
-      iex> Rclex.get_subscriber_names_and_types_by_node("node", "node", "/example", namespace: "/example")
+      iex> Rclex.get_topic_names_and_types("node", namespace: "/example")
       [{"/chatter", ["std_msgs/msg/String"]}]
   """
   @doc section: :graph
@@ -1330,6 +1333,77 @@ defmodule Rclex do
     no_demangle = Keyword.get(opts, :no_demangle, false)
     Rclex.Node.get_topic_names_and_types(name, namespace, no_demangle)
   end
+
+    @doc """
+  Return a list of action server names and their types for a node.
+
+  ### opts
+
+  - #{@namespace_doc}
+
+  ### Examples
+
+      iex> Rclex.action_get_server_names_and_types_by_node("node", "/chatter", "/example")
+      [{"/rotate_absolute", ["turtlesim/action/RotateAbsolute"]}]
+  """
+  @doc section: :graph
+  @spec action_get_server_names_and_types_by_node(
+          name :: String.t(),
+          node_name :: String.t(),
+          node_namespace :: String.t(),
+          opts :: [namespace: String.t()]
+        ) :: [{String.t(), [String.t()]}]
+  def action_get_server_names_and_types_by_node(name, node_name, node_namespace, opts \\ []) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    Rclex.Node.action_get_server_names_and_types_by_node(name, namespace, node_name, node_namespace)
+  end
+
+     @doc """
+  Return a list of action client names and their types for a node.
+
+  ### opts
+
+  - #{@namespace_doc}
+
+  ### Examples
+
+      iex> Rclex.action_get_client_names_and_types_by_node("node", "/chatter", "/example")
+      [{"/rotate_absolute", ["turtlesim/action/RotateAbsolute"]}]
+  """
+  @doc section: :graph
+  @spec action_get_client_names_and_types_by_node(
+          name :: String.t(),
+          node_name :: String.t(),
+          node_namespace :: String.t(),
+          opts :: [namespace: String.t()]
+        ) :: [{String.t(), [String.t()]}]
+  def action_get_client_names_and_types_by_node(name, node_name, node_namespace, opts \\ []) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    Rclex.Node.action_get_client_names_and_types_by_node(name, namespace, node_name, node_namespace)
+  end
+
+  @doc """
+  Return a list of action names and their types.
+
+  ### opts
+
+  - #{@namespace_doc}
+
+  ### Examples
+
+      iex> Rclex.action_get_names_and_types("node", namespace: "/example")
+      [{"/rotate_absolute", ["turtlesim/action/RotateAbsolute"]}]
+  """
+  @doc section: :graph
+  @spec action_get_names_and_types(
+          name :: String.t(),
+          opts :: [namespace: String.t()]
+        ) :: [{String.t(), [String.t()]}]
+  def action_get_names_and_types(name, opts \\ []) do
+    namespace = Keyword.get(opts, :namespace, "/")
+    Rclex.Node.action_get_names_and_types(name, namespace)
+  end
+
 
   @doc """
   Check if a service server is available for the given service client.
@@ -1346,7 +1420,7 @@ defmodule Rclex do
       iex> Rclex.service_server_available?("node", "/set_bool", namespace: "/example")
       :false
   """
-  @doc section: :graph
+  @doc section: :client
   @spec service_server_available?(
           name :: String.t(),
           service_type :: module(),

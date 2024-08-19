@@ -14,7 +14,13 @@ defmodule Rclex.NodesSupervisor do
   def start_child(context, name, namespace \\ "/", graph_change_callback \\ nil) do
     DynamicSupervisor.start_child(
       name(),
-      {Rclex.NodeSupervisor, [context: context, name: name, namespace: namespace, graph_change_callback: graph_change_callback]}
+      {Rclex.NodeSupervisor,
+       [
+         context: context,
+         name: name,
+         namespace: namespace,
+         graph_change_callback: graph_change_callback
+       ]}
     )
   end
 

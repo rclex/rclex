@@ -211,6 +211,39 @@ defmodule Rclex.Node do
     GenServer.call(server, {:get_topic_names_and_types, no_demangle})
   end
 
+  def action_get_client_names_and_types_by_node(
+        name,
+        namespace,
+        node_name,
+        node_namespace
+      ) do
+    server = name(name, namespace)
+
+    GenServer.call(
+      server,
+      {:action_get_client_names_and_types_by_node, node_name, node_namespace}
+    )
+  end
+
+  def action_get_names_and_types(name, namespace) do
+    server = name(name, namespace)
+    GenServer.call(server, {:action_get_names_and_types})
+  end
+
+  def action_get_server_names_and_types_by_node(
+        name,
+        namespace,
+        node_name,
+        node_namespace
+      ) do
+    server = name(name, namespace)
+
+    GenServer.call(
+      server,
+      {:action_get_server_names_and_types_by_node, node_name, node_namespace}
+    )
+  end
+
   # helpers
 
   defp names_and_types_charlist_to_string({:error, term}) do
@@ -259,24 +292,32 @@ defmodule Rclex.Node do
 
     node = Nif.rcl_node_init!(context, ~c"#{name}", ~c"#{namespace}")
 
-
     wait_thread =
       if graph_change_callback do
         if :erlang.fun_info(graph_change_callback)[:arity] != 0 do
           raise("graph_change_callback must expect zero parameters")
         end
+
         graph_guard_condition = Nif.rcl_node_get_graph_guard_condition!(node)
         Nif.node_start_waitset_thread!(context, graph_guard_condition)
       end
 
     {:ok,
-     %{context: context, node: node, name: name, namespace: namespace, graph_change_callback: graph_change_callback, wait_thread: wait_thread}}
+     %{
+       context: context,
+       node: node,
+       name: name,
+       namespace: namespace,
+       graph_change_callback: graph_change_callback,
+       wait_thread: wait_thread
+     }}
   end
 
   def terminate(reason, state) do
     if state.wait_thread do
       Nif.node_stop_waitset_thread!(state.wait_thread)
     end
+
     Nif.rcl_node_fini!(state.node)
 
     Logger.debug("#{__MODULE__}: #{inspect(reason)} #{Path.join(state.namespace, state.name)}")
@@ -561,13 +602,56 @@ defmodule Rclex.Node do
     {:reply, return, state}
   end
 
+  def handle_call(
+        {:action_get_server_names_and_types_by_node, node_name, node_namespace},
+        _from,
+        state
+      ) do
+    return =
+      Graph.action_get_server_names_and_types_by_node(
+        state.node,
+        ~c"#{node_name}",
+        ~c"#{node_namespace}"
+      )
+      |> names_and_types_charlist_to_string()
+
+    {:reply, return, state}
+  end
+
+  def handle_call({:action_get_names_and_types}, _from, state) do
+    return =
+      Graph.action_get_names_and_types(state.node)
+      |> names_and_types_charlist_to_string()
+
+    {:reply, return, state}
+  end
+
+  def handle_call(
+        {:action_get_client_names_and_types_by_node, node_name, node_namespace},
+        _from,
+        state
+      ) do
+    return =
+      Graph.action_get_client_names_and_types_by_node(
+        state.node,
+        ~c"#{node_name}",
+        ~c"#{node_namespace}"
+      )
+      |> names_and_types_charlist_to_string()
+
+    {:reply, return, state}
+  end
+
   def handle_call({:service_server_is_available, client}, _from, state) do
     return = Graph.service_server_is_available(state.node, client)
 
     {:reply, return, state}
   end
 
-  def handle_info({:new_graph_event, _index}, %{graph_change_callback: graph_change_callback} = state) do
+  def handle_info(
+        {:new_graph_event, _index},
+        %{graph_change_callback: graph_change_callback} = state
+      ) do
     graph_change_callback.()
     {:noreply, state}
   end

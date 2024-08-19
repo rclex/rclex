@@ -482,6 +482,18 @@ defmodule Rclex.Nif do
     :erlang.nif_error(:nif_not_loaded)
   end
 
+  def rcl_action_get_client_names_and_types_by_node!(_node, _node_name, _namespace) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_action_get_server_names_and_types_by_node!(_node, _node_name, _namespace) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  def rcl_action_get_names_and_types!(_node) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
   #  def rcl_wait_for_publishers!(_node, _topic_name, _count, _timeout) do
   #    :erlang.nif_error(:nif_not_loaded)
   #  end
