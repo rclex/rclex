@@ -49,6 +49,7 @@ defmodule Rclex do
   ### opts
 
   - #{@namespace_doc}
+  - `:graph_change_callback` is called on every change of the ROS2 graph. The callback function is expected to have zero parameters. To gain insight into the ROS2 graph, use the [graph access functions](#graph).
 
   ### Examples
 
@@ -58,13 +59,14 @@ defmodule Rclex do
       {:error, :already_started}
   """
   @doc section: :node
-  @spec start_node(name :: String.t(), opts :: [namespace: String.t()]) ::
+  @spec start_node(name :: String.t(), opts :: [namespace: String.t(), graph_change_callback: function()]) ::
           :ok | {:error, :already_started} | {:error, term()}
   def start_node(name, opts \\ []) when is_binary(name) and is_list(opts) do
     context = Rclex.Context.get()
     namespace = Keyword.get(opts, :namespace, "/")
+    graph_change_callback = Keyword.get(opts, :graph_change_callback)
 
-    case Rclex.NodesSupervisor.start_child(context, name, namespace) do
+    case Rclex.NodesSupervisor.start_child(context, name, namespace, graph_change_callback) do
       {:ok, _pid} -> :ok
       {:error, {:already_started, _pid}} -> {:error, :already_started}
       {:error, reason} -> {:error, reason}

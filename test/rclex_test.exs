@@ -54,6 +54,32 @@ defmodule RclexTest do
       assert Enum.count(logs) == 4
       assert List.last(logs) =~ "Node: :shutdown"
     end
+
+    test "start_node\2, graph change events" do
+      me = self()
+      graph_change_callback = fn -> send(me, :graph_changed) end
+
+      :ok = Rclex.start_node("name", namespace: "/", graph_change_callback: graph_change_callback)
+      assert_receive :graph_changed
+      :ok = Rclex.start_publisher(StdMsgs.Msg.String, "/chatter", "name", namespace: "/")
+      assert_receive :graph_changed
+      :ok = Rclex.start_subscription(fn _msg -> nil end, StdMsgs.Msg.String, "/chatter", "name", namespace: "/")
+      assert_receive :graph_changed
+      :ok = Rclex.start_timer(10, fn -> nil end, "timer", "name", namespace: "/")
+      assert_receive :graph_changed
+
+      logs =
+        capture_log(fn ->
+          :ok = Rclex.stop_node("name", namespace: "/")
+          assert_receive :graph_changed
+          assert_receive :graph_changed
+        end)
+        |> String.split("\n")
+        |> Enum.filter(&String.contains?(&1, ":shutdown"))
+
+      assert Enum.count(logs) == 4
+      assert List.last(logs) =~ "Node: :shutdown"
+    end
   end
 
   describe "publisher" do

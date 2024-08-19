@@ -255,18 +255,28 @@ defmodule Rclex.Node do
     context = Keyword.fetch!(args, :context)
     name = Keyword.fetch!(args, :name)
     namespace = Keyword.fetch!(args, :namespace)
+    graph_change_callback = Keyword.get(args, :graph_change_callback)
 
     node = Nif.rcl_node_init!(context, ~c"#{name}", ~c"#{namespace}")
 
-    graph_guard_condition = Nif.rcl_node_get_graph_guard_condition!(node)
-    wait_thread = Nif.node_start_waitset_thread!(context, graph_guard_condition)
+
+    wait_thread =
+      if graph_change_callback do
+        if :erlang.fun_info(graph_change_callback)[:arity] != 0 do
+          raise("graph_change_callback must expect zero parameters")
+        end
+        graph_guard_condition = Nif.rcl_node_get_graph_guard_condition!(node)
+        Nif.node_start_waitset_thread!(context, graph_guard_condition)
+      end
 
     {:ok,
-     %{context: context, node: node, name: name, namespace: namespace, wait_thread: wait_thread}}
+     %{context: context, node: node, name: name, namespace: namespace, graph_change_callback: graph_change_callback, wait_thread: wait_thread}}
   end
 
   def terminate(reason, state) do
-    Nif.node_stop_waitset_thread!(state.wait_thread)
+    if state.wait_thread do
+      Nif.node_stop_waitset_thread!(state.wait_thread)
+    end
     Nif.rcl_node_fini!(state.node)
 
     Logger.debug("#{__MODULE__}: #{inspect(reason)} #{Path.join(state.namespace, state.name)}")
@@ -557,8 +567,8 @@ defmodule Rclex.Node do
     {:reply, return, state}
   end
 
-  def handle_info({:new_graph_event, index}, state) do
-    Logger.debug("new graph event (#{index})")
+  def handle_info({:new_graph_event, _index}, %{graph_change_callback: graph_change_callback} = state) do
+    graph_change_callback.()
     {:noreply, state}
   end
 end

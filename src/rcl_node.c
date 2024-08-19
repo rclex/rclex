@@ -253,11 +253,9 @@ ERL_NIF_TERM nif_node_stop_waitset_thread(ErlNifEnv *env, int argc, const ERL_NI
   if (rc != RCL_RET_OK)
     return raise_with_message(env, __FILE__, __LINE__, rcutils_get_error_string().str);
 
-  ERL_NIF_TERM term = atom_ok;
-
   if (errno != 0) {
     return raise_with_message(env, __FILE__, __LINE__, "joining thread failed");
   }
 
-  return term;
+  return atom_ok;
 }

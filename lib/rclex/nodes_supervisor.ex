@@ -11,10 +11,10 @@ defmodule Rclex.NodesSupervisor do
     __MODULE__
   end
 
-  def start_child(context, name, namespace \\ "/") do
+  def start_child(context, name, namespace \\ "/", graph_change_callback \\ nil) do
     DynamicSupervisor.start_child(
       name(),
-      {Rclex.NodeSupervisor, [context: context, name: name, namespace: namespace]}
+      {Rclex.NodeSupervisor, [context: context, name: name, namespace: namespace, graph_change_callback: graph_change_callback]}
     )
   end
 

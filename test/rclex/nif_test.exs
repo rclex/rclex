@@ -76,9 +76,10 @@ defmodule Rclex.NifTest do
       graph_guard_condition = Nif.rcl_node_get_graph_guard_condition!(node)
       assert is_reference(graph_guard_condition)
       assert is_reference(node)
-      graph_thread = Nif.node_set_condition_callback!(context, graph_guard_condition)
-      assert is_reference(graph_thread)
-      assert_receive :new_graph_event
+      wait_thread = Nif.node_start_waitset_thread!(context, graph_guard_condition)
+      assert is_reference(wait_thread)
+      assert_receive {:new_graph_event, _}
+      assert Nif.node_stop_waitset_thread!(wait_thread) == :ok
       assert Nif.rcl_node_fini!(node) == :ok
     end
   end
