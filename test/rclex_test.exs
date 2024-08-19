@@ -892,11 +892,12 @@ defmodule RclexTest do
 
       :ok = Rclex.start_client(receive_callback, service_type, service_name, name)
 
-      execute_callback = fn _goal, _feedback_callback -> %Turtlesim.Action.RotateAbsolute.Result{} end
+      execute_callback = fn _goal, _feedback_callback ->
+        %Turtlesim.Action.RotateAbsolute.Result{}
+      end
 
       :ok = Rclex.start_action_server(execute_callback, action_type, action_name, name)
       :ok = Rclex.start_action_client(action_type, action_name, name)
-
 
       on_exit(fn -> capture_log(fn -> Rclex.stop_node("name") end) end)
       :timer.sleep(50)
@@ -1001,15 +1002,18 @@ defmodule RclexTest do
     end
 
     test "action_get_names_and_types/1", %{} do
-      assert [{"/rotate_absolute", ["turtlesim/action/RotateAbsolute"]}] = Rclex.action_get_names_and_types("name")
+      assert [{"/rotate_absolute", ["turtlesim/action/RotateAbsolute"]}] =
+               Rclex.action_get_names_and_types("name")
     end
 
     test "action_get_client_names_and_types_by_node/3", %{} do
-      assert [{"/rotate_absolute", ["turtlesim/action/RotateAbsolute"]}] = Rclex.action_get_client_names_and_types_by_node("name", "name", "/")
+      assert [{"/rotate_absolute", ["turtlesim/action/RotateAbsolute"]}] =
+               Rclex.action_get_client_names_and_types_by_node("name", "name", "/")
     end
 
     test "action_get_server_names_and_types_by_node/3", %{} do
-      assert [{"/rotate_absolute", ["turtlesim/action/RotateAbsolute"]}] = Rclex.action_get_server_names_and_types_by_node("name", "name", "/")
+      assert [{"/rotate_absolute", ["turtlesim/action/RotateAbsolute"]}] =
+               Rclex.action_get_server_names_and_types_by_node("name", "name", "/")
     end
 
     test "service_server_available?/4", %{

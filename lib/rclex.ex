@@ -1334,7 +1334,7 @@ defmodule Rclex do
     Rclex.Node.get_topic_names_and_types(name, namespace, no_demangle)
   end
 
-    @doc """
+  @doc """
   Return a list of action server names and their types for a node.
 
   ### opts
@@ -1355,10 +1355,16 @@ defmodule Rclex do
         ) :: [{String.t(), [String.t()]}]
   def action_get_server_names_and_types_by_node(name, node_name, node_namespace, opts \\ []) do
     namespace = Keyword.get(opts, :namespace, "/")
-    Rclex.Node.action_get_server_names_and_types_by_node(name, namespace, node_name, node_namespace)
+
+    Rclex.Node.action_get_server_names_and_types_by_node(
+      name,
+      namespace,
+      node_name,
+      node_namespace
+    )
   end
 
-     @doc """
+  @doc """
   Return a list of action client names and their types for a node.
 
   ### opts
@@ -1379,7 +1385,13 @@ defmodule Rclex do
         ) :: [{String.t(), [String.t()]}]
   def action_get_client_names_and_types_by_node(name, node_name, node_namespace, opts \\ []) do
     namespace = Keyword.get(opts, :namespace, "/")
-    Rclex.Node.action_get_client_names_and_types_by_node(name, namespace, node_name, node_namespace)
+
+    Rclex.Node.action_get_client_names_and_types_by_node(
+      name,
+      namespace,
+      node_name,
+      node_namespace
+    )
   end
 
   @doc """
@@ -1403,7 +1415,6 @@ defmodule Rclex do
     namespace = Keyword.get(opts, :namespace, "/")
     Rclex.Node.action_get_names_and_types(name, namespace)
   end
-
 
   @doc """
   Check if a service server is available for the given service client.
