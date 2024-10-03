@@ -144,7 +144,7 @@ defmodule Rclex.Generators.MsgEx do
             "#{name}"
 
           [{:builtin_type_array, "uint8[" <> _}, name] ->
-            "#{name} |> to_charlist()"
+            "#{name} |> :binary.bin_to_list()"
 
           [{:builtin_type_array, _type}, name] ->
             "#{name}"
