@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v0.11.1 on 03 Oct 2024
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.11.0...v0.11.1
+
+* New features: none
+* Code Improvements/Fixes:
+  * Fix UnicodeConversionError caused by treating a uint8 array as Unicode by @pojiro in https://github.com/rclex/rclex/pull/345
+* Bumps:
+  * Bump dialyxir from 1.4.3 to 1.4.4 by @dependabot in https://github.com/rclex/rclex/pull/343
+  * Bump credo from 1.7.7 to 1.7.8 by @dependabot in https://github.com/rclex/rclex/pull/342
+  * Bump ex_doc from 0.34.1 to 0.34.2 by @dependabot in https://github.com/rclex/rclex/pull/335
+* Note in this release:
+  * We deeply apologize,,, v0.11.0 could not be released on hex.pm because API key had revoked for GHA,,,
+
 ## v0.11.0 on 07 Jul 2024
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.10.1...v0.11.0
