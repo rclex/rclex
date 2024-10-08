@@ -112,6 +112,26 @@ defmodule Rclex.Pkgs.MsgsTest do
     |> tap(&Rclex.Pkgs.SensorMsgs.Msg.PointCloud.destroy!(&1))
   end
 
+  test "sensor_msgs/msg/Image" do
+    struct = %Rclex.Pkgs.SensorMsgs.Msg.Image{
+      header: %Rclex.Pkgs.StdMsgs.Msg.Header{
+        stamp: %Rclex.Pkgs.BuiltinInterfaces.Msg.Time{sec: 872_037, nanosec: 631_914},
+        frame_id: "image"
+      },
+      height: 480,
+      width: 640,
+      encoding: "8UC3",
+      is_bigendian: 0,
+      step: 640 * 3,
+      data: for(_ <- 1..(480 * 640 * 3), into: <<>>, do: <<:rand.uniform(256) - 1>>)
+    }
+
+    Rclex.Pkgs.SensorMsgs.Msg.Image.create!()
+    |> tap(&Rclex.Pkgs.SensorMsgs.Msg.Image.set!(&1, struct))
+    |> tap(fn message -> assert ^struct = Rclex.Pkgs.SensorMsgs.Msg.Image.get!(message) end)
+    |> tap(&Rclex.Pkgs.SensorMsgs.Msg.Image.destroy!(&1))
+  end
+
   test "diagnostic_msgs/msg/DiagnosticStatus" do
     struct = %Rclex.Pkgs.DiagnosticMsgs.Msg.DiagnosticStatus{
       level: 3,
