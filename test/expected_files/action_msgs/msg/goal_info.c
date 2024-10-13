@@ -87,18 +87,10 @@ ERL_NIF_TERM nif_action_msgs_msg_goal_info_set(ErlNifEnv *env, int argc, const E
   if (!enif_get_tuple(env, tuple[0], &goal_id_arity, &goal_id_tuple))
     return enif_make_badarg(env);
 
-  unsigned int goal_id_uuid_i;
-  ERL_NIF_TERM goal_id_uuid_left, goal_id_uuid_head, goal_id_uuid_tail;
-  for (goal_id_uuid_i = 0, goal_id_uuid_left = goal_id_tuple[0]; goal_id_uuid_i < 16; ++goal_id_uuid_i, goal_id_uuid_left = goal_id_uuid_tail)
-  {
-    if (!enif_get_list_cell(env, goal_id_uuid_left, &goal_id_uuid_head, &goal_id_uuid_tail))
-      return enif_make_badarg(env);
-
-    unsigned int goal_id_uuid_uint8;
-    if (!enif_get_uint(env, goal_id_uuid_head, &goal_id_uuid_uint8))
-      return enif_make_badarg(env);
-    message_p->goal_id.uuid[goal_id_uuid_i] = goal_id_uuid_uint8;
-  }
+  ErlNifBinary goal_id_uuid_binary;
+  if (!enif_inspect_binary(env, goal_id_tuple[0], &goal_id_uuid_binary))
+    return enif_make_badarg(env);
+  memcpy((void *)message_p->goal_id.uuid, (const void *)goal_id_uuid_binary.data, 16);
 
   int stamp_arity;
   const ERL_NIF_TERM *stamp_tuple;
@@ -127,16 +119,14 @@ ERL_NIF_TERM nif_action_msgs_msg_goal_info_get(ErlNifEnv *env, int argc, const E
 
   action_msgs__msg__GoalInfo *message_p = (action_msgs__msg__GoalInfo *)*ros_message_pp;
 
-  ERL_NIF_TERM goal_id_uuid[16];
-
-  for (size_t goal_id_uuid_i = 0; goal_id_uuid_i < 16; ++goal_id_uuid_i)
-  {
-    goal_id_uuid[goal_id_uuid_i] = enif_make_uint(env, message_p->goal_id.uuid[goal_id_uuid_i]);
-  }
+  ErlNifBinary goal_id_uuid_binary;
+  if (!enif_alloc_binary(16, &goal_id_uuid_binary))
+    return raise(env, __FILE__, __LINE__);
+  memcpy((void *)goal_id_uuid_binary.data, (const void *)message_p->goal_id.uuid, 16);
 
   return enif_make_tuple(env, 2,
     enif_make_tuple(env, 1,
-      enif_make_list_from_array(env, goal_id_uuid, 16)
+      enif_make_binary(env, &goal_id_uuid_binary)
     ),
     enif_make_tuple(env, 2,
       enif_make_int(env, message_p->stamp.sec),

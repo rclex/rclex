@@ -133,6 +133,10 @@ defmodule Rclex.MixProject do
 
   defp test_coverage() do
     [
+      summary: [
+        # Remove when https://github.com/rclex/rclex/issues/349 is resolved.
+        threshold: 80
+      ],
       ignore_modules: [
         Rclex.Nif,
         Rclex.Generators.MsgC.Acc,
