@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## v0.11.1 on 13 Oct 2024
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.11.1...v0.11.2
+
+* New features: none
+* Code Improvements/Fixes:
+  * Optimize binary copy for ROS2 rcl uint8 array by @pojiro in https://github.com/rclex/rclex/pull/348
+    * Reported and confirmed by @mlainez. Thank you.
+* Bumps: none
+* Note in this release: none
+
 ## v0.11.1 on 03 Oct 2024
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.11.0...v0.11.1
