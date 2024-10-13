@@ -5,12 +5,12 @@ struct = %Rclex.Pkgs.SensorMsgs.Msg.Image{
     stamp: %Rclex.Pkgs.BuiltinInterfaces.Msg.Time{sec: 872_037, nanosec: 631_914},
     frame_id: "image"
   },
-  height: 240,
-  width: 320,
-  encoding: "8UC1",
+  height: 480,
+  width: 640,
+  encoding: "8UC3",
   is_bigendian: 0,
-  step: 320 * 1,
-  data: for(_ <- 1..(240 * 320 * 1), into: <<>>, do: <<:rand.uniform(256) - 1>>)
+  step: 640 * 3,
+  data: for(_ <- 1..(480 * 640 * 3), into: <<>>, do: <<:rand.uniform(256) - 1>>)
 }
 
 Benchee.run(%{
