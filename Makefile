@@ -31,6 +31,9 @@ ROS_CFLAGS  ?= $(addprefix -I$(ROS_DIR)/include/, $(ROS_INCS))
 else ifeq ($(ROS_DISTRO), iron)
 ROS_INCS    ?= rcl rcutils rmw rcl_yaml_param_parser type_description_interfaces rosidl_runtime_c service_msgs builtin_interfaces rosidl_typesupport_interface rosidl_dynamic_typesupport
 ROS_CFLAGS  ?= $(addprefix -I$(ROS_DIR)/include/, $(ROS_INCS))
+else ifeq ($(ROS_DISTRO), jazzy)
+ROS_INCS    ?= rcl rcutils rmw rcl_yaml_param_parser type_description_interfaces rosidl_runtime_c service_msgs builtin_interfaces rosidl_typesupport_interface rosidl_dynamic_typesupport
+ROS_CFLAGS  ?= $(addprefix -I$(ROS_DIR)/include/, $(ROS_INCS))
 else ifeq ($(ROS_DISTRO), foxy)
 ROS_CFLAGS  ?= -I$(ROS_DIR)/include
 endif
@@ -51,6 +54,8 @@ MSG_OBJ_DIR  = $(MSG_PKGS:%=$(OBJ_DIR)/pkgs/%/msg)
 ifeq ($(ROS_DISTRO), humble)
 ROS_CFLAGS  += $(addprefix -I$(ROS_DIR)/include/, $(MSG_PKGS))
 else ifeq ($(ROS_DISTRO), iron)
+ROS_CFLAGS  += $(addprefix -I$(ROS_DIR)/include/, $(MSG_PKGS))
+else ifeq ($(ROS_DISTRO), jazzy)
 ROS_CFLAGS  += $(addprefix -I$(ROS_DIR)/include/, $(MSG_PKGS))
 endif
 ROS_LDFLAGS += $(MSG_PKGS:%=-l%__rosidl_typesupport_c)
