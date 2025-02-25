@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## v0.11.3 on 25 Feb 2025
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.11.2...v0.11.3
+
+* New features: none
+* Code Improvements/Fixes: none
+* Bumps: 
+  * Bump nimble_parsec from 1.4.0 to 1.4.2 by @dependabot in https://github.com/rclex/rclex/pull/360
+  * Bump credo from 1.7.8 to 1.7.11 by @dependabot in https://github.com/rclex/rclex/pull/358
+  * Bump ex_doc from 0.34.2 to 0.36.1 by @dependabot in https://github.com/rclex/rclex/pull/357
+  * Bump elixir_make from 0.8.4 to 0.9.0 by @dependabot in https://github.com/rclex/rclex/pull/353
+  * Bump dialyxir from 1.4.4 to 1.4.5 by @dependabot in https://github.com/rclex/rclex/pull/354
+  * Manually update of deps by `mix deps.update --all` by @takasehideki in https://github.com/rclex/rclex/pull/362
+* Note in this release: 
+  * This may be the final release to support old ROS distribution, e.g., Foxy, Galactic and Iron.
+  * Support for Jazzy is available in `main` branch. We'd like to release this ASAP (ref: https://github.com/rclex/rclex/pull/361)
+
 ## v0.11.2 on 13 Oct 2024
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.11.1...v0.11.2
