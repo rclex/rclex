@@ -41,7 +41,12 @@ ROS 2の主な貢献として，通信にDDS（Data Distribution Service）プ�
 
 ROS 2には長期サポート版（LTS）であるHumbleの利用を強く推奨します．
 短期サポート版（STS）のIronは，実験的なサポートでありネイティブ環境での基本的な動作のみを確認しています．対応状況の詳細は[Issue#228](https://github.com/rclex/rclex/issues/228#issuecomment-1715293177)を確認してください．
-FoxyとGalacticもCI対象としていますが，これらはすでにEOLとなっています．
+
+すでにEOLに達しているROS 2 Distributionsは，最新版に向けた開発ではサポートしていません．サポートを行っていた最終のリリース番号は次のとおりです．
+
+- Foxy Fitzroy: [v0.11.3](https://github.com/rclex/rclex/releases/tag/v0.11.3)
+- Galactic Geochelone: [v0.11.3](https://github.com/rclex/rclex/releases/tag/v0.11.3)
+- Iron Irwini: [v0.11.3](https://github.com/rclex/rclex/releases/tag/v0.11.3)
 
 動作検証の対象としている環境は[こちら](https://github.com/rclex/rclex_docker#available-versions-docker-tags)を参照してください．
 

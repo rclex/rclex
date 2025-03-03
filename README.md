@@ -45,7 +45,12 @@ Currently, we use the following environment as the main development target:
 
 We highly recommend using Humble for ROS 2 LTS distribution.
 Iron, the STS distribution, is experimentally supported and confirmed for the proper operation only in the native environment. See detail and status on [Issue#228](https://github.com/rclex/rclex/issues/228#issuecomment-1715293177).
-Although we also use Foxy and Galactic as CI targets, they have already reached EOL.
+
+We do not support ROS 2 Distributions that have already reached EOL in the development of the latest version. The last supported releases are as follows.
+
+- Foxy Fitzroy: [v0.11.3](https://github.com/rclex/rclex/releases/tag/v0.11.3)
+- Galactic Geochelone: [v0.11.3](https://github.com/rclex/rclex/releases/tag/v0.11.3)
+- Iron Irwini: [v0.11.3](https://github.com/rclex/rclex/releases/tag/v0.11.3)
 
 For other environments used to check the operation of this library,
 please refer to [here](https://github.com/rclex/rclex_docker#available-versions-docker-tags).
