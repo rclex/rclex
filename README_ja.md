@@ -40,7 +40,7 @@ ROS 2の主な貢献として，通信にDDS（Data Distribution Service）プ�
 - Erlang/OTP 27.2.4
 
 ROS 2には長期サポート版（LTS）である[Humble Hawksbill](https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html)の利用を強く推奨します．
-[Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html)での動作確認も行っています．詳細は[PR#361](https://github.com/rclex/rclex/pull/361)を参照ください．
+Ubuntu 24.04 LTS上での[Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html)との本ライブラリの動作確認も行っています．詳細は[PR#361](https://github.com/rclex/rclex/pull/361)を参照ください．
 
 短期サポート版（STS）のIronは，実験的なサポートでありネイティブ環境での基本的な動作のみを確認しています．対応状況の詳細は[Issue#228](https://github.com/rclex/rclex/issues/228#issuecomment-1715293177)を確認してください．
 FoxyとGalacticもCI対象としていますが，これらはすでにEOLとなっています．

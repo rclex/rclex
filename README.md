@@ -44,7 +44,7 @@ Currently, we use the following environment as the main development target:
 - Erlang/OTP 27.2.4
 
 We highly recommend using [Humble Hawksbill](https://docs.ros.org/en/rolling/Releases/Release-Humble-Hawksbill.html) for ROS 2 LTS distribution.
-We also confirmed the operation of this library with [Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html). See details in [PR#361](https://github.com/rclex/rclex/pull/361).  
+We also confirmed the operation of this library with [Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html) on Ubuntu 24.04 LTS. See details in [PR#361](https://github.com/rclex/rclex/pull/361).  
 
 For other environments used to check the operation of this library,
 please refer to [here](https://github.com/rclex/rclex_docker#available-versions-docker-tags).
