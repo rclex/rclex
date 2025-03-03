@@ -28,9 +28,9 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   use Mix.Task
 
-  @arm64v8_ros_distros ["foxy", "galactic", "humble"]
-  @amd64_ros_distros ["foxy", "galactic", "humble"]
-  @arm32v7_ros_distros ["foxy", "humble"]
+  @arm64v8_ros_distros ["humble"]
+  @amd64_ros_distros ["humble"]
+  @arm32v7_ros_distros ["humble"]
   @supported_ros_distros %{
     "arm64v8" => @arm64v8_ros_distros,
     "amd64" => @amd64_ros_distros,
@@ -160,15 +160,6 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     [
       "/lib/#{dir_name}/libspdlog.so*",
       "/usr/lib/#{dir_name}/libacl.so*"
-    ]
-  end
-
-  defp vendor_resources(arch, "foxy") do
-    dir_name = arch_dir_name(arch)
-
-    [
-      "/lib/#{dir_name}/libspdlog.so*",
-      "/lib/#{dir_name}/libtinyxml2.so*"
     ]
   end
 

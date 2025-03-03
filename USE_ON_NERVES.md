@@ -25,7 +25,7 @@ The "support" colomn refers to its status of official support as the ROS 2 distr
 | :--- | :--- | :---| :---|
 | humble | ○ | ○ | LTS until May 2027 |
 | galactic | ○ | - | EOL at Dec 2022 |
-| foxy | ○ | ○ | EOL at Jun 2023 |
+| foxy | ○ | ○ | until [v0.11.3](https://github.com/rclex/rclex/releases/tag/v0.11.3) |
 
 ## Preliminaries
 
@@ -84,7 +84,7 @@ mix deps.get
 > #### Note {: .info }
 >
 > In the following steps, Humble Hawksbill (`humble`) is assumed to be used as `ROS_DISTRO` (strongly recommend to use).
-> If you want to use `foxy` or `galactic`, you need to replace it appropriately in the subsequent steps. Note that these have already reached EOL.
+> If you want to use other ROS 2 distributions, you need to replace it appropriately in the subsequent steps. Note that these have already reached EOL.
 
 The following command extracts the ROS 2 Docker image and copies resources required for Rclex to the Nerves file system.
 You may change the value of `--arch` according to the architecture of your target board (see the "arch" column on the supported target list)

@@ -346,23 +346,21 @@ defmodule Rclex.NifTest do
       end
     end
 
-    if System.fetch_env!("ROS_DISTRO") != "foxy" do
-      test "rcl_subscription_set_on_new_message_callback!/1, rcl_subscription_clear_message_callback!/2",
-           %{
-             node: node,
-             type_support: type_support,
-             qos: qos
-           } do
-        subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", qos)
-        callback_resource = Nif.rcl_subscription_set_on_new_message_callback!(subscription)
+    test "rcl_subscription_set_on_new_message_callback!/1, rcl_subscription_clear_message_callback!/2",
+         %{
+           node: node,
+           type_support: type_support,
+           qos: qos
+         } do
+      subscription = Nif.rcl_subscription_init!(node, type_support, ~c"/topic", qos)
+      callback_resource = Nif.rcl_subscription_set_on_new_message_callback!(subscription)
 
-        assert is_reference(callback_resource)
+      assert is_reference(callback_resource)
 
-        assert Nif.rcl_subscription_clear_message_callback!(subscription, callback_resource) ==
-                 :ok
+      assert Nif.rcl_subscription_clear_message_callback!(subscription, callback_resource) ==
+               :ok
 
-        :ok = Nif.rcl_subscription_fini!(subscription, node)
-      end
+      :ok = Nif.rcl_subscription_fini!(subscription, node)
     end
   end
 

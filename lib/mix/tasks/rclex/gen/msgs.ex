@@ -24,7 +24,7 @@ defmodule Mix.Tasks.Rclex.Gen.Msgs do
   We can also specify explicitly as follows
 
   ```
-  mix rclex.gen.msgs --from /opt/ros/foxy/share
+  mix rclex.gen.msgs --from /opt/ros/humble/share
   ```
 
   ## How to clean
