@@ -24,7 +24,7 @@ The "support" colomn refers to its status of official support as the ROS 2 distr
 | `ROS_DISTRO` | arm64v8 | arm32v7 | support |
 | :--- | :--- | :---| :---|
 | humble | ○ | ○ | LTS until May 2027 |
-| galactic | ○ | - | EOL at Dec 2022 |
+| galactic | ○ | - | until [v0.11.3](https://github.com/rclex/rclex/releases/tag/v0.11.3) |
 | foxy | ○ | ○ | until [v0.11.3](https://github.com/rclex/rclex/releases/tag/v0.11.3) |
 
 ## Preliminaries
@@ -148,15 +148,6 @@ Add LD_LIBRARY_PATH line like following.
 >
 > - https://github.com/ros-tooling/cross_compile/issues/363
 > - https://github.com/ros2/rcpputils/pull/122
-
-> #### Note {: .warning }
->
-> If you want to use `galactic`, adding line should be as the below.
-> 
-> ```
-> ## only galactic needs /opt/ros/galactic/lib/aarch64-linux-gnu also, for libddsc
-> # -e LD_LIBRARY_PATH=/opt/ros/galactic/lib/aarch64-linux-gnu:/opt/ros/galactic/lib
-> ```
 
 ### Write Rclex code
 
