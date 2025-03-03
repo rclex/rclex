@@ -38,14 +38,13 @@ The basic and recommended environment is where the host (development) and the ta
 
 Currently, we use the following environment as the main development target:
 
-- Ubuntu 22.04.4 LTS (Jammy Jellyfish)
-- ROS 2 [Humble Hawksbill](https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html)
-- Elixir 1.15.7-otp-26
-- Erlang/OTP 26.2.2
+- Ubuntu 22.04 LTS (Jammy Jellyfish)
+- ROS 2 Humble Hawksbill
+- Elixir 1.17.3-otp-27
+- Erlang/OTP 27.2.4
 
-We highly recommend using Humble for ROS 2 LTS distribution.
-Iron, the STS distribution, is experimentally supported and confirmed for the proper operation only in the native environment. See detail and status on [Issue#228](https://github.com/rclex/rclex/issues/228#issuecomment-1715293177).
-Although we also use Foxy and Galactic as CI targets, they have already reached EOL.
+We highly recommend using [Humble Hawksbill](https://docs.ros.org/en/rolling/Releases/Release-Humble-Hawksbill.html) for ROS 2 LTS distribution.
+We also confirmed the operation of this library with [Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html). See details in [PR#361](https://github.com/rclex/rclex/pull/361).  
 
 For other environments used to check the operation of this library,
 please refer to [here](https://github.com/rclex/rclex_docker#available-versions-docker-tags).
