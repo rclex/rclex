@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v0.12.0 on 04 Mar 2025
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.11.3...v0.12.0
+
+* New features:
+  * Support jazzy by @pojiro in https://github.com/rclex/rclex/pull/361
+  * Remove old distro's dependent code that has already reached EOL by @takasehideki in https://github.com/rclex/rclex/pull/365
+  * Bump supported versions and CI targets by @takasehideki in https://github.com/rclex/rclex/pull/364
+  * Reapply git_hooks (v0.8.0 that has been addressed about path issue) by @takasehideki in https://github.com/rclex/rclex/pull/366
+* Code Improvements/Fixes:
+  * Patch for #366 by @pojiro in https://github.com/rclex/rclex/pull/368
+* Bumps: none
+* Note in this release: 
+  * Please welecome Jazzy Jalisco to our supported ROS 2 LTS distribution!! :tada:
+  * We decided to stop the support for old distributions (Foxy, Galactic and Iron) which have already reached EOL because of the concentrataion of our development resources in the future. If you want to use these distributions, please consider to employ v0.11.3 or earlier (see [#PR365](https://github.com/rclex/rclex/pull/365)).
+
 ## v0.11.3 on 25 Feb 2025
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.11.2...v0.11.3
