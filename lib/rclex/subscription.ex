@@ -53,96 +53,41 @@ defmodule Rclex.Subscription do
      }, {:continue, nil}}
   end
 
-  case System.fetch_env!("ROS_DISTRO") do
-    "foxy" ->
-      def terminate(reason, state) do
-        Nif.rcl_wait_set_fini!(state.callback_resource)
-        Nif.rcl_subscription_fini!(state.subscription, state.node)
+  def terminate(reason, state) do
+    Nif.rcl_subscription_clear_message_callback!(state.subscription, state.callback_resource)
+    Nif.rcl_subscription_fini!(state.subscription, state.node)
 
-        Logger.debug(
-          "#{__MODULE__}: #{inspect(reason)} #{Path.join(state.namespace, state.name)}"
-        )
-      end
+    Logger.debug("#{__MODULE__}: #{inspect(reason)} #{Path.join(state.namespace, state.name)}")
+  end
 
-      def handle_continue(nil, state) do
-        send(self(), :take)
-        callback_resource = Nif.rcl_wait_set_init_subscription!(state.context)
-        {:noreply, %{state | callback_resource: callback_resource}}
-      end
+  def handle_continue(nil, state) do
+    callback_resource = Nif.rcl_subscription_set_on_new_message_callback!(state.subscription)
+    {:noreply, %{state | callback_resource: callback_resource}}
+  end
 
-      def handle_info(:take, state) do
-        case Nif.rcl_wait_subscription!(state.callback_resource, 1000, state.subscription) do
+  def handle_info({:new_message, number_of_events}, state) when number_of_events > 0 do
+    for _ <- 1..number_of_events do
+      message = apply(state.message_type, :create!, [])
+
+      try do
+        case Nif.rcl_take!(state.subscription, message) do
           :ok ->
-            message = apply(state.message_type, :create!, [])
+            message_struct = apply(state.message_type, :get!, [message])
 
-            try do
-              case Nif.rcl_take!(state.subscription, message) do
-                :ok ->
-                  message_struct = apply(state.message_type, :get!, [message])
+            {:ok, _pid} =
+              Task.Supervisor.start_child(
+                {:via, PartitionSupervisor, {Rclex.TaskSupervisors, self()}},
+                fn -> state.callback.(message_struct) end
+              )
 
-                  {:ok, _pid} =
-                    Task.Supervisor.start_child(
-                      {:via, PartitionSupervisor, {Rclex.TaskSupervisors, self()}},
-                      fn -> state.callback.(message_struct) end
-                    )
-
-                :subscription_take_failed ->
-                  Logger.debug(
-                    "#{__MODULE__}: take failed but no error occurred in the middleware"
-                  )
-              end
-            after
-              :ok = apply(state.message_type, :destroy!, [message])
-            end
-
-          :timeout ->
-            nil
+          :subscription_take_failed ->
+            Logger.debug("#{__MODULE__}: take failed but no error occurred in the middleware")
         end
-
-        send(self(), :take)
-
-        {:noreply, state}
+      after
+        :ok = apply(state.message_type, :destroy!, [message])
       end
+    end
 
-    _ ->
-      def terminate(reason, state) do
-        Nif.rcl_subscription_clear_message_callback!(state.subscription, state.callback_resource)
-        Nif.rcl_subscription_fini!(state.subscription, state.node)
-
-        Logger.debug(
-          "#{__MODULE__}: #{inspect(reason)} #{Path.join(state.namespace, state.name)}"
-        )
-      end
-
-      def handle_continue(nil, state) do
-        callback_resource = Nif.rcl_subscription_set_on_new_message_callback!(state.subscription)
-        {:noreply, %{state | callback_resource: callback_resource}}
-      end
-
-      def handle_info({:new_message, number_of_events}, state) when number_of_events > 0 do
-        for _ <- 1..number_of_events do
-          message = apply(state.message_type, :create!, [])
-
-          try do
-            case Nif.rcl_take!(state.subscription, message) do
-              :ok ->
-                message_struct = apply(state.message_type, :get!, [message])
-
-                {:ok, _pid} =
-                  Task.Supervisor.start_child(
-                    {:via, PartitionSupervisor, {Rclex.TaskSupervisors, self()}},
-                    fn -> state.callback.(message_struct) end
-                  )
-
-              :subscription_take_failed ->
-                Logger.debug("#{__MODULE__}: take failed but no error occurred in the middleware")
-            end
-          after
-            :ok = apply(state.message_type, :destroy!, [message])
-          end
-        end
-
-        {:noreply, state}
-      end
+    {:noreply, state}
   end
 end

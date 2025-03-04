@@ -3,7 +3,7 @@
 # find src -name "*.c" -exec ./iwyu.sh {} \;
 
 include-what-you-use \
--I"$HOME/.asdf/installs/erlang/26.0.2/usr/include" \
+-I"$HOME/.asdf/installs/erlang/27.2.4/usr/include" \
 -I"/opt/ros/$ROS_DISTRO/include/rcl" \
 -I"/opt/ros/$ROS_DISTRO/include/rcutils" \
 -I"/opt/ros/$ROS_DISTRO/include/rmw" \
