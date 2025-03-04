@@ -51,6 +51,7 @@ defmodule Rclex.MixProject do
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false},
       {:benchee, "~> 1.0", only: :dev},
       {:nimble_parsec, "~> 1.0"},
+      {:git_hooks, "~> 0.8.0", only: [:dev], runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false}
     ]
