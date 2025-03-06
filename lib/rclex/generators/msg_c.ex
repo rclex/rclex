@@ -349,20 +349,11 @@ defmodule Rclex.Generators.MsgC do
 
   defp enif_get_builtin("string", var, mbr, term) do
     """
-    unsigned int #{var}_length;
-    #if (ERL_NIF_MAJOR_VERSION == 2 && ERL_NIF_MINOR_VERSION >= 17) // OTP-26 and later
-    if (!enif_get_string_length(env, #{term}, &#{var}_length, ERL_NIF_LATIN1))
-      return enif_make_badarg(env);
-    #else
-    if (!enif_get_list_length(env, #{term}, &#{var}_length))
-      return enif_make_badarg(env);
-    #endif
-
-    char #{var}[#{var}_length + 1];
-    if (enif_get_string(env, #{term}, #{var}, #{var}_length + 1, ERL_NIF_LATIN1) <= 0)
+    ErlNifBinary #{var}_binary;
+    if (!enif_inspect_binary(env, #{term}, &#{var}_binary))
       return enif_make_badarg(env);
 
-    if (!rosidl_runtime_c__String__assign(&(message_p->#{mbr}), #{var}))
+    if (!rosidl_runtime_c__String__assignn(&(message_p->#{mbr}), (const char *)#{var}_binary.data, #{var}_binary.size))
       return raise(env, __FILE__, __LINE__);
     """
   end
@@ -594,7 +585,7 @@ defmodule Rclex.Generators.MsgC do
   end
 
   defp enif_make_builtin("string", mbr) do
-    "enif_make_string(env, message_p->#{mbr}.data, ERL_NIF_LATIN1)"
+    "enif_make_binary_wrapper(env, message_p->#{mbr}.data, message_p->#{mbr}.size)"
   end
 
   defp format(binary) do

@@ -1,6 +1,7 @@
 #include "terms.h"
 #include "macros.h"
 #include <erl_nif.h>
+#include <string.h>
 
 ERL_NIF_TERM atom_ok;
 ERL_NIF_TERM atom_error;
@@ -26,4 +27,11 @@ ERL_NIF_TERM nif_test_raise_with_message(ErlNifEnv *env, int argc, const ERL_NIF
   ignore_unused(argv);
 
   return raise_with_message(env, __FILE__, __LINE__, "test");
+}
+
+ERL_NIF_TERM enif_make_binary_wrapper(ErlNifEnv *env, const char *data, size_t size) {
+  ErlNifBinary binary;
+  if (!enif_alloc_binary(size, &binary)) return raise(env, __FILE__, __LINE__);
+  memcpy((void *)binary.data, (const void *)data, binary.size);
+  return enif_make_binary(env, &binary);
 }

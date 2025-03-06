@@ -23,20 +23,11 @@
     if (!enif_get_tuple(env, layout_dim_head, &layout_dim_i_arity, &layout_dim_i_tuple))
       return enif_make_badarg(env);
 
-    unsigned int layout_dim_i_label_length;
-#if (ERL_NIF_MAJOR_VERSION == 2 && ERL_NIF_MINOR_VERSION >= 17) // OTP-26 and later
-    if (!enif_get_string_length(env, layout_dim_i_tuple[0], &layout_dim_i_label_length, ERL_NIF_LATIN1))
-      return enif_make_badarg(env);
-#else
-    if (!enif_get_list_length(env, layout_dim_i_tuple[0], &layout_dim_i_label_length))
-      return enif_make_badarg(env);
-#endif
-
-    char layout_dim_i_label[layout_dim_i_label_length + 1];
-    if (enif_get_string(env, layout_dim_i_tuple[0], layout_dim_i_label, layout_dim_i_label_length + 1, ERL_NIF_LATIN1) <= 0)
+    ErlNifBinary layout_dim_i_label_binary;
+    if (!enif_inspect_binary(env, layout_dim_i_tuple[0], &layout_dim_i_label_binary))
       return enif_make_badarg(env);
 
-    if (!rosidl_runtime_c__String__assign(&(message_p->layout.dim.data[layout_dim_i].label), layout_dim_i_label))
+    if (!rosidl_runtime_c__String__assignn(&(message_p->layout.dim.data[layout_dim_i].label), (const char *)layout_dim_i_label_binary.data, layout_dim_i_label_binary.size))
       return raise(env, __FILE__, __LINE__);
 
     unsigned int layout_dim_i_size;

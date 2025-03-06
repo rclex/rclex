@@ -11,7 +11,7 @@ defmodule Rclex.NifTest do
       rescue
         ex in [ErlangError] ->
           %ErlangError{original: charlist, reason: nil} = ex
-          assert "at src/terms.c:21" <> _ = to_string(charlist)
+          assert "at src/terms.c:22" <> _ = to_string(charlist)
       end
     end
 
@@ -21,7 +21,7 @@ defmodule Rclex.NifTest do
       rescue
         ex in [ErlangError] ->
           %ErlangError{original: charlist, reason: nil} = ex
-          assert "at src/terms.c:28" <> _ = to_string(charlist)
+          assert "at src/terms.c:29" <> _ = to_string(charlist)
           assert String.ends_with?(to_string(charlist), "test")
       end
     end
@@ -88,8 +88,8 @@ defmodule Rclex.NifTest do
 
       assert Nif.sensor_msgs_msg_point_cloud_set!(
                message,
-               {{{-9, 8}, ~c"test"}, [{0.1, 0.2, 0.3}, {0.4, 0.5, 0.6}, {0.7, 0.8, 0.9}],
-                [{~c"channels_name", [0.0]}]}
+               {{{-9, 8}, "test"}, [{0.1, 0.2, 0.3}, {0.4, 0.5, 0.6}, {0.7, 0.8, 0.9}],
+                [{"channels_name", [0.0]}]}
              ) == :ok
 
       # assert Nif.sensor_msgs_msg_point_cloud_get!(message) ==
@@ -113,8 +113,8 @@ defmodule Rclex.NifTest do
 
     test "std_msgs_msg_string_set!/1, std_msgs_msg_string_get!/1" do
       message = Nif.std_msgs_msg_string_create!()
-      assert Nif.std_msgs_msg_string_set!(message, {~c"test"}) == :ok
-      assert Nif.std_msgs_msg_string_get!(message) == {~c"test"}
+      assert Nif.std_msgs_msg_string_set!(message, {"test"}) == :ok
+      assert Nif.std_msgs_msg_string_get!(message) == {"test"}
       :ok = Nif.std_msgs_msg_string_destroy!(message)
     end
   end
@@ -132,8 +132,8 @@ defmodule Rclex.NifTest do
 
     test "std_msgs_msg_multi_array_dimension_set!/1, std_msgs_msg_multi_array_dimension_get!/1" do
       message = Nif.std_msgs_msg_multi_array_dimension_create!()
-      assert Nif.std_msgs_msg_multi_array_dimension_set!(message, {~c"1", 2, 3}) == :ok
-      assert Nif.std_msgs_msg_multi_array_dimension_get!(message) == {~c"1", 2, 3}
+      assert Nif.std_msgs_msg_multi_array_dimension_set!(message, {"1", 2, 3}) == :ok
+      assert Nif.std_msgs_msg_multi_array_dimension_get!(message) == {"1", 2, 3}
       :ok = Nif.std_msgs_msg_multi_array_dimension_destroy!(message)
     end
   end
@@ -154,11 +154,11 @@ defmodule Rclex.NifTest do
 
       assert Nif.std_msgs_msg_multi_array_layout_set!(
                message,
-               {[{~c"1", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}
+               {[{"1", 2, 3}, {"4", 5, 6}, {"7", 8, 9}], 10}
              ) == :ok
 
       assert Nif.std_msgs_msg_multi_array_layout_get!(message) ==
-               {[{~c"1", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}
+               {[{"1", 2, 3}, {"4", 5, 6}, {"7", 8, 9}], 10}
 
       :ok = Nif.std_msgs_msg_multi_array_layout_destroy!(message)
     end
@@ -180,11 +180,11 @@ defmodule Rclex.NifTest do
 
       assert Nif.std_msgs_msg_u_int32_multi_array_set!(
                message,
-               {{[{~c"test", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}, [1, 2, 3]}
+               {{[{"test", 2, 3}, {"4", 5, 6}, {"7", 8, 9}], 10}, [1, 2, 3]}
              ) == :ok
 
       assert Nif.std_msgs_msg_u_int32_multi_array_get!(message) ==
-               {{[{~c"test", 2, 3}, {~c"4", 5, 6}, {~c"7", 8, 9}], 10}, [1, 2, 3]}
+               {{[{"test", 2, 3}, {"4", 5, 6}, {"7", 8, 9}], 10}, [1, 2, 3]}
 
       :ok = Nif.std_msgs_msg_u_int32_multi_array_destroy!(message)
     end
@@ -276,7 +276,7 @@ defmodule Rclex.NifTest do
 
       wait_set = Nif.rcl_wait_set_init_subscription!(context)
       message = Nif.std_msgs_msg_string_create!()
-      :ok = Nif.std_msgs_msg_string_set!(message, {~c"Hello from Rclex"})
+      :ok = Nif.std_msgs_msg_string_set!(message, {"Hello from Rclex"})
 
       on_exit(fn ->
         Nif.std_msgs_msg_string_destroy!(message)
@@ -307,7 +307,7 @@ defmodule Rclex.NifTest do
       :ok = Nif.rcl_publish!(publisher, message)
       :ok = Nif.rcl_wait_subscription!(wait_set, 1000, subscription)
       assert Nif.rcl_take!(subscription, message) == :ok
-      assert Nif.std_msgs_msg_string_get!(message) == {~c"Hello from Rclex"}
+      assert Nif.std_msgs_msg_string_get!(message) == {"Hello from Rclex"}
     end
   end
 

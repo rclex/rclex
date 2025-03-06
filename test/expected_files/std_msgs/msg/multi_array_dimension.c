@@ -76,20 +76,11 @@ ERL_NIF_TERM nif_std_msgs_msg_multi_array_dimension_set(ErlNifEnv *env, int argc
   const ERL_NIF_TERM *tuple;
   if (!enif_get_tuple(env, argv[1], &arity, &tuple)) return enif_make_badarg(env);
 
-  unsigned int label_length;
-#if (ERL_NIF_MAJOR_VERSION == 2 && ERL_NIF_MINOR_VERSION >= 17) // OTP-26 and later
-  if (!enif_get_string_length(env, tuple[0], &label_length, ERL_NIF_LATIN1))
-    return enif_make_badarg(env);
-#else
-  if (!enif_get_list_length(env, tuple[0], &label_length))
-    return enif_make_badarg(env);
-#endif
-
-  char label[label_length + 1];
-  if (enif_get_string(env, tuple[0], label, label_length + 1, ERL_NIF_LATIN1) <= 0)
+  ErlNifBinary label_binary;
+  if (!enif_inspect_binary(env, tuple[0], &label_binary))
     return enif_make_badarg(env);
 
-  if (!rosidl_runtime_c__String__assign(&(message_p->label), label))
+  if (!rosidl_runtime_c__String__assignn(&(message_p->label), (const char *)label_binary.data, label_binary.size))
     return raise(env, __FILE__, __LINE__);
 
   unsigned int size;
@@ -115,7 +106,7 @@ ERL_NIF_TERM nif_std_msgs_msg_multi_array_dimension_get(ErlNifEnv *env, int argc
   std_msgs__msg__MultiArrayDimension *message_p = (std_msgs__msg__MultiArrayDimension *)*ros_message_pp;
 
   return enif_make_tuple(env, 3,
-    enif_make_string(env, message_p->label.data, ERL_NIF_LATIN1),
+    enif_make_binary_wrapper(env, message_p->label.data, message_p->label.size),
     enif_make_uint(env, message_p->size),
     enif_make_uint(env, message_p->stride)
   );
