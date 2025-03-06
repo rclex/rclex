@@ -3,6 +3,7 @@
 #include <erl_nif.h>
 #include <math.h>
 #include <rmw/qos_profiles.h>
+#include <rmw/time.h>
 #include <rmw/types.h>
 #include <stdbool.h>
 #include <stddef.h>
