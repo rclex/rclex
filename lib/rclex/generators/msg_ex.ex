@@ -137,13 +137,7 @@ defmodule Rclex.Generators.MsgEx do
 
         # credo:disable-for-next-line Credo.Check.Refactor.Nesting
         case [type_tuple, name] do
-          [{:builtin_type, "string" <> _}, name] ->
-            "#{name}"
-
           [{:builtin_type, _type}, name] ->
-            "#{name}"
-
-          [{:builtin_type_array, "uint8[" <> _}, name] ->
             "#{name}"
 
           [{:builtin_type_array, _type}, name] ->
@@ -180,13 +174,7 @@ defmodule Rclex.Generators.MsgEx do
 
         # credo:disable-for-next-line Credo.Check.Refactor.Nesting
         case [type_tuple, name] do
-          [{:builtin_type, "string" <> _}, name] ->
-            "#{name}: #{name}"
-
           [{:builtin_type, _type}, name] ->
-            "#{name}: #{name}"
-
-          [{:builtin_type_array, "uint8[" <> _}, name] ->
             "#{name}: #{name}"
 
           [{:builtin_type_array, _type}, name] ->
