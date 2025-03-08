@@ -134,8 +134,8 @@ defmodule Rclex.Generators.MsgExTest do
 
     for {ros2_message_type, expected} <- [
           {"std_msgs/msg/Empty", ""},
-          {"std_msgs/msg/String", "~c\"\#{data}\""},
-          {"std_msgs/msg/MultiArrayDimension", "~c\"\#{label}\",\nsize,\nstride"},
+          {"std_msgs/msg/String", "data"},
+          {"std_msgs/msg/MultiArrayDimension", "label,\nsize,\nstride"},
           {"std_msgs/msg/MultiArrayLayout",
            "for struct <- dim do\n  Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension.to_tuple(struct)\nend,\ndata_offset"},
           {"std_msgs/msg/UInt32MultiArray",
@@ -155,9 +155,8 @@ defmodule Rclex.Generators.MsgExTest do
 
     for {ros2_message_type, expected} <- [
           {"std_msgs/msg/Empty", ""},
-          {"std_msgs/msg/String", "data: \"\#{data}\""},
-          {"std_msgs/msg/MultiArrayDimension",
-           "label: \"\#{label}\",\nsize: size,\nstride: stride"},
+          {"std_msgs/msg/String", "data: data"},
+          {"std_msgs/msg/MultiArrayDimension", "label: label,\nsize: size,\nstride: stride"},
           {"std_msgs/msg/MultiArrayLayout",
            "dim:\n  for tuple <- dim do\n    Rclex.Pkgs.StdMsgs.Msg.MultiArrayDimension.to_struct(tuple)\n  end,\ndata_offset: data_offset"},
           {"std_msgs/msg/UInt32MultiArray",

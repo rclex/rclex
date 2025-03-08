@@ -3,7 +3,7 @@
   for (size_t dim_i = 0; dim_i < message_p->dim.size; ++dim_i)
   {
     dim[dim_i] = enif_make_tuple(env, 3,
-      enif_make_string(env, message_p->dim.data[dim_i].label.data, ERL_NIF_LATIN1),
+      enif_make_binary_wrapper(env, message_p->dim.data[dim_i].label.data, message_p->dim.data[dim_i].label.size),
       enif_make_uint(env, message_p->dim.data[dim_i].size),
       enif_make_uint(env, message_p->dim.data[dim_i].stride)
     );

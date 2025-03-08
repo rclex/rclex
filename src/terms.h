@@ -10,6 +10,7 @@ extern void make_common_atoms(ErlNifEnv *env);
 extern ERL_NIF_TERM nif_test_raise(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]);
 extern ERL_NIF_TERM nif_test_raise_with_message(ErlNifEnv *env, int argc,
                                                 const ERL_NIF_TERM argv[]);
+extern ERL_NIF_TERM enif_make_binary_wrapper(ErlNifEnv *env, const char *data, size_t size);
 
 static inline ERL_NIF_TERM raise(ErlNifEnv *env, const char *file, int line) {
   char str[1024];

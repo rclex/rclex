@@ -29,10 +29,10 @@ defmodule Rclex.Pkgs.StdMsgs.Msg.String do
   end
 
   def to_tuple(%__MODULE__{data: data}) do
-    {~c"#{data}"}
+    {data}
   end
 
   def to_struct({data}) do
-    %__MODULE__{data: "#{data}"}
+    %__MODULE__{data: data}
   end
 end

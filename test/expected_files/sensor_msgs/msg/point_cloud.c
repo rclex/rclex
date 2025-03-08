@@ -108,20 +108,11 @@ ERL_NIF_TERM nif_sensor_msgs_msg_point_cloud_set(ErlNifEnv *env, int argc, const
     return enif_make_badarg(env);
   message_p->header.stamp.nanosec = header_stamp_nanosec;
 
-  unsigned int header_frame_id_length;
-#if (ERL_NIF_MAJOR_VERSION == 2 && ERL_NIF_MINOR_VERSION >= 17) // OTP-26 and later
-  if (!enif_get_string_length(env, header_tuple[1], &header_frame_id_length, ERL_NIF_LATIN1))
-    return enif_make_badarg(env);
-#else
-  if (!enif_get_list_length(env, header_tuple[1], &header_frame_id_length))
-    return enif_make_badarg(env);
-#endif
-
-  char header_frame_id[header_frame_id_length + 1];
-  if (enif_get_string(env, header_tuple[1], header_frame_id, header_frame_id_length + 1, ERL_NIF_LATIN1) <= 0)
+  ErlNifBinary header_frame_id_binary;
+  if (!enif_inspect_binary(env, header_tuple[1], &header_frame_id_binary))
     return enif_make_badarg(env);
 
-  if (!rosidl_runtime_c__String__assign(&(message_p->header.frame_id), header_frame_id))
+  if (!rosidl_runtime_c__String__assignn(&(message_p->header.frame_id), (const char *)header_frame_id_binary.data, header_frame_id_binary.size))
     return raise(env, __FILE__, __LINE__);
 
   unsigned int points_length;
@@ -180,20 +171,11 @@ ERL_NIF_TERM nif_sensor_msgs_msg_point_cloud_set(ErlNifEnv *env, int argc, const
     if (!enif_get_tuple(env, channels_head, &channels_i_arity, &channels_i_tuple))
       return enif_make_badarg(env);
 
-    unsigned int channels_i_name_length;
-#if (ERL_NIF_MAJOR_VERSION == 2 && ERL_NIF_MINOR_VERSION >= 17) // OTP-26 and later
-    if (!enif_get_string_length(env, channels_i_tuple[0], &channels_i_name_length, ERL_NIF_LATIN1))
-      return enif_make_badarg(env);
-#else
-    if (!enif_get_list_length(env, channels_i_tuple[0], &channels_i_name_length))
-      return enif_make_badarg(env);
-#endif
-
-    char channels_i_name[channels_i_name_length + 1];
-    if (enif_get_string(env, channels_i_tuple[0], channels_i_name, channels_i_name_length + 1, ERL_NIF_LATIN1) <= 0)
+    ErlNifBinary channels_i_name_binary;
+    if (!enif_inspect_binary(env, channels_i_tuple[0], &channels_i_name_binary))
       return enif_make_badarg(env);
 
-    if (!rosidl_runtime_c__String__assign(&(message_p->channels.data[channels_i].name), channels_i_name))
+    if (!rosidl_runtime_c__String__assignn(&(message_p->channels.data[channels_i].name), (const char *)channels_i_name_binary.data, channels_i_name_binary.size))
       return raise(env, __FILE__, __LINE__);
 
     unsigned int channels_i_values_length;
@@ -254,7 +236,7 @@ ERL_NIF_TERM nif_sensor_msgs_msg_point_cloud_get(ErlNifEnv *env, int argc, const
     }
 
     channels[channels_i] = enif_make_tuple(env, 2,
-      enif_make_string(env, message_p->channels.data[channels_i].name.data, ERL_NIF_LATIN1),
+      enif_make_binary_wrapper(env, message_p->channels.data[channels_i].name.data, message_p->channels.data[channels_i].name.size),
       enif_make_list_from_array(env, channels_values, message_p->channels.data[channels_i].values.size)
     );
   }
@@ -265,7 +247,7 @@ ERL_NIF_TERM nif_sensor_msgs_msg_point_cloud_get(ErlNifEnv *env, int argc, const
         enif_make_int(env, message_p->header.stamp.sec),
         enif_make_uint(env, message_p->header.stamp.nanosec)
       ),
-      enif_make_string(env, message_p->header.frame_id.data, ERL_NIF_LATIN1)
+      enif_make_binary_wrapper(env, message_p->header.frame_id.data, message_p->header.frame_id.size)
     ),
     enif_make_list_from_array(env, points, message_p->points.size),
     enif_make_list_from_array(env, channels, message_p->channels.size)

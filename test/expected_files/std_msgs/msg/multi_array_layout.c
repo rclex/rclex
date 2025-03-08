@@ -99,20 +99,11 @@ ERL_NIF_TERM nif_std_msgs_msg_multi_array_layout_set(ErlNifEnv *env, int argc, c
     if (!enif_get_tuple(env, dim_head, &dim_i_arity, &dim_i_tuple))
       return enif_make_badarg(env);
 
-    unsigned int dim_i_label_length;
-#if (ERL_NIF_MAJOR_VERSION == 2 && ERL_NIF_MINOR_VERSION >= 17) // OTP-26 and later
-    if (!enif_get_string_length(env, dim_i_tuple[0], &dim_i_label_length, ERL_NIF_LATIN1))
-      return enif_make_badarg(env);
-#else
-    if (!enif_get_list_length(env, dim_i_tuple[0], &dim_i_label_length))
-      return enif_make_badarg(env);
-#endif
-
-    char dim_i_label[dim_i_label_length + 1];
-    if (enif_get_string(env, dim_i_tuple[0], dim_i_label, dim_i_label_length + 1, ERL_NIF_LATIN1) <= 0)
+    ErlNifBinary dim_i_label_binary;
+    if (!enif_inspect_binary(env, dim_i_tuple[0], &dim_i_label_binary))
       return enif_make_badarg(env);
 
-    if (!rosidl_runtime_c__String__assign(&(message_p->dim.data[dim_i].label), dim_i_label))
+    if (!rosidl_runtime_c__String__assignn(&(message_p->dim.data[dim_i].label), (const char *)dim_i_label_binary.data, dim_i_label_binary.size))
       return raise(env, __FILE__, __LINE__);
 
     unsigned int dim_i_size;
@@ -148,7 +139,7 @@ ERL_NIF_TERM nif_std_msgs_msg_multi_array_layout_get(ErlNifEnv *env, int argc, c
   for (size_t dim_i = 0; dim_i < message_p->dim.size; ++dim_i)
   {
     dim[dim_i] = enif_make_tuple(env, 3,
-      enif_make_string(env, message_p->dim.data[dim_i].label.data, ERL_NIF_LATIN1),
+      enif_make_binary_wrapper(env, message_p->dim.data[dim_i].label.data, message_p->dim.data[dim_i].label.size),
       enif_make_uint(env, message_p->dim.data[dim_i].size),
       enif_make_uint(env, message_p->dim.data[dim_i].stride)
     );
