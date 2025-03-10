@@ -112,7 +112,7 @@ static void new_message_callback(const void *user_data, size_t number_of_events)
   ErlNifPid *pid_p = (ErlNifPid *)user_data;
 
   ErlNifEnv *env = enif_alloc_env();
-  enif_send(env, pid_p, env,
+  enif_send(NULL, pid_p, env,
             enif_make_tuple(env, 2, new_message, enif_make_int(env, number_of_events)));
   enif_free_env(env);
 }
