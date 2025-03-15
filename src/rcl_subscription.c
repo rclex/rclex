@@ -13,13 +13,9 @@
 #include <rosidl_runtime_c/message_type_support_struct.h>
 #include <stddef.h>
 
-ERL_NIF_TERM subscription_take_failed;
 ERL_NIF_TERM new_message;
 
-void make_subscription_atom(ErlNifEnv *env) {
-  subscription_take_failed = enif_make_atom(env, "subscription_take_failed");
-  new_message              = enif_make_atom(env, "new_message");
-}
+void make_subscription_atom(ErlNifEnv *env) { new_message = enif_make_atom(env, "new_message"); }
 
 ERL_NIF_TERM nif_rcl_subscription_init(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[]) {
   if (argc != 4) return enif_make_badarg(env);

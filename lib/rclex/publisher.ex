@@ -57,15 +57,7 @@ defmodule Rclex.Publisher do
   end
 
   def handle_call({:publish, data}, _from, %{message_type: message_type} = state) do
-    message = apply(message_type, :create!, [])
-
-    try do
-      :ok = apply(message_type, :set!, [message, data])
-      :ok = Nif.rcl_publish!(state.publisher, message)
-    after
-      :ok = apply(message_type, :destroy!, [message])
-    end
-
-    {:reply, :ok, state}
+    apply(message_type, :publish!, [state.publisher, data])
+    |> then(&{:reply, &1, state})
   end
 end
