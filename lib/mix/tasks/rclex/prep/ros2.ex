@@ -28,8 +28,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   use Mix.Task
 
-  @arm64v8_ros_distros ["humble"]
-  @amd64_ros_distros ["humble"]
+  @arm64v8_ros_distros ["humble", "jazzy"]
+  @amd64_ros_distros ["humble", "jazzy"]
   @arm32v7_ros_distros ["humble"]
   @supported_ros_distros %{
     "arm64v8" => @arm64v8_ros_distros,
