@@ -146,6 +146,12 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     ]
   end
 
+  defp vendor_resources(arch, "jazzy") do
+    _dir_name = arch_dir_name(arch)
+
+    []
+  end
+
   defp copy_from_docker_impl!(arch, ros_distro, src_path, dest_path) do
     with true <- File.exists?(dest_path) do
       docker_tag = ros_docker_image_tag(arch, ros_distro)
