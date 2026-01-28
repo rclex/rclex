@@ -44,7 +44,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   @doc false
   def run(args) do
-    if not command_exists?("docker") do
+    if is_nil(System.find_executable("docker")) do
       Mix.raise("""
       Please install docker command first, we need it.
       """)
@@ -86,14 +86,6 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
     if Mix.shell().yes?(String.trim_trailing(message)) do
       copy_from_docker!(dest_dir_path, arch, ros_distro)
-    end
-  end
-
-  @doc false
-  def command_exists?(command) when is_binary(command) do
-    case System.cmd("sh", ["-c", "command -v #{command}"]) do
-      {_, 0} -> true
-      _ -> false
     end
   end
 
