@@ -149,7 +149,17 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
   defp copy_from_docker_impl!(arch, ros_distro, src_path, dest_path) do
     with true <- File.exists?(dest_path) do
       docker_tag = ros_docker_image_tag(arch, ros_distro)
-      docker_command_args = ["run", "--rm", "-v", "#{dest_path}:/mnt", docker_tag]
+
+      docker_command_args = [
+        "run",
+        "--rm",
+        "--platform",
+        "#{platform(arch)}",
+        "-v",
+        "#{dest_path}:/mnt",
+        docker_tag
+      ]
+
       copy_command = ["bash", "-c", "for s in #{src_path}; do cp -rf $s /mnt; done"]
 
       {_, 0} = System.cmd("docker", docker_command_args ++ copy_command)
@@ -173,9 +183,13 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     "rclex/arm32v7_ros_docker_with_vendor_resources:#{ros_distro}"
   end
 
-  defp arch_dir_name("arm64v8"), do: "aarch64-linux-gnu"
   defp arch_dir_name("amd64"), do: "x86_64-linux-gnu"
+  defp arch_dir_name("arm64v8"), do: "aarch64-linux-gnu"
   defp arch_dir_name("arm32v7"), do: "arm-linux-gnueabihf"
+
+  defp platform("amd64"), do: "linux/amd64"
+  defp platform("arm64v8"), do: "linux/arm64/v8"
+  defp platform("arm32v7"), do: "linux/arm/v7"
 
   @doc false
   @spec create_resources_directory!(directory_path :: String.t(), gitignore :: boolean()) :: :ok
