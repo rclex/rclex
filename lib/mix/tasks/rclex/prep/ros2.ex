@@ -139,17 +139,23 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     [
       "/lib/#{dir_name}/libspdlog.so*",
       "/lib/#{dir_name}/libtinyxml2.so*",
-      "/lib/#{dir_name}/libfmt.so*",
-      # humble needs OpenSSL 3.x which Nerves doesn't have
-      "/lib/#{dir_name}/libssl.so*",
-      "/lib/#{dir_name}/libcrypto.so*"
+      "/lib/#{dir_name}/libfmt.so*"
     ]
   end
 
   defp vendor_resources(arch, "jazzy") do
-    _dir_name = arch_dir_name(arch)
+    dir_name = arch_dir_name(arch)
 
-    []
+    [
+      "/lib/#{dir_name}/libspdlog.so*",
+      "/lib/#{dir_name}/libtinyxml2.so*",
+      "/lib/#{dir_name}/libfmt.so*",
+      "/lib/#{dir_name}/libyaml*.so*",
+      "/lib/#{dir_name}/liblttng-ust.so*",
+      "/lib/#{dir_name}/libnuma.so*",
+      "/lib/#{dir_name}/liblttng-ust-common.so*",
+      "/lib/#{dir_name}/liblttng-ust-tracepoint.so*"
+    ]
   end
 
   defp copy_from_docker_impl!(arch, ros_distro, src_path, dest_path) do
