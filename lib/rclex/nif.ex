@@ -1,15 +1,63 @@
 defmodule Rclex.Nif do
   @moduledoc false
 
+  require Logger
+
   @on_load :load
   @compile {:autoload, false}
 
+  defp on_host? do
+    if function_exported?(Nerves.Runtime, :mix_target, 0) do
+      apply(Nerves.Runtime, :mix_target, []) == :host
+    else
+      true
+    end
+  end
+
+  defp error_message(reason) do
+    if on_host?() do
+      """
+      Failed to load NIF library for Rclex.
+
+      This usually means ROS environment is not initialized.
+
+      Please run: source /opt/ros/<ROS_DISTRO>/setup.bash
+
+      Original error: #{inspect(reason)}
+      """
+    else
+      """
+      Failed to load NIF library for Rclex on Nerves.
+
+      This usually means ROS 2 resources are not properly prepared on the Nerves device.
+
+      Please ensure:
+        1. You have run: mix rclex.prep.ros2 --arch <your_arch>
+        2. The ROS 2 libraries are available on the device
+        3. LD_LIBRARY_PATH is properly set to include the ROS 2 library paths
+
+      For more details, see: USE_ON_NERVES.md
+
+      Original error: #{inspect(reason)}
+      """
+    end
+  end
+
   def load() do
-    Application.app_dir(:rclex)
-    |> Path.join("priv/rclex.so")
-    |> String.replace_suffix(".so", "")
-    |> to_charlist()
-    |> :erlang.load_nif(_load_info = :any_term)
+    path =
+      Application.app_dir(:rclex)
+      |> Path.join("priv/rclex.so")
+      |> String.replace_suffix(".so", "")
+      |> to_charlist()
+
+    case :erlang.load_nif(path, _load_info = :any_term) do
+      :ok ->
+        :ok
+
+      {:error, reason} ->
+        Logger.error(error_message(reason))
+        {:error, reason}
+    end
   end
 
   def test_raise!() do
