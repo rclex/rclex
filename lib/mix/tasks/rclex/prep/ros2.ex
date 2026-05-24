@@ -28,8 +28,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   use Mix.Task
 
-  @arm64v8_ros_distros ["humble"]
-  @amd64_ros_distros ["humble"]
+  @arm64v8_ros_distros ["humble", "jazzy"]
+  @amd64_ros_distros ["humble", "jazzy"]
   @arm32v7_ros_distros ["humble"]
   @supported_ros_distros %{
     "arm64v8" => @arm64v8_ros_distros,
@@ -44,7 +44,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   @doc false
   def run(args) do
-    if not command_exists?("docker") do
+    if is_nil(System.find_executable("docker")) do
       Mix.raise("""
       Please install docker command first, we need it.
       """)
@@ -86,14 +86,6 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
     if Mix.shell().yes?(String.trim_trailing(message)) do
       copy_from_docker!(dest_dir_path, arch, ros_distro)
-    end
-  end
-
-  @doc false
-  def command_exists?(command) when is_binary(command) do
-    case System.cmd("sh", ["-c", "command -v #{command}"]) do
-      {_, 0} -> true
-      _ -> false
     end
   end
 
@@ -147,17 +139,39 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     [
       "/lib/#{dir_name}/libspdlog.so*",
       "/lib/#{dir_name}/libtinyxml2.so*",
+      "/lib/#{dir_name}/libfmt.so*"
+    ]
+  end
+
+  defp vendor_resources(arch, "jazzy") do
+    dir_name = arch_dir_name(arch)
+
+    [
+      "/lib/#{dir_name}/libspdlog.so*",
+      "/lib/#{dir_name}/libtinyxml2.so*",
       "/lib/#{dir_name}/libfmt.so*",
-      # humble needs OpenSSL 3.x which Nerves doesn't have
-      "/lib/#{dir_name}/libssl.so*",
-      "/lib/#{dir_name}/libcrypto.so*"
+      "/lib/#{dir_name}/libyaml*.so*",
+      "/lib/#{dir_name}/liblttng-ust.so*",
+      "/lib/#{dir_name}/libnuma.so*",
+      "/lib/#{dir_name}/liblttng-ust-common.so*",
+      "/lib/#{dir_name}/liblttng-ust-tracepoint.so*"
     ]
   end
 
   defp copy_from_docker_impl!(arch, ros_distro, src_path, dest_path) do
     with true <- File.exists?(dest_path) do
       docker_tag = ros_docker_image_tag(arch, ros_distro)
-      docker_command_args = ["run", "--rm", "-v", "#{dest_path}:/mnt", docker_tag]
+
+      docker_command_args = [
+        "run",
+        "--rm",
+        "--platform",
+        "#{platform(arch)}",
+        "-v",
+        "#{dest_path}:/mnt",
+        docker_tag
+      ]
+
       copy_command = ["bash", "-c", "for s in #{src_path}; do cp -rf $s /mnt; done"]
 
       {_, 0} = System.cmd("docker", docker_command_args ++ copy_command)
@@ -181,9 +195,13 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     "rclex/arm32v7_ros_docker_with_vendor_resources:#{ros_distro}"
   end
 
-  defp arch_dir_name("arm64v8"), do: "aarch64-linux-gnu"
   defp arch_dir_name("amd64"), do: "x86_64-linux-gnu"
+  defp arch_dir_name("arm64v8"), do: "aarch64-linux-gnu"
   defp arch_dir_name("arm32v7"), do: "arm-linux-gnueabihf"
+
+  defp platform("amd64"), do: "linux/amd64"
+  defp platform("arm64v8"), do: "linux/arm64/v8"
+  defp platform("arm32v7"), do: "linux/arm/v7"
 
   @doc false
   @spec create_resources_directory!(directory_path :: String.t(), gitignore :: boolean()) :: :ok
