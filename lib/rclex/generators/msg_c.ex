@@ -601,18 +601,22 @@ defmodule Rclex.Generators.MsgC do
     end)
   end
 
-  defp get_deps_types(ros2_message_type, types \\ MapSet.new([]), ros2_message_type_map) do
+  defp get_deps_types(ros2_message_type, ros2_message_type_map) do
+    get_deps_types(ros2_message_type, [], ros2_message_type_map)
+  end
+
+  defp get_deps_types(ros2_message_type, types, ros2_message_type_map) do
     get_fields(ros2_message_type, ros2_message_type_map)
     |> Enum.reduce(types, fn field, acc ->
       [head | _] = field
 
       case head do
         {:msg_type, type} ->
-          get_deps_types(type, MapSet.put(acc, type), ros2_message_type_map)
+          get_deps_types(type, Enum.uniq([type | acc]), ros2_message_type_map)
 
         {:msg_type_array, type} ->
           %{type: type} = get_array_type(type)
-          get_deps_types(type, MapSet.put(acc, type), ros2_message_type_map)
+          get_deps_types(type, Enum.uniq([type | acc]), ros2_message_type_map)
 
         _ ->
           acc
