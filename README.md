@@ -40,8 +40,8 @@ Currently, we use the following environment as the main development target:
 
 - Ubuntu 22.04 LTS (Jammy Jellyfish)
 - ROS 2 Humble Hawksbill
-- Elixir 1.18.4-otp-27
-- Erlang/OTP 27.3.4.3
+- Elixir 1.19.5-otp-28
+- Erlang/OTP 28.5
 
 We highly recommend using [Humble Hawksbill](https://docs.ros.org/en/rolling/Releases/Release-Humble-Hawksbill.html) for ROS 2 LTS distribution.
 We also confirmed the operation of this library with [Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html) on Ubuntu 24.04 LTS. See details in [PR#361](https://github.com/rclex/rclex/pull/361).
