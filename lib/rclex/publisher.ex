@@ -23,7 +23,6 @@ defmodule Rclex.Publisher do
   def publish(%message_type{} = message, topic_name, name, namespace \\ "/") do
     case GenServer.whereis(name(message_type, topic_name, name, namespace)) do
       nil -> {:error, :not_found}
-      {_atom, _node} -> raise("should not happen")
       pid -> GenServer.call(pid, {:publish, message})
     end
   end
