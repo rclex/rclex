@@ -14,12 +14,12 @@ jobs:
       matrix:
         dockertags: [
           latest,
-          jazzy-ex1.19.0-otp28.1,
+          jazzy-ex1.20.0-otp29.0.1,
+          jazzy-ex1.19.5-otp28.5,
           jazzy-ex1.18.4-otp27.3.4.3,
-          jazzy-ex1.17.3-otp27.2.4,
-          humble-ex1.19.0-otp28.1,
+          humble-ex1.20.0-otp29.0.1,
+          humble-ex1.19.5-otp28.5,
           humble-ex1.18.4-otp27.3.4.3,
-          humble-ex1.17.3-otp27.2.4,
         ]
     container: rclex/rclex_docker:${{ matrix.dockertags }}
 
