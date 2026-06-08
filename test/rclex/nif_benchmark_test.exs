@@ -1,8 +1,6 @@
 defmodule Rclex.NifBenchmarkTest do
   use ExUnit.Case
 
-  require Logger
-
   import ExUnit.CaptureLog
 
   alias Rclex.Nif
