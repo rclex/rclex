@@ -28,6 +28,7 @@ defmodule Rclex.Generators.MsgC do
 
   def to_deps_header_prefix_list(ros2_message_type, ros2_message_type_map) do
     get_deps_types(ros2_message_type, ros2_message_type_map)
+    |> Enum.sort()
     |> Enum.map(fn ros2_message_type ->
       [interfaces, "msg", type] = ros2_message_type |> String.split("/")
       [interfaces, "msg", "detail", Util.to_down_snake(type)] |> Path.join()
