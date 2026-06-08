@@ -71,7 +71,7 @@ defmodule Rclex.Generators.MsgC do
 
     Enum.with_index(fields)
     |> Enum.map_join("\n", fn {[_, name | _] = field, index} ->
-      acc = %Acc{
+      acc = %{
         acc
         | vars: acc.vars ++ [name],
           mbrs: acc.mbrs ++ [name],
@@ -127,7 +127,7 @@ defmodule Rclex.Generators.MsgC do
 
     binary =
       (fn ->
-         acc = %Acc{acc | vars: acc.vars ++ ["i"], mbrs: acc.mbrs ++ ["data[#{var}_i]"]}
+         acc = %{acc | vars: acc.vars ++ ["i"], mbrs: acc.mbrs ++ ["data[#{var}_i]"]}
          enif_get({:msg_type, type}, acc, ros2_message_type_map)
        end).()
       |> format()
@@ -202,7 +202,7 @@ defmodule Rclex.Generators.MsgC do
 
     binary =
       (fn ->
-         acc = %Acc{acc | vars: vars, mbrs: mbrs, terms: terms}
+         acc = %{acc | vars: vars, mbrs: mbrs, terms: terms}
          enif_get({:builtin_type, type}, acc, ros2_message_type_map)
        end).()
       |> format()
@@ -252,7 +252,7 @@ defmodule Rclex.Generators.MsgC do
 
     binary =
       (fn ->
-         acc = %Acc{acc | vars: vars, mbrs: mbrs, terms: terms}
+         acc = %{acc | vars: vars, mbrs: mbrs, terms: terms}
          enif_get({:builtin_type, type}, acc, ros2_message_type_map)
        end).()
       |> format()
@@ -384,7 +384,7 @@ defmodule Rclex.Generators.MsgC do
       %{type: type, kind: :unbounded_dynamic} ->
         array_for(
           {:unbounded, type},
-          %Acc{acc | type: {:msg_type, type}},
+          %{acc | type: {:msg_type, type}},
           ros2_message_type_map
         )
     end
@@ -395,14 +395,14 @@ defmodule Rclex.Generators.MsgC do
       %{type: type, kind: :unbounded_dynamic} ->
         array_for(
           {:unbounded, type},
-          %Acc{acc | type: {:builtin_type, type}},
+          %{acc | type: {:builtin_type, type}},
           ros2_message_type_map
         )
 
       %{type: type, kind: :static, size: size} ->
         array_for(
           {:static, type, size},
-          %Acc{acc | type: {:builtin_type, type}},
+          %{acc | type: {:builtin_type, type}},
           ros2_message_type_map
         )
     end
@@ -427,7 +427,7 @@ defmodule Rclex.Generators.MsgC do
 
     mbrs = acc.mbrs ++ ["data[#{var}_i]"]
 
-    acc = %Acc{acc | mbrs: mbrs}
+    acc = %{acc | mbrs: mbrs}
 
     binary =
       build_get_fun_fragments(acc, "#{var}[#{var}_i] =", ros2_message_type_map)
@@ -462,7 +462,7 @@ defmodule Rclex.Generators.MsgC do
 
     mbrs = List.pop_at(acc.mbrs, -1) |> then(fn {mbr, mbrs} -> mbrs ++ ["#{mbr}[#{var}_i]"] end)
 
-    acc = %Acc{acc | mbrs: mbrs}
+    acc = %{acc | mbrs: mbrs}
 
     binary =
       build_get_fun_fragments(acc, "#{var}[#{var}_i] =", ros2_message_type_map)
@@ -484,7 +484,7 @@ defmodule Rclex.Generators.MsgC do
 
     {binaries, accs} =
       Enum.map_reduce(fields, [], fn [_, name | _] = field, accs ->
-        acc = %Acc{acc | vars: acc.vars ++ [name], mbrs: acc.mbrs ++ [name], type: hd(field)}
+        acc = %{acc | vars: acc.vars ++ [name], mbrs: acc.mbrs ++ [name], type: hd(field)}
         {binary, accs_} = enif_make(acc.type, acc, ros2_message_type_map)
         {binary, accs ++ accs_}
       end)
