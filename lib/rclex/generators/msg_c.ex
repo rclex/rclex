@@ -602,23 +602,37 @@ defmodule Rclex.Generators.MsgC do
     end)
   end
 
-  defp get_deps_types(ros2_message_type, types \\ MapSet.new([]), ros2_message_type_map) do
+  defp get_deps_types(ros2_message_type, ros2_message_type_map) do
+    ros2_message_type
+    |> collect_deps_types(%{}, ros2_message_type_map)
+    |> Map.keys()
+  end
+
+  defp collect_deps_types(ros2_message_type, seen, ros2_message_type_map) do
     get_fields(ros2_message_type, ros2_message_type_map)
-    |> Enum.reduce(types, fn field, acc ->
+    |> Enum.reduce(seen, fn field, acc ->
       [head | _] = field
 
       case head do
         {:msg_type, type} ->
-          get_deps_types(type, MapSet.put(acc, type), ros2_message_type_map)
+          put_and_collect_deps_types(type, acc, ros2_message_type_map)
 
         {:msg_type_array, type} ->
           %{type: type} = get_array_type(type)
-          get_deps_types(type, MapSet.put(acc, type), ros2_message_type_map)
+          put_and_collect_deps_types(type, acc, ros2_message_type_map)
 
         _ ->
           acc
       end
     end)
+  end
+
+  defp put_and_collect_deps_types(type, seen, ros2_message_type_map) do
+    if Map.has_key?(seen, type) do
+      seen
+    else
+      collect_deps_types(type, Map.put(seen, type, true), ros2_message_type_map)
+    end
   end
 
   defp get_fields(ros2_message_type, ros2_message_type_map) do
