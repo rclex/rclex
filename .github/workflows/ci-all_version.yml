@@ -68,7 +68,7 @@ jobs:
           cd rclex
           mix local.hex --force
           mix rclex.gen.msgs
-          mix test
+          mix test --warnings-as-errors --cover
 
       - name: connection tests
         run: |
