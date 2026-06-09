@@ -4,6 +4,7 @@ defmodule Rclex.Generators.MsgC do
   alias Rclex.Generators.Util
   alias Rclex.Parsers.TypeParser
 
+  @spec generate(String.t(), map()) :: String.t()
   def generate(type, ros2_message_type_map) do
     set_fun_fragments = set_fun_fragments(type, ros2_message_type_map)
     is_empty_type? = set_fun_fragments == ""
@@ -21,11 +22,13 @@ defmodule Rclex.Generators.MsgC do
     )
   end
 
+  @spec to_header_name(String.t()) :: String.t()
   def to_header_name(ros2_message_type) do
     [_interfaces, "msg", type] = ros2_message_type |> String.split("/")
     Util.to_down_snake(type)
   end
 
+  @spec to_deps_header_prefix_list(String.t(), map()) :: list()
   def to_deps_header_prefix_list(ros2_message_type, ros2_message_type_map) do
     get_deps_types(ros2_message_type, ros2_message_type_map)
     |> Enum.sort()
@@ -40,6 +43,7 @@ defmodule Rclex.Generators.MsgC do
     [interfaces, "msg", "detail", Util.to_down_snake(type)] |> Path.join()
   end
 
+  @spec rosidl_get_msg_type_support(String.t()) :: String.t()
   def rosidl_get_msg_type_support(ros2_message_type) do
     [interfaces, "msg", type] = ros2_message_type |> String.split("/")
     "ROSIDL_GET_MSG_TYPE_SUPPORT(#{interfaces}, msg, #{type})"
@@ -52,6 +56,7 @@ defmodule Rclex.Generators.MsgC do
   iex> Rclex.Generators.MsgC.to_c_type("std_msgs/msg/UInt32MultiArray")
   "std_msgs__msg__UInt32MultiArray"
   """
+  @spec to_c_type(String.t()) :: String.t()
   def to_c_type(ros2_message_type) do
     [interfaces, "msg", type] = ros2_message_type |> String.split("/")
     [interfaces, "_msg_", type] |> Enum.join("_")
