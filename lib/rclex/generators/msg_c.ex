@@ -30,8 +30,7 @@ defmodule Rclex.Generators.MsgC do
 
   @spec to_deps_header_prefix_list(String.t(), map()) :: list()
   def to_deps_header_prefix_list(ros2_message_type, ros2_message_type_map) do
-    get_deps_types(ros2_message_type, ros2_message_type_map)
-    |> Enum.sort()
+    get_deps_types(ros2_message_type, MapSet.new(), ros2_message_type_map)
     |> Enum.map(fn ros2_message_type ->
       [interfaces, "msg", type] = ros2_message_type |> String.split("/")
       [interfaces, "msg", "detail", Util.to_down_snake(type)] |> Path.join()
@@ -619,37 +618,26 @@ defmodule Rclex.Generators.MsgC do
     end)
   end
 
-  defp get_deps_types(ros2_message_type, ros2_message_type_map) do
-    ros2_message_type
-    |> collect_deps_types(%{}, ros2_message_type_map)
-    |> Map.keys()
-  end
-
-  defp collect_deps_types(ros2_message_type, seen, ros2_message_type_map) do
+  @dialyzer {:nowarn_function, get_deps_types: 3}
+  @spec get_deps_types(String.t(), MapSet.t(String.t()), map()) :: MapSet.t(String.t())
+  defp get_deps_types(ros2_message_type, types, ros2_message_type_map)
+       when is_struct(types, MapSet) do
     get_fields(ros2_message_type, ros2_message_type_map)
-    |> Enum.reduce(seen, fn field, acc ->
+    |> Enum.reduce(types, fn field, %MapSet{} = acc ->
       [head | _] = field
 
       case head do
         {:msg_type, type} ->
-          put_and_collect_deps_types(type, acc, ros2_message_type_map)
+          get_deps_types(type, MapSet.put(acc, type), ros2_message_type_map)
 
         {:msg_type_array, type} ->
           %{type: type} = get_array_type(type)
-          put_and_collect_deps_types(type, acc, ros2_message_type_map)
+          get_deps_types(type, MapSet.put(acc, type), ros2_message_type_map)
 
         _ ->
           acc
       end
     end)
-  end
-
-  defp put_and_collect_deps_types(type, seen, ros2_message_type_map) do
-    if Map.has_key?(seen, type) do
-      seen
-    else
-      collect_deps_types(type, Map.put(seen, type, true), ros2_message_type_map)
-    end
   end
 
   defp get_fields(ros2_message_type, ros2_message_type_map) do
