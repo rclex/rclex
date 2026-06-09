@@ -23,7 +23,6 @@ defmodule Rclex.NodesSupervisor do
 
     case GenServer.whereis(name) do
       nil -> {:error, :not_found}
-      {_atom, _node} -> raise("should not happen")
       pid -> DynamicSupervisor.terminate_child(name(), pid)
     end
   end

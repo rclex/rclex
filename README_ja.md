@@ -36,8 +36,8 @@ ROS 2の主な貢献として，通信にDDS（Data Distribution Service）プ�
 
 - Ubuntu 22.04 LTS (Jammy Jellyfish)
 - ROS 2 Humble Hawksbill
-- Elixir 1.18.4-otp-27
-- Erlang/OTP 27.3.4.3
+- Elixir 1.19.5-otp-28
+- Erlang/OTP 28.5
 
 ROS 2には長期サポート版（LTS）である[Humble Hawksbill](https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html)の利用を強く推奨します．
 Ubuntu 24.04 LTS上での[Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html)との本ライブラリの動作確認も行っています．詳細は[PR#361](https://github.com/rclex/rclex/pull/361)を参照ください．
