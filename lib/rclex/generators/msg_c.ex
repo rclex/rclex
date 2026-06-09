@@ -618,6 +618,7 @@ defmodule Rclex.Generators.MsgC do
     end)
   end
 
+  # REMOVE THE LINE BELOW ONCE https://github.com/rclex/rclex/issues/402 IS RESOLVED
   @dialyzer {:nowarn_function, get_deps_types: 3}
   @spec get_deps_types(String.t(), MapSet.t(String.t()), map()) :: MapSet.t(String.t())
   defp get_deps_types(ros2_message_type, types, ros2_message_type_map)
