@@ -40,7 +40,8 @@ ROS 2の主な貢献として，通信にDDS（Data Distribution Service）プ�
 - Erlang/OTP 28.5
 
 ROS 2には長期サポート版（LTS）である[Humble Hawksbill](https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html)の利用を強く推奨します．
-Ubuntu 24.04 LTS上での[Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html)，Ubuntu 26.04 LTS上での[Lyrical Luth](https://docs.ros.org/en/rolling/Releases/Release-Lyrical-Luth.html)との本ライブラリの動作確認も行っています．詳細は[PR#361](https://github.com/rclex/rclex/pull/361)を参照ください．
+Ubuntu 24.04 LTS上での[Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html)，Ubuntu 26.04 LTS上での[Lyrical Luth](https://docs.ros.org/en/rolling/Releases/Release-Lyrical-Luth.html)との本ライブラリの動作確認も行っています．
+短期サポート版（STS）のディストリビューションについては，現在のサポート対象となっている[Kilted Kaiju](https://docs.ros.org/en/rolling/Releases/Release-Kilted-Kaiju.html)でも動作することを確認しています．ただしこのディストリビューションはGitHub ActionsでのCI testの対象には含めていません．
 
 すでにEOLに達しているROS 2 Distributionsは，最新版に向けた開発ではサポートしていません．サポートを行っていた最終のリリース番号は次のとおりです．
 
