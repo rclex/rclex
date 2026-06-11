@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## v0.13.0 on 11 Jun 2026
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.12.0...v0.13.0
+
+* New features:
+  * feat: support Lyrical Luth (along with Kilted Kaiju) by @takasehideki in https://github.com/rclex/rclex/pull/405
+  * bump: follow Docker tags in CI workflow for compatibility with latest versions of rclex_docker by @takasehideki in https://github.com/rclex/rclex/pull/400
+  * CI: update latest to Elixit 1.18.4 and add Elixir 1.19 by @takasehideki in https://github.com/rclex/rclex/pull/379
+* Code Improvements/Fixes:
+  * Improve ROS 2 builtin type `string` handling by @pojiro in https://github.com/rclex/rclex/pull/371
+  * Review pr 401 by @pojiro in https://github.com/rclex/rclex/pull/404
+  * fix: eliminate warning for type inference to follow Elixir 1.19+ by @takasehideki in https://github.com/rclex/rclex/pull/401
+* Bumps:
+  * Bump benchee from 1.3.1 to 1.5.1
+  * Bump credo from 1.7.11 to 1.7.19
+  * Bump dialyxir from 1.4.5 to 1.4.7
+  * Bump elixir_make from 0.9.0 to 0.10.0
+  * Bump git_hooks from 0.8.0 to 0.8.1
+  * Bump ex_doc from 0.37.2 to 0.40.3
+  * Bump mix_test_watch from 1.2.0 to 1.4.0
+* Note in this release:
+  * Please welecome Lyrical Luth to our supported ROS 2 LTS distribution!! :tada:
+  * Update the default Elixir and Erlang versions to 1.19.5 and 28.5
+
 ## v0.12.0 on 04 Mar 2025
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.11.3...v0.12.0
