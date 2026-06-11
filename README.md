@@ -44,7 +44,8 @@ Currently, we use the following environment as the main development target:
 - Erlang/OTP 28.5
 
 We highly recommend using [Humble Hawksbill](https://docs.ros.org/en/rolling/Releases/Release-Humble-Hawksbill.html) for ROS 2 LTS distribution.
-We also confirmed the operation of this library with [Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html) on Ubuntu 24.04 LTS. See details in [PR#361](https://github.com/rclex/rclex/pull/361).
+We also confirmed the operation of this library with [Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html) on Ubuntu 24.04 LTS, and [Lyrical Luth](https://docs.ros.org/en/rolling/Releases/Release-Lyrical-Luth.html) on Ubuntu 26.04 LTS.
+As for STS which is currently supported, we also confirmed the operation with [Kilted Kaiju](https://docs.ros.org/en/rolling/Releases/Release-Kilted-Kaiju.html). However, this STS distribution is not included in the CI tests on GHA.
 
 We do not support ROS 2 Distributions that have already reached EOL in the development of the latest version.
 The last supported releases are as follows.
