@@ -83,14 +83,14 @@ mix deps.get
 
 > #### Note {: .info }
 >
-> In the following steps, Humble Hawksbill (`humble`) is assumed to be used as `ROS_DISTRO` (strongly recommend to use).
-> If you want to use other ROS 2 distributions, you need to replace it appropriately in the subsequent steps. Note that these have already reached EOL.
+> In the following steps, Jazzy Jalisco (`jazzy`) is assumed to be used as `ROS_DISTRO` (strongly recommend to use).
+> If you want to use another ROS 2 distribution, you need to replace it appropriately in the subsequent steps. Note that some older distributions have already reached EOL.
 
 The following command extracts the ROS 2 Docker image and copies resources required for Rclex to the Nerves file system.
 You may change the value of `--arch` according to the architecture of your target board (see the "arch" column on the supported target list)
 
 ```
-export ROS_DISTRO=humble
+export ROS_DISTRO=jazzy
 mix rclex.prep.ros2 --arch arm64v8
 ```
 
@@ -101,7 +101,7 @@ mix rclex.prep.ros2 --arch arm64v8
 
 ### Configure ROS 2 message types you want to use
 
-Rclex provides pub/sub based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/humble/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
+Rclex provides pub/sub based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Interfaces.html) for more details about message types in ROS 2.
 
 The message types you want to use in your project can be specified in `ros2_message_types` in `config/config.exs`. 
 Multiple message types can be specified separated by comma `,`.
@@ -129,7 +129,7 @@ cp deps/nerves_system_rpi4/rootfs_overlay/etc/erlinit.config rootfs_overlay/etc
 ```
 
 Add LD_LIBRARY_PATH line like following.  
-`ROS_DISTRO` should be written directly such as `humble`, as the below.
+`ROS_DISTRO` should be written directly such as `jazzy`, as the below.
 
 ```
 # Enable UTF-8 filename handling in Erlang and custom inet configuration
@@ -139,7 +139,7 @@ Add LD_LIBRARY_PATH line like following.
 -e ERL_CRASH_DUMP=/root/erl_crash.dump;ERL_CRASH_DUMP_SECONDS=5
 
 # add for ROS 2 (rclex_on_nerves)
--e LD_LIBRARY_PATH=/opt/ros/humble/lib
+-e LD_LIBRARY_PATH=/opt/ros/jazzy/lib
 ```
 
 > #### Why add LD_LIBRARY_PATH explicitly {: .info }
@@ -202,7 +202,7 @@ Rclex: Publishing: Hello World from Rclex!
 You can confirm the above operation by subscribing with `ros2 topic echo` on the machine where ROS 2 env has been installed.
 
 ```
-$ source /opt/ros/humble/setup.bash
+$ source /opt/ros/jazzy/setup.bash
 $ ros2 topic echo /chatter std_msgs/msg/String
 data: Hello World from Rclex!
 ---

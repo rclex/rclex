@@ -34,13 +34,13 @@ ROS 2の主な貢献として，通信にDDS（Data Distribution Service）プ�
 
 現在，下記の環境を主な対象として開発を進めています．
 
-- Ubuntu 22.04 LTS (Jammy Jellyfish)
-- ROS 2 Humble Hawksbill
+- Ubuntu 24.04 LTS (Noble Numbat)
+- ROS 2 Jazzy Jalisco
 - Elixir 1.19.5-otp-28
 - Erlang/OTP 28.5
 
-ROS 2には長期サポート版（LTS）である[Humble Hawksbill](https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html)の利用を強く推奨します．
-Ubuntu 24.04 LTS上での[Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html)，Ubuntu 26.04 LTS上での[Lyrical Luth](https://docs.ros.org/en/rolling/Releases/Release-Lyrical-Luth.html)との本ライブラリの動作確認も行っています．
+ROS 2には長期サポート版（LTS）である[Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html)の利用を強く推奨します．
+Ubuntu 22.04 LTS上での[Humble Hawksbill](https://docs.ros.org/en/humble/Releases/Release-Humble-Hawksbill.html)，Ubuntu 26.04 LTS上での[Lyrical Luth](https://docs.ros.org/en/rolling/Releases/Release-Lyrical-Luth.html)との本ライブラリの動作確認も行っています．
 短期サポート版（STS）のディストリビューションについては，現在のサポート対象となっている[Kilted Kaiju](https://docs.ros.org/en/rolling/Releases/Release-Kilted-Kaiju.html)でも動作することを確認しています．ただしこのディストリビューションはGitHub ActionsでのCI testの対象には含めていません．
 
 すでにEOLに達しているROS 2 Distributionsは，最新版に向けた開発ではサポートしていません．サポートを行っていた最終のリリース番号は次のとおりです．
@@ -110,12 +110,12 @@ mix deps.get
 ### ROS 2の環境設定
 
 ```
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 ```
 
 ### メッセージの型の設定
 
-Rclexでは，ROS 2において定義されるメッセージの型を利用して出版購読型のトピック通信を行うことができます．ROS 2におけるメッセージの型については[こちら](https://docs.ros.org/en/humble/Concepts/About-ROS-Interfaces.html)を参照してください．
+Rclexでは，ROS 2において定義されるメッセージの型を利用して出版購読型のトピック通信を行うことができます．ROS 2におけるメッセージの型については[こちら](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Interfaces.html)を参照してください．
 
 プロジェクトで使用したいメッセージの型は，`config/config.exs` における `ros2_message_types` で指定します．コンマ区切り `,` で複数の型を指定することもできます．
 
@@ -184,7 +184,7 @@ Rclex: Publishing: Hello World from Rclex!
 このメッセージの出版結果は，ROS 2コマンド`ros2 topic echo`によって購読して確認できます．
 
 ```
-$ source /opt/ros/humble/setup.bash
+$ source /opt/ros/jazzy/setup.bash
 $ ros2 topic echo /chatter std_msgs/msg/String
 data: Hello World from Rclex!
 ---
