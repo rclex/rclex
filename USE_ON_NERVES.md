@@ -23,6 +23,7 @@ The "support" colomn refers to its status of official support as the ROS 2 distr
 
 | `ROS_DISTRO` | arm64v8 | arm32v7 | support |
 | :--- | :--- | :---| :---|
+| jazzy | ○ | - | LTS until May 2029 |
 | humble | ○ | ○ | LTS until May 2027 |
 | galactic | ○ | - | until [v0.11.3](https://github.com/rclex/rclex/releases/tag/v0.11.3) |
 | foxy | ○ | ○ | until [v0.11.3](https://github.com/rclex/rclex/releases/tag/v0.11.3) |
