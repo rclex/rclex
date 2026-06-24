@@ -38,13 +38,13 @@ The basic and recommended environment is where the host (development) and the ta
 
 Currently, we use the following environment as the main development target:
 
-- Ubuntu 22.04 LTS (Jammy Jellyfish)
-- ROS 2 Humble Hawksbill
+- Ubuntu 24.04 LTS (Noble Numbat)
+- ROS 2 Jazzy Jalisco
 - Elixir 1.19.5-otp-28
 - Erlang/OTP 28.5
 
-We highly recommend using [Humble Hawksbill](https://docs.ros.org/en/rolling/Releases/Release-Humble-Hawksbill.html) for ROS 2 LTS distribution.
-We also confirmed the operation of this library with [Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html) on Ubuntu 24.04 LTS, and [Lyrical Luth](https://docs.ros.org/en/rolling/Releases/Release-Lyrical-Luth.html) on Ubuntu 26.04 LTS.
+We highly recommend using [Jazzy Jalisco](https://docs.ros.org/en/rolling/Releases/Release-Jazzy-Jalisco.html) for ROS 2 LTS distribution.
+We also confirmed the operation of this library with the ROS 2 LTS distribution: [Humble Hawksbill](https://docs.ros.org/en/rolling/Releases/Release-Humble-Hawksbill.html) on Ubuntu 22.04 LTS, and [Lyrical Luth](https://docs.ros.org/en/rolling/Releases/Release-Lyrical-Luth.html) on Ubuntu 26.04 LTS.
 As for STS which is currently supported, we also confirmed the operation with [Kilted Kaiju](https://docs.ros.org/en/rolling/Releases/Release-Kilted-Kaiju.html). However, this STS distribution is not included in the CI tests on GHA.
 
 We do not support ROS 2 Distributions that have already reached EOL in the development of the latest version.
@@ -117,12 +117,12 @@ mix deps.get
 ### Setup the ROS 2 environment
 
 ```
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 ```
 
 ## Configure ROS 2 message types you want to use
 
-Rclex provides pub/sub-based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/humble/Concepts/About-ROS-Interfaces.html) for more details about message types in ROS 2.
+Rclex provides pub/sub-based topic communication using the message type defined in ROS 2. Please refer [here](https://docs.ros.org/en/jazzy/Concepts/Basic/About-Interfaces.html) for more details about message types in ROS 2.
 
 The message types you want to use in your project can be specified in `ros2_message_types` in `config/config.exs`. 
 Multiple message types can be specified separated by comma `,`.
@@ -190,7 +190,7 @@ Rclex: Publishing: Hello World from Rclex!
 You can confirm the above operation by subscribing with `ros2 topic echo` from the other terminal.
 
 ```
-$ source /opt/ros/humble/setup.bash
+$ source /opt/ros/jazzy/setup.bash
 $ ros2 topic echo /chatter std_msgs/msg/String
 data: Hello World from Rclex!
 ---
