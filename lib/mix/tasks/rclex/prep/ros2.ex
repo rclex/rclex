@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   ROS 2 resources will be prepared under .ros2.
 
-  An `--arch` option should be specified, option value is `arm64v8`, currently only supported.
+  An `--arch` option should be specified. Supported values are `arm64v8`, `amd64`, and `arm32v7`.
 
   ## Examples
 
@@ -28,8 +28,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   use Mix.Task
 
-  @arm64v8_ros_distros ["humble"]
-  @amd64_ros_distros ["humble"]
+  @arm64v8_ros_distros ["humble", "jazzy"]
+  @amd64_ros_distros ["humble", "jazzy"]
   @arm32v7_ros_distros ["humble"]
   @supported_ros_distros %{
     "arm64v8" => @arm64v8_ros_distros,
@@ -44,7 +44,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   @doc false
   def run(args) do
-    if not command_exists?("docker") do
+    if is_nil(System.find_executable("docker")) do
       Mix.raise("""
       Please install docker command first, we need it.
       """)
@@ -90,14 +90,6 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
   end
 
   @doc false
-  def command_exists?(command) when is_binary(command) do
-    case System.cmd("sh", ["-c", "command -v #{command}"]) do
-      {_, 0} -> true
-      _ -> false
-    end
-  end
-
-  @doc false
   def parse_args(args) do
     {parsed_args, _remaining_args, _invalid} = OptionParser.parse(args, strict: @switches)
 
@@ -106,6 +98,9 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   @doc false
   def copy_from_docker!(dest_dir_path, arch, ros_distro) do
+    docker_tag = ros_docker_image_tag(arch, ros_distro)
+    Mix.shell().info("\nCopy from image: #{docker_tag}\n")
+
     dest_path = Path.join(dest_dir_path, "/opt/ros/#{ros_distro}")
     create_resources_directory!(dest_path, _git_ignore = true)
     copy_ros_resources_from_docker!(dest_path, arch, ros_distro)
@@ -147,20 +142,58 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     [
       "/lib/#{dir_name}/libspdlog.so*",
       "/lib/#{dir_name}/libtinyxml2.so*",
+      "/lib/#{dir_name}/libfmt.so*"
+    ]
+  end
+
+  defp vendor_resources(arch, "jazzy") do
+    dir_name = arch_dir_name(arch)
+
+    [
+      "/lib/#{dir_name}/libspdlog.so*",
+      "/lib/#{dir_name}/libtinyxml2.so*",
       "/lib/#{dir_name}/libfmt.so*",
-      # humble needs OpenSSL 3.x which Nerves doesn't have
-      "/lib/#{dir_name}/libssl.so*",
-      "/lib/#{dir_name}/libcrypto.so*"
+      "/lib/#{dir_name}/libyaml*.so*",
+      "/lib/#{dir_name}/liblttng-ust.so*",
+      "/lib/#{dir_name}/libnuma.so*",
+      "/lib/#{dir_name}/liblttng-ust-common.so*",
+      "/lib/#{dir_name}/liblttng-ust-tracepoint.so*"
     ]
   end
 
   defp copy_from_docker_impl!(arch, ros_distro, src_path, dest_path) do
     with true <- File.exists?(dest_path) do
       docker_tag = ros_docker_image_tag(arch, ros_distro)
-      docker_command_args = ["run", "--rm", "-v", "#{dest_path}:/mnt", docker_tag]
+
+      docker_command_args = [
+        "run",
+        "--rm",
+        "--platform",
+        "#{platform(arch)}",
+        "-v",
+        "#{dest_path}:/mnt",
+        docker_tag
+      ]
+
       copy_command = ["bash", "-c", "for s in #{src_path}; do cp -rf $s /mnt; done"]
 
-      {_, 0} = System.cmd("docker", docker_command_args ++ copy_command)
+      {command_output, status} =
+        System.cmd("docker", docker_command_args ++ copy_command, stderr_to_stdout: true)
+
+      if status == 0 do
+        message = "Copied from #{src_path} to #{Path.relative_to_cwd(dest_path)}"
+        Mix.shell().info(message)
+      else
+        Mix.raise("""
+        Failed to copy resources from Docker.
+        src: #{src_path}
+        dest: #{Path.relative_to_cwd(dest_path)}
+        image: #{docker_tag}
+        exit_status: #{status}
+        output:
+        #{command_output}
+        """)
+      end
     end
   end
 
@@ -181,9 +214,13 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
     "rclex/arm32v7_ros_docker_with_vendor_resources:#{ros_distro}"
   end
 
-  defp arch_dir_name("arm64v8"), do: "aarch64-linux-gnu"
   defp arch_dir_name("amd64"), do: "x86_64-linux-gnu"
+  defp arch_dir_name("arm64v8"), do: "aarch64-linux-gnu"
   defp arch_dir_name("arm32v7"), do: "arm-linux-gnueabihf"
+
+  defp platform("amd64"), do: "linux/amd64"
+  defp platform("arm64v8"), do: "linux/arm64/v8"
+  defp platform("arm32v7"), do: "linux/arm/v7"
 
   @doc false
   @spec create_resources_directory!(directory_path :: String.t(), gitignore :: boolean()) :: :ok
