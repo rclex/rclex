@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   ROS 2 resources will be prepared under .ros2.
 
-  An `--arch` option should be specified, option value is `arm64v8`, currently only supported.
+  An `--arch` option should be specified. Supported values are `arm64v8`, `amd64`, and `arm32v7`.
 
   ## Examples
 
@@ -177,7 +177,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
       copy_command = ["bash", "-c", "for s in #{src_path}; do cp -rf $s /mnt; done"]
 
-      {command_output, status} = System.cmd("docker", docker_command_args ++ copy_command)
+      {command_output, status} =
+        System.cmd("docker", docker_command_args ++ copy_command, stderr_to_stdout: true)
 
       if status == 0 do
         message = "Copied from #{src_path} to #{Path.relative_to_cwd(dest_path)}"

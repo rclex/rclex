@@ -47,8 +47,13 @@ defmodule Rclex.MixProject do
   # WHY: Skip NIF build when ROS_DISTRO is not defined.
   #      This task runs without ROS 2 resources, so NIFs requiring ROS 2 cannot be built.
   defp compilers do
-    if(is_nil(System.get_env("ROS_DISTRO")), do: [], else: [:elixir_make]) ++
-      Mix.compilers()
+    ros_distro = System.get_env("ROS_DISTRO")
+
+    cond do
+      is_nil(ros_distro) -> []
+      String.trim(ros_distro) == "" -> []
+      true -> [:elixir_make]
+    end ++ Mix.compilers()
   end
 
   # Run "mix help deps" to learn about dependencies.
