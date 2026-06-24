@@ -98,6 +98,9 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   @doc false
   def copy_from_docker!(dest_dir_path, arch, ros_distro) do
+    docker_tag = ros_docker_image_tag(arch, ros_distro)
+    Mix.shell().info("\nCopy from image: #{docker_tag}\n")
+
     dest_path = Path.join(dest_dir_path, "/opt/ros/#{ros_distro}")
     create_resources_directory!(dest_path, _git_ignore = true)
     copy_ros_resources_from_docker!(dest_path, arch, ros_distro)
@@ -174,7 +177,22 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
       copy_command = ["bash", "-c", "for s in #{src_path}; do cp -rf $s /mnt; done"]
 
-      {_, 0} = System.cmd("docker", docker_command_args ++ copy_command)
+      {command_output, status} = System.cmd("docker", docker_command_args ++ copy_command)
+
+      if status == 0 do
+        message = "Copied from #{src_path} to #{Path.relative_to_cwd(dest_path)}"
+        Mix.shell().info(message)
+      else
+        Mix.raise("""
+        Failed to copy resources from Docker.
+        src: #{src_path}
+        dest: #{Path.relative_to_cwd(dest_path)}
+        image: #{docker_tag}
+        exit_status: #{status}
+        output:
+        #{command_output}
+        """)
+      end
     end
   end
 
