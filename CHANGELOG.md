@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## v0.13.1 on 24 Jun 2026
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.13.0...v0.13.1
+
+## What's Changed
+
+* New features:
+  * Add jazzy support to `mix rclex.prep.ros2` by @pojiro in https://github.com/rclex/rclex/pull/391
+  * feat: change `latest` to ROS 2 Jazzy Jalisco by @takasehideki in https://github.com/rclex/rclex/pull/407
+* Code Improvements/Fixes: none
+* Bumps: none
+* Note in this release:
+  * Jazzy is also now available on Nerves!
+  * Recommended ROS 2 distribution is switched to Jazzy!
+
 ## v0.13.0 on 11 Jun 2026
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.12.0...v0.13.0
