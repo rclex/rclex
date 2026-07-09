@@ -18,7 +18,11 @@ defmodule Rclex.MixProject do
       deps: deps(),
       make_clean: ["clean"],
       compilers: compilers(),
-      aliases: [format: [&format_c/1, "format"], iwyu: [&iwyu/1]],
+      aliases: [
+        compile: [&copy_templates/1, "compile"],
+        format: [&format_c/1, "format"],
+        iwyu: [&iwyu/1]
+      ],
       test_ignore_filters: [&String.starts_with?(&1, "test/expected_files/")],
       test_coverage: test_coverage(),
       dialyzer: dialyzer(),
@@ -44,14 +48,16 @@ defmodule Rclex.MixProject do
     ]
   end
 
-  # WHY: Skip NIF build when ROS_DISTRO is not defined.
-  #      This task runs without ROS 2 resources, so NIFs requiring ROS 2 cannot be built.
   defp compilers do
     ros_distro = System.get_env("ROS_DISTRO")
-
+    argv = System.argv()
+    # Skip NIF build (:elixir_make):
+    #   - when ROS_DISTRO is not set
+    #   - when running rclex Mix tasks that prepare ROS 2 resources or message packages
     cond do
       is_nil(ros_distro) -> []
-      String.trim(ros_distro) == "" -> []
+      "rclex.prep.ros2" in argv -> []
+      "rclex.gen.msgs" in argv -> []
       true -> [:elixir_make]
     end ++ Mix.compilers()
   end
@@ -96,6 +102,22 @@ defmodule Rclex.MixProject do
       source_ref: "v#{@version}",
       source_url: @source_url
     ]
+  end
+
+  defp copy_templates(_args) do
+    project_dir =
+      Mix.Project.project_file()
+      |> Path.dirname()
+
+    ["lib/rclex/msg_funcs.ex", "src/msg_funcs.h", "src/msg_funcs.ec"]
+    |> Enum.each(fn path ->
+      source_file_path = Path.join(project_dir, "priv/templates/rclex.gen.msgs/#{path}")
+      destination_file_path = Path.join(project_dir, path)
+
+      if not File.exists?(destination_file_path) do
+        File.cp!(source_file_path, destination_file_path)
+      end
+    end)
   end
 
   defp format_c(_args) do
