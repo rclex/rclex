@@ -216,7 +216,11 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
         docker_tag
       ]
 
-      copy_command = ["bash", "-c", "for s in #{src_path}; do cp -rf $s /mnt; done"]
+      copy_command = [
+        "bash",
+        "-c",
+        "for s in #{src_path}; do test -e $s || continue; cp -rf $s /mnt; done"
+      ]
 
       {command_output, status} =
         System.cmd("docker", docker_command_args ++ copy_command, stderr_to_stdout: true)
