@@ -1,29 +1,128 @@
 defmodule Mix.Tasks.Rclex.Prep.Ros2 do
-  @shortdoc "Prepare ROS 2 resources under .ros2 directory."
+  @shortdoc "Prepare ROS 2 resources for Nerves and hosts without a local ROS 2 installation."
   @moduledoc """
   #{@shortdoc}
+
+  `mix rclex.prep.ros2` prepares the ROS 2 resources that Nerves targets and
+  Linux hosts need when they run Rclex without a local ROS 2 installation.
+
+  The task copies the required ROS 2 files from a Docker image into the target
+  directory for the runtime environment. Before copying, it shows a confirmation
+  prompt and proceeds only when you answer yes.
+
+  ## Prerequisites
+
+  - Docker must be available.
+  - `ROS_DISTRO` must be set.
+  - An `--arch` value must be provided, or it must be inferred from `MIX_TARGET`.
+  - Supported architectures are `arm64v8`, `amd64`, and `arm32v7`.
+
+  For Nerves, `MIX_TARGET=rpi4` is inferred as `arm64v8`, and `MIX_TARGET=rpi3`
+  is inferred as `arm32v7`. For any other Nerves target, specify `--arch`
+  explicitly.
+
+  ## Basic Usage
+
+  ### Nerves
+
+  The following example uses `rpi4` and `jazzy`.
+
+  Prepare ROS 2 resources.
+
+  ```
+  export MIX_TARGET=rpi4
+  export ROS_DISTRO=jazzy
+  mix rclex.prep.ros2 --arch arm64v8
+  # ROS 2 resources are copied under `rootfs_overlay/opt/ros/jazzy`.
+  # If `MIX_TARGET` is `rpi4` or `rpi3`, you can omit `--arch`.
+  ```
+
+  Write your application that uses Rclex.
+
+  Generate the message definitions.
+
+  ```
+  mix rclex.gen.msgs --from rootfs_overlay/opt/ros/jazzy/share
+  # The `--from` option is optional.
+  ```
+
+  Add `LD_LIBRARY_PATH` to `rootfs_overlay/etc/erlinit.config`.
+
+  See `USE_ON_NERVES.md` for more details.
+
+  ### Linux host without ROS 2
+
+  The following example uses `amd64` and `jazzy`.
+
+  Prepare ROS 2 resources.
+
+  ```
+  export ROS_DISTRO=jazzy
+  mix rclex.prep.ros2 --arch amd64
+  # ROS 2 resources are copied under `.ros2/resources/from-docker/amd64/jazzy/opt/ros/jazzy`.
+  ```
+
+  Write your application that uses Rclex.
+
+  Generate the message definitions.
+
+  ```
+  mix rclex.gen.msgs --from .ros2/resources/from-docker/amd64/jazzy/opt/ros/jazzy/share
+  ```
+
+  Run the application with `LD_LIBRARY_PATH`.
+
+  ```
+  LD_LIBRARY_PATH=.ros2/resources/from-docker/amd64/jazzy/opt/ros/jazzy/lib run your app
+  ```
+
+  ## Usage
 
   ```
   mix rclex.prep.ros2 --arch ARCH
   ```
 
-  ROS 2 resources will be prepared under .ros2.
+  ROS 2 resources are prepared under:
 
-  An `--arch` option should be specified. Supported values are `arm64v8`, `amd64`, and `arm32v7`.
+  - `.ros2/resources/from-docker/<arch>/<ros_distro>/opt/ros/<ros_distro>` on the host
+  - `rootfs_overlay/opt/ros/<ros_distro>` on Nerves
 
-  You can also customize the copy source image with one of the following options (supported for `arm64v8` and `amd64` only).
+  You can omit `--arch` on Nerves when it is inferred from `MIX_TARGET`.
 
-  - `--dockerfile PATH`: build an arbitrary Dockerfile and copy resources from that image.
+  You can also customize the Docker image with `--dockerfile`. This option is
+  supported for `arm64v8` and `amd64` only.
+
+  - `--dockerfile PATH`: build the given Dockerfile and copy resources from the
+    resulting image.
+
+  ## Default Docker images
+
+  - `arm64v8`, `amd64`: `ARCH/ros:ROS_DISTRO-ros-core`
+  - `arm32v7`: `rclex/arm32v7_ros_docker_with_vendor_resources:ROS_DISTRO`
+
+  ## Requirements for `--dockerfile`
+
+  The built image must provide at least the following directories:
+
+  - `/opt/ros/$ROS_DISTRO/include`
+  - `/opt/ros/$ROS_DISTRO/lib`
+  - `/opt/ros/$ROS_DISTRO/share`
+
+  ## Notes
+
+  - `--dockerfile` is not available for `arm32v7`.
+  - The image architecture used by the Dockerfile must match the requested
+    target architecture.
 
   ## Examples
 
-  specify arch explicitly with `--arch` option
+  Specify the architecture explicitly with `--arch`.
 
   ```
   mix rclex.prep.ros2 --arch arm64v8
   ```
 
-  For Nerves, `export MIX_TARGET=[TARGET]` is invoked properly, `--arch` option is not needed.
+  For Nerves, if `MIX_TARGET` is `rpi4` or `rpi3`, `--arch` can be omitted.
 
   ```
   mix rclex.prep.ros2
@@ -34,6 +133,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
   ```
   mix rclex.prep.ros2 --arch arm64v8 --dockerfile docker/ros2/Dockerfile
   ```
+
+  In this example, `docker/ros2/Dockerfile` is just a sample path.
 
   Example Dockerfile for `rmw_zenoh_cpp` (ROS 2 Jazzy)
 
