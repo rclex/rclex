@@ -261,7 +261,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
       # vendor's ex.) zenoh_cpp_vendor
       "/opt/ros/#{ros_distro}/opt"
     ]
-    |> Enum.map(fn src_path -> copy_from_docker_impl!(docker_tag, arch, src_path, dest_path) end)
+    |> Enum.each(fn src_path -> copy_from_docker_impl!(docker_tag, arch, src_path, dest_path) end)
   end
 
   defp copy_ros_resources_from_docker!(dest_path, arch, _ros_distro, docker_tag)
@@ -271,13 +271,13 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
       "/root/ros2_ws/install/*/lib",
       "/root/ros2_ws/install/*/share"
     ]
-    |> Enum.map(fn src_path -> copy_from_docker_impl!(docker_tag, arch, src_path, dest_path) end)
+    |> Enum.each(fn src_path -> copy_from_docker_impl!(docker_tag, arch, src_path, dest_path) end)
   end
 
   defp copy_vendor_resources_from_docker!(dest_path, arch, ros_distro, docker_tag)
        when arch in ["arm64v8", "amd64", "arm32v7"] do
     vendor_resources(arch, ros_distro)
-    |> Enum.map(fn src_path -> copy_from_docker_impl!(docker_tag, arch, src_path, dest_path) end)
+    |> Enum.each(fn src_path -> copy_from_docker_impl!(docker_tag, arch, src_path, dest_path) end)
   end
 
   defp vendor_resources(arch, "humble") do
