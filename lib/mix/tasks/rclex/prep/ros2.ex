@@ -136,7 +136,7 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
 
   In this example, `docker/ros2/Dockerfile` is just a sample path.
 
-  Example Dockerfile for `rmw_zenoh_cpp` (ROS 2 Jazzy)
+  A frequently used example for your own Dockerfile is when you want to use Zenoh as RMW (`rmw_zenoh_cpp`) on the Nerves system. In that case, a customized Dockerfile would be as follows:
 
   ```
   FROM arm64v8/ros:jazzy-ros-core
