@@ -409,7 +409,6 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
   end
 
   defp custom_docker_build_spec!(arch, ros_distro, input_path) do
-    # https://docs.docker.com/build/concepts/context/#what-is-a-build-context
     context_path = Path.dirname(input_path)
 
     %{
@@ -417,6 +416,8 @@ defmodule Mix.Tasks.Rclex.Prep.Ros2 do
       ros_distro: ros_distro,
       image_tag: "rclex/prep_ros2:#{arch}-#{ros_distro}",
       source_path: input_path,
+      # For the meaning of Docker build context, see:
+      # https://docs.docker.com/build/concepts/context/#what-is-a-build-context
       build_context_path: context_path,
       build_dockerfile_path: input_path
     }
