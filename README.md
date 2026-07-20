@@ -67,6 +67,12 @@ You can also try the power of Rclex with it easily. Please check ["Docker Enviro
 
 Please refer to [Use on Nerves](USE_ON_NERVES.md) section and [b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves) example repository for more details!
 
+### Linux without ROS 2 installed
+
+`rclex` can also run on Linux environments where ROS 2 is not installed. In this case, you do not need to install a ROS 2 environment on the host.
+
+Please refer to [Use on no ROS 2 Linux](USE_ON_NO_ROS2_LINUX.md) section for details.
+
 ## Features
 
 Currently, the Rclex API allows for the following:

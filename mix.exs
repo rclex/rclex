@@ -97,7 +97,13 @@ defmodule Rclex.MixProject do
 
   defp docs() do
     [
-      extras: ["README.md", "README_ja.md", "USE_ON_NERVES.md", "CHANGELOG.md"],
+      extras: [
+        "README.md",
+        "README_ja.md",
+        "USE_ON_NERVES.md",
+        "USE_ON_NO_ROS2_LINUX.md",
+        "CHANGELOG.md"
+      ],
       main: "readme",
       source_ref: "v#{@version}",
       source_url: @source_url
