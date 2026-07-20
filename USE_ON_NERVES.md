@@ -142,13 +142,6 @@ Add LD_LIBRARY_PATH line like following.
 # add for ROS 2 (rclex_on_nerves)
 -e AMENT_PREFIX_PATH=/opt/ros/jazzy
 -e LD_LIBRARY_PATH=/opt/ros/jazzy/lib
-# If you use rmw_zenoh_cpp, see the following.
-# You need to copy rmw_zenoh_cpp resources using the `--dockerfile` option of `mix rclex.prep.ros2`.
-# -e LD_LIBRARY_PATH=/opt/ros/jazzy/lib:/opt/ros/jazzy/opt/zenoh_cpp_vendor/lib
-# https://github.com/ros2/rmw_zenoh#session-and-router-configs
-# -e ZENOH_SESSION_CONFIG_URI=/etc/YOUR_RMW_ZENOH_SESSION_CONFIG.json5
-# https://github.com/ros2/rmw_zenoh#checking-for-a-zenoh-router
-# -e ZENOH_ROUTER_CHECK_ATTEMPTS=0
 ```
 
 > #### Why add LD_LIBRARY_PATH explicitly {: .info }
@@ -216,3 +209,41 @@ $ ros2 topic echo /chatter std_msgs/msg/String
 data: Hello World from Rclex!
 ---
 ```
+
+## Using Examples
+
+### Use rmw_zenoh_cpp
+
+To use rmw_zenoh_cpp, run `mix rclex.prep.ros2` with the `--dockerfile` option
+to specify a Dockerfile like the following.
+
+Replace the architecture and ROS distro values to match your environment.
+
+```
+FROM arm64v8/ros:jazzy-ros-core
+
+RUN apt-get update \\
+    && apt-get install -y --no-install-recommends \\
+         ros-jazzy-rmw-zenoh-cpp \\
+    && rm -rf /var/lib/apt/lists/*
+```
+
+Then update the ROS 2 related settings in erlinit.config as follows.
+
+```
+# add for ROS 2 (rclex_on_nerves)
+-e AMENT_PREFIX_PATH=/opt/ros/jazzy
+-e LD_LIBRARY_PATH=/opt/ros/jazzy/lib:/opt/ros/jazzy/opt/zenoh_cpp_vendor/lib
+-e ZENOH_SESSION_CONFIG_URI=/etc/YOUR_RMW_ZENOH_SESSION_CONFIG.json5
+-e ZENOH_ROUTER_CHECK_ATTEMPTS=0
+```
+
+For ZENOH_SESSION_CONFIG_URI, see:
+https://github.com/ros2/rmw_zenoh#session-and-router-configs
+
+For ZENOH_ROUTER_CHECK_ATTEMPTS, see:
+https://github.com/ros2/rmw_zenoh#checking-for-a-zenoh-router
+
+Set these values appropriately for your environment.
+The Zenoh session config file must be placed under rootfs_overlay so that it is
+available at runtime.
