@@ -210,14 +210,14 @@ data: Hello World from Rclex!
 ---
 ```
 
-## Using Examples
+## Customizing ROS 2 System
 
-### Use rmw_zenoh_cpp
+You may want to customize the system configuration or environmental setting for ROS 2 included in Nerves.
+For example, when using [rmw_zenoh](https://docs.ros.org/en/rolling/Get-Started/Installation/RMW-Implementations/Non-DDS-Implementations/Working-with-Zenoh.html) at the communication layer, you’ll need to install additional packages in the default Docker container and configure some environment variables for Zenoh communication.
 
-To use rmw_zenoh_cpp, run `mix rclex.prep.ros2` with the `--dockerfile` option
-to specify a Dockerfile like the following.
+This section explains how to customize a ROS 2 system, using this example as a guide.
 
-Replace the architecture and ROS distro values to match your environment.
+To use rmw_zenoh_cpp, prepare a Dockerfile with the installation of the rmw_zenoh_cpp package added, and then run `mix rclex.prep.ros2` with the `--dockerfile` option (you may need to replace the architecture and ROS distro values with those that match your environment).
 
 ```
 FROM arm64v8/ros:jazzy-ros-core
