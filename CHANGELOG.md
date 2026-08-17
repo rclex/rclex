@@ -1,10 +1,19 @@
 # CHANGELOG
 
+## v0.13.2 on 17 Aug 2026
+
+**Full Changelog**: https://github.com/rclex/rclex/compare/v0.13.1...v0.13.2
+
+* New features:
+  * Add `--dockerfile` option concept to mix rclex.prep.ros2 by @pojiro in https://github.com/rclex/rclex/pull/409
+* Code Improvements/Fixes: none
+* Bumps:
+  * chore(deps-dev): bump git_hooks from 0.8.1 to 0.9.0 by @dependabot[bot] in https://github.com/rclex/rclex/pull/411
+* Note in this release: none
+
 ## v0.13.1 on 24 Jun 2026
 
 **Full Changelog**: https://github.com/rclex/rclex/compare/v0.13.0...v0.13.1
-
-## What's Changed
 
 * New features:
   * Add jazzy support to `mix rclex.prep.ros2` by @pojiro in https://github.com/rclex/rclex/pull/391
