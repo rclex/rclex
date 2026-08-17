@@ -140,6 +140,7 @@ Add LD_LIBRARY_PATH line like following.
 -e ERL_CRASH_DUMP=/root/erl_crash.dump;ERL_CRASH_DUMP_SECONDS=5
 
 # add for ROS 2 (rclex_on_nerves)
+-e AMENT_PREFIX_PATH=/opt/ros/jazzy
 -e LD_LIBRARY_PATH=/opt/ros/jazzy/lib
 ```
 
@@ -208,3 +209,41 @@ $ ros2 topic echo /chatter std_msgs/msg/String
 data: Hello World from Rclex!
 ---
 ```
+
+## Customizing ROS 2 System
+
+You may want to customize the system configuration or environmental setting for ROS 2 included in Nerves.
+For example, when using [rmw_zenoh](https://docs.ros.org/en/rolling/Get-Started/Installation/RMW-Implementations/Non-DDS-Implementations/Working-with-Zenoh.html) at the communication layer, you’ll need to install additional packages in the default Docker container and configure some environment variables for Zenoh communication.
+
+This section explains how to customize a ROS 2 system, using this example as a guide.
+
+To use rmw_zenoh_cpp, prepare a Dockerfile with the installation of the rmw_zenoh_cpp package added, and then run `mix rclex.prep.ros2` with the `--dockerfile` option (you may need to replace the architecture and ROS distro values with those that match your environment).
+
+```
+FROM arm64v8/ros:jazzy-ros-core
+
+RUN apt-get update \\
+    && apt-get install -y --no-install-recommends \\
+         ros-jazzy-rmw-zenoh-cpp \\
+    && rm -rf /var/lib/apt/lists/*
+```
+
+Then update the ROS 2 related settings in erlinit.config as follows.
+
+```
+# add for ROS 2 (rclex_on_nerves)
+-e AMENT_PREFIX_PATH=/opt/ros/jazzy
+-e LD_LIBRARY_PATH=/opt/ros/jazzy/lib:/opt/ros/jazzy/opt/zenoh_cpp_vendor/lib
+-e ZENOH_SESSION_CONFIG_URI=/etc/YOUR_RMW_ZENOH_SESSION_CONFIG.json5
+-e ZENOH_ROUTER_CHECK_ATTEMPTS=0
+```
+
+For ZENOH_SESSION_CONFIG_URI, see:
+https://github.com/ros2/rmw_zenoh#session-and-router-configs
+
+For ZENOH_ROUTER_CHECK_ATTEMPTS, see:
+https://github.com/ros2/rmw_zenoh#checking-for-a-zenoh-router
+
+Set these values appropriately for your environment.
+The Zenoh session config file must be placed under rootfs_overlay so that it is
+available at runtime.

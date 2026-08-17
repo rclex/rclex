@@ -62,6 +62,12 @@ Ubuntu 22.04 LTS上での[Humble Hawksbill](https://docs.ros.org/en/humble/Relea
 
 詳細は[Use on Nerves](USE_ON_NERVES.md)のセクションおよび[b5g-ex/rclex_on_nerves](https://github.com/b5g-ex/rclex_on_nerves)のリポジトリによる例を参照してください．
 
+### ROS 2がインストールされていないLinux
+
+`rclex` はROS 2がインストールされていないLinuxでの実行も可能です．この場合，ホスト環境にはROS 2環境を導入する必要はありません．
+
+詳細は[Use on no ROS 2 Linux](USE_ON_NO_ROS2_LINUX.md)のセクションを参照してください．
+
 ## 機能
 
 現時点では以下のことができるようにRclex APIを提供しています．
